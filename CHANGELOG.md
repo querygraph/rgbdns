@@ -32,6 +32,8 @@ versioning once its djbdns-compatible public surface stabilizes.
   AAAA plus `ip6.arpa` and historical `ip6.int` PTR records, while `3` emits
   AAAA only.
 - IPv4, IPv6, NS, CNAME, SOA, PTR, MX, TXT, and opaque record support.
+- Typed IPv4/IPv6 listen-address construction across every daemon, including
+  correct bracketed socket addresses for `IP=::` and other IPv6 literals.
 - Initial `tinydns`, `tinydns-data`, `tinydns-get`, and `dnsq` commands.
 - Atomic `tinydns-data` output in the original `data.cdb` key/value format and
   a bounded, validating CDB loader used by `tinydns` by default.

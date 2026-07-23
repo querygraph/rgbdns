@@ -14,7 +14,7 @@ use hickory_server::{
 };
 use ipnet::IpNet;
 use rgbdns::dnscache_config::{PreparedRoots, forward_zones_from_environment};
-use std::{env, net::SocketAddr, sync::Arc, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 use tokio::net::{TcpListener, UdpSocket};
 
 #[tokio::main]
@@ -36,7 +36,7 @@ async fn main() {
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let ip = env::var("IP").unwrap_or_else(|_| "127.0.0.1".into());
     let port = env::var("PORT").unwrap_or_else(|_| "53".into());
-    let address: SocketAddr = format!("{ip}:{port}").parse()?;
+    let address = rgbdns::socket_address(&ip, &port)?;
     let roots = PreparedRoots::from_environment()?;
 
     let options = RecursorOptions {

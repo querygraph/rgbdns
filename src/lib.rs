@@ -43,3 +43,33 @@ impl From<std::io::Error> for Error {
     }
 }
 pub type Result<T> = std::result::Result<T, Error>;
+
+/// Constructs a listen address without ambiguous IPv6 string concatenation.
+pub fn socket_address(ip: &str, port: &str) -> Result<std::net::SocketAddr> {
+    let ip = ip
+        .parse::<std::net::IpAddr>()
+        .map_err(|_| Error::Format("invalid IP address"))?;
+    let port = port
+        .parse::<u16>()
+        .map_err(|_| Error::Format("invalid port"))?;
+    Ok(std::net::SocketAddr::new(ip, port))
+}
+
+#[cfg(test)]
+mod address_tests {
+    use super::*;
+
+    #[test]
+    fn constructs_ipv4_and_ipv6_socket_addresses() {
+        assert_eq!(
+            socket_address("192.0.2.1", "5353").unwrap().to_string(),
+            "192.0.2.1:5353"
+        );
+        assert_eq!(
+            socket_address("2001:db8::1", "53").unwrap().to_string(),
+            "[2001:db8::1]:53"
+        );
+        assert!(socket_address("bad", "53").is_err());
+        assert!(socket_address("127.0.0.1", "65536").is_err());
+    }
+}
