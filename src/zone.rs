@@ -16,6 +16,7 @@ pub struct Zone {
     locations: Vec<(Vec<u8>, [u8; 2])>,
     current_metadata: RecordMetadata,
     default_serial: u32,
+    unqualified_nodes: BTreeSet<Name>,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -56,6 +57,13 @@ impl Zone {
         Ok(z)
     }
     fn add(&mut self, r: Record) {
+        if self.current_metadata.cutoff == 0 && self.current_metadata.location.is_none() {
+            let mut node = Some(r.name.clone());
+            while let Some(name) = node {
+                self.unqualified_nodes.insert(name.clone());
+                node = name.parent();
+            }
+        }
         self.metadata
             .entry(r.name.clone())
             .or_default()
@@ -473,12 +481,18 @@ impl Zone {
         }
         let mut rows = self.visible_records(name, location, now);
         if rows.is_empty() {
+            if self.name_exists(name, location, now) {
+                let zone = self
+                    .authoritative
+                    .iter()
+                    .filter(|z| name.is_subdomain_of(z))
+                    .max_by_key(|z| z.labels().count());
+                return Lookup::NoData(zone.and_then(|z| self.soa(z, location, now)));
+            }
             let mut p = name.parent();
             while let Some(n) = p {
-                let wc = n.wildcard();
-                let wildcard_rows = self.visible_records(&wc, location, now);
-                if !wildcard_rows.is_empty() {
-                    rows = wildcard_rows;
+                if self.name_exists(&n, location, now) {
+                    rows = self.visible_records(&n.wildcard(), location, now);
                     break;
                 }
                 p = n.parent()
@@ -559,6 +573,14 @@ impl Zone {
             }
         }
         selected
+    }
+    fn name_exists(&self, name: &Name, location: [u8; 2], now: u64) -> bool {
+        if self.unqualified_nodes.contains(name) {
+            return true;
+        }
+        self.records.keys().any(|owner| {
+            owner.is_subdomain_of(name) && !self.visible_records(owner, location, now).is_empty()
+        })
     }
 }
 
@@ -853,5 +875,28 @@ mod tests {
         for record_type in [0, 2, 5, 6, 12, 15, 252] {
             assert!(Zone::parse(&format!(":example:{record_type}:x\n")).is_err());
         }
+    }
+
+    #[test]
+    fn empty_nonterminals_and_closest_encloser_block_higher_wildcards() {
+        let zone = Zone::parse(
+            ".example::ns.example\n\
+             +*.example:192.0.2.1\n\
+             +leaf.branch.example:192.0.2.2\n",
+        )
+        .unwrap();
+        assert!(matches!(
+            zone.lookup(&"branch.example".parse().unwrap(), RecordType::A),
+            Lookup::NoData(Some(_))
+        ));
+        assert!(matches!(
+            zone.lookup(&"missing.branch.example".parse().unwrap(), RecordType::A),
+            Lookup::NxDomain(Some(_))
+        ));
+        assert!(matches!(
+            zone.lookup(&"other.example".parse().unwrap(), RecordType::A),
+            Lookup::Answer(records)
+                if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
+        ));
     }
 }

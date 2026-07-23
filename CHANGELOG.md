@@ -30,6 +30,9 @@ versioning once its djbdns-compatible public surface stabilizes.
   client-location selection, retained exactly through text and CDB forms.
 - Source-file modification times for implicit SOA serials, matching
   `tinydns-data`, plus enforcement of its generic-record type restrictions.
+- RFC closest-encloser wildcard behavior and empty-nonterminal NODATA handling,
+  with an indexed fast path for ordinary unqualified zones.
+- Client-IP selection in `tinydns-get`.
 - Correct original djbdns field positions, default target expansion, glue
   generation, SOA TTL behavior, one-to-three-digit octal escapes, and patched
   SRV priority/weight ordering, differentially checked against patched 1.05.

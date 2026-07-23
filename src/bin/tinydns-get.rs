@@ -5,8 +5,8 @@ use rgbdns::{
 };
 fn main() {
     let a = std::env::args().skip(1).collect::<Vec<_>>();
-    if a.len() != 2 {
-        eprintln!("usage: tinydns-get type name");
+    if !(2..=3).contains(&a.len()) {
+        eprintln!("usage: tinydns-get type name [ip]");
         std::process::exit(100)
     }
     let typ = a[0].parse::<RecordType>().unwrap();
@@ -20,6 +20,12 @@ fn main() {
         ..Default::default()
     };
     let z = Zone::from_file("data").unwrap();
-    let r = Message::decode(&server::respond(&z, &q.encode().unwrap(), 65535).unwrap()).unwrap();
+    let wire = if let Some(address) = a.get(2) {
+        server::respond_from(&z, &q.encode().unwrap(), 65535, address.parse().unwrap())
+    } else {
+        server::respond(&z, &q.encode().unwrap(), 65535)
+    }
+    .unwrap();
+    let r = Message::decode(&wire).unwrap();
     println!("{r:#?}")
 }

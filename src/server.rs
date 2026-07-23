@@ -14,6 +14,15 @@ pub fn respond(zone: &Zone, wire: &[u8], transport_limit: usize) -> Result<Vec<u
     respond_over_transport(zone, wire, transport_limit, true, None)
 }
 
+pub fn respond_from(
+    zone: &Zone,
+    wire: &[u8],
+    transport_limit: usize,
+    client: IpAddr,
+) -> Result<Vec<u8>> {
+    respond_over_transport(zone, wire, transport_limit, true, Some(client))
+}
+
 fn respond_over_transport(
     zone: &Zone,
     wire: &[u8],
