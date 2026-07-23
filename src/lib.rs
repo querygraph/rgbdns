@@ -4,7 +4,10 @@ pub mod axfr;
 pub mod cdb;
 pub mod name;
 pub mod packet;
+pub mod rbl;
 pub mod server;
+pub mod special;
+pub mod wall;
 pub mod zone;
 
 pub use name::Name;

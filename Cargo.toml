@@ -49,3 +49,15 @@ path = "src/bin/axfrdns.rs"
 [[bin]]
 name = "axfr-get"
 path = "src/bin/axfr-get.rs"
+
+[[bin]]
+name = "rbldns"
+path = "src/bin/rbldns.rs"
+
+[[bin]]
+name = "rbldns-data"
+path = "src/bin/rbldns-data.rs"
+
+[[bin]]
+name = "walldns"
+path = "src/bin/walldns.rs"

@@ -34,6 +34,18 @@ pub fn compile(zone: &Zone, path: impl AsRef<Path>) -> Result<()> {
 }
 
 pub fn load(path: impl AsRef<Path>) -> Result<Zone> {
+    let entries = read_entries(path)?;
+    let mut records = Vec::new();
+    for (key, value) in entries {
+        if key.starts_with(b"\0%") {
+            continue; // location mapping, consumed by the location-aware loader later
+        }
+        records.push(decode_record(&key, &value)?);
+    }
+    Ok(Zone::from_compiled_records(records))
+}
+
+pub(crate) fn read_entries(path: impl AsRef<Path>) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
     let metadata = fs::metadata(path.as_ref())?;
     if metadata.len() > MAX_DATABASE_SIZE {
         return Err(Error::Format("CDB exceeds configured safety limit"));
@@ -51,7 +63,7 @@ pub fn load(path: impl AsRef<Path>) -> Result<Zone> {
         .min()
         .unwrap_or(bytes.len());
     let mut position = HEADER_LEN;
-    let mut records = Vec::new();
+    let mut entries = Vec::new();
     while position < data_end {
         let header = bytes
             .get(position..position + 8)
@@ -67,18 +79,15 @@ pub fn load(path: impl AsRef<Path>) -> Result<Zone> {
             .checked_add(data_len)
             .filter(|end| *end <= data_end)
             .ok_or(Error::Format("invalid CDB value length"))?;
-        let key = &bytes[position..key_end];
-        let value = &bytes[key_end..value_end];
+        let key = bytes[position..key_end].to_vec();
+        let value = bytes[key_end..value_end].to_vec();
         position = value_end;
-        if key.starts_with(b"\0%") {
-            continue; // location mapping, consumed by the location-aware loader later
-        }
-        records.push(decode_record(key, value)?);
+        entries.push((key, value));
     }
     if position != data_end {
         return Err(Error::Format("CDB data section is misaligned"));
     }
-    Ok(Zone::from_compiled_records(records))
+    Ok(entries)
 }
 
 fn decode_record(key: &[u8], value: &[u8]) -> Result<Record> {

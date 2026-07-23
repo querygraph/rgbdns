@@ -21,6 +21,9 @@ Implemented:
   `cargo test --test dnscache_network -- --ignored`
 - bounded RFC 5936-style AXFR serving and retrieval, with atomic conversion
   back to tinydns text and loopback-only service access by default
+- `rbldns` longest-prefix matching, A/TXT responses and address substitution;
+  its CDB compiler is differentially identical to the original fixture
+- `walldns` direct-address and partial/full reverse-tree behavior
 
 Patch/source corpus searched and tracked:
 
@@ -48,7 +51,7 @@ Remaining suite components:
   tooling (the running iterative engine already provides bounded caches,
   bailiwick enforcement, DNSSEC, randomized ports/IDs/case, TCP fallback,
   query coalescing, and negative caching)
-- `rbldns`, `walldns`, and configuration programs
+- configuration programs
 - remaining clients (`dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`,
   `dnsqr`, `dnstrace`, `dnsfilter`)
 - automated differential tests against patched C djbdns and additional RFC

@@ -3,8 +3,9 @@
 `rgbdns` is a memory-safe Rust reimplementation of djbdns. The current runnable
 slice provides djbdns-compatible tinydns text and CDB data, authoritative UDP
 and TCP DNS, a DNSSEC-validating iterative cache, `tinydns-get`,
-`tinydns-data`, `axfrdns`, `axfr-get`, and `dnsq`, with strict bounded packet
-parsing, IPv4/IPv6, wildcards, negative answers, and safe OS-generated query IDs.
+`tinydns-data`, `axfrdns`, `axfr-get`, `rbldns`, `walldns`, and `dnsq`, with
+strict bounded packet parsing, IPv4/IPv6, wildcards, negative answers, and safe
+OS-generated query IDs.
 
 ```sh
 cargo test

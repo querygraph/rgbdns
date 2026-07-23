@@ -33,6 +33,11 @@ versioning once its djbdns-compatible public surface stabilizes.
   authoritative-zone isolation, and matching opening/closing SOA records.
 - `axfr-get` with strict response validation, transfer limits, safe tinydns
   escaping, fsync, and atomic output replacement.
+- `rbldns` and atomic `rbldns-data`, including longest-prefix IPv4 block-list
+  matching, configurable A/TXT responses, `$` address substitution, and exact
+  CDB key/value compatibility with the original compiler.
+- `walldns` direct and `in-addr.arpa` A/PTR mappings with the original TTL and
+  refusal behavior.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
 
