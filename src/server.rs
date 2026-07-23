@@ -4,6 +4,7 @@ use crate::{
     zone::{Lookup, Zone},
 };
 use std::{
+    collections::HashSet,
     io::{Read, Write},
     net::{IpAddr, TcpListener, UdpSocket},
     sync::Arc,
@@ -76,11 +77,19 @@ fn respond_over_transport(
     if question.qclass != 1 {
         r.flags |= 4
     } else {
-        match client.map_or_else(
-            || zone.lookup(&question.name, question.qtype),
-            |address| zone.lookup_from(&question.name, question.qtype, address),
-        ) {
-            Lookup::Answer(x) => r.answers = x,
+        match zone_lookup(zone, &question.name, question.qtype, client) {
+            Lookup::Answer(x) => {
+                r.answers = x;
+                if !matches!(
+                    question.qtype,
+                    crate::RecordType::Cname | crate::RecordType::Any
+                ) && !expand_cname_chain(zone, &mut r, question.qtype, client)
+                {
+                    r.flags = (r.flags & !0x000f) | 2;
+                    r.answers.clear();
+                }
+                add_target_addresses(zone, &mut r, client);
+            }
             Lookup::Referral {
                 authorities,
                 additionals,
@@ -104,6 +113,86 @@ fn respond_over_transport(
         }
     }
     truncate(r, response_limit)
+}
+
+fn zone_lookup(
+    zone: &Zone,
+    name: &crate::Name,
+    record_type: crate::RecordType,
+    client: Option<IpAddr>,
+) -> Lookup {
+    client.map_or_else(
+        || zone.lookup(name, record_type),
+        |address| zone.lookup_from(name, record_type, address),
+    )
+}
+
+fn expand_cname_chain(
+    zone: &Zone,
+    response: &mut Message,
+    record_type: crate::RecordType,
+    client: Option<IpAddr>,
+) -> bool {
+    let mut visited = response
+        .answers
+        .iter()
+        .map(|record| record.name.clone())
+        .collect::<HashSet<_>>();
+    for _ in 0..16 {
+        if response
+            .answers
+            .iter()
+            .any(|record| record.rr_type() == record_type)
+        {
+            return true;
+        }
+        let Some(target) = response.answers.iter().rev().find_map(|record| {
+            if let crate::RData::Name(crate::RecordType::Cname, target) = &record.data {
+                Some(target.clone())
+            } else {
+                None
+            }
+        }) else {
+            return true;
+        };
+        if !visited.insert(target.clone()) {
+            return false;
+        }
+        match zone_lookup(zone, &target, record_type, client) {
+            Lookup::Answer(records) => response.answers.extend(records),
+            Lookup::NoData(_) | Lookup::NxDomain(_) | Lookup::Referral { .. } | Lookup::Refused => {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+fn add_target_addresses(zone: &Zone, response: &mut Message, client: Option<IpAddr>) {
+    let targets = response
+        .answers
+        .iter()
+        .filter_map(|record| match &record.data {
+            crate::RData::Name(crate::RecordType::Ns, target)
+            | crate::RData::Mx(_, target)
+            | crate::RData::Srv { target, .. } => Some(target.clone()),
+            _ => None,
+        })
+        .collect::<HashSet<_>>();
+    for target in targets {
+        for record_type in [crate::RecordType::A, crate::RecordType::Aaaa] {
+            if let Lookup::Answer(records) = zone_lookup(zone, &target, record_type, client) {
+                response
+                    .additionals
+                    .extend(records.into_iter().filter(|record| {
+                        matches!(
+                            record.rr_type(),
+                            crate::RecordType::A | crate::RecordType::Aaaa
+                        )
+                    }));
+            }
+        }
+    }
 }
 
 fn truncate(mut response: Message, limit: usize) -> Result<Vec<u8>> {
@@ -272,6 +361,49 @@ mod tests {
                 .iter()
                 .any(|record| record.data == RData::A("198.51.100.1".parse().unwrap()))
         );
+    }
+
+    #[test]
+    fn expands_bounded_cname_chains_and_target_additionals() {
+        let zone = Zone::parse(
+            ".example::ns.example\n\
+             Calias.example:middle.example\n\
+             Cmiddle.example:www.example\n\
+             +www.example:192.0.2.1:60\n\
+             @example:192.0.2.25:mail.example:10:300\n",
+        )
+        .unwrap();
+        let cname = Message::decode(
+            &respond(&zone, &query("alias.example", RecordType::A, None), 4096).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(cname.answers.len(), 3);
+        assert_eq!(cname.answers[2].rr_type(), RecordType::A);
+        let mx = Message::decode(
+            &respond(&zone, &query("example", RecordType::Mx, None), 4096).unwrap(),
+        )
+        .unwrap();
+        assert!(
+            mx.additionals
+                .iter()
+                .any(|record| record.data == RData::A("192.0.2.25".parse().unwrap()))
+        );
+    }
+
+    #[test]
+    fn cname_loops_return_servfail_with_bounded_work() {
+        let zone = Zone::parse(
+            ".example::ns.example\n\
+             Ca.example:b.example\n\
+             Cb.example:a.example\n",
+        )
+        .unwrap();
+        let response = Message::decode(
+            &respond(&zone, &query("a.example", RecordType::A, None), 4096).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(response.flags & 15, 2);
+        assert!(response.answers.is_empty());
     }
 
     #[test]

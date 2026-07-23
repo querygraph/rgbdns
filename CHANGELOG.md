@@ -32,6 +32,8 @@ versioning once its djbdns-compatible public surface stabilizes.
   `tinydns-data`, plus enforcement of its generic-record type restrictions.
 - RFC closest-encloser wildcard behavior and empty-nonterminal NODATA handling,
   with an indexed fast path for ordinary unqualified zones.
+- Bounded in-zone CNAME-chain expansion with loop-to-SERVFAIL handling and
+  address additionals for NS, MX, and SRV targets.
 - Client-IP selection in `tinydns-get`.
 - Correct original djbdns field positions, default target expansion, glue
   generation, SOA TTL behavior, one-to-three-digit octal escapes, and patched
