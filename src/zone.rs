@@ -199,43 +199,40 @@ impl Zone {
                 }
             }
             b'6' | b'3' => {
-                // IPv6 uses ':' internally, so find the longest prefix after
-                // the owner that forms an address; later fields remain TTL
-                // and timestamp in patched djbdns formats.
-                let (ip, consumed) = (2..=f.len())
-                    .rev()
-                    .find_map(|end| {
-                        f[1..end]
-                            .join(":")
-                            .parse::<Ipv6Addr>()
-                            .ok()
-                            .map(|ip| (ip, end))
-                    })
-                    .ok_or_else(|| Error::InvalidRecord("bad IPv6".into()))?;
-                let ttl = field_opt(&f, consumed)
-                    .and_then(|x| x.parse().ok())
-                    .unwrap_or(86400);
-                self.current_metadata = record_metadata(&f, consumed + 1, consumed + 2);
+                // fefe's djbdns IPv6 patch deliberately uses a flat 32-digit
+                // address so ':' remains an unambiguous field separator.
+                let address = field(&f, 1)?;
+                if address.len() != 32 || !address.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+                    return Err(Error::InvalidRecord(
+                        "IPv6 address must contain 32 flat hexadecimal digits".into(),
+                    ));
+                }
+                let ip = Ipv6Addr::from(
+                    u128::from_str_radix(address, 16)
+                        .map_err(|_| Error::InvalidRecord("bad IPv6".into()))?,
+                );
+                let ttl = number_or(&f, 2, 86400);
+                self.current_metadata = record_metadata(&f, 3, 4);
                 self.add(Record {
                     name: name.clone(),
                     ttl,
                     data: RData::Aaaa(ip),
                 });
-                if kind == b'3' {
+                if kind == b'6' {
                     let hex = format!("{:032x}", u128::from(ip));
-                    let rev = Name::from_str(&format!(
-                        "{}.ip6.arpa",
-                        hex.chars()
-                            .rev()
-                            .map(|c| c.to_string())
-                            .collect::<Vec<_>>()
-                            .join(".")
-                    ))?;
-                    self.add(Record {
-                        name: rev,
-                        ttl,
-                        data: RData::Name(RecordType::Ptr, name),
-                    })
+                    let nibbles = hex
+                        .chars()
+                        .rev()
+                        .map(|character| character.to_string())
+                        .collect::<Vec<_>>()
+                        .join(".");
+                    for suffix in ["ip6.arpa", "ip6.int"] {
+                        self.add(Record {
+                            name: Name::from_str(&format!("{nibbles}.{suffix}"))?,
+                            ttl,
+                            data: RData::Name(RecordType::Ptr, name.clone()),
+                        });
+                    }
                 }
             }
             b'C' | b'^' => {
@@ -699,7 +696,7 @@ mod tests {
     use super::*;
     #[test]
     fn common_markers() {
-        let z=Zone::parse(".example:192.0.2.53:ns.example\n=www.example:192.0.2.1:60\n'example:hello\\072world\n6v6.example:2001:db8::1\n").unwrap();
+        let z=Zone::parse(".example:192.0.2.53:ns.example\n=www.example:192.0.2.1:60\n'example:hello\\072world\n6v6.example:20010db8000000000000000000000001\n").unwrap();
         assert!(
             matches!(z.lookup(&"www.example".parse().unwrap(),RecordType::A),Lookup::Answer(x) if x[0].ttl==60)
         );
@@ -898,5 +895,30 @@ mod tests {
             Lookup::Answer(records)
                 if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
         ));
+    }
+
+    #[test]
+    fn patched_ipv6_flat_format_has_unambiguous_ttl_and_reverse_trees() {
+        let zone = Zone::parse(
+            ".example::ns.example\n\
+             6v6.example:20010db8000000000000000000000001:123\n",
+        )
+        .unwrap();
+        assert!(matches!(
+            zone.lookup(&"v6.example".parse().unwrap(), RecordType::Aaaa),
+            Lookup::Answer(records)
+                if records[0].ttl == 123
+                    && records[0].data == RData::Aaaa("2001:db8::1".parse().unwrap())
+        ));
+        let nibbles = "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2";
+        for suffix in ["ip6.arpa", "ip6.int"] {
+            assert!(matches!(
+                zone.lookup(
+                    &format!("{nibbles}.{suffix}").parse().unwrap(),
+                    RecordType::Ptr,
+                ),
+                Lookup::Answer(_)
+            ));
+        }
     }
 }

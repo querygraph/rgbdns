@@ -10,3 +10,4 @@ Calias.example:www.example:62
 S_sip._tcp.example:192.0.2.7:sip:5060:10:20:66
 %aa:192.0.2
 +qualified.example:192.0.2.99:0:400000007fffffff:aa
+6v6.example:20010db8000000000000000000000001:67

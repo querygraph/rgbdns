@@ -22,6 +22,9 @@ versioning once its djbdns-compatible public surface stabilizes.
   responses are not subjected to the legacy 512-byte UDP ceiling.
 - tinydns data support for `.`, `&`, `=`, `+`, `@`, `'`, `^`, `C`, `Z`, `:`,
   `3`, `6`, and patched `S` records.
+- Felix von Leitner-compatible flat 32-hex-digit IPv6 data fields: `6` emits
+  AAAA plus `ip6.arpa` and historical `ip6.int` PTR records, while `3` emits
+  AAAA only.
 - IPv4, IPv6, NS, CNAME, SOA, PTR, MX, TXT, and opaque record support.
 - Initial `tinydns`, `tinydns-data`, `tinydns-get`, and `dnsq` commands.
 - Atomic `tinydns-data` output in the original `data.cdb` key/value format and
@@ -59,18 +62,22 @@ versioning once its djbdns-compatible public surface stabilizes.
   validation, retries, resolver configuration, and automatic TCP fallback.
 - Runnable `dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`, and `dnsqr`
   clients; `dnsq` now uses the hardened shared transport.
+- Patched-suite `dnsip6` and `dnsip6q` AAAA lookup clients.
 - Bounded-concurrency, order-preserving `dnsfilter` and an IPv4/IPv6-capable
   iterative `dnstrace` with referral/glue reporting and depth limits.
 - Atomic `tinydns-edit add` operations with original duplicate checks, TTL
   inheritance, permissions, and NS/MX slot allocation, differentially verified
   against djbdns.
+- Patched `tinydns-edit` `host6` and `alias6` modes with unambiguous flat IPv6
+  output and address-family validation.
 - OS-randomized, non-repeating `random-ip` generation with fixed-prefix and
   count bounds.
 - Portable `tinydns-conf`, `dnscache-conf`, `rbldns-conf`, `walldns-conf`, and
   `axfrdns-conf` service-directory generators with non-overwrite behavior,
   executable run/log scripts, current root hints, and private random seeds.
 - Permanent patched-C golden-entry tests for tinydns, rbldns, and pickdns CDB
-  output.
+  output; the tinydns corpus includes 19 exact semantic entries covering
+  location, timestamp, SRV, AAAA, `ip6.arpa`, and `ip6.int` behavior.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
 

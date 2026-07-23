@@ -71,6 +71,14 @@ name = "dnsipq"
 path = "src/bin/dnsipq.rs"
 
 [[bin]]
+name = "dnsip6"
+path = "src/bin/dnsip6.rs"
+
+[[bin]]
+name = "dnsip6q"
+path = "src/bin/dnsip6q.rs"
+
+[[bin]]
 name = "dnsname"
 path = "src/bin/dnsname.rs"
 

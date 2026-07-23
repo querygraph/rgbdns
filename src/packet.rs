@@ -89,10 +89,24 @@ impl std::str::FromStr for RecordType {
             "DNSKEY" => Self::Dnskey,
             "AXFR" => Self::Axfr,
             "ANY" => Self::Any,
-            x => Self::Unknown(
-                x.parse()
-                    .map_err(|_| Error::Format("unknown record type"))?,
-            ),
+            "HINFO" => Self::Unknown(13),
+            "RP" => Self::Unknown(17),
+            "SIG" => Self::Unknown(24),
+            "KEY" => Self::Unknown(25),
+            "NAPTR" => Self::Unknown(35),
+            "NSEC3" => Self::Unknown(50),
+            "NSEC3PARAM" => Self::Unknown(51),
+            "TLSA" => Self::Unknown(52),
+            "SVCB" => Self::Unknown(64),
+            "HTTPS" => Self::Unknown(65),
+            x => {
+                let number = x.strip_prefix("TYPE").unwrap_or(x);
+                Self::Unknown(
+                    number
+                        .parse()
+                        .map_err(|_| Error::Format("unknown record type"))?,
+                )
+            }
         })
     }
 }
@@ -648,5 +662,29 @@ mod tests {
             0, 0, 0x80, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 3, 1, 2, 3,
         ];
         assert!(Message::decode(&bad_a).is_err());
+    }
+    #[test]
+    fn parses_standard_and_generic_record_type_names() {
+        for (name, code) in [
+            ("HINFO", 13),
+            ("RP", 17),
+            ("SIG", 24),
+            ("KEY", 25),
+            ("NAPTR", 35),
+            ("NSEC3", 50),
+            ("NSEC3PARAM", 51),
+            ("TLSA", 52),
+            ("SVCB", 64),
+            ("HTTPS", 65),
+            ("TYPE65400", 65400),
+            ("65401", 65401),
+        ] {
+            assert_eq!(
+                name.parse::<RecordType>().unwrap(),
+                RecordType::Unknown(code)
+            );
+        }
+        assert!("TYPEbogus".parse::<RecordType>().is_err());
+        assert!("TYPE65536".parse::<RecordType>().is_err());
     }
 }

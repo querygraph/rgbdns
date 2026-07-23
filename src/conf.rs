@@ -156,6 +156,8 @@ fn configure_tinydns(directory: &Path, root: &Path) -> Result<()> {
         ("add-childns", "childns"),
         ("add-host", "host"),
         ("add-alias", "alias"),
+        ("add-host6", "host6"),
+        ("add-alias6", "alias6"),
         ("add-mx", "mx"),
     ] {
         write_file(

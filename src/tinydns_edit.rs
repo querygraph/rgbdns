@@ -4,7 +4,7 @@ use crate::{Error, Name, Result};
 use std::{
     fs::{self, File},
     io::Write,
-    net::Ipv4Addr,
+    net::{Ipv4Addr, Ipv6Addr},
     path::Path,
 };
 
@@ -15,6 +15,8 @@ pub enum Mode {
     Host,
     Alias,
     Mx,
+    Host6,
+    Alias6,
 }
 
 impl Mode {
@@ -25,9 +27,17 @@ impl Mode {
             "host" => Ok(Self::Host),
             "alias" => Ok(Self::Alias),
             "mx" => Ok(Self::Mx),
+            "host6" => Ok(Self::Host6),
+            "alias6" => Ok(Self::Alias6),
             _ => Err(Error::Format("invalid tinydns-edit mode")),
         }
     }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Address {
+    V4(Ipv4Addr),
+    V6(Ipv6Addr),
 }
 
 pub fn add(
@@ -35,8 +45,11 @@ pub fn add(
     temporary: &Path,
     mode: Mode,
     target: Name,
-    address: Ipv4Addr,
+    address: Address,
 ) -> Result<()> {
+    if matches!(mode, Mode::Host6 | Mode::Alias6) != matches!(address, Address::V6(_)) {
+        return Err(Error::Format("address family does not match edit mode"));
+    }
     if data == temporary {
         return Err(Error::Format("data and temporary paths must differ"));
     }
@@ -68,7 +81,10 @@ pub fn add(
                 if fields
                     .get(1)
                     .and_then(|value| value.parse::<Ipv4Addr>().ok())
-                    == Some(address)
+                    == match address {
+                        Address::V4(address) => Some(address),
+                        Address::V6(_) => None,
+                    }
                 {
                     return Err(Error::InvalidRecord("IP address already used".into()));
                 }
@@ -76,6 +92,19 @@ pub fn add(
             Mode::Mx if marker == b'@' && name_field(&fields, 0).as_ref() == Some(&target) => {
                 ttl = number(&fields, 4, 86_400);
                 mark_slot(&mut used, &fields, 2, "mx", &target);
+            }
+            Mode::Host6 if marker == b'6' => {
+                if name_field(&fields, 0).as_ref() == Some(&target) {
+                    return Err(Error::InvalidRecord("host name already used".into()));
+                }
+                if fields.get(1).and_then(|value| parse_flat_ipv6(value).ok())
+                    == match address {
+                        Address::V6(address) => Some(address),
+                        Address::V4(_) => None,
+                    }
+                {
+                    return Err(Error::InvalidRecord("IPv6 address already used".into()));
+                }
             }
             _ => {}
         }
@@ -89,14 +118,18 @@ pub fn add(
                 .ok_or_else(|| Error::InvalidRecord("too many records for that domain".into()))?;
             let letter = char::from(b'a' + slot as u8);
             match mode {
-                Mode::Ns => format!(".{owner}:{address}:{letter}:{ttl}"),
-                Mode::ChildNs => format!("&{owner}:{address}:{letter}:{ttl}"),
-                Mode::Mx => format!("@{owner}:{address}:{letter}::{ttl}"),
+                Mode::Ns => format!(".{owner}:{}:{letter}:{ttl}", display_address(address)),
+                Mode::ChildNs => {
+                    format!("&{owner}:{}:{letter}:{ttl}", display_address(address))
+                }
+                Mode::Mx => format!("@{owner}:{}:{letter}::{ttl}", display_address(address)),
                 _ => unreachable!(),
             }
         }
-        Mode::Host => format!("={owner}:{address}:{ttl}"),
-        Mode::Alias => format!("+{owner}:{address}:{ttl}"),
+        Mode::Host => format!("={owner}:{}:{ttl}", display_address(address)),
+        Mode::Alias => format!("+{owner}:{}:{ttl}", display_address(address)),
+        Mode::Host6 => format!("6{owner}:{}:{ttl}", display_address(address)),
+        Mode::Alias6 => format!("3{owner}:{}:{ttl}", display_address(address)),
     };
 
     let mut file = File::create(temporary)?;
@@ -123,6 +156,22 @@ pub fn add(
     }
     fs::rename(temporary, data)?;
     Ok(())
+}
+
+fn display_address(address: Address) -> String {
+    match address {
+        Address::V4(address) => address.to_string(),
+        Address::V6(address) => format!("{:032x}", u128::from(address)),
+    }
+}
+
+fn parse_flat_ipv6(value: &str) -> Result<Ipv6Addr> {
+    if value.len() != 32 || !value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return Err(Error::InvalidRecord("bad flat IPv6 address".into()));
+    }
+    Ok(Ipv6Addr::from(u128::from_str_radix(value, 16).map_err(
+        |_| Error::InvalidRecord("bad flat IPv6 address".into()),
+    )?))
 }
 
 fn mark_slot(used: &mut [bool; 26], fields: &[String], index: usize, role: &str, owner: &Name) {
@@ -204,7 +253,7 @@ mod tests {
             &temporary,
             Mode::Ns,
             "example".parse().unwrap(),
-            "192.0.2.3".parse().unwrap(),
+            Address::V4("192.0.2.3".parse().unwrap()),
         )
         .unwrap();
         add(
@@ -212,7 +261,7 @@ mod tests {
             &temporary,
             Mode::Mx,
             "example".parse().unwrap(),
-            "192.0.2.4".parse().unwrap(),
+            Address::V4("192.0.2.4".parse().unwrap()),
         )
         .unwrap();
         let result = fs::read_to_string(&data).unwrap();
@@ -231,7 +280,7 @@ mod tests {
                 &temporary,
                 Mode::Host,
                 "host.example".parse().unwrap(),
-                "192.0.2.2".parse().unwrap(),
+                Address::V4("192.0.2.2".parse().unwrap()),
             )
             .is_err()
         );
@@ -241,10 +290,30 @@ mod tests {
                 &temporary,
                 Mode::Host,
                 "other.example".parse().unwrap(),
-                "192.0.2.1".parse().unwrap(),
+                Address::V4("192.0.2.1".parse().unwrap()),
             )
             .is_err()
         );
         fs::remove_file(data).unwrap();
+    }
+
+    #[test]
+    fn ipv6_modes_emit_flat_unambiguous_addresses() {
+        let (data, temporary) = paths();
+        fs::write(&data, "").unwrap();
+        add(
+            &data,
+            &temporary,
+            Mode::Host6,
+            "v6.example".parse().unwrap(),
+            Address::V6("2001:db8::1".parse().unwrap()),
+        )
+        .unwrap();
+        let contents = fs::read_to_string(&data).unwrap();
+        fs::remove_file(data).unwrap();
+        assert_eq!(
+            contents,
+            "6v6.example:20010db8000000000000000000000001:86400\n"
+        );
     }
 }

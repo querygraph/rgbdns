@@ -8,9 +8,11 @@ Implemented:
 - tinydns markers `. & = + @ ' ^ C Z : 3 6 S %`, including client-location
   selection and query-time TAI64 activation/expiration
 - atomic djbdns-compatible `data.cdb` compilation and bounded, validating CDB
-  loading; a 16-entry fixture including location and timestamp qualifiers was
-  differentially verified as identical
+  loading; a 19-entry fixture including location, timestamp, SRV, and patched
+  IPv6 qualifiers was differentially verified as identical
   key/value entries against Debian-patched djbdns 1.05
+- fefe-patch flat IPv6 `3`/`6` records, including both `ip6.arpa` and legacy
+  `ip6.int` reverse trees, plus `tinydns-edit` `host6`/`alias6`
 - authoritative A, AAAA, NS, CNAME, SOA, PTR, MX, TXT and opaque RR data
 - wildcard synthesis, NXDOMAIN/NODATA SOA authority, REFUSED outside zones
 - referrals with in-bailiwick glue and correct authoritative-bit behavior
@@ -27,8 +29,8 @@ Implemented:
   its CDB compiler is differentially identical to the original fixture
 - `walldns` direct-address and partial/full reverse-tree behavior
 - location-aware `pickdns` with exact CDB compilation and service configuration
-- recursive client tools `dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`, and
-  `dnsqr`, plus hardened non-recursive `dnsq`
+- recursive client tools `dnsip`, `dnsipq`, `dnsip6`, `dnsip6q`, `dnsname`,
+  `dnsmx`, `dnstxt`, and `dnsqr`, plus hardened non-recursive `dnsq`
 - bounded, order-preserving `dnsfilter` and iterative IPv4/IPv6 `dnstrace`
 - `tinydns-edit` add modes and bounded `random-ip`
 - service-directory generators for tinydns, dnscache, rbldns, walldns, and
