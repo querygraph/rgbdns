@@ -1,6 +1,9 @@
 //! djbdns-compatible `data.cdb` compilation and bounded loading.
 
-use crate::{Error, Message, Name, RData, Record, RecordType, Result, zone::Zone};
+use crate::{
+    Error, Message, Name, RData, Record, RecordType, Result,
+    zone::{RecordMetadata, Zone},
+};
 use std::{fs, path::Path};
 
 const HEADER_LEN: usize = 256 * 8;
@@ -10,7 +13,14 @@ pub fn compile(zone: &Zone, path: impl AsRef<Path>) -> Result<()> {
     let filename = path.as_ref().to_string_lossy().into_owned();
     let mut writer = cdb::CDBWriter::create(filename)
         .map_err(|error| Error::Io(std::io::Error::other(error)))?;
-    for record in zone.records() {
+    for (prefix, location) in zone.location_entries() {
+        let mut key = b"\0%".to_vec();
+        key.extend(prefix);
+        writer
+            .add(&key, &location)
+            .map_err(|error| Error::Io(std::io::Error::other(error)))?;
+    }
+    for (record, metadata) in zone.record_entries() {
         if record.rr_type() == RecordType::Opt {
             continue;
         }
@@ -20,9 +30,16 @@ pub fn compile(zone: &Zone, path: impl AsRef<Path>) -> Result<()> {
         };
         let mut value = Vec::new();
         value.extend(record.rr_type().code().to_be_bytes());
-        value.push(marker);
+        value.push(if metadata.location.is_some() {
+            marker + 1
+        } else {
+            marker
+        });
+        if let Some(location) = metadata.location {
+            value.extend(location);
+        }
         value.extend(record.ttl.to_be_bytes());
-        value.extend([0; 8]); // no tai64 activation/expiration cutoff
+        value.extend(metadata.cutoff.to_be_bytes());
         encode_rdata(&record.data, &mut value)?;
         writer
             .add(&owner.to_wire(), &value)
@@ -36,13 +53,18 @@ pub fn compile(zone: &Zone, path: impl AsRef<Path>) -> Result<()> {
 pub fn load(path: impl AsRef<Path>) -> Result<Zone> {
     let entries = read_entries(path)?;
     let mut records = Vec::new();
+    let mut locations = Vec::new();
     for (key, value) in entries {
         if key.starts_with(b"\0%") {
-            continue; // location mapping, consumed by the location-aware loader later
+            if value.len() != 2 || key.len() > 6 {
+                return Err(Error::Format("invalid location mapping"));
+            }
+            locations.push((key[2..].to_vec(), [value[0], value[1]]));
+            continue;
         }
         records.push(decode_record(&key, &value)?);
     }
-    Ok(Zone::from_compiled_records(records))
+    Ok(Zone::from_compiled_records(records, locations))
 }
 
 pub(crate) fn read_entries(path: impl AsRef<Path>) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
@@ -54,14 +76,24 @@ pub(crate) fn read_entries(path: impl AsRef<Path>) -> Result<Vec<(Vec<u8>, Vec<u
     if bytes.len() < HEADER_LEN {
         return Err(Error::Format("short CDB header"));
     }
-    let data_end = (0..256)
-        .filter_map(|index| {
-            let offset = index * 8;
-            let position = le_u32(&bytes[offset..offset + 4]) as usize;
-            (position >= HEADER_LEN && position <= bytes.len()).then_some(position)
-        })
-        .min()
-        .unwrap_or(bytes.len());
+    let mut data_end = bytes.len();
+    for index in 0..256 {
+        let offset = index * 8;
+        let position = le_u32(&bytes[offset..offset + 4]) as usize;
+        let slots = le_u32(&bytes[offset + 4..offset + 8]) as usize;
+        if position < HEADER_LEN || position > bytes.len() {
+            return Err(Error::Format("invalid CDB hash-table position"));
+        }
+        position
+            .checked_add(
+                slots
+                    .checked_mul(8)
+                    .ok_or(Error::Format("CDB hash-table size overflow"))?,
+            )
+            .filter(|end| *end <= bytes.len())
+            .ok_or(Error::Format("invalid CDB hash-table size"))?;
+        data_end = data_end.min(position);
+    }
     let mut position = HEADER_LEN;
     let mut entries = Vec::new();
     while position < data_end {
@@ -90,31 +122,33 @@ pub(crate) fn read_entries(path: impl AsRef<Path>) -> Result<Vec<(Vec<u8>, Vec<u
     Ok(entries)
 }
 
-fn decode_record(key: &[u8], value: &[u8]) -> Result<Record> {
+fn decode_record(key: &[u8], value: &[u8]) -> Result<(Record, RecordMetadata)> {
     if value.len() < 15 {
         return Err(Error::Format("short tinydns CDB value"));
-    }
-    if value[7..15] != [0; 8] {
-        return Err(Error::Format(
-            "time-qualified tinydns CDB records require request-time filtering",
-        ));
     }
     let mut name = decode_name(key)?;
     let typ = u16::from_be_bytes([value[0], value[1]]);
     let marker = value[2];
-    let rdata_offset = match marker {
-        b'=' | b'*' => 15,
-        b'>' | b'+' => {
-            return Err(Error::Format(
-                "location-qualified tinydns CDB records require client-aware lookup",
-            ));
-        }
+    let (header, rdata_offset, location) = match marker {
+        b'=' | b'*' => (3, 15, None),
+        b'>' | b'+' if value.len() >= 17 => (5, 17, Some([value[3], value[4]])),
+        b'>' | b'+' => return Err(Error::Format("short location-specific CDB value")),
         _ => return Err(Error::Format("invalid tinydns CDB marker")),
     };
-    if marker == b'*' {
+    if marker == b'*' || marker == b'+' {
         name = name.with_wildcard();
     }
-    let ttl = u32::from_be_bytes([value[3], value[4], value[5], value[6]]);
+    let ttl = u32::from_be_bytes([
+        value[header],
+        value[header + 1],
+        value[header + 2],
+        value[header + 3],
+    ]);
+    let cutoff = u64::from_be_bytes(
+        value[header + 4..header + 12]
+            .try_into()
+            .map_err(|_| Error::Format("short tinydns cutoff"))?,
+    );
     let rdata = value
         .get(rdata_offset..)
         .ok_or(Error::Format("invalid CDB RDATA offset"))?;
@@ -130,7 +164,7 @@ fn decode_record(key: &[u8], value: &[u8]) -> Result<Record> {
             .to_be_bytes(),
     );
     packet.extend(rdata);
-    Message::decode(&packet)?
+    let record = Message::decode(&packet)?
         .answers
         .into_iter()
         .next()
@@ -138,7 +172,8 @@ fn decode_record(key: &[u8], value: &[u8]) -> Result<Record> {
             record.name = name;
             record
         })
-        .ok_or(Error::Format("missing decoded CDB record"))
+        .ok_or(Error::Format("missing decoded CDB record"))?;
+    Ok((record, RecordMetadata { cutoff, location }))
 }
 
 fn encode_rdata(data: &RData, out: &mut Vec<u8>) -> Result<()> {
@@ -243,6 +278,8 @@ mod tests {
             ".example:192.0.2.53:ns.example\n\
              +www.example:192.0.2.1:60\n\
              +*.wild.example:192.0.2.2:61\n\
+             %aa:192.0.2\n\
+             +located.example:192.0.2.9:64::aa\n\
              'example:hello\\072world:62\n\
              S_sip._tcp.example:192.0.2.7:sip.example:5060:10:20:63\n",
         )
@@ -271,6 +308,16 @@ mod tests {
         assert!(matches!(
             loaded.lookup(&"_sip._tcp.example".parse().unwrap(), RecordType::Srv),
             Lookup::Answer(_)
+        ));
+        assert!(matches!(
+            loaded.lookup_from(
+                &"located.example".parse().unwrap(),
+                RecordType::A,
+                std::net::IpAddr::V4(Ipv4Addr::new(192, 0, 2, 44)),
+            ),
+            Lookup::Answer(records)
+                if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 9))
+                    && records[0].ttl == 64
         ));
     }
 

@@ -26,6 +26,8 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Initial `tinydns`, `tinydns-data`, `tinydns-get`, and `dnsq` commands.
 - Atomic `tinydns-data` output in the original `data.cdb` key/value format and
   a bounded, validating CDB loader used by `tinydns` by default.
+- Query-time TAI64 activation/expiration semantics and longest-prefix `%`
+  client-location selection, retained exactly through text and CDB forms.
 - Correct original djbdns field positions, default target expansion, glue
   generation, SOA TTL behavior, one-to-three-digit octal escapes, and patched
   SRV priority/weight ordering, differentially checked against patched 1.05.

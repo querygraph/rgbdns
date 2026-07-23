@@ -2,7 +2,7 @@ use crate::{Error, Name, RData, Record, RecordType, Result};
 use std::{
     collections::{BTreeMap, BTreeSet},
     fs,
-    net::{Ipv4Addr, Ipv6Addr},
+    net::{IpAddr, Ipv4Addr, Ipv6Addr},
     path::Path,
     str::FromStr,
 };
@@ -10,8 +10,17 @@ use std::{
 #[derive(Clone, Debug, Default)]
 pub struct Zone {
     records: BTreeMap<Name, Vec<Record>>,
+    metadata: BTreeMap<Name, Vec<RecordMetadata>>,
     authoritative: BTreeSet<Name>,
     delegations: BTreeSet<Name>,
+    locations: Vec<(Vec<u8>, [u8; 2])>,
+    current_metadata: RecordMetadata,
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+pub(crate) struct RecordMetadata {
+    pub cutoff: u64,
+    pub location: Option<[u8; 2]>,
 }
 impl Zone {
     pub fn from_file(path: impl AsRef<Path>) -> Result<Self> {
@@ -35,16 +44,34 @@ impl Zone {
         Ok(z)
     }
     fn add(&mut self, r: Record) {
+        self.metadata
+            .entry(r.name.clone())
+            .or_default()
+            .push(self.current_metadata);
         self.records.entry(r.name.clone()).or_default().push(r)
     }
-    pub(crate) fn records(&self) -> impl Iterator<Item = &Record> {
-        self.records.values().flatten()
+    pub(crate) fn record_entries(&self) -> impl Iterator<Item = (&Record, RecordMetadata)> {
+        self.records.iter().flat_map(|(owner, records)| {
+            records.iter().zip(
+                self.metadata
+                    .get(owner)
+                    .expect("record metadata invariant")
+                    .iter()
+                    .copied(),
+            )
+        })
+    }
+    pub(crate) fn location_entries(&self) -> impl Iterator<Item = (&[u8], [u8; 2])> {
+        self.locations
+            .iter()
+            .map(|(prefix, location)| (prefix.as_slice(), *location))
     }
     pub fn transfer(&self, name: &Name) -> Option<Vec<Record>> {
         if !self.authoritative.contains(name) {
             return None;
         }
-        let soa = self.soa(name)?;
+        let now = 4_611_686_018_427_387_914u64.saturating_add(unix_now());
+        let soa = self.soa(name, [0, 0], now)?;
         let mut records = vec![soa.clone()];
         records.extend(
             self.records
@@ -57,21 +84,28 @@ impl Zone {
                                 && owner.is_subdomain_of(child)
                         })
                 })
-                .flat_map(|(_, records)| records)
-                .filter(|record| !(record.name == *name && record.rr_type() == RecordType::Soa))
-                .cloned(),
+                .flat_map(|(owner, _)| self.visible_records(owner, [0, 0], now))
+                .filter(|record| !(record.name == *name && record.rr_type() == RecordType::Soa)),
         );
         records.push(soa);
         Some(records)
     }
-    pub(crate) fn from_compiled_records(records: Vec<Record>) -> Self {
-        let mut zone = Self::default();
-        for record in records {
+    pub(crate) fn from_compiled_records(
+        records: Vec<(Record, RecordMetadata)>,
+        locations: Vec<(Vec<u8>, [u8; 2])>,
+    ) -> Self {
+        let mut zone = Self {
+            locations,
+            ..Self::default()
+        };
+        for (record, metadata) in records {
+            zone.current_metadata = metadata;
             if record.rr_type() == RecordType::Soa {
                 zone.authoritative.insert(record.name.clone());
             }
             zone.add(record);
         }
+        zone.current_metadata = RecordMetadata::default();
         let ns_owners = zone
             .records
             .iter()
@@ -88,16 +122,36 @@ impl Zone {
     fn add_line(&mut self, line: &str) -> Result<()> {
         let kind = line.as_bytes()[0];
         let f = split_fields(&line[1..]);
-        let name = field(&f, 0)?.parse::<Name>()?;
-        match kind {
-            b'Z' => ensure_unqualified(&f, 9, 10)?,
-            b'.' | b'&' => ensure_unqualified(&f, 4, 5)?,
-            b'+' | b'=' | b'C' | b'^' | b'\'' => ensure_unqualified(&f, 3, 4)?,
-            b'@' => ensure_unqualified(&f, 5, 6)?,
-            b'S' => ensure_unqualified(&f, 7, 8)?,
-            b':' => ensure_unqualified(&f, 4, 5)?,
-            _ => {}
+        if kind == b'%' {
+            let location = location_code(field_opt(&f, 0).unwrap_or_default());
+            let prefix = field_opt(&f, 1)
+                .unwrap_or_default()
+                .split('.')
+                .filter(|field| !field.is_empty())
+                .map(|field| {
+                    field
+                        .parse::<u8>()
+                        .map_err(|_| Error::InvalidRecord("bad location IP prefix".into()))
+                })
+                .collect::<Result<Vec<_>>>()?;
+            if prefix.len() > 4 {
+                return Err(Error::InvalidRecord(
+                    "location IP prefix has more than four octets".into(),
+                ));
+            }
+            self.locations.push((prefix, location));
+            return Ok(());
         }
+        let name = field(&f, 0)?.parse::<Name>()?;
+        self.current_metadata = match kind {
+            b'Z' => record_metadata(&f, 9, 10),
+            b'.' | b'&' => record_metadata(&f, 4, 5),
+            b'+' | b'=' | b'C' | b'^' | b'\'' => record_metadata(&f, 3, 4),
+            b'@' => record_metadata(&f, 5, 6),
+            b'S' => record_metadata(&f, 7, 8),
+            b':' => record_metadata(&f, 4, 5),
+            _ => RecordMetadata::default(),
+        };
         match kind {
             b'=' | b'+' => {
                 let ttl = number_or(&f, 2, 86400);
@@ -141,7 +195,7 @@ impl Zone {
                 let ttl = field_opt(&f, consumed)
                     .and_then(|x| x.parse().ok())
                     .unwrap_or(86400);
-                ensure_unqualified(&f, consumed + 1, consumed + 2)?;
+                self.current_metadata = record_metadata(&f, consumed + 1, consumed + 2);
                 self.add(Record {
                     name: name.clone(),
                     ttl,
@@ -345,6 +399,20 @@ impl Zone {
         Ok(())
     }
     pub fn lookup(&self, name: &Name, typ: RecordType) -> Lookup {
+        self.lookup_for(name, typ, None, unix_now())
+    }
+    pub fn lookup_from(&self, name: &Name, typ: RecordType, client: IpAddr) -> Lookup {
+        self.lookup_for(name, typ, Some(client), unix_now())
+    }
+    fn lookup_for(
+        &self,
+        name: &Name,
+        typ: RecordType,
+        client: Option<IpAddr>,
+        unix_seconds: u64,
+    ) -> Lookup {
+        let location = self.client_location(client);
+        let now = 4_611_686_018_427_387_914u64.saturating_add(unix_seconds);
         if let Some(delegation) = self
             .delegations
             .iter()
@@ -352,12 +420,9 @@ impl Zone {
             .max_by_key(|owner| owner.labels().count())
         {
             let authorities = self
-                .records
-                .get(delegation)
+                .visible_records(delegation, location, now)
                 .into_iter()
-                .flatten()
                 .filter(|record| record.rr_type() == RecordType::Ns)
-                .cloned()
                 .collect::<Vec<_>>();
             let mut additionals = Vec::new();
             for authority in &authorities {
@@ -368,14 +433,11 @@ impl Zone {
                     continue;
                 }
                 additionals.extend(
-                    self.records
-                        .get(target)
+                    self.visible_records(target, location, now)
                         .into_iter()
-                        .flatten()
                         .filter(|record| {
                             matches!(record.rr_type(), RecordType::A | RecordType::Aaaa)
-                        })
-                        .cloned(),
+                        }),
                 );
             }
             return Lookup::Referral {
@@ -383,15 +445,14 @@ impl Zone {
                 additionals,
             };
         }
-        let mut owner = name.clone();
-        let mut rows = self.records.get(name);
-        if rows.is_none() {
+        let mut rows = self.visible_records(name, location, now);
+        if rows.is_empty() {
             let mut p = name.parent();
             while let Some(n) = p {
                 let wc = n.wildcard();
-                if let Some(r) = self.records.get(&wc) {
-                    owner = wc;
-                    rows = Some(r);
+                let wildcard_rows = self.visible_records(&wc, location, now);
+                if !wildcard_rows.is_empty() {
+                    rows = wildcard_rows;
                     break;
                 }
                 p = n.parent()
@@ -402,37 +463,83 @@ impl Zone {
             .iter()
             .filter(|z| name.is_subdomain_of(z))
             .max_by_key(|z| z.labels().count());
-        let Some(records) = rows else {
+        if rows.is_empty() {
             return if let Some(zone) = zone {
-                Lookup::NxDomain(self.soa(zone))
+                Lookup::NxDomain(self.soa(zone, location, now))
             } else {
                 Lookup::Refused
             };
-        };
-        let mut answer: Vec<Record> = records
-            .iter()
+        }
+        let mut answer: Vec<Record> = rows
+            .into_iter()
             .filter(|r| {
                 typ == RecordType::Any || r.rr_type() == typ || r.rr_type() == RecordType::Cname
             })
-            .cloned()
             .collect();
         for r in &mut answer {
             r.name = name.clone()
         }
         if answer.is_empty() {
-            Lookup::NoData(zone.and_then(|z| self.soa(z)))
+            Lookup::NoData(zone.and_then(|z| self.soa(z, location, now)))
         } else {
-            let _ = owner;
             Lookup::Answer(answer)
         }
     }
-    fn soa(&self, z: &Name) -> Option<Record> {
-        self.records
-            .get(z)?
-            .iter()
+    fn soa(&self, z: &Name, location: [u8; 2], now: u64) -> Option<Record> {
+        self.visible_records(z, location, now)
+            .into_iter()
             .find(|r| r.rr_type() == RecordType::Soa)
-            .cloned()
     }
+    fn visible_records(&self, owner: &Name, location: [u8; 2], now: u64) -> Vec<Record> {
+        let Some(records) = self.records.get(owner) else {
+            return Vec::new();
+        };
+        records
+            .iter()
+            .zip(self.metadata.get(owner).expect("record metadata invariant"))
+            .filter_map(|(record, metadata)| {
+                if metadata.location.is_some_and(|value| value != location) {
+                    return None;
+                }
+                let mut record = record.clone();
+                if metadata.cutoff != 0 {
+                    if record.ttl == 0 {
+                        if metadata.cutoff < now {
+                            return None;
+                        }
+                        record.ttl = metadata.cutoff.saturating_sub(now).clamp(2, 3600) as u32;
+                    } else if metadata.cutoff >= now {
+                        return None;
+                    }
+                }
+                Some(record)
+            })
+            .collect()
+    }
+    fn client_location(&self, client: Option<IpAddr>) -> [u8; 2] {
+        let Some(IpAddr::V4(address)) = client else {
+            return [0, 0];
+        };
+        let octets = address.octets();
+        let mut selected = [0, 0];
+        let mut selected_length = None;
+        for (prefix, location) in &self.locations {
+            if prefix.len() <= octets.len()
+                && octets[..prefix.len()] == prefix[..]
+                && selected_length.is_none_or(|length| prefix.len() > length)
+            {
+                selected = *location;
+                selected_length = Some(prefix.len());
+            }
+        }
+        selected
+    }
+}
+
+fn unix_now() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::SystemTime::UNIX_EPOCH)
+        .map_or(0, |duration| duration.as_secs())
 }
 #[derive(Clone, Debug)]
 pub enum Lookup {
@@ -480,18 +587,30 @@ fn expanded_target(value: &str, role: &str, owner: &Name) -> Result<Name> {
     };
     target.parse()
 }
-fn ensure_unqualified(fields: &[String], timestamp: usize, location: usize) -> Result<()> {
-    if field_opt(fields, timestamp).is_some_and(|value| !value.is_empty()) {
-        return Err(Error::InvalidRecord(
-            "timestamp-qualified records are not supported yet".into(),
-        ));
+fn record_metadata(fields: &[String], timestamp: usize, location: usize) -> RecordMetadata {
+    let text = field_opt(fields, timestamp).unwrap_or_default().as_bytes();
+    let mut bytes = [0; 8];
+    for (index, byte) in text.iter().take(16).enumerate() {
+        let nibble = match byte {
+            b'0'..=b'9' => byte - b'0',
+            b'a'..=b'f' => byte - b'a' + 10,
+            _ => 0,
+        };
+        bytes[index / 2] |= if index % 2 == 0 { nibble << 4 } else { nibble };
     }
-    if field_opt(fields, location).is_some_and(|value| !value.is_empty()) {
-        return Err(Error::InvalidRecord(
-            "location-qualified records are not supported yet".into(),
-        ));
+    let location = location_code(field_opt(fields, location).unwrap_or_default());
+    RecordMetadata {
+        cutoff: u64::from_be_bytes(bytes),
+        location: (location != [0, 0]).then_some(location),
     }
-    Ok(())
+}
+
+fn location_code(value: &str) -> [u8; 2] {
+    let bytes = value.as_bytes();
+    [
+        bytes.first().copied().unwrap_or(0),
+        bytes.get(1).copied().unwrap_or(0),
+    ]
 }
 fn unescape(s: &str) -> Result<Vec<u8>> {
     let mut o = Vec::new();
@@ -631,5 +750,69 @@ mod tests {
     #[test]
     fn text_escapes_use_one_to_three_octal_digits() {
         assert_eq!(unescape(r"\1\12\123\8").unwrap(), [1, 10, 83, b'8']);
+    }
+
+    #[test]
+    fn tai64_activation_and_expiration_are_evaluated_at_lookup() {
+        const TAI_EPOCH: u64 = 4_611_686_018_427_387_914;
+        let cutoff = format!("{:016x}", TAI_EPOCH + 200);
+        let z = Zone::parse(&format!(
+            ".example::ns.example\n\
+             +expires.example:192.0.2.1:0:{cutoff}\n\
+             +activates.example:192.0.2.2:60:{cutoff}\n"
+        ))
+        .unwrap();
+        let expires = "expires.example".parse().unwrap();
+        assert!(matches!(
+            z.lookup_for(&expires, RecordType::A, None, 100),
+            Lookup::Answer(records) if records[0].ttl == 100
+        ));
+        assert!(matches!(
+            z.lookup_for(&expires, RecordType::A, None, 201),
+            Lookup::NxDomain(_)
+        ));
+        let activates = "activates.example".parse().unwrap();
+        assert!(matches!(
+            z.lookup_for(&activates, RecordType::A, None, 200),
+            Lookup::NxDomain(_)
+        ));
+        assert!(matches!(
+            z.lookup_for(&activates, RecordType::A, None, 201),
+            Lookup::Answer(records) if records[0].ttl == 60
+        ));
+    }
+
+    #[test]
+    fn longest_client_prefix_selects_location_records() {
+        let z = Zone::parse(
+            ".example::ns.example\n\
+             %aa:192\n\
+             %bb:192.0.2\n\
+             +located.example:192.0.2.1:60::aa\n\
+             +located.example:192.0.2.2:60::bb\n",
+        )
+        .unwrap();
+        let name = "located.example".parse().unwrap();
+        assert!(matches!(
+            z.lookup_for(
+                &name,
+                RecordType::A,
+                Some(IpAddr::V4(Ipv4Addr::new(192, 0, 2, 55))),
+                0,
+            ),
+            Lookup::Answer(records)
+                if records.len() == 1
+                    && records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 2))
+        ));
+        assert!(matches!(
+            z.lookup_for(
+                &name,
+                RecordType::A,
+                Some(IpAddr::V4(Ipv4Addr::new(192, 9, 9, 9))),
+                0,
+            ),
+            Lookup::Answer(records)
+                if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
+        ));
     }
 }

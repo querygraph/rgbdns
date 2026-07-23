@@ -5,13 +5,13 @@ use crate::{
 };
 use std::{
     io::{Read, Write},
-    net::{TcpListener, UdpSocket},
+    net::{IpAddr, TcpListener, UdpSocket},
     sync::Arc,
     thread,
 };
 
 pub fn respond(zone: &Zone, wire: &[u8], transport_limit: usize) -> Result<Vec<u8>> {
-    respond_over_transport(zone, wire, transport_limit, true)
+    respond_over_transport(zone, wire, transport_limit, true, None)
 }
 
 fn respond_over_transport(
@@ -19,6 +19,7 @@ fn respond_over_transport(
     wire: &[u8],
     transport_limit: usize,
     is_udp: bool,
+    client: Option<IpAddr>,
 ) -> Result<Vec<u8>> {
     let q = Message::decode(wire)?;
     if q.flags & 0x8000 != 0 || q.questions.len() != 1 {
@@ -66,7 +67,10 @@ fn respond_over_transport(
     if question.qclass != 1 {
         r.flags |= 4
     } else {
-        match zone.lookup(&question.name, question.qtype) {
+        match client.map_or_else(
+            || zone.lookup(&question.name, question.qtype),
+            |address| zone.lookup_from(&question.name, question.qtype, address),
+        ) {
             Lookup::Answer(x) => r.answers = x,
             Lookup::Referral {
                 authorities,
@@ -140,7 +144,7 @@ fn serve_sockets(zone: Zone, udp: UdpSocket, tcp: TcpListener) -> Result<()> {
         let mut b = [0u8; 65535];
         loop {
             if let Ok((n, peer)) = udp.recv_from(&mut b)
-                && let Ok(r) = respond(&z, &b[..n], 4096)
+                && let Ok(r) = respond_over_transport(&z, &b[..n], 4096, true, Some(peer.ip()))
             {
                 let _ = udp.send_to(&r, peer);
             }
@@ -150,11 +154,12 @@ fn serve_sockets(zone: Zone, udp: UdpSocket, tcp: TcpListener) -> Result<()> {
         let z = zone.clone();
         thread::spawn(move || {
             if let Ok(mut s) = stream {
+                let client = s.peer_addr().ok().map(|peer| peer.ip());
                 let mut l = [0; 2];
                 if s.read_exact(&mut l).is_ok() {
                     let mut b = vec![0; u16::from_be_bytes(l) as usize];
                     if s.read_exact(&mut b).is_ok()
-                        && let Ok(r) = respond_over_transport(&z, &b, 65535, false)
+                        && let Ok(r) = respond_over_transport(&z, &b, 65535, false, client)
                     {
                         let _ = s.write_all(&(r.len() as u16).to_be_bytes());
                         let _ = s.write_all(&r);
@@ -223,6 +228,40 @@ mod tests {
                 .additionals
                 .iter()
                 .any(|record| record.rr_type() == RecordType::A)
+        );
+    }
+
+    #[test]
+    fn client_address_selects_tinydns_location() {
+        let zone = Zone::parse(
+            ".example::ns.example\n\
+             %aa:192.0.2\n\
+             +www.example:192.0.2.1:60::aa\n\
+             +www.example:198.51.100.1:60\n",
+        )
+        .unwrap();
+        let response = Message::decode(
+            &respond_over_transport(
+                &zone,
+                &query("www.example", RecordType::A, None),
+                4096,
+                true,
+                Some("192.0.2.44".parse().unwrap()),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            response
+                .answers
+                .iter()
+                .any(|record| record.data == RData::A("192.0.2.1".parse().unwrap()))
+        );
+        assert!(
+            response
+                .answers
+                .iter()
+                .any(|record| record.data == RData::A("198.51.100.1".parse().unwrap()))
         );
     }
 

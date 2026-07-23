@@ -5,9 +5,11 @@ Primary baseline: djbdns 1.05, released 2001-02-11 into the public domain.
 Implemented:
 
 - RFC 1034/1035 names, compression decoding, queries and resource records
-- tinydns markers `. & = + @ ' ^ C Z : 3 6 S` (location `%` is pending)
+- tinydns markers `. & = + @ ' ^ C Z : 3 6 S %`, including client-location
+  selection and query-time TAI64 activation/expiration
 - atomic djbdns-compatible `data.cdb` compilation and bounded, validating CDB
-  loading; a 14-record fixture was differentially verified as identical
+  loading; a 16-entry fixture including location and timestamp qualifiers was
+  differentially verified as identical
   key/value entries against Debian-patched djbdns 1.05
 - authoritative A, AAAA, NS, CNAME, SOA, PTR, MX, TXT and opaque RR data
 - wildcard synthesis, NXDOMAIN/NODATA SOA authority, REFUSED outside zones
