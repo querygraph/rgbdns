@@ -11,6 +11,7 @@ use std::{
 pub struct Zone {
     records: BTreeMap<Name, Vec<Record>>,
     authoritative: BTreeSet<Name>,
+    delegations: BTreeSet<Name>,
 }
 impl Zone {
     pub fn from_file(path: impl AsRef<Path>) -> Result<Self> {
@@ -232,6 +233,8 @@ impl Zone {
                             minimum: 2560,
                         },
                     })
+                } else {
+                    self.delegations.insert(name);
                 }
             }
             b'Z' => {
@@ -269,6 +272,44 @@ impl Zone {
         Ok(())
     }
     pub fn lookup(&self, name: &Name, typ: RecordType) -> Lookup {
+        if let Some(delegation) = self
+            .delegations
+            .iter()
+            .filter(|owner| name.is_subdomain_of(owner))
+            .max_by_key(|owner| owner.labels().count())
+        {
+            let authorities = self
+                .records
+                .get(delegation)
+                .into_iter()
+                .flatten()
+                .filter(|record| record.rr_type() == RecordType::Ns)
+                .cloned()
+                .collect::<Vec<_>>();
+            let mut additionals = Vec::new();
+            for authority in &authorities {
+                let RData::Name(RecordType::Ns, target) = &authority.data else {
+                    continue;
+                };
+                if !target.is_subdomain_of(delegation) {
+                    continue;
+                }
+                additionals.extend(
+                    self.records
+                        .get(target)
+                        .into_iter()
+                        .flatten()
+                        .filter(|record| {
+                            matches!(record.rr_type(), RecordType::A | RecordType::Aaaa)
+                        })
+                        .cloned(),
+                );
+            }
+            return Lookup::Referral {
+                authorities,
+                additionals,
+            };
+        }
         let mut owner = name.clone();
         let mut rows = self.records.get(name);
         if rows.is_none() {
@@ -323,6 +364,10 @@ impl Zone {
 #[derive(Clone, Debug)]
 pub enum Lookup {
     Answer(Vec<Record>),
+    Referral {
+        authorities: Vec<Record>,
+        additionals: Vec<Record>,
+    },
     NoData(Option<Record>),
     NxDomain(Option<Record>),
     Refused,

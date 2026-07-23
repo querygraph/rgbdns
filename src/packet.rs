@@ -12,6 +12,7 @@ pub enum RecordType {
     Txt,
     Aaaa,
     Srv,
+    Opt,
     Caa,
     Ds,
     Rrsig,
@@ -32,6 +33,7 @@ impl RecordType {
             Self::Txt => 16,
             Self::Aaaa => 28,
             Self::Srv => 33,
+            Self::Opt => 41,
             Self::Ds => 43,
             Self::Rrsig => 46,
             Self::Nsec => 47,
@@ -52,6 +54,7 @@ impl RecordType {
             16 => Self::Txt,
             28 => Self::Aaaa,
             33 => Self::Srv,
+            41 => Self::Opt,
             43 => Self::Ds,
             46 => Self::Rrsig,
             47 => Self::Nsec,
@@ -75,6 +78,7 @@ impl std::str::FromStr for RecordType {
             "TXT" => Self::Txt,
             "AAAA" => Self::Aaaa,
             "SRV" => Self::Srv,
+            "OPT" => Self::Opt,
             "CAA" => Self::Caa,
             "DS" => Self::Ds,
             "RRSIG" => Self::Rrsig,
@@ -134,6 +138,13 @@ pub enum RData {
         tag: Vec<u8>,
         value: Vec<u8>,
     },
+    Opt {
+        udp_payload: u16,
+        extended_rcode: u8,
+        version: u8,
+        flags: u16,
+        options: Vec<u8>,
+    },
     Opaque(RecordType, Vec<u8>),
 }
 impl RData {
@@ -147,6 +158,7 @@ impl RData {
             Self::Txt(_) => RecordType::Txt,
             Self::Srv { .. } => RecordType::Srv,
             Self::Caa { .. } => RecordType::Caa,
+            Self::Opt { .. } => RecordType::Opt,
             Self::Opaque(t, _) => *t,
         }
     }
@@ -235,7 +247,8 @@ impl<'a> Reader<'a> {
     fn record(&mut self) -> Result<Record> {
         let name = self.name()?;
         let typ = RecordType::from_code(self.u16()?);
-        if self.u16()? != 1 {
+        let class = self.u16()?;
+        if typ != RecordType::Opt && class != 1 {
             return Err(Error::Format("non-IN record"));
         }
         let ttl = self.u32()?;
@@ -269,6 +282,42 @@ impl<'a> Reader<'a> {
                 port: self.u16()?,
                 target: self.name()?,
             },
+            RecordType::Soa => RData::Soa {
+                mname: self.name()?,
+                admin: self.name()?,
+                serial: self.u32()?,
+                refresh: self.u32()?,
+                retry: self.u32()?,
+                expire: self.u32()?,
+                minimum: self.u32()?,
+            },
+            RecordType::Caa if len >= 2 => {
+                let flags = self.u8()?;
+                let tag_len = self.u8()? as usize;
+                if self.p + tag_len > end {
+                    return Err(Error::Format("bad CAA tag length"));
+                }
+                let tag = self.b[self.p..self.p + tag_len].to_vec();
+                self.p += tag_len;
+                let value = self.b[self.p..end].to_vec();
+                self.p = end;
+                RData::Caa { flags, tag, value }
+            }
+            RecordType::Opt => {
+                if !name.is_root() {
+                    return Err(Error::Format("OPT owner is not root"));
+                }
+                let options = self.b[self.p..end].to_vec();
+                validate_edns_options(&options)?;
+                self.p = end;
+                RData::Opt {
+                    udp_payload: class,
+                    extended_rcode: (ttl >> 24) as u8,
+                    version: (ttl >> 16) as u8,
+                    flags: ttl as u16,
+                    options,
+                }
+            }
             RecordType::Txt => {
                 let mut v = Vec::new();
                 while self.p < end {
@@ -281,6 +330,9 @@ impl<'a> Reader<'a> {
                 }
                 RData::Txt(v)
             }
+            RecordType::A | RecordType::Aaaa => {
+                return Err(Error::Format("invalid address RDLENGTH"));
+            }
             _ => {
                 let v = self.b[self.p..end].to_vec();
                 self.p = end;
@@ -290,8 +342,25 @@ impl<'a> Reader<'a> {
         if self.p != end {
             return Err(Error::Format("rdata length mismatch"));
         }
-        Ok(Record { name, ttl, data })
+        Ok(Record {
+            name,
+            ttl: if typ == RecordType::Opt { 0 } else { ttl },
+            data,
+        })
     }
+}
+
+fn validate_edns_options(mut options: &[u8]) -> Result<()> {
+    while !options.is_empty() {
+        if options.len() < 4 {
+            return Err(Error::Format("truncated EDNS option"));
+        }
+        let len = u16::from_be_bytes([options[2], options[3]]) as usize;
+        options = options
+            .get(4 + len..)
+            .ok_or(Error::Format("truncated EDNS option data"))?;
+    }
+    Ok(())
 }
 impl Message {
     pub fn decode(b: &[u8]) -> Result<Self> {
@@ -382,8 +451,26 @@ impl Writer {
     fn record(&mut self, r: &Record) -> Result<()> {
         self.name(&r.name)?;
         self.u16(r.rr_type().code());
-        self.u16(1);
-        self.u32(r.ttl);
+        match &r.data {
+            RData::Opt {
+                udp_payload,
+                extended_rcode,
+                version,
+                flags,
+                ..
+            } => {
+                self.u16(*udp_payload);
+                self.u32(
+                    u32::from(*extended_rcode) << 24
+                        | u32::from(*version) << 16
+                        | u32::from(*flags),
+                );
+            }
+            _ => {
+                self.u16(1);
+                self.u32(r.ttl);
+            }
+        }
         let at = self.0.len();
         self.u16(0);
         let start = self.0.len();
@@ -439,6 +526,10 @@ impl Writer {
                 self.0.extend(tag);
                 self.0.extend(value)
             }
+            RData::Opt { options, .. } => {
+                validate_edns_options(options)?;
+                self.0.extend(options)
+            }
             RData::Opaque(_, v) => self.0.extend(v),
         }
         let len: u16 = (self.0.len() - start)
@@ -472,5 +563,63 @@ mod tests {
         b[5] = 1;
         b.extend([0xc0, 0x0c, 0, 1, 0, 1]);
         assert!(Message::decode(&b).is_err())
+    }
+    #[test]
+    fn structured_records_and_edns_roundtrip() {
+        let records = vec![
+            Record {
+                name: "example".parse().unwrap(),
+                ttl: 60,
+                data: RData::Soa {
+                    mname: "ns.example".parse().unwrap(),
+                    admin: "hostmaster.example".parse().unwrap(),
+                    serial: 1,
+                    refresh: 2,
+                    retry: 3,
+                    expire: 4,
+                    minimum: 5,
+                },
+            },
+            Record {
+                name: "example".parse().unwrap(),
+                ttl: 60,
+                data: RData::Caa {
+                    flags: 0,
+                    tag: b"issue".to_vec(),
+                    value: b"ca.example".to_vec(),
+                },
+            },
+        ];
+        let opt = Record {
+            name: Name::root(),
+            ttl: 0,
+            data: RData::Opt {
+                udp_payload: 1232,
+                extended_rcode: 0,
+                version: 0,
+                flags: 0x8000,
+                options: vec![0, 12, 0, 2, 0xaa, 0xbb],
+            },
+        };
+        let message = Message {
+            answers: records,
+            additionals: vec![opt],
+            ..Default::default()
+        };
+        assert_eq!(
+            Message::decode(&message.encode().unwrap()).unwrap(),
+            message
+        );
+    }
+    #[test]
+    fn rejects_malformed_edns_options_and_address_length() {
+        let malformed_opt = [
+            0, 0, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 41, 4, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0,
+        ];
+        assert!(Message::decode(&malformed_opt).is_err());
+        let bad_a = [
+            0, 0, 0x80, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 3, 1, 2, 3,
+        ];
+        assert!(Message::decode(&bad_a).is_err());
     }
 }

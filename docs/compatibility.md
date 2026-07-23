@@ -8,8 +8,10 @@ Implemented:
 - tinydns markers `. & = + @ ' ^ C Z : 3 6` (location `%` is pending)
 - authoritative A, AAAA, NS, CNAME, SOA, PTR, MX, TXT and opaque RR data
 - wildcard synthesis, NXDOMAIN/NODATA SOA authority, REFUSED outside zones
-- UDP truncation and DNS over TCP
+- referrals with in-bailiwick glue and correct authoritative-bit behavior
+- EDNS(0), BADVERS, DO-bit echo, whole-record UDP truncation, and DNS over TCP
 - pointer-loop, section-count, label/name, RDLENGTH, and TXT bounds checks
+- randomized property tests and live UDP/TCP integration tests
 
 Patch/source corpus searched and tracked:
 
