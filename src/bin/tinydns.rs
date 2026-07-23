@@ -1,6 +1,6 @@
 use rgbdns::{server, zone::Zone};
 fn main() {
-    let data = std::env::var("DATA").unwrap_or_else(|_| "data".into());
+    let data = std::env::var("DATA").unwrap_or_else(|_| "data.cdb".into());
     let ip = std::env::var("IP").unwrap_or_else(|_| "0.0.0.0".into());
     let port = std::env::var("PORT").unwrap_or_else(|_| "53".into());
     let z = Zone::from_file(data).unwrap_or_else(|e| {

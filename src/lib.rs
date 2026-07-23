@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+pub mod cdb;
 pub mod name;
 pub mod packet;
 pub mod server;

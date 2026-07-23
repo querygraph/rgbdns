@@ -24,6 +24,11 @@ versioning once its djbdns-compatible public surface stabilizes.
   `3`, `6`, and patched `S` records.
 - IPv4, IPv6, NS, CNAME, SOA, PTR, MX, TXT, and opaque record support.
 - Initial `tinydns`, `tinydns-data`, `tinydns-get`, and `dnsq` commands.
+- Atomic `tinydns-data` output in the original `data.cdb` key/value format and
+  a bounded, validating CDB loader used by `tinydns` by default.
+- Correct original djbdns field positions, default target expansion, glue
+  generation, SOA TTL behavior, one-to-three-digit octal escapes, and patched
+  SRV priority/weight ordering, differentially checked against patched 1.05.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
 

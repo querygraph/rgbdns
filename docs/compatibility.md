@@ -5,7 +5,10 @@ Primary baseline: djbdns 1.05, released 2001-02-11 into the public domain.
 Implemented:
 
 - RFC 1034/1035 names, compression decoding, queries and resource records
-- tinydns markers `. & = + @ ' ^ C Z : 3 6` (location `%` is pending)
+- tinydns markers `. & = + @ ' ^ C Z : 3 6 S` (location `%` is pending)
+- atomic djbdns-compatible `data.cdb` compilation and bounded, validating CDB
+  loading; a 14-record fixture was differentially verified as identical
+  key/value entries against Debian-patched djbdns 1.05
 - authoritative A, AAAA, NS, CNAME, SOA, PTR, MX, TXT and opaque RR data
 - wildcard synthesis, NXDOMAIN/NODATA SOA authority, REFUSED outside zones
 - referrals with in-bailiwick glue and correct authoritative-bit behavior
@@ -46,4 +49,5 @@ Remaining suite components:
 - `axfrdns`/`axfr-get`, `rbldns`, `walldns`, and configuration programs
 - remaining clients (`dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`,
   `dnsqr`, `dnstrace`, `dnsfilter`)
-- byte-for-byte differential tests against patched C djbdns and RFC vectors
+- automated differential tests against patched C djbdns and additional RFC
+  vectors (the initial CDB corpus has been manually verified)

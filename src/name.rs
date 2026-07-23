@@ -42,6 +42,24 @@ impl Name {
     pub(crate) fn wire_len(&self) -> usize {
         1 + self.0.iter().map(|l| l.len() + 1).sum::<usize>()
     }
+    pub(crate) fn to_wire(&self) -> Vec<u8> {
+        let mut wire = Vec::with_capacity(self.wire_len());
+        for label in &self.0 {
+            wire.push(label.len() as u8);
+            wire.extend(label);
+        }
+        wire.push(0);
+        wire
+    }
+    pub(crate) fn without_wildcard(&self) -> Option<Self> {
+        self.0
+            .first()
+            .filter(|label| label.as_slice() == b"*")
+            .map(|_| Self(self.0[1..].to_vec()))
+    }
+    pub(crate) fn with_wildcard(&self) -> Self {
+        self.wildcard()
+    }
 }
 
 fn validate(labels: &[Vec<u8>]) -> Result<()> {
