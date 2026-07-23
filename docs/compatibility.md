@@ -54,11 +54,11 @@ Patch/source corpus searched and tracked:
 - errno, libc, compiler, large-file, and platform portability fixes across
   Debian, Gentoo, FreeBSD, NetBSD, Ubuntu, and openSUSE packaging.
 
-Remaining suite components:
+Remaining compatibility work:
 
 - djbdns `dnscache` filesystem configuration compatibility and cache-dump
   tooling (the running iterative engine already provides bounded caches,
   bailiwick enforcement, DNSSEC, randomized ports/IDs/case, TCP fallback,
   query coalescing, and negative caching)
-- automated differential tests against patched C djbdns and additional RFC
-  vectors (the initial CDB corpus has been manually verified)
+- additional RFC vectors and interoperability corpora (CDB compiler
+  compatibility is continuously enforced by patched-C golden-entry tests)

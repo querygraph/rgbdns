@@ -69,6 +69,8 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Portable `tinydns-conf`, `dnscache-conf`, `rbldns-conf`, `walldns-conf`, and
   `axfrdns-conf` service-directory generators with non-overwrite behavior,
   executable run/log scripts, current root hints, and private random seeds.
+- Permanent patched-C golden-entry tests for tinydns, rbldns, and pickdns CDB
+  output.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
 
