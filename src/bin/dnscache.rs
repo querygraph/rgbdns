@@ -7,7 +7,8 @@ use hickory_server::{
     zone_handler::{Catalog, ZoneHandler, ZoneType},
 };
 use ipnet::IpNet;
-use std::{env, net::SocketAddr, path::PathBuf, sync::Arc, time::Duration};
+use rgbdns::dnscache_config::PreparedRoots;
+use std::{env, net::SocketAddr, sync::Arc, time::Duration};
 use tokio::net::{TcpListener, UdpSocket};
 
 #[tokio::main]
@@ -30,9 +31,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let ip = env::var("IP").unwrap_or_else(|_| "127.0.0.1".into());
     let port = env::var("PORT").unwrap_or_else(|_| "53".into());
     let address: SocketAddr = format!("{ip}:{port}").parse()?;
-    let roots = env::var_os("ROOTS")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from("config/root.hints"));
+    let roots = PreparedRoots::from_environment()?;
 
     let options = RecursorOptions {
         case_randomization: true,
@@ -45,7 +44,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let config = RecursiveConfig {
-        roots,
+        roots: roots.path().to_owned(),
         dnssec_policy: DnssecPolicyConfig::ValidateWithStaticKey {
             path: None,
             nsec3_soft_iteration_limit: DnssecConfig::default().nsec3_soft_iteration_limit,

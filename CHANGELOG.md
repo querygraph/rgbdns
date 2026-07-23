@@ -11,6 +11,9 @@ versioning once its djbdns-compatible public surface stabilizes.
   bailiwick enforcement, bounded response/nameserver caches, query
   case-randomization, EDNS, TCP fallback, and loopback-only access by default.
 - Current InterNIC root hints dated 2026-07-22.
+- Direct support for original `dnscache` `ROOT/servers/@` files containing
+  bounded IPv4/IPv6 server lists, translated through private ephemeral master
+  files; BIND-format `ROOTS` files remain supported.
 - Memory-safe DNS name and packet codecs with bounded compression-pointer,
   section-count, label, RDATA, and TXT parsing.
 - Authoritative UDP and TCP server with truncation, wildcard synthesis,

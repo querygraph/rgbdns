@@ -4,6 +4,7 @@ pub mod axfr;
 pub mod cdb;
 pub mod client;
 pub mod conf;
+pub mod dnscache_config;
 pub mod name;
 pub mod packet;
 pub mod pick;
