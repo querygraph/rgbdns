@@ -85,3 +85,11 @@ path = "src/bin/dnstxt.rs"
 [[bin]]
 name = "dnsqr"
 path = "src/bin/dnsqr.rs"
+
+[[bin]]
+name = "dnsfilter"
+path = "src/bin/dnsfilter.rs"
+
+[[bin]]
+name = "dnstrace"
+path = "src/bin/dnstrace.rs"

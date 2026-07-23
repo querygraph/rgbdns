@@ -26,6 +26,7 @@ Implemented:
 - `walldns` direct-address and partial/full reverse-tree behavior
 - recursive client tools `dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`, and
   `dnsqr`, plus hardened non-recursive `dnsq`
+- bounded, order-preserving `dnsfilter` and iterative IPv4/IPv6 `dnstrace`
 
 Patch/source corpus searched and tracked:
 
@@ -54,6 +55,5 @@ Remaining suite components:
   bailiwick enforcement, DNSSEC, randomized ports/IDs/case, TCP fallback,
   query coalescing, and negative caching)
 - configuration programs
-- remaining clients (`dnstrace`, `dnsfilter`)
 - automated differential tests against patched C djbdns and additional RFC
   vectors (the initial CDB corpus has been manually verified)

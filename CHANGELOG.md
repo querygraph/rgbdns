@@ -42,6 +42,8 @@ versioning once its djbdns-compatible public surface stabilizes.
   validation, retries, resolver configuration, and automatic TCP fallback.
 - Runnable `dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`, and `dnsqr`
   clients; `dnsq` now uses the hardened shared transport.
+- Bounded-concurrency, order-preserving `dnsfilter` and an IPv4/IPv6-capable
+  iterative `dnstrace` with referral/glue reporting and depth limits.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
 
