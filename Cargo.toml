@@ -10,6 +10,7 @@ cdb = "0.6"
 getrandom = "0.3"
 hickory-server = { version = "0.26.1", default-features = false, features = ["dnssec-ring", "recursor", "resolver"] }
 ipnet = "2"
+nix = { version = "0.31.3", features = ["process", "user"] }
 tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
@@ -141,3 +142,11 @@ path = "src/bin/pickdns-data.rs"
 [[bin]]
 name = "pickdns-conf"
 path = "src/bin/pickdns-conf.rs"
+
+[[bin]]
+name = "multilog"
+path = "src/bin/multilog.rs"
+
+[[bin]]
+name = "setuidgid"
+path = "src/bin/setuidgid.rs"

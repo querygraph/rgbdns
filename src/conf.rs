@@ -195,8 +195,10 @@ fn make_log(directory: &Path, user: &str) -> Result<()> {
     write_file(
         &directory.join("log/run"),
         format!(
-            "#!/bin/sh\nexec setuidgid {} multilog t ./main\n",
-            shell_quote(user)
+            "#!/bin/sh\nexec {} {} {} t ./main\n",
+            shell_quote(&executable("setuidgid")?.to_string_lossy()),
+            shell_quote(user),
+            shell_quote(&executable("multilog")?.to_string_lossy()),
         )
         .as_bytes(),
         0o755,
@@ -210,10 +212,11 @@ fn run_script(directory: &Path, user: &str, binary: &str) -> Result<String> {
          [ ! -f {dir}/env/ROOTS ] || export ROOTS=$(cat {dir}/env/ROOTS)\n\
          [ ! -f {dir}/env/CACHESIZE ] || export CACHESIZE=$(cat {dir}/env/CACHESIZE)\n\
          [ ! -f {dir}/env/ALLOW_NETS ] || export ALLOW_NETS=$(cat {dir}/env/ALLOW_NETS)\n\
-         cd \"$ROOT\"\nexec setuidgid {user} {binary}\n",
+         cd \"$ROOT\"\nexec {setuidgid} {user} {binary}\n",
         dir = shell_quote(&directory.to_string_lossy()),
         user = shell_quote(user),
         binary = shell_quote(&executable(binary)?.to_string_lossy()),
+        setuidgid = shell_quote(&executable("setuidgid")?.to_string_lossy()),
     ))
 }
 
@@ -268,6 +271,11 @@ mod tests {
         ];
         configure(Service::Tinydns, &arguments).unwrap();
         assert!(directory.join("run").is_file());
+        let run = fs::read_to_string(directory.join("run")).unwrap();
+        let log_run = fs::read_to_string(directory.join("log/run")).unwrap();
+        assert!(run.contains("/setuidgid"));
+        assert!(log_run.contains("/setuidgid"));
+        assert!(log_run.contains("/multilog"));
         assert!(directory.join("root/data").is_file());
         assert!(directory.join("root/add-host").is_file());
         assert!(configure(Service::Tinydns, &arguments).is_err());

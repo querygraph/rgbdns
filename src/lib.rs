@@ -5,11 +5,14 @@ pub mod cdb;
 pub mod client;
 pub mod conf;
 pub mod dnscache_config;
+pub mod multilog;
 pub mod name;
 pub mod packet;
 pub mod pick;
 pub mod rbl;
 pub mod server;
+#[cfg(unix)]
+pub mod setuidgid;
 pub mod special;
 pub mod tinydns_edit;
 pub mod wall;

@@ -10,6 +10,12 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Iterative `dnscache` service with DNSSEC validation, root-hint traversal,
   bailiwick enforcement, bounded response/nameserver caches, query
   case-randomization, EDNS, TCP fallback, and loopback-only access by default.
+- Self-contained daemontools-compatible `multilog` with streaming input,
+  TAI64N line timestamps, symlink-safe append, atomic rotation, bounded
+  size/retention controls, and multiple destinations.
+- Self-contained `setuidgid` with system account/group resolution,
+  supplementary-group initialization, verified UID/GID dropping, and direct
+  process replacement.
 - Current InterNIC root hints dated 2026-07-22.
 - Direct support for original `dnscache` `ROOT/servers/@` files containing
   bounded IPv4/IPv6 server lists, translated through private ephemeral master
@@ -83,6 +89,8 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Portable `tinydns-conf`, `dnscache-conf`, `rbldns-conf`, `walldns-conf`, and
   `axfrdns-conf` service-directory generators with non-overwrite behavior,
   executable run/log scripts, current root hints, and private random seeds.
+- Generated service directories use absolute paths to rgbdns's `multilog` and
+  `setuidgid`; external daemontools executables are no longer required.
 - Permanent patched-C golden-entry tests for tinydns, rbldns, and pickdns CDB
   output; the tinydns corpus includes 19 exact semantic entries covering
   location, timestamp, SRV, AAAA, `ip6.arpa`, and `ip6.int` behavior.

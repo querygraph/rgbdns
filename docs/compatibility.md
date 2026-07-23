@@ -37,6 +37,8 @@ Implemented:
 - `tinydns-edit` add modes and bounded `random-ip`
 - service-directory generators for tinydns, dnscache, rbldns, walldns, and
   axfrdns (portable generation omits privileged ownership changes)
+- in-suite `setuidgid` and the generated-service `multilog t` surface, plus
+  bounded `s<size>` rotation and `n<count>` retention controls
 
 Patch/source corpus searched and tracked:
 
