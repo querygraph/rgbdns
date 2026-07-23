@@ -1,0 +1,34 @@
+[package]
+name = "rgbdns"
+version = "0.1.0"
+edition = "2024"
+license = "Unlicense"
+description = "A safe, faithful Rust reimplementation of the djbdns suite"
+
+[dependencies]
+getrandom = "0.3"
+
+[dev-dependencies]
+proptest = "1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+[[bin]]
+name = "tinydns"
+path = "src/bin/tinydns.rs"
+
+[[bin]]
+name = "tinydns-data"
+path = "src/bin/tinydns-data.rs"
+
+[[bin]]
+name = "tinydns-get"
+path = "src/bin/tinydns-get.rs"
+
+[[bin]]
+name = "dnsq"
+path = "src/bin/dnsq.rs"
+
