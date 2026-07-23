@@ -3,29 +3,36 @@ use rgbdns::{
     server,
     zone::Zone,
 };
+
 fn main() {
-    let a = std::env::args().skip(1).collect::<Vec<_>>();
-    if !(2..=3).contains(&a.len()) {
-        eprintln!("usage: tinydns-get type name [ip]");
-        std::process::exit(100)
+    if let Err(error) = run() {
+        eprintln!("tinydns-get: fatal: {error}");
+        std::process::exit(111);
     }
-    let typ = a[0].parse::<RecordType>().unwrap();
+}
+
+fn run() -> Result<(), Box<dyn std::error::Error>> {
+    let arguments = std::env::args().skip(1).collect::<Vec<_>>();
+    if !(2..=3).contains(&arguments.len()) {
+        return Err(rgbdns::Error::Format("usage: tinydns-get type name [ip]").into());
+    }
+    let record_type = arguments[0].parse::<RecordType>()?;
     let q = Message {
         id: 1,
         questions: vec![Question {
-            name: a[1].parse().unwrap(),
-            qtype: typ,
+            name: arguments[1].parse()?,
+            qtype: record_type,
             qclass: 1,
         }],
         ..Default::default()
     };
-    let z = Zone::from_file("data").unwrap();
-    let wire = if let Some(address) = a.get(2) {
-        server::respond_from(&z, &q.encode().unwrap(), 65535, address.parse().unwrap())
+    let zone = Zone::from_file("data")?;
+    let query = q.encode()?;
+    let wire = if let Some(address) = arguments.get(2) {
+        server::respond_from(&zone, &query, 65535, address.parse()?)
     } else {
-        server::respond(&z, &q.encode().unwrap(), 65535)
-    }
-    .unwrap();
-    let r = Message::decode(&wire).unwrap();
-    println!("{r:#?}")
+        server::respond(&zone, &query, 65535)
+    }?;
+    println!("{:#?}", Message::decode(&wire)?);
+    Ok(())
 }

@@ -1,20 +1,24 @@
 use rgbdns::{RecordType, client};
+
 fn main() {
-    let a = std::env::args().skip(1).collect::<Vec<_>>();
-    if a.len() != 3 {
-        eprintln!("usage: dnsq type name server");
-        std::process::exit(100)
-    }
-    let server = client::server_address(&a[2]).unwrap_or_else(|error| {
+    if let Err(error) = run() {
         eprintln!("dnsq: fatal: {error}");
-        std::process::exit(100)
-    });
+        std::process::exit(111);
+    }
+}
+
+fn run() -> rgbdns::Result<()> {
+    let arguments = std::env::args().skip(1).collect::<Vec<_>>();
+    if arguments.len() != 3 {
+        return Err(rgbdns::Error::Format("usage: dnsq type name server"));
+    }
+    let server = client::server_address(&arguments[2])?;
     let response = client::query(
-        a[1].parse().unwrap(),
-        a[0].parse::<RecordType>().unwrap(),
+        arguments[1].parse()?,
+        arguments[0].parse::<RecordType>()?,
         false,
         &[server],
-    )
-    .unwrap();
-    println!("{response:#?}")
+    )?;
+    println!("{response:#?}");
+    Ok(())
 }

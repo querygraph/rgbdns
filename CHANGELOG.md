@@ -98,3 +98,5 @@ versioning once its djbdns-compatible public surface stabilizes.
 - `dnscache` rejects malformed and out-of-range cache, recursion, and
   access-list settings instead of silently defaulting or allocating without a
   configured ceiling.
+- All shipped command-line paths report malformed input and I/O failures
+  without Rust panics; this includes hardened `dnsq` and `tinydns-get` paths.
