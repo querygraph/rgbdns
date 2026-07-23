@@ -31,20 +31,40 @@ fn respond_over_transport(
     is_udp: bool,
     client: Option<IpAddr>,
 ) -> Result<Vec<u8>> {
-    let q = Message::decode(wire)?;
-    if q.flags & 0x8000 != 0 || q.questions.len() != 1 {
-        return Err(Error::Format("expected one query"));
+    let q = match Message::decode(wire) {
+        Ok(query) => query,
+        Err(_) if wire.len() >= 12 && wire[2] & 0x80 == 0 => {
+            return error_response(wire, 1);
+        }
+        Err(error) => return Err(error),
+    };
+    if q.flags & 0x8000 != 0 {
+        return Err(Error::Format("received a DNS response"));
+    }
+    if q.questions.len() != 1 {
+        return error_response(wire, 1);
     }
     let question = q.questions[0].clone();
-    let opt = q.additionals.iter().find_map(|record| match &record.data {
-        crate::RData::Opt {
-            udp_payload,
-            version,
-            flags,
-            ..
-        } => Some((*udp_payload, *version, *flags)),
-        _ => None,
-    });
+    if q.flags & 0x7800 != 0 {
+        return error_response(wire, 4);
+    }
+    let options = q
+        .additionals
+        .iter()
+        .filter_map(|record| match &record.data {
+            crate::RData::Opt {
+                udp_payload,
+                version,
+                flags,
+                ..
+            } => Some((*udp_payload, *version, *flags)),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    if options.len() > 1 {
+        return error_response(wire, 1);
+    }
+    let opt = options.first().copied();
     let response_limit = if is_udp {
         opt.map_or(512, |(size, _, _)| usize::from(size).max(512))
             .min(transport_limit)
@@ -113,6 +133,18 @@ fn respond_over_transport(
         }
     }
     truncate(r, response_limit)
+}
+
+fn error_response(query: &[u8], rcode: u16) -> Result<Vec<u8>> {
+    if query.len() < 4 {
+        return Err(Error::Format("short DNS query"));
+    }
+    Message {
+        id: u16::from_be_bytes([query[0], query[1]]),
+        flags: 0x8000 | (u16::from_be_bytes([query[2], query[3]]) & 0x0100) | rcode,
+        ..Default::default()
+    }
+    .encode()
 }
 
 fn zone_lookup(
@@ -404,6 +436,32 @@ mod tests {
         .unwrap();
         assert_eq!(response.flags & 15, 2);
         assert!(response.answers.is_empty());
+    }
+
+    #[test]
+    fn malformed_queries_get_bounded_formerr_and_unknown_opcode_gets_notimp() {
+        let zone = Zone::parse(".example::ns.example\n").unwrap();
+        let mut malformed = query("example", RecordType::A, None);
+        malformed[5] = 2;
+        let response = Message::decode(&respond(&zone, &malformed, 4096).unwrap()).unwrap();
+        assert_eq!(response.flags & 15, 1);
+        assert!(response.questions.is_empty());
+        assert_eq!(response.encode().unwrap().len(), 12);
+
+        let mut opcode = query("example", RecordType::A, None);
+        opcode[2] |= 0x08;
+        let response = Message::decode(&respond(&zone, &opcode, 4096).unwrap()).unwrap();
+        assert_eq!(response.flags & 15, 4);
+
+        let mut duplicate_opt =
+            Message::decode(&query("example", RecordType::A, Some((1232, 0)))).unwrap();
+        duplicate_opt
+            .additionals
+            .push(duplicate_opt.additionals[0].clone());
+        let response =
+            Message::decode(&respond(&zone, &duplicate_opt.encode().unwrap(), 4096).unwrap())
+                .unwrap();
+        assert_eq!(response.flags & 15, 1);
     }
 
     #[test]

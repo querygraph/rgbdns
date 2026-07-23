@@ -34,6 +34,8 @@ versioning once its djbdns-compatible public surface stabilizes.
   with an indexed fast path for ordinary unqualified zones.
 - Bounded in-zone CNAME-chain expansion with loop-to-SERVFAIL handling and
   address additionals for NS, MX, and SRV targets.
+- Minimal bounded FORMERR replies for decodable malformed queries, NOTIMP for
+  unsupported opcodes, and rejection of duplicate EDNS OPT records.
 - Client-IP selection in `tinydns-get`.
 - Correct original djbdns field positions, default target expansion, glue
   generation, SOA TTL behavior, one-to-three-digit octal escapes, and patched
