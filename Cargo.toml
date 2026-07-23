@@ -61,3 +61,27 @@ path = "src/bin/rbldns-data.rs"
 [[bin]]
 name = "walldns"
 path = "src/bin/walldns.rs"
+
+[[bin]]
+name = "dnsip"
+path = "src/bin/dnsip.rs"
+
+[[bin]]
+name = "dnsipq"
+path = "src/bin/dnsipq.rs"
+
+[[bin]]
+name = "dnsname"
+path = "src/bin/dnsname.rs"
+
+[[bin]]
+name = "dnsmx"
+path = "src/bin/dnsmx.rs"
+
+[[bin]]
+name = "dnstxt"
+path = "src/bin/dnstxt.rs"
+
+[[bin]]
+name = "dnsqr"
+path = "src/bin/dnsqr.rs"

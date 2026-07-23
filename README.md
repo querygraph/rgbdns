@@ -29,3 +29,6 @@ separated CIDR list to authorize additional clients.
 
 `axfrdns` is TCP-only and likewise permits loopback clients by default. Its
 `ALLOW_NETS` setting accepts comma-separated IPv4 or IPv6 CIDRs.
+
+The recursive client commands read `DNSCACHEIP` (a comma-separated list of IP
+or `IP:port` endpoints) when set, otherwise they use `/etc/resolv.conf`.
