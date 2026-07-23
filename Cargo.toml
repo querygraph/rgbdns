@@ -7,6 +7,7 @@ description = "A safe, faithful Rust reimplementation of the djbdns suite"
 
 [dependencies]
 cdb = "0.6"
+chrono = "0.4"
 getrandom = "0.3"
 hickory-server = { version = "0.26.1", default-features = false, features = ["dnssec-ring", "recursor", "resolver"] }
 ipnet = "2"
@@ -150,3 +151,11 @@ path = "src/bin/multilog.rs"
 [[bin]]
 name = "setuidgid"
 path = "src/bin/setuidgid.rs"
+
+[[bin]]
+name = "tai64n"
+path = "src/bin/tai64n.rs"
+
+[[bin]]
+name = "tai64nlocal"
+path = "src/bin/tai64nlocal.rs"

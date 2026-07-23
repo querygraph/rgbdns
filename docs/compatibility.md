@@ -39,6 +39,8 @@ Implemented:
   axfrdns (portable generation omits privileged ownership changes)
 - in-suite `setuidgid` and the generated-service `multilog t` surface, plus
   bounded `s<size>` rotation and `n<count>` retention controls
+- daemontools-compatible `tai64n` and `tai64nlocal`, with a complete
+  1972--2017 leap-second table and ISO local-time rendering
 
 Patch/source corpus searched and tracked:
 

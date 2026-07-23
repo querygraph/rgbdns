@@ -16,6 +16,8 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Self-contained `setuidgid` with system account/group resolution,
   supplementary-group initialization, verified UID/GID dropping, and direct
   process replacement.
+- Leap-second-aware `tai64n` and `tai64nlocal` stream filters, sharing exact
+  TAI64N labels with `multilog` and covering the published daemontools vector.
 - Current InterNIC root hints dated 2026-07-22.
 - Direct support for original `dnscache` `ROOT/servers/@` files containing
   bounded IPv4/IPv6 server lists, translated through private ephemeral master

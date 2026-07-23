@@ -14,6 +14,7 @@ pub mod server;
 #[cfg(unix)]
 pub mod setuidgid;
 pub mod special;
+pub mod tai64;
 pub mod tinydns_edit;
 pub mod wall;
 pub mod zone;

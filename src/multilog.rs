@@ -4,7 +4,7 @@ use std::{
     fs::{self, File, OpenOptions},
     io::{self, BufRead, Write},
     path::{Path, PathBuf},
-    time::{SystemTime, UNIX_EPOCH},
+    time::SystemTime,
 };
 
 const DEFAULT_MAX_SIZE: u64 = 99_999;
@@ -12,7 +12,6 @@ const DEFAULT_RETAIN: usize = 10;
 const MAX_DESTINATIONS: usize = 64;
 const MAX_SIZE: u64 = 1 << 40;
 const MAX_RETAIN: usize = 10_000;
-const TAI64_BASE: u64 = 0x4000_0000_0000_000a;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Config {
@@ -205,16 +204,11 @@ fn secure_append(path: &Path) -> io::Result<File> {
 }
 
 pub fn tai64n(time: SystemTime) -> String {
-    format!("{} ", tai64n_label(time))
+    format!("{} ", crate::tai64::label(time))
 }
 
 fn tai64n_label(time: SystemTime) -> String {
-    let duration = time.duration_since(UNIX_EPOCH).unwrap_or_default();
-    format!(
-        "@{:016x}{:08x}",
-        TAI64_BASE.saturating_add(duration.as_secs()),
-        duration.subsec_nanos()
-    )
+    crate::tai64::label(time)
 }
 
 #[cfg(test)]

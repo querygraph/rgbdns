@@ -63,3 +63,37 @@ fn setuidgid_replaces_itself_and_preserves_child_status() {
         .unwrap();
     assert_eq!(status.code(), Some(7));
 }
+
+#[test]
+fn tai64_filters_roundtrip_a_published_timestamp() {
+    let output = Command::new(env!("CARGO_BIN_EXE_tai64nlocal"))
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .and_then(|mut child| {
+            child
+                .stdin
+                .take()
+                .unwrap()
+                .write_all(b"@4000000037c219bf2ef02e94 mark\n")?;
+            child.wait_with_output()
+        })
+        .unwrap();
+    assert!(output.status.success());
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.ends_with(".787492500 mark\n"));
+
+    let output = Command::new(env!("CARGO_BIN_EXE_tai64n"))
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .and_then(|mut child| {
+            child.stdin.take().unwrap().write_all(b"line\n")?;
+            child.wait_with_output()
+        })
+        .unwrap();
+    assert!(output.status.success());
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.starts_with("@4"));
+    assert!(text.ends_with(" line\n"));
+}
