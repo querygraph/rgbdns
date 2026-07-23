@@ -48,6 +48,11 @@ versioning once its djbdns-compatible public surface stabilizes.
   clients; `dnsq` now uses the hardened shared transport.
 - Bounded-concurrency, order-preserving `dnsfilter` and an IPv4/IPv6-capable
   iterative `dnstrace` with referral/glue reporting and depth limits.
+- Atomic `tinydns-edit add` operations with original duplicate checks, TTL
+  inheritance, permissions, and NS/MX slot allocation, differentially verified
+  against djbdns.
+- OS-randomized, non-repeating `random-ip` generation with fixed-prefix and
+  count bounds.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
 

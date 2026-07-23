@@ -29,6 +29,7 @@ Implemented:
 - recursive client tools `dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`, and
   `dnsqr`, plus hardened non-recursive `dnsq`
 - bounded, order-preserving `dnsfilter` and iterative IPv4/IPv6 `dnstrace`
+- `tinydns-edit` add modes and bounded `random-ip`
 
 Patch/source corpus searched and tracked:
 

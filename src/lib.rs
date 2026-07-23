@@ -8,6 +8,7 @@ pub mod packet;
 pub mod rbl;
 pub mod server;
 pub mod special;
+pub mod tinydns_edit;
 pub mod wall;
 pub mod zone;
 
