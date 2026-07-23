@@ -28,6 +28,8 @@ versioning once its djbdns-compatible public surface stabilizes.
   a bounded, validating CDB loader used by `tinydns` by default.
 - Query-time TAI64 activation/expiration semantics and longest-prefix `%`
   client-location selection, retained exactly through text and CDB forms.
+- Source-file modification times for implicit SOA serials, matching
+  `tinydns-data`, plus enforcement of its generic-record type restrictions.
 - Correct original djbdns field positions, default target expansion, glue
   generation, SOA TTL behavior, one-to-three-digit octal escapes, and patched
   SRV priority/weight ordering, differentially checked against patched 1.05.
@@ -54,5 +56,6 @@ versioning once its djbdns-compatible public surface stabilizes.
 - No unsafe Rust.
 - DNS query IDs use operating-system randomness.
 - Malformed and cyclic compressed names are rejected with bounded work.
+- Non-backward compression pointers and trailing packet data are rejected.
 - Property tests exercise 20,000 arbitrary and round-trip packet cases per
   complete test run.

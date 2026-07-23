@@ -219,8 +219,8 @@ impl<'a> Reader<'a> {
                     .get(pos + 1)
                     .ok_or(Error::Format("truncated pointer"))?;
                 let q = (((n & 0x3f) as usize) << 8) | b as usize;
-                if q >= self.b.len() {
-                    return Err(Error::Format("pointer out of range"));
+                if q >= pos {
+                    return Err(Error::Format("compression pointer is not backward"));
                 }
                 if !jumped {
                     self.p = pos + 2;
@@ -403,6 +403,9 @@ impl Message {
         for _ in 0..ar {
             m.additionals.push(r.record()?)
         }
+        if r.p != b.len() {
+            return Err(Error::Format("trailing DNS packet data"));
+        }
         Ok(m)
     }
     pub fn encode(&self) -> Result<Vec<u8>> {
@@ -567,6 +570,26 @@ mod tests {
         b[5] = 1;
         b.extend([0xc0, 0x0c, 0, 1, 0, 1]);
         assert!(Message::decode(&b).is_err())
+    }
+    #[test]
+    fn rejects_trailing_packet_data_and_forward_compression() {
+        let mut packet = Message {
+            questions: vec![Question {
+                name: "example".parse().unwrap(),
+                qtype: RecordType::A,
+                qclass: 1,
+            }],
+            ..Default::default()
+        }
+        .encode()
+        .unwrap();
+        packet.push(0);
+        assert!(Message::decode(&packet).is_err());
+
+        let mut forward = vec![0; 12];
+        forward[5] = 1;
+        forward.extend([0xc0, 18, 0, 1, 0, 1, 0]);
+        assert!(Message::decode(&forward).is_err());
     }
     #[test]
     fn structured_records_and_edns_roundtrip() {

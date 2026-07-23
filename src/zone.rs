@@ -15,6 +15,7 @@ pub struct Zone {
     delegations: BTreeSet<Name>,
     locations: Vec<(Vec<u8>, [u8; 2])>,
     current_metadata: RecordMetadata,
+    default_serial: u32,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -28,11 +29,22 @@ impl Zone {
         if path.extension().is_some_and(|extension| extension == "cdb") {
             crate::cdb::load(path)
         } else {
-            Self::parse(&fs::read_to_string(path)?)
+            let serial = fs::metadata(path)?
+                .modified()?
+                .duration_since(std::time::SystemTime::UNIX_EPOCH)
+                .map_or(1, |duration| duration.as_secs() as u32)
+                .max(1);
+            Self::parse_with_serial(&fs::read_to_string(path)?, serial)
         }
     }
     pub fn parse(text: &str) -> Result<Self> {
-        let mut z = Self::default();
+        Self::parse_with_serial(text, 1)
+    }
+    fn parse_with_serial(text: &str, default_serial: u32) -> Result<Self> {
+        let mut z = Self {
+            default_serial,
+            ..Self::default()
+        };
         for (number, raw) in text.lines().enumerate() {
             let line = raw.trim_end_matches('\r');
             if line.is_empty() || line.starts_with('#') || line.starts_with('-') {
@@ -312,6 +324,20 @@ impl Zone {
                         .parse()
                         .map_err(|_| Error::InvalidRecord("bad type".into()))?,
                 );
+                if matches!(
+                    typ,
+                    RecordType::Unknown(0)
+                        | RecordType::Axfr
+                        | RecordType::Soa
+                        | RecordType::Ns
+                        | RecordType::Cname
+                        | RecordType::Ptr
+                        | RecordType::Mx
+                ) {
+                    return Err(Error::InvalidRecord(
+                        "record type is prohibited for the generic marker".into(),
+                    ));
+                }
                 self.add(Record {
                     name,
                     ttl: field_opt(&f, 3)
@@ -349,7 +375,7 @@ impl Zone {
                         data: RData::Soa {
                             mname: host,
                             admin,
-                            serial: 1,
+                            serial: self.default_serial,
                             refresh: 16384,
                             retry: 2048,
                             expire: 1048576,
@@ -814,5 +840,18 @@ mod tests {
             Lookup::Answer(records)
                 if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
         ));
+    }
+
+    #[test]
+    fn implicit_soa_uses_source_serial_and_generic_types_are_restricted() {
+        let zone = Zone::parse_with_serial(".example::ns.example\n", 1_234_567).unwrap();
+        assert!(matches!(
+            zone.lookup(&"example".parse().unwrap(), RecordType::Soa),
+            Lookup::Answer(records)
+                if matches!(records[0].data, RData::Soa { serial: 1_234_567, .. })
+        ));
+        for record_type in [0, 2, 5, 6, 12, 15, 252] {
+            assert!(Zone::parse(&format!(":example:{record_type}:x\n")).is_err());
+        }
     }
 }
