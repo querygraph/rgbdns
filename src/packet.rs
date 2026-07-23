@@ -18,6 +18,7 @@ pub enum RecordType {
     Rrsig,
     Nsec,
     Dnskey,
+    Axfr,
     Any,
     Unknown(u16),
 }
@@ -38,6 +39,7 @@ impl RecordType {
             Self::Rrsig => 46,
             Self::Nsec => 47,
             Self::Dnskey => 48,
+            Self::Axfr => 252,
             Self::Caa => 257,
             Self::Any => 255,
             Self::Unknown(n) => n,
@@ -59,6 +61,7 @@ impl RecordType {
             46 => Self::Rrsig,
             47 => Self::Nsec,
             48 => Self::Dnskey,
+            252 => Self::Axfr,
             257 => Self::Caa,
             255 => Self::Any,
             n => Self::Unknown(n),
@@ -84,6 +87,7 @@ impl std::str::FromStr for RecordType {
             "RRSIG" => Self::Rrsig,
             "NSEC" => Self::Nsec,
             "DNSKEY" => Self::Dnskey,
+            "AXFR" => Self::Axfr,
             "ANY" => Self::Any,
             x => Self::Unknown(
                 x.parse()

@@ -41,3 +41,11 @@ path = "src/bin/dnsq.rs"
 name = "dnscache"
 path = "src/bin/dnscache.rs"
 test = false
+
+[[bin]]
+name = "axfrdns"
+path = "src/bin/axfrdns.rs"
+
+[[bin]]
+name = "axfr-get"
+path = "src/bin/axfr-get.rs"

@@ -19,6 +19,8 @@ Implemented:
   `cloudflare.com` (AD), authenticated denial, and deliberately bogus
   `dnssec-failed.org` (SERVFAIL without AD); the opt-in test is
   `cargo test --test dnscache_network -- --ignored`
+- bounded RFC 5936-style AXFR serving and retrieval, with atomic conversion
+  back to tinydns text and loopback-only service access by default
 
 Patch/source corpus searched and tracked:
 
@@ -46,7 +48,7 @@ Remaining suite components:
   tooling (the running iterative engine already provides bounded caches,
   bailiwick enforcement, DNSSEC, randomized ports/IDs/case, TCP fallback,
   query coalescing, and negative caching)
-- `axfrdns`/`axfr-get`, `rbldns`, `walldns`, and configuration programs
+- `rbldns`, `walldns`, and configuration programs
 - remaining clients (`dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`,
   `dnsqr`, `dnstrace`, `dnsfilter`)
 - automated differential tests against patched C djbdns and additional RFC

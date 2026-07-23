@@ -40,6 +40,30 @@ impl Zone {
     pub(crate) fn records(&self) -> impl Iterator<Item = &Record> {
         self.records.values().flatten()
     }
+    pub fn transfer(&self, name: &Name) -> Option<Vec<Record>> {
+        if !self.authoritative.contains(name) {
+            return None;
+        }
+        let soa = self.soa(name)?;
+        let mut records = vec![soa.clone()];
+        records.extend(
+            self.records
+                .iter()
+                .filter(|(owner, _)| {
+                    owner.is_subdomain_of(name)
+                        && !self.authoritative.iter().any(|child| {
+                            child != name
+                                && child.is_subdomain_of(name)
+                                && owner.is_subdomain_of(child)
+                        })
+                })
+                .flat_map(|(_, records)| records)
+                .filter(|record| !(record.name == *name && record.rr_type() == RecordType::Soa))
+                .cloned(),
+        );
+        records.push(soa);
+        Some(records)
+    }
     pub(crate) fn from_compiled_records(records: Vec<Record>) -> Self {
         let mut zone = Self::default();
         for record in records {
@@ -263,6 +287,7 @@ impl Zone {
                 }
                 if kind == b'.' {
                     self.authoritative.insert(name.clone());
+                    self.delegations.remove(&name);
                     let admin = format!("hostmaster.{name}").parse()?;
                     self.add(Record {
                         name,
@@ -278,7 +303,9 @@ impl Zone {
                         },
                     })
                 } else {
-                    self.delegations.insert(name);
+                    if !self.authoritative.contains(&name) {
+                        self.delegations.insert(name);
+                    }
                 }
             }
             b'Z' => {
@@ -293,6 +320,7 @@ impl Zone {
                 ];
                 let ttl = number_or(&f, 8, 2560);
                 self.authoritative.insert(name.clone());
+                self.delegations.remove(&name);
                 self.add(Record {
                     name,
                     ttl,

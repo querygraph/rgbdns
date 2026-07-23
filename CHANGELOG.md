@@ -29,6 +29,10 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Correct original djbdns field positions, default target expansion, glue
   generation, SOA TTL behavior, one-to-three-digit octal escapes, and patched
   SRV priority/weight ordering, differentially checked against patched 1.05.
+- TCP-only `axfrdns` with CIDR access controls, bounded multi-message transfers,
+  authoritative-zone isolation, and matching opening/closing SOA records.
+- `axfr-get` with strict response validation, transfer limits, safe tinydns
+  escaping, fsync, and atomic output replacement.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
 
