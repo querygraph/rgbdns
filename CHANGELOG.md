@@ -36,6 +36,9 @@ versioning once its djbdns-compatible public surface stabilizes.
   address additionals for NS, MX, and SRV targets.
 - Minimal bounded FORMERR replies for decodable malformed queries, NOTIMP for
   unsupported opcodes, and rejection of duplicate EDNS OPT records.
+- Fixed-size TCP accept-worker pools and per-connection deadlines for
+  authoritative, specialized, and AXFR services; AXFR also enforces message,
+  record, and aggregate-byte limits.
 - Client-IP selection in `tinydns-get`.
 - Correct original djbdns field positions, default target expansion, glue
   generation, SOA TTL behavior, one-to-three-digit octal escapes, and patched

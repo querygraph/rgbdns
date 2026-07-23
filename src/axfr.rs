@@ -15,6 +15,7 @@ use std::{
 const MAX_TCP_MESSAGE: usize = u16::MAX as usize;
 const MAX_TRANSFER_RECORDS: usize = 1_000_000;
 const MAX_TRANSFER_MESSAGES: usize = 1_000_000;
+const MAX_TRANSFER_BYTES: usize = 1 << 30;
 
 pub fn serve(zone: Zone, address: &str, allowed: Vec<IpNet>) -> Result<()> {
     serve_listener(
@@ -29,23 +30,31 @@ pub fn serve_listener(
     listener: TcpListener,
     allowed: Arc<Vec<IpNet>>,
 ) -> Result<()> {
-    for stream in listener.incoming() {
+    let mut workers = Vec::new();
+    for _ in 0..16 {
         let zone = zone.clone();
         let allowed = allowed.clone();
-        thread::spawn(move || {
-            if let Ok(mut stream) = stream {
+        let listener = listener.try_clone()?;
+        workers.push(thread::spawn(move || {
+            for stream in listener.incoming() {
+                let Ok(mut stream) = stream else {
+                    continue;
+                };
                 let peer = match stream.peer_addr() {
                     Ok(peer) => peer,
-                    Err(_) => return,
+                    Err(_) => continue,
                 };
                 if !allowed.iter().any(|network| network.contains(&peer.ip())) {
-                    return;
+                    continue;
                 }
                 let _ = stream.set_read_timeout(Some(Duration::from_secs(30)));
                 let _ = stream.set_write_timeout(Some(Duration::from_secs(30)));
                 let _ = serve_connection(&zone, &mut stream);
             }
-        });
+        }));
+    }
+    for worker in workers {
+        let _ = worker.join();
     }
     Ok(())
 }
@@ -67,9 +76,10 @@ fn serve_connection(zone: &Zone, stream: &mut TcpStream) -> Result<()> {
     for record in records {
         batch.push(record);
         let candidate = response_wire(query.id, first.then(|| question.clone()), 0, batch.clone());
-        if candidate
-            .as_ref()
-            .is_ok_and(|wire| wire.len() <= MAX_TCP_MESSAGE)
+        if batch.len() <= 4096
+            && candidate
+                .as_ref()
+                .is_ok_and(|wire| wire.len() <= MAX_TCP_MESSAGE)
         {
             continue;
         }
@@ -154,8 +164,13 @@ pub fn fetch(server: SocketAddr, zone: Name) -> Result<Vec<Record>> {
 
     let mut records = Vec::new();
     let mut opening_soa = None;
+    let mut transfer_bytes = 0usize;
     for message_number in 0..MAX_TRANSFER_MESSAGES {
         let response = read_message(&mut stream)?;
+        transfer_bytes = transfer_bytes
+            .checked_add(response.encode()?.len())
+            .filter(|bytes| *bytes <= MAX_TRANSFER_BYTES)
+            .ok_or(Error::Format("AXFR byte limit exceeded"))?;
         if response.id != id || response.flags & 0x8000 == 0 {
             return Err(Error::Format("invalid AXFR response"));
         }

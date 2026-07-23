@@ -6,6 +6,7 @@ use std::{
     net::{IpAddr, TcpListener, UdpSocket},
     sync::Arc,
     thread,
+    time::Duration,
 };
 
 pub type Handler = dyn Fn(&[u8], usize, IpAddr) -> Result<Vec<u8>> + Send + Sync;
@@ -24,10 +25,17 @@ pub fn serve(address: &str, handler: Arc<Handler>) -> Result<()> {
             }
         }
     });
-    for stream in tcp.incoming() {
+    let mut workers = Vec::new();
+    for _ in 0..32 {
         let handler = handler.clone();
-        thread::spawn(move || {
-            if let Ok(mut stream) = stream {
+        let listener = tcp.try_clone()?;
+        workers.push(thread::spawn(move || {
+            for stream in listener.incoming() {
+                let Ok(mut stream) = stream else {
+                    continue;
+                };
+                let _ = stream.set_read_timeout(Some(Duration::from_secs(30)));
+                let _ = stream.set_write_timeout(Some(Duration::from_secs(30)));
                 let client = stream.peer_addr().ok().map(|peer| peer.ip());
                 let mut length = [0; 2];
                 if stream.read_exact(&mut length).is_ok() {
@@ -41,7 +49,10 @@ pub fn serve(address: &str, handler: Arc<Handler>) -> Result<()> {
                     }
                 }
             }
-        });
+        }));
+    }
+    for worker in workers {
+        let _ = worker.join();
     }
     Ok(())
 }

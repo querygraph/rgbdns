@@ -9,6 +9,7 @@ use std::{
     net::{IpAddr, TcpListener, UdpSocket},
     sync::Arc,
     thread,
+    time::Duration,
 };
 
 pub fn respond(zone: &Zone, wire: &[u8], transport_limit: usize) -> Result<Vec<u8>> {
@@ -280,10 +281,17 @@ fn serve_sockets(zone: Zone, udp: UdpSocket, tcp: TcpListener) -> Result<()> {
             }
         }
     });
-    for stream in tcp.incoming() {
+    let mut workers = Vec::new();
+    for _ in 0..32 {
         let z = zone.clone();
-        thread::spawn(move || {
-            if let Ok(mut s) = stream {
+        let listener = tcp.try_clone()?;
+        workers.push(thread::spawn(move || {
+            for stream in listener.incoming() {
+                let Ok(mut s) = stream else {
+                    continue;
+                };
+                let _ = s.set_read_timeout(Some(Duration::from_secs(30)));
+                let _ = s.set_write_timeout(Some(Duration::from_secs(30)));
                 let client = s.peer_addr().ok().map(|peer| peer.ip());
                 let mut l = [0; 2];
                 if s.read_exact(&mut l).is_ok() {
@@ -296,7 +304,10 @@ fn serve_sockets(zone: Zone, udp: UdpSocket, tcp: TcpListener) -> Result<()> {
                     }
                 }
             }
-        });
+        }));
+    }
+    for worker in workers {
+        let _ = worker.join();
     }
     Ok(())
 }
