@@ -3,6 +3,7 @@
 pub mod axfr;
 pub mod cdb;
 pub mod client;
+pub mod conf;
 pub mod name;
 pub mod packet;
 pub mod rbl;

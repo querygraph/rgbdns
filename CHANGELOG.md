@@ -53,6 +53,9 @@ versioning once its djbdns-compatible public surface stabilizes.
   against djbdns.
 - OS-randomized, non-repeating `random-ip` generation with fixed-prefix and
   count bounds.
+- Portable `tinydns-conf`, `dnscache-conf`, `rbldns-conf`, `walldns-conf`, and
+  `axfrdns-conf` service-directory generators with non-overwrite behavior,
+  executable run/log scripts, current root hints, and private random seeds.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
 

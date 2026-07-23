@@ -101,3 +101,23 @@ path = "src/bin/tinydns-edit.rs"
 [[bin]]
 name = "random-ip"
 path = "src/bin/random-ip.rs"
+
+[[bin]]
+name = "tinydns-conf"
+path = "src/bin/tinydns-conf.rs"
+
+[[bin]]
+name = "dnscache-conf"
+path = "src/bin/dnscache-conf.rs"
+
+[[bin]]
+name = "rbldns-conf"
+path = "src/bin/rbldns-conf.rs"
+
+[[bin]]
+name = "walldns-conf"
+path = "src/bin/walldns-conf.rs"
+
+[[bin]]
+name = "axfrdns-conf"
+path = "src/bin/axfrdns-conf.rs"

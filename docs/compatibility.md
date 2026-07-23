@@ -30,6 +30,8 @@ Implemented:
   `dnsqr`, plus hardened non-recursive `dnsq`
 - bounded, order-preserving `dnsfilter` and iterative IPv4/IPv6 `dnstrace`
 - `tinydns-edit` add modes and bounded `random-ip`
+- service-directory generators for tinydns, dnscache, rbldns, walldns, and
+  axfrdns (portable generation omits privileged ownership changes)
 
 Patch/source corpus searched and tracked:
 
@@ -57,6 +59,5 @@ Remaining suite components:
   tooling (the running iterative engine already provides bounded caches,
   bailiwick enforcement, DNSSEC, randomized ports/IDs/case, TCP fallback,
   query coalescing, and negative caching)
-- configuration programs
 - automated differential tests against patched C djbdns and additional RFC
   vectors (the initial CDB corpus has been manually verified)
