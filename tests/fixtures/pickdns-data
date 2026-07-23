@@ -1,0 +1,5 @@
+%aa:192.0.2
++www.example:192.0.2.1:
++www.example:192.0.2.2:aa
++www.example:192.0.2.3:aa
++mail.example:198.51.100.1:aa

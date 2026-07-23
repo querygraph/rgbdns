@@ -121,3 +121,15 @@ path = "src/bin/walldns-conf.rs"
 [[bin]]
 name = "axfrdns-conf"
 path = "src/bin/axfrdns-conf.rs"
+
+[[bin]]
+name = "pickdns"
+path = "src/bin/pickdns.rs"
+
+[[bin]]
+name = "pickdns-data"
+path = "src/bin/pickdns-data.rs"
+
+[[bin]]
+name = "pickdns-conf"
+path = "src/bin/pickdns-conf.rs"

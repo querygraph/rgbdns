@@ -42,6 +42,9 @@ versioning once its djbdns-compatible public surface stabilizes.
   CDB key/value compatibility with the original compiler.
 - `walldns` direct and `in-addr.arpa` A/PTR mappings with the original TTL and
   refusal behavior.
+- Location-aware `pickdns`, atomic `pickdns-data`, and `pickdns-conf`, with
+  unbiased address shuffling, original three-answer/TTL behavior, fallback
+  locations, and differentially identical CDB entries.
 - Shared bounded stub resolver with OS-random query IDs, connected UDP source
   validation, retries, resolver configuration, and automatic TCP fallback.
 - Runnable `dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`, and `dnsqr`

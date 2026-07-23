@@ -11,6 +11,9 @@ fn main() {
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let ip = std::env::var("IP").unwrap_or_else(|_| "0.0.0.0".into());
     let port = std::env::var("PORT").unwrap_or_else(|_| "53".into());
-    special::serve(&format!("{ip}:{port}"), Arc::new(wall::respond))?;
+    special::serve(
+        &format!("{ip}:{port}"),
+        Arc::new(|wire: &[u8], limit: usize, _| wall::respond(wire, limit)),
+    )?;
     Ok(())
 }

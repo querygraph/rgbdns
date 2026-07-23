@@ -6,6 +6,7 @@ pub mod client;
 pub mod conf;
 pub mod name;
 pub mod packet;
+pub mod pick;
 pub mod rbl;
 pub mod server;
 pub mod special;

@@ -26,6 +26,7 @@ Implemented:
 - `rbldns` longest-prefix matching, A/TXT responses and address substitution;
   its CDB compiler is differentially identical to the original fixture
 - `walldns` direct-address and partial/full reverse-tree behavior
+- location-aware `pickdns` with exact CDB compilation and service configuration
 - recursive client tools `dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`, and
   `dnsqr`, plus hardened non-recursive `dnsq`
 - bounded, order-preserving `dnsfilter` and iterative IPv4/IPv6 `dnstrace`

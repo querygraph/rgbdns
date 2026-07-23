@@ -12,13 +12,14 @@ pub enum Service {
     Tinydns,
     Dnscache,
     Rbldns,
+    Pickdns,
     Walldns,
     Axfrdns,
 }
 
 pub fn configure(service: Service, arguments: &[String]) -> Result<()> {
     let (user, log_user, directory, ip, extra) = match service {
-        Service::Tinydns | Service::Walldns if arguments.len() == 4 => (
+        Service::Tinydns | Service::Pickdns | Service::Walldns if arguments.len() == 4 => (
             arguments[0].as_str(),
             arguments[1].as_str(),
             Path::new(&arguments[2]),
@@ -98,6 +99,18 @@ pub fn configure(service: Service, arguments: &[String]) -> Result<()> {
                 0o644,
             )?;
         }
+        Service::Pickdns => {
+            write_file(&root.join("data"), b"", 0o644)?;
+            write_file(
+                &root.join("Makefile"),
+                format!(
+                    "data.cdb: data\n\t{}\n",
+                    executable("pickdns-data")?.display()
+                )
+                .as_bytes(),
+                0o644,
+            )?;
+        }
         Service::Walldns | Service::Axfrdns => {}
     }
 
@@ -115,6 +128,7 @@ pub fn configure(service: Service, arguments: &[String]) -> Result<()> {
         Service::Tinydns => "tinydns",
         Service::Dnscache => "dnscache",
         Service::Rbldns => "rbldns",
+        Service::Pickdns => "pickdns",
         Service::Walldns => "walldns",
         Service::Axfrdns => "axfrdns",
     };

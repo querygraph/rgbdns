@@ -235,7 +235,7 @@ fn encode_rdata(data: &RData, out: &mut Vec<u8>) -> Result<()> {
     Ok(())
 }
 
-fn decode_name(wire: &[u8]) -> Result<Name> {
+pub(crate) fn decode_name(wire: &[u8]) -> Result<Name> {
     let mut labels = Vec::new();
     let mut position = 0;
     loop {
