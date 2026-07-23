@@ -88,6 +88,8 @@ versioning once its djbdns-compatible public surface stabilizes.
   location, timestamp, SRV, AAAA, `ip6.arpa`, and `ip6.int` behavior.
 - Compatibility and patch-research ledger.
 - Verified public remote at `querygraph/rgbdns`.
+- Least-privilege GitHub Actions verification for formatting, strict clippy,
+  every offline test target, and optimized production binaries.
 
 ### Security
 
