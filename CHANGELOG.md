@@ -100,3 +100,10 @@ versioning once its djbdns-compatible public surface stabilizes.
   configured ceiling.
 - All shipped command-line paths report malformed input and I/O failures
   without Rust panics; this includes hardened `dnsq` and `tinydns-get` paths.
+- Portable explicit error conversion for `random-ip` OS-randomness failures,
+  including targets where `getrandom::Error` does not implement the standard
+  error trait.
+- Resolver dependencies pinned to Hickory 0.26.1, which contains the fixes for
+  RUSTSEC-2026-0119 (encoder CPU exhaustion) and RUSTSEC-2026-0120 (unbounded
+  NSEC3 closest-encloser validation), and uses the response-keyed recursor
+  architecture that supersedes RUSTSEC-2026-0106.

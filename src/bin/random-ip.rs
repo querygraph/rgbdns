@@ -25,7 +25,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         *value = index as u8;
     }
     for end in (1..=256).rev() {
-        let index = uniform(end as u32)? as usize;
+        let index = uniform(end as u32)
+            .map_err(|error| std::io::Error::other(format!("OS randomness unavailable: {error}")))?
+            as usize;
         table.swap(end - 1, index);
     }
     while loops > 0 {
