@@ -11,13 +11,25 @@ Implemented:
 - UDP truncation and DNS over TCP
 - pointer-loop, section-count, label/name, RDLENGTH, and TXT bounds checks
 
-Patch families being tracked:
+Patch/source corpus searched and tracked:
 
-- Debian djbdns patch series and `rts.tests`
-- Felix von Leitner's IPv6/test patch series
-- CVE-2008-4392 merged-query and SOA-cache corrections
-- EDNS(0), larger packets, DNSCurve, and tinydnssec/DNSSEC extensions
-- errno, libc, compiler, large-file, and platform portability fixes
+- Upstream djbdns 1.05 source and documentation at <https://cr.yp.to/djbdns.html>.
+- Debian 1.05-22.1 source, Python autopkgtests, historical `rts.tests`, and
+  patches for long-packet compression, SRV/PTR, recursion depth, the
+  CVE-2012-1191 ghost-domain attack, query merging, SOA caching, root hints,
+  data limits, POSIX types, and modern compilers.
+- Felix von Leitner's IPv6 patch line through test32.
+- FreeBSD's jumbo-p13, persistent-cache, ignoreip2, persistent-mmap, SRV,
+  DNSCurve, and IPv6 options.
+- NetBSD's cache-statistics, ignoreip2, multi-listener, merge-query, and
+  tinydns 64-bit patch options.
+- Gentoo's merged patch set including CVE-2008-4392 query coalescing and SOA
+  caching.
+- tinydnssec's DNSSEC records, signing workflow, EDNS(0), and large-response
+  support.
+- Third-party rbldns per-entry-response and multiple-zone patches.
+- errno, libc, compiler, large-file, and platform portability fixes across
+  Debian, Gentoo, FreeBSD, NetBSD, Ubuntu, and openSUSE packaging.
 
 Remaining suite components:
 

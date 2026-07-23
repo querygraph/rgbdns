@@ -263,6 +263,12 @@ impl<'a> Reader<'a> {
                 let p = self.u16()?;
                 RData::Mx(p, self.name()?)
             }
+            RecordType::Srv => RData::Srv {
+                priority: self.u16()?,
+                weight: self.u16()?,
+                port: self.u16()?,
+                target: self.name()?,
+            },
             RecordType::Txt => {
                 let mut v = Vec::new();
                 while self.p < end {

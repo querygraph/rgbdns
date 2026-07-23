@@ -130,6 +130,48 @@ impl Zone {
                     data: RData::Mx(pref, mx),
                 })
             }
+            b'S' => {
+                let ip = field_opt(&f, 1).filter(|x| !x.is_empty());
+                let mut target = field(&f, 2)?.to_owned();
+                if !target.contains('.') {
+                    target = format!("{target}.srv.{name}");
+                }
+                let target: Name = target.parse()?;
+                let number = |index: usize, default: u16| -> Result<u16> {
+                    match field_opt(&f, index).filter(|x| !x.is_empty()) {
+                        Some(value) => value
+                            .parse()
+                            .map_err(|_| Error::InvalidRecord(format!("bad SRV field {index}"))),
+                        None => Ok(default),
+                    }
+                };
+                let port = number(3, 0)?;
+                let weight = number(4, 0)?;
+                let priority = number(5, 0)?;
+                let ttl = field_opt(&f, 6)
+                    .and_then(|x| x.parse().ok())
+                    .unwrap_or(86400);
+                self.add(Record {
+                    name,
+                    ttl,
+                    data: RData::Srv {
+                        priority,
+                        weight,
+                        port,
+                        target: target.clone(),
+                    },
+                });
+                if let Some(ip) = ip {
+                    self.add(Record {
+                        name: target,
+                        ttl,
+                        data: RData::A(
+                            ip.parse()
+                                .map_err(|_| Error::InvalidRecord("bad SRV glue".into()))?,
+                        ),
+                    });
+                }
+            }
             b'\'' => {
                 let bytes = unescape(field(&f, 1)?)?;
                 let chunks = bytes.chunks(255).map(<[u8]>::to_vec).collect();
@@ -365,5 +407,25 @@ mod tests {
     #[test]
     fn escaped_colon() {
         assert_eq!(unescape(r"a\072b").unwrap(), b"a:b")
+    }
+    #[test]
+    fn patched_srv_marker_and_glue() {
+        let z = Zone::parse("S_sip._tcp.example:192.0.2.7:sip:5060:10:20:300\n").unwrap();
+        assert!(matches!(
+            z.lookup(
+                &"_sip._tcp.example".parse().unwrap(),
+                RecordType::Srv
+            ),
+            Lookup::Answer(records)
+                if matches!(
+                    &records[0].data,
+                    RData::Srv { priority: 20, weight: 10, port: 5060, target }
+                        if target.to_string() == "sip.srv._sip._tcp.example."
+                )
+        ));
+        assert!(matches!(
+            z.lookup(&"sip.srv._sip._tcp.example".parse().unwrap(), RecordType::A),
+            Lookup::Answer(_)
+        ));
     }
 }
