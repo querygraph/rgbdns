@@ -11,6 +11,13 @@ use std::{
 
 const MAX_ROOTS_FILE: u64 = 1 << 20;
 const MAX_ROOT_ADDRESSES: usize = 256;
+const MAX_FORWARD_ZONES: usize = 1024;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ForwardZone {
+    pub name: String,
+    pub servers: Vec<IpAddr>,
+}
 
 /// A root-hints path suitable for the recursive resolver.
 ///
@@ -92,6 +99,61 @@ impl PreparedRoots {
     pub fn path(&self) -> &Path {
         &self.path
     }
+}
+
+/// Loads original djbdns `ROOT/servers/domain` forwarding rules.
+pub fn forward_zones_from_environment() -> Result<Vec<ForwardZone>> {
+    let Some(root) = env::var_os("ROOT").map(PathBuf::from) else {
+        return Ok(Vec::new());
+    };
+    load_forward_zones(&root.join("servers"))
+}
+
+pub fn load_forward_zones(directory: &Path) -> Result<Vec<ForwardZone>> {
+    let mut zones = Vec::new();
+    for entry in fs::read_dir(directory)? {
+        let entry = entry?;
+        if zones.len() >= MAX_FORWARD_ZONES {
+            return Err(Error::Format("too many forwarding zones"));
+        }
+        let file_type = entry.file_type()?;
+        if !file_type.is_file() {
+            continue;
+        }
+        let name = entry
+            .file_name()
+            .into_string()
+            .map_err(|_| Error::Format("forwarding zone name is not UTF-8"))?;
+        if name == "@" {
+            continue;
+        }
+        if name.is_empty() || name.starts_with('.') || name.ends_with('.') {
+            return Err(Error::Format("invalid forwarding zone filename"));
+        }
+        let metadata = entry.metadata()?;
+        if metadata.len() > MAX_ROOTS_FILE {
+            return Err(Error::Format("forwarding server file is too large"));
+        }
+        let contents = fs::read_to_string(entry.path())?;
+        let servers = contents
+            .lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty() && !line.starts_with('#'))
+            .map(|line| {
+                line.parse::<IpAddr>()
+                    .map_err(|_| Error::Format("invalid forwarding server address"))
+            })
+            .collect::<Result<Vec<_>>>()?;
+        if servers.is_empty() {
+            return Err(Error::Format("forwarding zone contains no servers"));
+        }
+        if servers.len() > MAX_ROOT_ADDRESSES {
+            return Err(Error::Format("too many forwarding server addresses"));
+        }
+        zones.push(ForwardZone { name, servers });
+    }
+    zones.sort_by(|left, right| left.name.cmp(&right.name));
+    Ok(zones)
 }
 
 impl Drop for PreparedRoots {
@@ -177,5 +239,28 @@ mod tests {
         fs::write(&mixed, "192.0.2.1\nnot-an-address\n").unwrap();
         assert!(PreparedRoots::prepare(mixed.clone()).is_err());
         fs::remove_file(mixed).unwrap();
+    }
+
+    #[test]
+    fn loads_bounded_per_zone_forwarders() {
+        let directory = path("forwarders");
+        fs::create_dir(&directory).unwrap();
+        fs::write(directory.join("@"), "198.41.0.4\n").unwrap();
+        fs::write(
+            directory.join("internal.example"),
+            "192.0.2.53\n2001:db8::53\n",
+        )
+        .unwrap();
+        assert_eq!(
+            load_forward_zones(&directory).unwrap(),
+            vec![ForwardZone {
+                name: "internal.example".into(),
+                servers: vec![
+                    "192.0.2.53".parse().unwrap(),
+                    "2001:db8::53".parse().unwrap()
+                ],
+            }]
+        );
+        fs::remove_dir_all(directory).unwrap();
     }
 }

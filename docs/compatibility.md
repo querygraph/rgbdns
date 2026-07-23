@@ -24,7 +24,7 @@ Implemented:
   `dnssec-failed.org` (SERVFAIL without AD); the opt-in test is
   `cargo test --test dnscache_network -- --ignored`
 - original one-address-per-line `dnscache` `root/servers/@` root-server files,
-  alongside BIND master-file root hints
+  BIND master-file root hints, and per-domain `root/servers/*` forwarding
 - bounded RFC 5936-style AXFR serving and retrieval, with atomic conversion
   back to tinydns text and loopback-only service access by default
 - `rbldns` longest-prefix matching, A/TXT responses and address substitution;
@@ -60,8 +60,8 @@ Patch/source corpus searched and tracked:
 
 Remaining compatibility work:
 
-- djbdns `dnscache` per-zone `root/servers/*` forwarding compatibility and
-  cache-dump tooling (the running iterative engine already provides bounded caches,
+- djbdns `dnscache` cache-dump tooling (the running iterative engine already
+  provides bounded caches,
   bailiwick enforcement, DNSSEC, randomized ports/IDs/case, TCP fallback,
   query coalescing, and negative caching)
 - additional RFC vectors and interoperability corpora (CDB compiler

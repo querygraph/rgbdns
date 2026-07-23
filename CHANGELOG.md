@@ -14,6 +14,9 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Direct support for original `dnscache` `ROOT/servers/@` files containing
   bounded IPv4/IPv6 server lists, translated through private ephemeral master
   files; BIND-format `ROOTS` files remain supported.
+- Original `dnscache` `ROOT/servers/domain` split-horizon forwarding rules,
+  with strict filenames, bounded files/address counts, UDP-to-TCP fallback,
+  isolated caches, and longest-suffix catalog selection.
 - Memory-safe DNS name and packet codecs with bounded compression-pointer,
   section-count, label, RDATA, and TXT parsing.
 - Authoritative UDP and TCP server with truncation, wildcard synthesis,

@@ -2,12 +2,18 @@ use hickory_server::{
     Server,
     net::runtime::TokioRuntimeProvider,
     proto::rr::{LowerName, Name},
-    resolver::recursor::{DnssecConfig, DnssecPolicyConfig, RecursiveConfig, RecursorOptions},
-    store::recursor::RecursiveZoneHandler,
+    resolver::{
+        config::{NameServerConfig, ResolverOpts},
+        recursor::{DnssecConfig, DnssecPolicyConfig, RecursiveConfig, RecursorOptions},
+    },
+    store::{
+        forwarder::{ForwardConfig, ForwardZoneHandler},
+        recursor::RecursiveZoneHandler,
+    },
     zone_handler::{Catalog, ZoneHandler, ZoneType},
 };
 use ipnet::IpNet;
-use rgbdns::dnscache_config::PreparedRoots;
+use rgbdns::dnscache_config::{PreparedRoots, forward_zones_from_environment};
 use std::{env, net::SocketAddr, sync::Arc, time::Duration};
 use tokio::net::{TcpListener, UdpSocket};
 
@@ -67,6 +73,33 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         LowerName::from(Name::root()),
         vec![Arc::new(handler) as Arc<dyn ZoneHandler>],
     );
+    for zone in forward_zones_from_environment()? {
+        // djbdns uses filenames without a trailing root label; Catalog keys
+        // must be fully qualified to participate in suffix matching.
+        let origin = Name::from_ascii(format!("{}.", zone.name))?;
+        let mut options = ResolverOpts::default();
+        // Many private authoritative servers canonicalize owner case. Strict
+        // 0x20 checking would make otherwise valid legacy forwarding fail.
+        options.case_randomization = false;
+        options.try_tcp_on_error = true;
+        options.cache_size = 1024;
+        let config = ForwardConfig {
+            name_servers: zone
+                .servers
+                .into_iter()
+                .map(NameServerConfig::udp_and_tcp)
+                .collect(),
+            options: Some(options),
+        };
+        let handler = ForwardZoneHandler::builder_tokio(config)
+            .with_origin(origin.clone())
+            .build()
+            .map_err(std::io::Error::other)?;
+        catalog.upsert(
+            LowerName::from(origin),
+            vec![Arc::new(handler) as Arc<dyn ZoneHandler>],
+        );
+    }
 
     let denied = ["0.0.0.0/0", "::/0"]
         .into_iter()
