@@ -1,0 +1,43 @@
+{
+  "$schema": "../firstpair/publishing/book.build.schema.json",
+  "schemaVersion": 1,
+  "bookRoot": "docs/book",
+  "manuscript": "docs/book/rgbdns.md",
+  "metadata": "docs/book/metadata.yaml",
+  "cover": "docs/book/cover.md",
+  "css": "docs/book/epub.css",
+  "stem": "rgbdns",
+  "title": "DNS from First Principles",
+  "subtitle": "Names, Packets, Authority, Recursion, and the Design of rgbdns",
+  "author": "The rgbdns contributors",
+  "version": {
+    "source": "file",
+    "file": "docs/book/VERSION"
+  },
+  "kindleName": "${stem} (${version})",
+  "dist": "docs/book/dist",
+  "buildDir": "docs/book/build/firstpair",
+  "edition": "full",
+  "primaryFormat": "typst",
+  "mobi": false,
+  "pandoc": {
+    "reader": "markdown+smart",
+    "tocDepth": 2,
+    "numberSections": true,
+    "resourcePaths": ["docs/book", "${repoRoot}"]
+  },
+  "pdfFormats": [
+    {
+      "name": "typst",
+      "renderer": "typst",
+      "stem": "rgbdns",
+      "primary": true
+    }
+  ],
+  "html": {
+    "splitLevel": 1
+  },
+  "validators": [
+    "docs/book/validate.sh"
+  ]
+}

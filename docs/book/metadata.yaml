@@ -1,0 +1,15 @@
+---
+title: DNS from First Principles
+subtitle: Names, Packets, Authority, Recursion, and the Design of rgbdns
+author:
+  - The rgbdns contributors
+date: 2026-07-23
+lang: en-US
+rights: Released into the public domain under the Unlicense
+subject: Domain Name System architecture and the rgbdns implementation
+description: >-
+  A ground-up explanation of DNS followed by a guided tour of rgbdns, a
+  memory-safe Rust reimplementation of the djbdns suite.
+identifier: urn:rgbdns:book:0.1.0
+...
+

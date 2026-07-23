@@ -40,3 +40,18 @@ timestamps to `main/current`; optional `s<size>` and `n<count>` arguments set
 the rotation threshold and retained-file count. Daemons continue to write
 diagnostics to stderr, allowing the same binaries to work under daemontools,
 systemd, containers, or another supervisor.
+
+## Book
+
+[*DNS from First Principles*](docs/book/rgbdns.md) develops the protocol from
+names and packets through authority, recursion, DNSSEC, transfers, operations,
+and security, then maps each concept to rgbdns. It also compares systemd,
+runit, s6/s6-rc, OpenRC, and container-native replacements for
+`svc`/`supervise`.
+
+Build the FirstPair package with Pandoc and Typst:
+
+```sh
+docs/book/build.sh
+docs/book/validate.sh
+```
