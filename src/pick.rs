@@ -290,7 +290,7 @@ mod tests {
         let loaded = Database::from_file(&path).unwrap();
         fs::remove_file(path).unwrap();
         assert_eq!(
-            loaded.addresses[&([b'a', b'a'], "www.example".parse().unwrap())],
+            loaded.addresses[&(*b"aa", "www.example".parse().unwrap())],
             [Ipv4Addr::new(192, 0, 2, 1)]
         );
     }

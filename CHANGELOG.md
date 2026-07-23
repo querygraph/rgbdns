@@ -90,6 +90,7 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Verified public remote at `querygraph/rgbdns`.
 - Least-privilege GitHub Actions verification for formatting, strict clippy,
   every offline test target, and optimized production binaries.
+- Clean Rust 1.97 clippy compatibility and the Node 24-based checkout action.
 
 ### Security
 
