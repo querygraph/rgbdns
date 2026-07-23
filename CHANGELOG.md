@@ -95,3 +95,6 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Non-backward compression pointers and trailing packet data are rejected.
 - Property tests exercise 20,000 arbitrary and round-trip packet cases per
   complete test run.
+- `dnscache` rejects malformed and out-of-range cache, recursion, and
+  access-list settings instead of silently defaulting or allocating without a
+  configured ceiling.
