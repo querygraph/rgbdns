@@ -16,6 +16,7 @@ pub struct Zone {
     locations: Vec<(Vec<u8>, [u8; 2])>,
     current_metadata: RecordMetadata,
     default_serial: u32,
+    nodes: BTreeSet<Name>,
     unqualified_nodes: BTreeSet<Name>,
 }
 
@@ -54,15 +55,41 @@ impl Zone {
             z.add_line(line)
                 .map_err(|e| Error::InvalidRecord(format!("line {}: {e}", number + 1)))?;
         }
+        z.validate_aliases()?;
         Ok(z)
     }
-    fn add(&mut self, r: Record) {
-        if self.current_metadata.cutoff == 0 && self.current_metadata.location.is_none() {
-            let mut node = Some(r.name.clone());
-            while let Some(name) = node {
-                self.unqualified_nodes.insert(name.clone());
-                node = name.parent();
+    fn validate_aliases(&self) -> Result<()> {
+        for (owner, records) in &self.records {
+            let cnames = records
+                .iter()
+                .filter(|record| record.rr_type() == RecordType::Cname)
+                .collect::<Vec<_>>();
+            if cnames.is_empty() {
+                continue;
             }
+            if records
+                .iter()
+                .any(|record| record.rr_type() != RecordType::Cname)
+                || cnames
+                    .iter()
+                    .skip(1)
+                    .any(|record| record.data != cnames[0].data)
+            {
+                return Err(Error::InvalidRecord(format!(
+                    "CNAME at {owner} conflicts with other data"
+                )));
+            }
+        }
+        Ok(())
+    }
+    fn add(&mut self, r: Record) {
+        let mut node = Some(r.name.clone());
+        while let Some(name) = node {
+            self.nodes.insert(name.clone());
+            if self.current_metadata.cutoff == 0 && self.current_metadata.location.is_none() {
+                self.unqualified_nodes.insert(name.clone());
+            }
+            node = name.parent();
         }
         self.metadata
             .entry(r.name.clone())
@@ -574,6 +601,9 @@ impl Zone {
     fn name_exists(&self, name: &Name, location: [u8; 2], now: u64) -> bool {
         if self.unqualified_nodes.contains(name) {
             return true;
+        }
+        if !self.nodes.contains(name) {
+            return false;
         }
         self.records.keys().any(|owner| {
             owner.is_subdomain_of(name) && !self.visible_records(owner, location, now).is_empty()

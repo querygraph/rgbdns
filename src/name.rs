@@ -1,10 +1,66 @@
 use crate::{Error, Result};
-use std::{fmt, str::FromStr};
+use std::{
+    cmp::Ordering,
+    fmt,
+    hash::{Hash, Hasher},
+    str::FromStr,
+};
 
-/// Canonical DNS name. Labels are stored lower-case because DNS matching is
-/// ASCII case-insensitive. The root is represented by an empty label vector.
-#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+/// Validated DNS name.
+///
+/// Original ASCII case is retained for RFC 4343 response preservation while
+/// equality, ordering, and hashing use the DNS case-insensitive comparison
+/// rules. The root is represented by an empty label vector.
+#[derive(Clone, Debug, Default)]
 pub struct Name(Vec<Vec<u8>>);
+
+impl PartialEq for Name {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.len() == other.0.len()
+            && self.0.iter().zip(&other.0).all(|(left, right)| {
+                left.len() == right.len()
+                    && left
+                        .iter()
+                        .zip(right)
+                        .all(|(a, b)| a.eq_ignore_ascii_case(b))
+            })
+    }
+}
+
+impl Eq for Name {}
+
+impl Hash for Name {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.len().hash(state);
+        for label in &self.0 {
+            label.len().hash(state);
+            for byte in label {
+                byte.to_ascii_lowercase().hash(state);
+            }
+        }
+    }
+}
+
+impl PartialOrd for Name {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Name {
+    fn cmp(&self, other: &Self) -> Ordering {
+        for (left, right) in self.0.iter().zip(&other.0) {
+            let ordering = left
+                .iter()
+                .map(u8::to_ascii_lowercase)
+                .cmp(right.iter().map(u8::to_ascii_lowercase));
+            if ordering != Ordering::Equal {
+                return ordering;
+            }
+        }
+        self.0.len().cmp(&other.0.len())
+    }
+}
 
 impl Name {
     pub fn root() -> Self {
@@ -29,18 +85,13 @@ impl Name {
     }
     pub(crate) fn from_labels(labels: Vec<Vec<u8>>) -> Result<Self> {
         validate(&labels)?;
-        Ok(Self(
-            labels
-                .into_iter()
-                .map(|mut l| {
-                    l.make_ascii_lowercase();
-                    l
-                })
-                .collect(),
-        ))
+        Ok(Self(labels))
     }
     pub(crate) fn wire_len(&self) -> usize {
         1 + self.0.iter().map(|l| l.len() + 1).sum::<usize>()
+    }
+    pub(crate) fn suffix(&self, first_label: usize) -> Self {
+        Self(self.0[first_label..].to_vec())
     }
     pub(crate) fn to_wire(&self) -> Vec<u8> {
         let mut wire = Vec::with_capacity(self.wire_len());
@@ -115,7 +166,7 @@ impl FromStr for Name {
                     }
                 }
                 c => {
-                    label.push(c.to_ascii_lowercase());
+                    label.push(c);
                     i += 1;
                 }
             }
@@ -156,7 +207,11 @@ mod tests {
     fn root_and_case() {
         assert_eq!(
             "WWW.Example".parse::<Name>().unwrap().to_string(),
-            "www.example."
+            "WWW.Example."
+        );
+        assert_eq!(
+            "WWW.Example".parse::<Name>().unwrap(),
+            "www.example".parse::<Name>().unwrap()
         );
         assert_eq!(".".parse::<Name>().unwrap(), Name::root());
     }

@@ -101,6 +101,11 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Least-privilege GitHub Actions verification for formatting, strict clippy,
   every offline test target, and optimized production binaries.
 - Clean Rust 1.97 clippy compatibility and the Node 24-based checkout action.
+- Traceable DNS conformance coverage for the implemented RFC surface, with
+  independent ldns `drill` interoperability, generated packet properties, and
+  hostile-wire corpora.
+- Dependency-free core microbenchmarks and a documented optimization
+  checkpoint for codecs, zone lookup, response generation, and truncation.
 
 ### Security
 
@@ -108,7 +113,11 @@ versioning once its djbdns-compatible public surface stabilizes.
 - DNS query IDs use operating-system randomness.
 - Malformed and cyclic compressed names are rejected with bounded work.
 - Non-backward compression pointers and trailing packet data are rejected.
-- Property tests exercise 20,000 arbitrary and round-trip packet cases per
+- Compression pointers into arbitrary prior bytes are rejected; client and
+  AXFR responses are bound to their request identity, opcode, and question.
+- TCP query service supports bounded persistent and pipelined connections
+  through a shared transport implementation with deadlines.
+- Property tests exercise 40,000 arbitrary, structured, and name-identity cases per
   complete test run.
 - `dnscache` rejects malformed and out-of-range cache, recursion, and
   access-list settings instead of silently defaulting or allocating without a

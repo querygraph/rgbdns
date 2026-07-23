@@ -61,10 +61,27 @@ pub fn serve_listener(
 
 fn serve_connection(zone: &Zone, stream: &mut TcpStream) -> Result<()> {
     let query = read_message(stream)?;
-    if query.flags & 0x8000 != 0 || query.questions.len() != 1 {
-        return Err(Error::Format("expected one AXFR query"));
+    if query.flags & 0x8000 != 0 {
+        return Err(Error::Format("received an AXFR response as a query"));
+    }
+    if query.questions.len() != 1 {
+        return write_response(stream, query.id, None, 1, Vec::new());
     }
     let question = query.questions[0].clone();
+    if query.flags & 0x7800 != 0 {
+        return write_response(stream, query.id, Some(question), 4, Vec::new());
+    }
+    if !query.answers.is_empty()
+        || !query.authorities.is_empty()
+        || query
+            .additionals
+            .iter()
+            .filter(|record| record.rr_type() == RecordType::Opt)
+            .count()
+            > 1
+    {
+        return write_response(stream, query.id, Some(question), 1, Vec::new());
+    }
     if question.qclass != 1 || question.qtype != RecordType::Axfr {
         return write_response(stream, query.id, Some(question), 4, Vec::new());
     }
@@ -155,7 +172,7 @@ pub fn fetch(server: SocketAddr, zone: Name) -> Result<Vec<Record>> {
     };
     let wire = Message {
         id,
-        questions: vec![question],
+        questions: vec![question.clone()],
         ..Default::default()
     }
     .encode()?;
@@ -171,9 +188,7 @@ pub fn fetch(server: SocketAddr, zone: Name) -> Result<Vec<Record>> {
             .checked_add(response.encode()?.len())
             .filter(|bytes| *bytes <= MAX_TRANSFER_BYTES)
             .ok_or(Error::Format("AXFR byte limit exceeded"))?;
-        if response.id != id || response.flags & 0x8000 == 0 {
-            return Err(Error::Format("invalid AXFR response"));
-        }
+        validate_axfr_message(&response, id, &question, message_number == 0)?;
         if response.flags & 0x000f != 0 {
             return Err(Error::Format("AXFR server returned an error"));
         }
@@ -187,12 +202,18 @@ pub fn fetch(server: SocketAddr, zone: Name) -> Result<Vec<Record>> {
                     return Err(Error::Format("AXFR does not begin with zone SOA"));
                 }
                 opening_soa = Some(record.clone());
-            } else if opening_soa.as_ref() == Some(&record) {
+            } else if record.rr_type() == RecordType::Soa {
+                if opening_soa.as_ref() != Some(&record) {
+                    return Err(Error::Format("AXFR contains a mismatched SOA"));
+                }
                 if answer_index + 1 != answer_count {
                     return Err(Error::Format("records follow closing AXFR SOA"));
                 }
                 records.push(record);
                 return Ok(records);
+            }
+            if !record.name.is_subdomain_of(&zone) {
+                return Err(Error::Format("AXFR record is outside the requested zone"));
             }
             records.push(record);
         }
@@ -204,6 +225,32 @@ pub fn fetch(server: SocketAddr, zone: Name) -> Result<Vec<Record>> {
         }
     }
     Err(Error::Format("AXFR message limit exceeded"))
+}
+
+fn validate_axfr_message(
+    response: &Message,
+    id: u16,
+    question: &Question,
+    first: bool,
+) -> Result<()> {
+    let valid_question = if first {
+        response.questions.as_slice() == std::slice::from_ref(question)
+    } else {
+        response.questions.is_empty()
+            || response.questions.as_slice() == std::slice::from_ref(question)
+    };
+    if response.id != id
+        || response.flags & 0x8000 == 0
+        || response.flags & 0x7800 != 0
+        || response.flags & 0x0200 != 0
+        || response.flags & 0x000f == 0 && response.flags & 0x0400 == 0
+        || !valid_question
+        || !response.authorities.is_empty()
+    {
+        Err(Error::Format("invalid AXFR response"))
+    } else {
+        Ok(())
+    }
 }
 
 fn random_id() -> Result<u16> {
@@ -370,5 +417,41 @@ mod tests {
             imported.lookup(&"example".parse().unwrap(), RecordType::Txt),
             Lookup::Answer(_)
         ));
+    }
+
+    #[test]
+    fn axfr_client_rejects_spoofable_or_structurally_invalid_messages() {
+        let question = Question {
+            name: "example".parse().unwrap(),
+            qtype: RecordType::Axfr,
+            qclass: 1,
+        };
+        let valid = Message {
+            id: 7,
+            flags: 0x8400,
+            questions: vec![question.clone()],
+            ..Default::default()
+        };
+        assert!(validate_axfr_message(&valid, 7, &question, true).is_ok());
+
+        let mut wrong_question = valid.clone();
+        wrong_question.questions[0].name = "attacker.example".parse().unwrap();
+        assert!(validate_axfr_message(&wrong_question, 7, &question, true).is_err());
+
+        let mut truncated = valid.clone();
+        truncated.flags |= 0x0200;
+        assert!(validate_axfr_message(&truncated, 7, &question, true).is_err());
+
+        let mut non_authoritative = valid.clone();
+        non_authoritative.flags &= !0x0400;
+        assert!(validate_axfr_message(&non_authoritative, 7, &question, true).is_err());
+
+        let mut authority_data = valid;
+        authority_data.authorities.push(Record {
+            name: "example".parse().unwrap(),
+            ttl: 60,
+            data: RData::A(Ipv4Addr::new(192, 0, 2, 1)),
+        });
+        assert!(validate_axfr_message(&authority_data, 7, &question, true).is_err());
     }
 }

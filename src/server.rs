@@ -4,12 +4,9 @@ use crate::{
     zone::{Lookup, Zone},
 };
 use std::{
-    collections::HashSet,
-    io::{Read, Write},
-    net::{IpAddr, TcpListener, UdpSocket},
+    collections::{HashMap, HashSet},
+    net::IpAddr,
     sync::Arc,
-    thread,
-    time::Duration,
 };
 
 pub fn respond(zone: &Zone, wire: &[u8], transport_limit: usize) -> Result<Vec<u8>> {
@@ -32,6 +29,15 @@ fn respond_over_transport(
     is_udp: bool,
     client: Option<IpAddr>,
 ) -> Result<Vec<u8>> {
+    // Unknown opcodes can define a body layout different from QUERY. RFC 8906
+    // therefore requires NOTIMP based on the header alone, without attempting
+    // to parse the body as a standard question.
+    if wire.len() >= 4 {
+        let flags = u16::from_be_bytes([wire[2], wire[3]]);
+        if flags & 0x8000 == 0 && flags & 0x7800 != 0 {
+            return error_response(wire, 4);
+        }
+    }
     let q = match Message::decode(wire) {
         Ok(query) => query,
         Err(_) if wire.len() >= 12 && wire[2] & 0x80 == 0 => {
@@ -41,6 +47,13 @@ fn respond_over_transport(
     };
     if q.flags & 0x8000 != 0 {
         return Err(Error::Format("received a DNS response"));
+    }
+    if q.answers
+        .iter()
+        .chain(&q.authorities)
+        .any(|record| record.rr_type() == crate::RecordType::Opt)
+    {
+        return error_response(wire, 1);
     }
     if q.questions.len() != 1 {
         return error_response(wire, 1);
@@ -121,19 +134,53 @@ fn respond_over_transport(
             }
             Lookup::NoData(soa) => {
                 if let Some(x) = soa {
-                    r.authorities.push(x)
+                    r.authorities.push(negative_soa(x))
                 }
             }
             Lookup::NxDomain(soa) => {
                 r.flags |= 3;
                 if let Some(x) = soa {
-                    r.authorities.push(x)
+                    r.authorities.push(negative_soa(x))
                 }
             }
             Lookup::Refused => r.flags |= 5,
         }
     }
+    normalize_rrsets(&mut r.answers);
+    normalize_rrsets(&mut r.authorities);
+    normalize_rrsets(&mut r.additionals);
     truncate(r, response_limit)
+}
+
+fn normalize_rrsets(records: &mut Vec<crate::Record>) {
+    let mut ttls = HashMap::new();
+    for record in records.iter() {
+        ttls.entry((record.name.clone(), record.rr_type()))
+            .and_modify(|ttl: &mut u32| *ttl = (*ttl).min(record.ttl))
+            .or_insert(record.ttl);
+    }
+    for record in records.iter_mut() {
+        record.ttl = ttls[&(record.name.clone(), record.rr_type())];
+    }
+    let mut index = 0;
+    while index < records.len() {
+        if records[..index].iter().any(|record| {
+            record.name == records[index].name
+                && record.rr_type() == records[index].rr_type()
+                && record.data == records[index].data
+        }) {
+            records.remove(index);
+        } else {
+            index += 1;
+        }
+    }
+}
+
+fn negative_soa(mut record: crate::Record) -> crate::Record {
+    if let crate::RData::Soa { minimum, .. } = &record.data {
+        record.ttl = record.ttl.min(*minimum);
+    }
+    record
 }
 
 fn error_response(query: &[u8], rcode: u16) -> Result<Vec<u8>> {
@@ -142,7 +189,7 @@ fn error_response(query: &[u8], rcode: u16) -> Result<Vec<u8>> {
     }
     Message {
         id: u16::from_be_bytes([query[0], query[1]]),
-        flags: 0x8000 | (u16::from_be_bytes([query[2], query[3]]) & 0x0100) | rcode,
+        flags: 0x8000 | (u16::from_be_bytes([query[2], query[3]]) & 0x7900) | rcode,
         ..Default::default()
     }
     .encode()
@@ -234,82 +281,88 @@ fn truncate(mut response: Message, limit: usize) -> Result<Vec<u8>> {
         return Ok(full);
     }
     response.flags |= 0x0200;
-    loop {
-        let wire = response.encode()?;
+    let removable = response
+        .additionals
+        .iter()
+        .filter(|record| record.rr_type() != crate::RecordType::Opt)
+        .count()
+        + response.authorities.len()
+        + response.answers.len()
+        + response
+            .additionals
+            .iter()
+            .filter(|record| record.rr_type() == crate::RecordType::Opt)
+            .count()
+        + usize::from(!response.questions.is_empty());
+
+    let mut low = 0;
+    let mut high = removable;
+    while low < high {
+        let middle = low + (high - low) / 2;
+        let candidate = with_tail_records_removed(&response, middle);
+        if candidate.encode()?.len() <= limit {
+            high = middle;
+        } else {
+            low = middle + 1;
+        }
+    }
+    while low <= removable {
+        let candidate = with_tail_records_removed(&response, low);
+        let wire = candidate.encode()?;
         if wire.len() <= limit {
             return Ok(wire);
         }
-        if let Some(index) = response
+        low += 1;
+    }
+    Err(Error::Format("DNS response cannot fit transport limit"))
+}
+
+fn with_tail_records_removed(response: &Message, mut count: usize) -> Message {
+    let mut candidate = response.clone();
+    while count != 0
+        && let Some(index) = candidate
             .additionals
             .iter()
             .rposition(|record| record.rr_type() != crate::RecordType::Opt)
-        {
-            response.additionals.remove(index);
-        } else {
-            let removed = response.authorities.pop().is_some()
-                || response.answers.pop().is_some()
-                || response.additionals.pop().is_some();
-            if removed {
-                continue;
-            }
-            // A valid question can itself exceed an unusually small caller
-            // limit. Return a header-only truncated response in that case.
-            if response.questions.is_empty() {
-                return Ok(wire);
-            }
-            response.questions.clear();
-        }
+    {
+        candidate.additionals.remove(index);
+        count -= 1;
     }
+    while count != 0 && candidate.authorities.pop().is_some() {
+        count -= 1;
+    }
+    while count != 0 && candidate.answers.pop().is_some() {
+        count -= 1;
+    }
+    while count != 0 && candidate.additionals.pop().is_some() {
+        count -= 1;
+    }
+    if count != 0 {
+        candidate.questions.clear();
+    }
+    candidate
 }
 
 pub fn serve(zone: Zone, addr: &str) -> Result<()> {
-    let udp = UdpSocket::bind(addr)?;
-    let tcp = TcpListener::bind(addr)?;
-    serve_sockets(zone, udp, tcp)
+    let zone = Arc::new(zone);
+    crate::transport::serve(
+        addr,
+        Arc::new(move |wire, limit, client| {
+            respond_over_transport(&zone, wire, limit, limit <= 4096, Some(client))
+        }),
+    )
 }
 
-fn serve_sockets(zone: Zone, udp: UdpSocket, tcp: TcpListener) -> Result<()> {
+#[cfg(test)]
+fn serve_sockets(zone: Zone, udp: std::net::UdpSocket, tcp: std::net::TcpListener) -> Result<()> {
     let zone = Arc::new(zone);
-    let z = zone.clone();
-    thread::spawn(move || {
-        let mut b = [0u8; 65535];
-        loop {
-            if let Ok((n, peer)) = udp.recv_from(&mut b)
-                && let Ok(r) = respond_over_transport(&z, &b[..n], 4096, true, Some(peer.ip()))
-            {
-                let _ = udp.send_to(&r, peer);
-            }
-        }
-    });
-    let mut workers = Vec::new();
-    for _ in 0..32 {
-        let z = zone.clone();
-        let listener = tcp.try_clone()?;
-        workers.push(thread::spawn(move || {
-            for stream in listener.incoming() {
-                let Ok(mut s) = stream else {
-                    continue;
-                };
-                let _ = s.set_read_timeout(Some(Duration::from_secs(30)));
-                let _ = s.set_write_timeout(Some(Duration::from_secs(30)));
-                let client = s.peer_addr().ok().map(|peer| peer.ip());
-                let mut l = [0; 2];
-                if s.read_exact(&mut l).is_ok() {
-                    let mut b = vec![0; u16::from_be_bytes(l) as usize];
-                    if s.read_exact(&mut b).is_ok()
-                        && let Ok(r) = respond_over_transport(&z, &b, 65535, false, client)
-                    {
-                        let _ = s.write_all(&(r.len() as u16).to_be_bytes());
-                        let _ = s.write_all(&r);
-                    }
-                }
-            }
-        }));
-    }
-    for worker in workers {
-        let _ = worker.join();
-    }
-    Ok(())
+    crate::transport::serve_sockets(
+        udp,
+        tcp,
+        Arc::new(move |wire, limit, client| {
+            respond_over_transport(&zone, wire, limit, limit <= 4096, Some(client))
+        }),
+    )
 }
 
 #[cfg(test)]
@@ -318,7 +371,8 @@ mod tests {
     use crate::{Name, Question, RData, Record, RecordType};
     use std::{
         io::{Read, Write},
-        net::{TcpStream, UdpSocket},
+        net::{TcpListener, TcpStream, UdpSocket},
+        thread,
         time::Duration,
     };
 
@@ -556,18 +610,21 @@ mod tests {
         tcp_client
             .set_read_timeout(Some(Duration::from_secs(2)))
             .unwrap();
-        tcp_client
-            .write_all(&(request.len() as u16).to_be_bytes())
-            .unwrap();
-        tcp_client.write_all(&request).unwrap();
+        let mut pipelined = Vec::new();
+        for _ in 0..2 {
+            pipelined.extend((request.len() as u16).to_be_bytes());
+            pipelined.extend(&request);
+        }
+        tcp_client.write_all(&pipelined).unwrap();
         let mut length = [0; 2];
-        tcp_client.read_exact(&mut length).unwrap();
-        let mut response = vec![0; u16::from_be_bytes(length) as usize];
-        tcp_client.read_exact(&mut response).unwrap();
-        assert_eq!(Message::decode(&response).unwrap().answers.len(), 1);
+        for _ in 0..2 {
+            tcp_client.read_exact(&mut length).unwrap();
+            let mut response = vec![0; u16::from_be_bytes(length) as usize];
+            tcp_client.read_exact(&mut response).unwrap();
+            assert_eq!(Message::decode(&response).unwrap().answers.len(), 1);
+        }
 
         let large_request = query("many.example", RecordType::A, None);
-        let mut tcp_client = TcpStream::connect(address).unwrap();
         tcp_client
             .write_all(&(large_request.len() as u16).to_be_bytes())
             .unwrap();

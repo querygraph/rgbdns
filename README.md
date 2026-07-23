@@ -55,3 +55,16 @@ Build the FirstPair package with Pandoc and Typst:
 docs/book/build.sh
 docs/book/validate.sh
 ```
+
+## Conformance and performance
+
+[`docs/conformance.md`](docs/conformance.md) maps implemented DNS requirements
+to RFC-numbered, adversarial, property, live-network, and independent ldns
+tests. [`docs/performance.md`](docs/performance.md) documents the stable-Rust
+core benchmark:
+
+```sh
+cargo test --test rfc_conformance
+cargo test --test wire_security
+cargo bench --bench dns_core
+```

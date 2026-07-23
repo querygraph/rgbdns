@@ -23,139 +23,182 @@ lto = "thin"
 codegen-units = 1
 strip = true
 
+[profile.bench]
+lto = false
+codegen-units = 16
+strip = false
+
+[[bench]]
+name = "dns_core"
+harness = false
+
 [[bin]]
 name = "tinydns"
 path = "src/bin/tinydns.rs"
+bench = false
 
 [[bin]]
 name = "tinydns-data"
 path = "src/bin/tinydns-data.rs"
+bench = false
 
 [[bin]]
 name = "tinydns-get"
 path = "src/bin/tinydns-get.rs"
+bench = false
 
 [[bin]]
 name = "dnsq"
 path = "src/bin/dnsq.rs"
+bench = false
 
 [[bin]]
 name = "dnscache"
 path = "src/bin/dnscache.rs"
+bench = false
 test = false
 
 [[bin]]
 name = "axfrdns"
 path = "src/bin/axfrdns.rs"
+bench = false
 
 [[bin]]
 name = "axfr-get"
 path = "src/bin/axfr-get.rs"
+bench = false
 
 [[bin]]
 name = "rbldns"
 path = "src/bin/rbldns.rs"
+bench = false
 
 [[bin]]
 name = "rbldns-data"
 path = "src/bin/rbldns-data.rs"
+bench = false
 
 [[bin]]
 name = "walldns"
 path = "src/bin/walldns.rs"
+bench = false
 
 [[bin]]
 name = "dnsip"
 path = "src/bin/dnsip.rs"
+bench = false
 
 [[bin]]
 name = "dnsipq"
 path = "src/bin/dnsipq.rs"
+bench = false
 
 [[bin]]
 name = "dnsip6"
 path = "src/bin/dnsip6.rs"
+bench = false
 
 [[bin]]
 name = "dnsip6q"
 path = "src/bin/dnsip6q.rs"
+bench = false
 
 [[bin]]
 name = "dnsname"
 path = "src/bin/dnsname.rs"
+bench = false
 
 [[bin]]
 name = "dnsmx"
 path = "src/bin/dnsmx.rs"
+bench = false
 
 [[bin]]
 name = "dnstxt"
 path = "src/bin/dnstxt.rs"
+bench = false
 
 [[bin]]
 name = "dnsqr"
 path = "src/bin/dnsqr.rs"
+bench = false
 
 [[bin]]
 name = "dnsfilter"
 path = "src/bin/dnsfilter.rs"
+bench = false
 
 [[bin]]
 name = "dnstrace"
 path = "src/bin/dnstrace.rs"
+bench = false
 
 [[bin]]
 name = "tinydns-edit"
 path = "src/bin/tinydns-edit.rs"
+bench = false
 
 [[bin]]
 name = "random-ip"
 path = "src/bin/random-ip.rs"
+bench = false
 
 [[bin]]
 name = "tinydns-conf"
 path = "src/bin/tinydns-conf.rs"
+bench = false
 
 [[bin]]
 name = "dnscache-conf"
 path = "src/bin/dnscache-conf.rs"
+bench = false
 
 [[bin]]
 name = "rbldns-conf"
 path = "src/bin/rbldns-conf.rs"
+bench = false
 
 [[bin]]
 name = "walldns-conf"
 path = "src/bin/walldns-conf.rs"
+bench = false
 
 [[bin]]
 name = "axfrdns-conf"
 path = "src/bin/axfrdns-conf.rs"
+bench = false
 
 [[bin]]
 name = "pickdns"
 path = "src/bin/pickdns.rs"
+bench = false
 
 [[bin]]
 name = "pickdns-data"
 path = "src/bin/pickdns-data.rs"
+bench = false
 
 [[bin]]
 name = "pickdns-conf"
 path = "src/bin/pickdns-conf.rs"
+bench = false
 
 [[bin]]
 name = "multilog"
 path = "src/bin/multilog.rs"
+bench = false
 
 [[bin]]
 name = "setuidgid"
 path = "src/bin/setuidgid.rs"
+bench = false
 
 [[bin]]
 name = "tai64n"
 path = "src/bin/tai64n.rs"
+bench = false
 
 [[bin]]
 name = "tai64nlocal"
 path = "src/bin/tai64nlocal.rs"
+bench = false

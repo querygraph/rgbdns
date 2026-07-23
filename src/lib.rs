@@ -16,6 +16,7 @@ pub mod setuidgid;
 pub mod special;
 pub mod tai64;
 pub mod tinydns_edit;
+mod transport;
 pub mod wall;
 pub mod zone;
 

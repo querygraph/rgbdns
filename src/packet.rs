@@ -1,7 +1,10 @@
 use crate::{Error, Name, Result};
-use std::net::{Ipv4Addr, Ipv6Addr};
+use std::{
+    collections::HashMap,
+    net::{Ipv4Addr, Ipv6Addr},
+};
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum RecordType {
     A,
     Ns,
@@ -195,6 +198,7 @@ pub struct Message {
 struct Reader<'a> {
     b: &'a [u8],
     p: usize,
+    name_offsets: Vec<bool>,
 }
 impl<'a> Reader<'a> {
     fn u8(&mut self) -> Result<u8> {
@@ -236,6 +240,12 @@ impl<'a> Reader<'a> {
                 if q >= pos {
                     return Err(Error::Format("compression pointer is not backward"));
                 }
+                if !self.name_offsets.get(q).is_some_and(|valid| *valid) {
+                    return Err(Error::Format(
+                        "compression pointer does not target a prior name",
+                    ));
+                }
+                self.name_offsets[pos] = true;
                 if !jumped {
                     self.p = pos + 2;
                     jumped = true;
@@ -246,6 +256,7 @@ impl<'a> Reader<'a> {
             if n & 0xc0 != 0 {
                 return Err(Error::Format("reserved label type"));
             }
+            self.name_offsets[pos] = true;
             pos += 1;
             if n == 0 {
                 if !jumped {
@@ -385,7 +396,11 @@ impl Message {
         if b.len() < 12 {
             return Err(Error::Format("short header"));
         }
-        let mut r = Reader { b, p: 0 };
+        let mut r = Reader {
+            b,
+            p: 0,
+            name_offsets: vec![false; b.len()],
+        };
         let id = r.u16()?;
         let flags = r.u16()?;
         let qd = r.u16()?;
@@ -423,7 +438,7 @@ impl Message {
         Ok(m)
     }
     pub fn encode(&self) -> Result<Vec<u8>> {
-        let mut w = Writer(Vec::with_capacity(512));
+        let mut w = Writer(Vec::with_capacity(512), HashMap::new(), None);
         w.u16(self.id);
         w.u16(self.flags);
         for n in [
@@ -447,7 +462,7 @@ impl Message {
         Ok(w.0)
     }
 }
-struct Writer(Vec<u8>);
+struct Writer(Vec<u8>, HashMap<Name, u16>, Option<(Name, u16)>);
 impl Writer {
     fn u8(&mut self, n: u8) {
         self.0.push(n)
@@ -462,11 +477,41 @@ impl Writer {
         if n.wire_len() > 255 {
             return Err(Error::Format("name too long"));
         }
-        for l in n.labels() {
-            self.u8(l.len() as u8);
-            self.0.extend(l)
+        if let Some((last, offset)) = &self.2
+            && last == n
+        {
+            self.u16(0xc000 | *offset);
+            return Ok(());
+        }
+        // Owner names commonly repeat across an RRset. Avoid rebuilding every
+        // possible suffix when the complete name already has a pointer.
+        if let Some(offset) = self.1.get(n).copied() {
+            self.2 = Some((n.clone(), offset));
+            self.u16(0xc000 | offset);
+            return Ok(());
+        }
+        let start = u16::try_from(self.0.len())
+            .ok()
+            .filter(|offset| *offset < 0x4000);
+        let labels = n.labels().collect::<Vec<_>>();
+        for (index, label) in labels.iter().enumerate() {
+            let suffix = n.suffix(index);
+            if let Some(offset) = self.1.get(&suffix).copied() {
+                self.u16(0xc000 | offset);
+                return Ok(());
+            }
+            if let Ok(offset) = u16::try_from(self.0.len())
+                && offset < 0x4000
+            {
+                self.1.entry(suffix).or_insert(offset);
+            }
+            self.u8(label.len() as u8);
+            self.0.extend(*label)
         }
         self.u8(0);
+        if let Some(offset) = start {
+            self.2 = Some((n.clone(), offset));
+        }
         Ok(())
     }
     fn record(&mut self, r: &Record) -> Result<()> {
@@ -651,6 +696,37 @@ mod tests {
             Message::decode(&message.encode().unwrap()).unwrap(),
             message
         );
+    }
+
+    #[test]
+    fn encoder_compresses_repeated_names_and_suffixes() {
+        let message = Message {
+            questions: vec![Question {
+                name: "www.deep.example".parse().unwrap(),
+                qtype: RecordType::A,
+                qclass: 1,
+            }],
+            answers: vec![
+                Record {
+                    name: "www.deep.example".parse().unwrap(),
+                    ttl: 60,
+                    data: RData::A("192.0.2.1".parse().unwrap()),
+                },
+                Record {
+                    name: "mail.deep.example".parse().unwrap(),
+                    ttl: 60,
+                    data: RData::A("192.0.2.2".parse().unwrap()),
+                },
+            ],
+            ..Message::default()
+        };
+        let wire = message.encode().unwrap();
+        assert!(
+            wire.windows(2)
+                .any(|bytes| bytes[0] & 0xc0 == 0xc0 && bytes[1] == 12)
+        );
+        assert!(wire.len() < 80);
+        assert_eq!(Message::decode(&wire).unwrap(), message);
     }
     #[test]
     fn rejects_malformed_edns_options_and_address_length() {

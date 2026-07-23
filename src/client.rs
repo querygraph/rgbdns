@@ -21,14 +21,15 @@ pub fn query(
     servers: &[SocketAddr],
 ) -> Result<Message> {
     let id = random_id()?;
+    let question = Question {
+        name,
+        qtype: record_type,
+        qclass: 1,
+    };
     let wire = Message {
         id,
         flags: if recursion_desired { 0x0100 } else { 0 },
-        questions: vec![Question {
-            name,
-            qtype: record_type,
-            qclass: 1,
-        }],
+        questions: vec![question.clone()],
         ..Default::default()
     }
     .encode()?;
@@ -39,11 +40,13 @@ pub fn query(
         .cycle()
         .take(servers.len().max(1) * 2)
     {
-        match udp_query(server, &wire, id) {
-            Ok(response) if response.flags & 0x0200 != 0 => match tcp_query(server, &wire, id) {
-                Ok(response) => return Ok(response),
-                Err(error) => last_error = Some(error),
-            },
+        match udp_query(server, &wire, id, &question) {
+            Ok(response) if response.flags & 0x0200 != 0 => {
+                match tcp_query(server, &wire, id, &question) {
+                    Ok(response) => return Ok(response),
+                    Err(error) => last_error = Some(error),
+                }
+            }
             Ok(response) => return Ok(response),
             Err(error) => last_error = Some(error),
         }
@@ -88,7 +91,7 @@ pub fn server_address(value: &str) -> Result<SocketAddr> {
         .map_err(|_| Error::Format("invalid DNS server address"))
 }
 
-fn udp_query(server: SocketAddr, wire: &[u8], id: u16) -> Result<Message> {
+fn udp_query(server: SocketAddr, wire: &[u8], id: u16, question: &Question) -> Result<Message> {
     let bind = if server.is_ipv4() {
         "0.0.0.0:0"
     } else {
@@ -101,24 +104,33 @@ fn udp_query(server: SocketAddr, wire: &[u8], id: u16) -> Result<Message> {
     socket.send(wire)?;
     let mut response = [0; 65535];
     let length = socket.recv(&mut response)?;
-    validate(Message::decode(&response[..length])?, id)
+    validate(Message::decode(&response[..length])?, id, question, false)
 }
 
-fn tcp_query(server: SocketAddr, wire: &[u8], id: u16) -> Result<Message> {
+fn tcp_query(server: SocketAddr, wire: &[u8], id: u16, question: &Question) -> Result<Message> {
     let mut stream = TcpStream::connect_timeout(&server, TIMEOUT)?;
     stream.set_read_timeout(Some(TIMEOUT))?;
     stream.set_write_timeout(Some(TIMEOUT))?;
-    stream.write_all(&(wire.len() as u16).to_be_bytes())?;
-    stream.write_all(wire)?;
+    let wire_length =
+        u16::try_from(wire.len()).map_err(|_| Error::Format("DNS query exceeds TCP framing"))?;
+    let mut framed = Vec::with_capacity(wire.len() + 2);
+    framed.extend(wire_length.to_be_bytes());
+    framed.extend(wire);
+    stream.write_all(&framed)?;
     let mut length = [0; 2];
     stream.read_exact(&mut length)?;
     let mut response = vec![0; u16::from_be_bytes(length) as usize];
     stream.read_exact(&mut response)?;
-    validate(Message::decode(&response)?, id)
+    validate(Message::decode(&response)?, id, question, true)
 }
 
-fn validate(message: Message, id: u16) -> Result<Message> {
-    if message.id != id || message.flags & 0x8000 == 0 {
+fn validate(message: Message, id: u16, question: &Question, is_tcp: bool) -> Result<Message> {
+    if message.id != id
+        || message.flags & 0x8000 == 0
+        || message.flags & 0x7800 != 0
+        || message.questions.as_slice() != std::slice::from_ref(question)
+        || is_tcp && message.flags & 0x0200 != 0
+    {
         Err(Error::Format("mismatched DNS response"))
     } else {
         Ok(message)
@@ -202,5 +214,33 @@ mod tests {
             server_address("127.0.0.1:5353").unwrap(),
             "127.0.0.1:5353".parse().unwrap()
         );
+    }
+
+    #[test]
+    fn rejects_responses_with_a_mismatched_question_opcode_or_tcp_truncation() {
+        let question = Question {
+            name: "example".parse().unwrap(),
+            qtype: RecordType::A,
+            qclass: 1,
+        };
+        let valid = Message {
+            id: 7,
+            flags: 0x8000,
+            questions: vec![question.clone()],
+            ..Default::default()
+        };
+        assert!(validate(valid.clone(), 7, &question, false).is_ok());
+
+        let mut mismatched = valid.clone();
+        mismatched.questions[0].name = "attacker.example".parse().unwrap();
+        assert!(validate(mismatched, 7, &question, false).is_err());
+
+        let mut opcode = valid.clone();
+        opcode.flags |= 1 << 11;
+        assert!(validate(opcode, 7, &question, false).is_err());
+
+        let mut truncated = valid;
+        truncated.flags |= 0x0200;
+        assert!(validate(truncated, 7, &question, true).is_err());
     }
 }
