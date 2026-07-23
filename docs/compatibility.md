@@ -12,6 +12,10 @@ Implemented:
 - EDNS(0), BADVERS, DO-bit echo, whole-record UDP truncation, and DNS over TCP
 - pointer-loop, section-count, label/name, RDLENGTH, and TXT bounds checks
 - randomized property tests and live UDP/TCP integration tests
+- iterative DNSSEC-validating `dnscache`, verified live against signed
+  `cloudflare.com` (AD), authenticated denial, and deliberately bogus
+  `dnssec-failed.org` (SERVFAIL without AD); the opt-in test is
+  `cargo test --test dnscache_network -- --ignored`
 
 Patch/source corpus searched and tracked:
 
@@ -35,8 +39,10 @@ Patch/source corpus searched and tracked:
 
 Remaining suite components:
 
-- recursive `dnscache` with bounded cache, bailiwick enforcement, DNSSEC,
-  randomized ports/IDs/case, TCP fallback and query coalescing
+- djbdns `dnscache` filesystem configuration compatibility and cache-dump
+  tooling (the running iterative engine already provides bounded caches,
+  bailiwick enforcement, DNSSEC, randomized ports/IDs/case, TCP fallback,
+  query coalescing, and negative caching)
 - `axfrdns`/`axfr-get`, `rbldns`, `walldns`, and configuration programs
 - remaining clients (`dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`,
   `dnsqr`, `dnstrace`, `dnsfilter`)

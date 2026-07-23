@@ -7,6 +7,10 @@ description = "A safe, faithful Rust reimplementation of the djbdns suite"
 
 [dependencies]
 getrandom = "0.3"
+hickory-server = { version = "0.26.1", default-features = false, features = ["dnssec-ring", "recursor"] }
+ipnet = "2"
+tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 [dev-dependencies]
 proptest = "1"
@@ -32,3 +36,7 @@ path = "src/bin/tinydns-get.rs"
 name = "dnsq"
 path = "src/bin/dnsq.rs"
 
+[[bin]]
+name = "dnscache"
+path = "src/bin/dnscache.rs"
+test = false

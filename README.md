@@ -8,8 +8,14 @@ parsing, IPv4/IPv6, wildcards, negative answers, and safe OS-generated query IDs
 ```sh
 cargo test
 IP=127.0.0.1 PORT=5353 cargo run --release --bin tinydns
+IP=127.0.0.1 PORT=5354 cargo run --release --bin dnscache
 ```
 
 The service reads `data` directly and atomically on startup; it deliberately
 does not reproduce cdb's unchecked native-memory parsing. See
 [`docs/compatibility.md`](docs/compatibility.md) for scope and research.
+
+`dnscache` performs iteration from `config/root.hints`, validates DNSSEC using
+the bundled root trust anchor, randomizes UDP query IDs, ports, and letter case,
+and only serves loopback clients by default. Set `ALLOW_NETS` to a comma-
+separated CIDR list to authorize additional clients.

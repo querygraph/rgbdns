@@ -7,6 +7,10 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ### Added
 
+- Iterative `dnscache` service with DNSSEC validation, root-hint traversal,
+  bailiwick enforcement, bounded response/nameserver caches, query
+  case-randomization, EDNS, TCP fallback, and loopback-only access by default.
+- Current InterNIC root hints dated 2026-07-22.
 - Memory-safe DNS name and packet codecs with bounded compression-pointer,
   section-count, label, RDATA, and TXT parsing.
 - Authoritative UDP and TCP server with truncation, wildcard synthesis,
