@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>DNSSEC: authenticating the chain</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-011.html" accesskey="n" rel="next">Zone transfer and secondary service</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-009.html" accesskey="p" rel="previous">Recursion: discovering an answer</a>
+</span>
+</div>
+</nav>
+<h1 data-number="9" id="dnssec-authenticating-the-chain"><span
+class="header-section-number">9</span> DNSSEC: authenticating the
+chain</h1>
+<h2 data-number="9.1" id="what-ordinary-dns-cannot-prove"><span
+class="header-section-number">9.1</span> What ordinary DNS cannot
+prove</h2>
+<p>Transaction IDs, source ports, and query-case randomization make
+blind spoofing harder, but they do not cryptographically establish who
+published an RRset. DNSSEC adds signatures and a chain of trust.</p>
+<p>A zone signs RRsets with private keys and publishes DNSKEY records. A
+parent publishes a DS digest that identifies a child key. Starting from
+a configured root trust anchor, a validating resolver can authenticate
+the root DNSKEY, then a top-level domain’s DS and DNSKEY, and so on to
+the answer.</p>
+<p>RRSIG authenticates an RRset over a validity interval. DS links
+parent to child. NSEC or NSEC3 authenticates nonexistence by proving
+gaps in the ordered namespace. DNSSEC provides origin authentication and
+integrity; it does not encrypt queries or hide names.</p>
+<p>Validation outcomes matter:</p>
+<ul>
+<li><strong>secure</strong>: a valid chain reaches the answer;</li>
+<li><strong>insecure</strong>: the chain proves that the child is
+unsigned;</li>
+<li><strong>bogus</strong>: signatures or proofs fail;</li>
+<li><strong>indeterminate</strong>: validation cannot be completed
+safely.</li>
+</ul>
+<p>A resolver must not turn bogus data into a normal answer merely to
+improve availability. Clock correctness also becomes a dependency
+because signatures have inception and expiration times.</p>
+<h2 data-number="9.2" id="rgbdns-validation-policy"><span
+class="header-section-number">9.2</span> rgbdns validation policy</h2>
+<p>rgbdns configures the recursive handler with a static root trust
+anchor and DNSSEC validation enabled. Validation and NSEC3 work receive
+bounded caches and iteration policies. A failed validation surfaces as
+resolution failure rather than an unchecked answer.</p>
+<p>The authoritative rgbdns data path focuses on the djbdns record
+surface; the recursive path is where DNSSEC validation is currently
+integrated. This is an example of honest component boundaries: “the
+suite supports validating recursion” does not imply that every
+authoritative signing workflow has been recreated.</p>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Names form a delegated tree</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-005.html" accesskey="n" rel="next">Resource records: typed facts with lifetimes</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-003.html" accesskey="p" rel="previous">The problem DNS solves</a>
+</span>
+</div>
+</nav>
+<h1 data-number="3" id="names-form-a-delegated-tree"><span
+class="header-section-number">3</span> Names form a delegated tree</h1>
+<h2 data-number="3.1" id="labels-and-the-root"><span
+class="header-section-number">3.1</span> Labels and the root</h2>
+<p>A DNS name is a sequence of labels. In the presentation form
+<code>www.example.com.</code>, the dots separate the labels
+<code>www</code>, <code>example</code>, and <code>com</code>. The final
+dot represents the root’s empty label. Reading from right to left walks
+from general to specific:</p>
+<pre class="text"><code>.                     root
+└── com.               top-level domain
+    └── example.com.   delegated domain
+        └── www.example.com.</code></pre>
+<p>The absolute name has a wire limit of 255 octets, including length
+bytes and the terminating root label. Each ordinary label is at most 63
+octets. DNS names are not inherently UTF-8 strings. Internationalized
+names are normally converted by applications into ASCII-compatible
+labels before DNS sees them.</p>
+<p>DNS comparison is case-insensitive for ordinary ASCII letters,
+although the original spelling can be preserved. A robust implementation
+therefore needs a canonical comparison rule without losing the bytes
+required for encoding.</p>
+<p>In rgbdns, <code>src/name.rs</code> represents a name as a vector of
+byte-vector labels. Construction validates label and total lengths.
+Parsing accepts the familiar dotted form and backslash escapes. The type
+provides parent and subdomain operations, case-insensitive ordering,
+display formatting, and wire encoding. Making invalid names difficult to
+construct removes repeated checks from the rest of the system.</p>
+<h2 data-number="3.2" id="zones-are-administrative-cuts"><span
+class="header-section-number">3.2</span> Zones are administrative
+cuts</h2>
+<p>The namespace is one tree; a zone is an administratively served
+portion of that tree. The two are not identical.</p>
+<p>The zone <code>example.com.</code> might contain records for
+<code>www.example.com.</code> and <code>mail.example.com.</code>, then
+delegate <code>research.example.com.</code> to other servers. The child
+remains below <code>example.com.</code> in the namespace but is outside
+the parent zone’s authoritative contents.</p>
+<p>A delegation is expressed by NS records at the cut. If a named server
+lies inside the delegated child, a resolver cannot first resolve that
+server’s name through the child—it needs its address in order to reach
+the child. The parent therefore supplies an address record called
+<strong>glue</strong>. Glue is navigation data, not an assertion that
+the parent is authoritative for every fact about the host.</p>
+<p>The root zone delegates top-level domains. A cold recursive resolver
+starts with a small configured set of root server addresses, asks the
+root where to find a top-level domain, asks that domain where to find
+the next child, and continues.</p>
+<h2 data-number="3.3" id="wildcards-are-synthesis-rules"><span
+class="header-section-number">3.3</span> Wildcards are synthesis
+rules</h2>
+<p>A wildcard such as <code>*.example.com.</code> does not mean “return
+this record for every name ending in example.com.” It participates only
+when the queried name does not exist, and the closest-encloser rules
+determine which wildcard, if any, can synthesize an answer. Existing
+intermediate names can block a wildcard.</p>
+<p>rgbdns stores wildcard records under their literal wildcard owner and
+its zone lookup searches from the queried name toward the closest
+existing ancestor. It synthesizes the queried owner in returned records.
+This is more precise than a string suffix match and is one reason the
+<code>Zone</code> abstraction tracks known nodes in addition to
+records.</p>
+</body>
+</html>

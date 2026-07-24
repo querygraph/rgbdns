@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>UDP, TCP, EDNS, and truncation</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-008.html" accesskey="n" rel="next">Authority: answering from owned facts</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-006.html" accesskey="p" rel="previous">Messages on the wire</a>
+</span>
+</div>
+</nav>
+<h1 data-number="6" id="udp-tcp-edns-and-truncation"><span
+class="header-section-number">6</span> UDP, TCP, EDNS, and
+truncation</h1>
+<h2 data-number="6.1" id="why-there-are-two-transports"><span
+class="header-section-number">6.1</span> Why there are two
+transports</h2>
+<p>Classic DNS uses UDP for ordinary queries because one request and one
+response need no connection setup. Traditional UDP DNS assumed a
+512-byte message. Larger answers set TC, telling the client to retry
+over TCP. TCP frames every DNS message with a two-byte length.</p>
+<p>Zone transfers use TCP. Modern responses—especially DNSSEC
+responses—often need more than 512 bytes, so EDNS lets a client
+advertise a larger UDP receive size through an OPT pseudo-record.
+Internet paths can still drop fragmented UDP packets. A commonly
+conservative payload is 1232 bytes, large enough for useful DNSSEC
+answers while fitting the IPv6 minimum MTU without fragmentation under
+normal headers.</p>
+<p>TCP is not merely an emergency protocol. Firewalls that assume DNS is
+UDP-only break standards-compliant resolution.</p>
+<h2 data-number="6.2"
+id="truncation-must-preserve-a-valid-message"><span
+class="header-section-number">6.2</span> Truncation must preserve a
+valid message</h2>
+<p>Cutting the last bytes off an encoded message creates a malformed
+packet. Correct truncation removes complete records, sets TC, updates
+section counts, and re-encodes. A useful removal order discards
+nonessential additional data before authority and answer data. OPT
+sometimes needs special treatment because it carries the EDNS
+response.</p>
+<p><code>src/server.rs</code> calculates a response limit from the
+caller’s transport limit and the client’s EDNS advertisement. It caps
+advertised UDP size, rejects multiple OPT records, responds to
+unsupported EDNS versions, and constructs a full typed response. If
+encoding exceeds the limit, <code>truncate</code> sets TC and removes
+complete records in a defined order until the packet fits. The same core
+response logic serves UDP and TCP without treating TCP as a giant UDP
+datagram.</p>
+</body>
+</html>

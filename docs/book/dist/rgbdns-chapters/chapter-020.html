@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Where DNS ends</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-021.html" accesskey="n" rel="next">Appendix A: Configuration quick reference</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-019.html" accesskey="p" rel="previous">Reading the rgbdns source</a>
+</span>
+</div>
+</nav>
+<h1 data-number="19" id="where-dns-ends"><span
+class="header-section-number">19</span> Where DNS ends</h1>
+<p>DNS establishes named, cacheable facts and, with DNSSEC, their
+authenticated origin. It does not prove that the address belongs to the
+application a user intended, encrypt the subsequent connection,
+guarantee freshness inside the TTL window, or choose a healthy endpoint.
+TLS identity, application discovery, load balancing, routing, and
+monitoring build on DNS but remain separate systems.</p>
+<p>That boundary is the best final replacement for the phone-book
+metaphor. DNS is a delegated publication and discovery protocol. Its
+tree assigns authority; its records carry typed statements; its TTLs
+make caching explicit; its packet format makes efficient exchange
+possible; recursion joins many authorities into one answer; DNSSEC
+authenticates the chain; and supervision keeps the implementing
+processes available without becoming part of the protocol.</p>
+<p>rgbdns expresses those ideas as small programs over shared, validated
+Rust types. Understanding the protocol makes the program family
+unsurprising. Reading the program family, in turn, shows how the
+abstract DNS model becomes bounded packets, immutable databases,
+iterative queries, atomic files, and foreground processes.</p>
+</body>
+</html>

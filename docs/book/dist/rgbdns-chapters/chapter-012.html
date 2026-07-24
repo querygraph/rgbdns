@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>The rgbdns program family</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-013.html" accesskey="n" rel="next">Client behavior and diagnostics</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-011.html" accesskey="p" rel="previous">Zone transfer and secondary service</a>
+</span>
+</div>
+</nav>
+<h1 data-number="11" id="the-rgbdns-program-family"><span
+class="header-section-number">11</span> The rgbdns program family</h1>
+<h2 data-number="11.1" id="one-suite-small-purposes"><span
+class="header-section-number">11.1</span> One suite, small purposes</h2>
+<p>rgbdns deliberately exposes separate commands:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Command family</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tinydns</code>, <code>tinydns-data</code>,
+<code>tinydns-get</code>, <code>tinydns-edit</code></td>
+<td>authoritative service and data maintenance</td>
+</tr>
+<tr>
+<td><code>dnscache</code></td>
+<td>validating recursive resolver and cache</td>
+</tr>
+<tr>
+<td><code>axfrdns</code>, <code>axfr-get</code></td>
+<td>zone transfer server and client</td>
+</tr>
+<tr>
+<td><code>rbldns</code>, <code>rbldns-data</code></td>
+<td>address-prefix blocklist DNS</td>
+</tr>
+<tr>
+<td><code>pickdns</code>, <code>pickdns-data</code></td>
+<td>location-aware address selection</td>
+</tr>
+<tr>
+<td><code>walldns</code></td>
+<td>synthetic address/reverse answers</td>
+</tr>
+<tr>
+<td><code>dnsq</code>, <code>dnsqr</code>, <code>dnsip*</code>,
+<code>dnsname</code>, <code>dnsmx</code>, <code>dnstxt</code></td>
+<td>queries and diagnostics</td>
+</tr>
+<tr>
+<td><code>dnsfilter</code>, <code>dnstrace</code>,
+<code>random-ip</code></td>
+<td>stream lookup, delegation tracing, testing</td>
+</tr>
+<tr>
+<td><code>*-conf</code></td>
+<td>service-directory generation</td>
+</tr>
+<tr>
+<td><code>setuidgid</code>, <code>multilog</code>, <code>tai64n</code>,
+<code>tai64nlocal</code></td>
+<td>process and logging support</td>
+</tr>
+</tbody>
+</table>
+<p>This composition makes privilege and failure boundaries visible. A
+compiler can run with write access to data while the server runs
+read-only. A recursive cache can be restarted without touching
+authority. Diagnostic clients reuse the packet and client libraries
+rather than embedding daemon behavior.</p>
+<h2 data-number="11.2" id="specialized-responders"><span
+class="header-section-number">11.2</span> Specialized responders</h2>
+<p><code>rbldns</code> treats the labels before a configured suffix as a
+numeric address, finds the most-specific matching IPv4 prefix in a
+compiled database, and returns configured A/TXT data. Parsing caps the
+number of numeric labels and validates networks before compilation.</p>
+<p><code>pickdns</code> maps client prefixes to two-byte locations and
+selects address sets for that location. It shuffles eligible addresses
+with operating-system randomness. Location-aware answers are a policy
+feature; clients behind shared resolvers may appear at the resolver’s
+address, a limitation operators must understand.</p>
+<p><code>walldns</code> synthesizes narrowly defined forward and reverse
+answers without a zone database. These specialized services run through
+<code>src/special.rs</code>, which provides shared bounded UDP/TCP
+serving and passes the peer address to the handler.</p>
+<p>The lesson is architectural: once parsing, transport, names, and
+record models are sound, unusual DNS policies can be small pure response
+functions rather than new monolithic servers.</p>
+</body>
+</html>

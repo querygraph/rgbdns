@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Running rgbdns under supervision</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-017.html" accesskey="n" rel="next">Operating an authoritative service</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-015.html" accesskey="p" rel="previous">Time and logs: TAI64N</a>
+</span>
+</div>
+</nav>
+<h1 data-number="15" id="running-rgbdns-under-supervision"><span
+class="header-section-number">15</span> Running rgbdns under
+supervision</h1>
+<h2 data-number="15.1" id="the-service-contract"><span
+class="header-section-number">15.1</span> The service contract</h2>
+<p>rgbdns daemons run in the foreground, emit diagnostics to standard
+error, take configuration from files and environment, and terminate on
+fatal startup errors. That is the portable contract a supervisor needs.
+The generated djbdns-style directories additionally provide
+<code>run</code> and <code>log/run</code> programs, but the daemon
+binaries do not require a particular supervisor.</p>
+<p>The classic daemontools control plane is:</p>
+<pre class="text"><code>supervise service/       keep one process running
+svc -u service/          bring it up
+svc -d service/          bring it down
+svc -t service/          send TERM
+svstat service/          inspect status</code></pre>
+<p>No modern replacement is universally best. Choose according to the
+host and the migration boundary.</p>
+<h2 data-number="15.2" id="recommendations"><span
+class="header-section-number">15.2</span> Recommendations</h2>
+<h3 data-number="15.2.1" id="existing-linux-host-systemd"><span
+class="header-section-number">15.2.1</span> Existing Linux host:
+systemd</h3>
+<p>Use systemd when the machine already boots and manages services with
+systemd. It supplies dependency ordering, restart policy, socket and
+readiness models, resource controls, credential and filesystem
+sandboxing, a unified journal, and distribution-native administration.
+Avoid wrapping an rgbdns daemon in a second nested supervisor.</p>
+<p>A minimal authoritative unit is:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode ini"><code class="sourceCode ini"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[Unit]</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Description</span><span class="ot">=</span><span class="st">rgbdns authoritative DNS</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">After</span><span class="ot">=</span><span class="st">network-online.target</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="dt">Wants</span><span class="ot">=</span><span class="st">network-online.target</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">[Service]</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="dt">Type</span><span class="ot">=</span><span class="st">simple</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="dt">User</span><span class="ot">=</span><span class="st">dns</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="dt">Group</span><span class="ot">=</span><span class="st">dns</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">IP=192.0.2.53</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">PORT=53</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">DATA=/etc/rgbdns/data.cdb</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="dt">ExecStart</span><span class="ot">=</span><span class="st">/usr/local/bin/tinydns</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="dt">Restart</span><span class="ot">=</span><span class="st">on-failure</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="dt">RestartSec</span><span class="ot">=</span><span class="st">1s</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="dt">NoNewPrivileges</span><span class="ot">=</span><span class="kw">yes</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="dt">ProtectSystem</span><span class="ot">=</span><span class="st">strict</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="dt">ProtectHome</span><span class="ot">=</span><span class="kw">yes</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="dt">PrivateTmp</span><span class="ot">=</span><span class="kw">yes</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="dt">ReadOnlyPaths</span><span class="ot">=</span><span class="st">/etc/rgbdns</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="dt">AmbientCapabilities</span><span class="ot">=</span><span class="st">CAP_NET_BIND_SERVICE</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="dt">CapabilityBoundingSet</span><span class="ot">=</span><span class="st">CAP_NET_BIND_SERVICE</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="kw">[Install]</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="dt">WantedBy</span><span class="ot">=</span><span class="st">multi-user.target</span></span></code></pre></div>
+<p>Prefer a socket above 1024 or a narrowly bounded bind capability over
+running the daemon as root. Test hardening settings on the target
+distribution because name-service libraries and trust-anchor paths may
+require additional read-only access.</p>
+<p>Command mapping:</p>
+<table>
+<thead>
+<tr>
+<th>daemontools</th>
+<th>systemd</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>svc -u service</code></td>
+<td><code>systemctl start service</code></td>
+</tr>
+<tr>
+<td><code>svc -d service</code></td>
+<td><code>systemctl stop service</code></td>
+</tr>
+<tr>
+<td><code>svc -t service</code></td>
+<td><code>systemctl kill --signal=TERM service</code></td>
+</tr>
+<tr>
+<td><code>svc -h service</code></td>
+<td><code>systemctl kill --signal=HUP service</code></td>
+</tr>
+<tr>
+<td><code>svstat service</code></td>
+<td><code>systemctl status service</code></td>
+</tr>
+<tr>
+<td><code>multilog</code> output</td>
+<td>journal, or explicit file logging policy</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="15.2.2"
+id="closest-service-directory-migration-runit"><span
+class="header-section-number">15.2.2</span> Closest service-directory
+migration: runit</h3>
+<p>Use runit when you want the smallest conceptual migration from
+daemontools. It uses a service directory with a <code>run</code>
+program, keeps the supervised process in the foreground, has a companion
+log service, and exposes the compact <code>sv</code> control command.
+Existing rgbdns generated <code>run</code> scripts are close to the
+required shape; adjust the directory layout and enablement symlink for
+the distribution.</p>
+<table>
+<thead>
+<tr>
+<th>daemontools</th>
+<th>runit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>svc -u service</code></td>
+<td><code>sv up service</code></td>
+</tr>
+<tr>
+<td><code>svc -d service</code></td>
+<td><code>sv down service</code></td>
+</tr>
+<tr>
+<td><code>svc -t service</code></td>
+<td><code>sv term service</code></td>
+</tr>
+<tr>
+<td><code>svstat service</code></td>
+<td><code>sv status service</code></td>
+</tr>
+</tbody>
+</table>
+<p>Choose runit for minimal hosts, appliances, or migrations where
+preserving the service-directory model matters more than rich dependency
+and sandbox policy.</p>
+<h3 data-number="15.2.3"
+id="strong-supervision-composition-s6-and-s6-rc"><span
+class="header-section-number">15.2.3</span> Strong supervision
+composition: s6 and s6-rc</h3>
+<p>Use s6 when precise process supervision, reliable readiness, and
+composable small tools are primary requirements. Its
+<code>s6-supervise</code> and <code>s6-svc</code> are close in spirit to
+<code>supervise</code> and <code>svc</code>; <code>s6-rc</code> adds
+declared dependencies and transactional service-state changes. The
+ecosystem is particularly effective in carefully constructed containers
+and small systems, but its compilation and directory conventions make
+migration more involved than runit.</p>
+<table>
+<thead>
+<tr>
+<th>daemontools</th>
+<th>s6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>supervise service</code></td>
+<td><code>s6-supervise service</code></td>
+</tr>
+<tr>
+<td><code>svc -u service</code></td>
+<td><code>s6-svc -u service</code></td>
+</tr>
+<tr>
+<td><code>svc -d service</code></td>
+<td><code>s6-svc -d service</code></td>
+</tr>
+<tr>
+<td><code>svc -t service</code></td>
+<td><code>s6-svc -t service</code></td>
+</tr>
+<tr>
+<td><code>svstat service</code></td>
+<td><code>s6-svstat service</code></td>
+</tr>
+</tbody>
+</table>
+<p>Choose s6/s6-rc when the team is willing to own its service database
+and wants more rigorous dependency transitions than ad hoc shell
+orchestration.</p>
+<h3 data-number="15.2.4" id="openrc-and-container-orchestrators"><span
+class="header-section-number">15.2.4</span> OpenRC and container
+orchestrators</h3>
+<p>On an OpenRC-based distribution, use the native init integration
+unless there is a deliberate reason to introduce another supervision
+tree. OpenRC service scripts can use its supervisor support while
+retaining distribution-standard boot ordering and administration.</p>
+<p>In Kubernetes or a similar orchestrator, run one foreground rgbdns
+daemon per container and let the platform own restart, health, resource
+limits, log collection, and rollout. Use a Deployment for
+<code>tinydns</code> or <code>dnscache</code>, a Service for stable
+network reachability, readiness/liveness probes that test the intended
+DNS role, ConfigMaps or mounted immutable CDBs for public data, and
+Secrets for sensitive material. Do not put systemd, daemontools, and the
+orchestrator around the same single process.</p>
+<p>An s6-based container is reasonable only when one image intentionally
+contains several cooperating long-lived processes and that tradeoff is
+explicit.</p>
+<h2 data-number="15.3" id="a-practical-selection-rule"><span
+class="header-section-number">15.3</span> A practical selection
+rule</h2>
+<p>Use this order:</p>
+<ol type="1">
+<li>Follow the host’s native manager: systemd on systemd hosts, OpenRC
+on OpenRC hosts.</li>
+<li>For a direct service-directory replacement, choose runit.</li>
+<li>For a designed supervision graph or multi-process container, choose
+s6/s6-rc.</li>
+<li>In an orchestrated single-process container, use the
+orchestrator.</li>
+</ol>
+<p>The least risky migration preserves one owner for restart policy and
+logs. Running two supervisors creates ambiguous signal paths, duplicate
+restarts, and status commands that disagree.</p>
+</body>
+</html>

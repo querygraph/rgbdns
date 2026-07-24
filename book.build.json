@@ -5,11 +5,13 @@
   "manuscript": "docs/book/rgbdns.md",
   "metadata": "docs/book/metadata.yaml",
   "cover": "docs/book/cover.md",
+  "coverImage": "cover/rgbdns-cover.png",
+  "headboardImage": "cover/rgbdns-headboard.png",
   "css": "docs/book/epub.css",
   "stem": "rgbdns",
   "title": "DNS from First Principles",
   "subtitle": "Names, Packets, Authority, Recursion, and the Design of rgbdns",
-  "author": "The rgbdns contributors",
+  "author": "Alexy Khrabrov",
   "version": {
     "source": "file",
     "file": "docs/book/VERSION"
@@ -20,6 +22,16 @@
   "edition": "full",
   "primaryFormat": "typst",
   "mobi": false,
+  "pdf": {
+    "coverImage": "cover/rgbdns-cover.png",
+    "coverWidth": "6in",
+    "coverHeight": "9in",
+    "coverFit": "cover"
+  },
+  "epub": {
+    "coverImage": "cover/rgbdns-cover.png",
+    "includeRenderedCover": false
+  },
   "pandoc": {
     "reader": "markdown+smart",
     "tocDepth": 2,

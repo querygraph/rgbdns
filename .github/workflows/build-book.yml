@@ -1,0 +1,51 @@
+name: Build FirstPair Book
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-firstpair-book
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - name: Check out rgbdns
+        uses: actions/checkout@v5
+
+      - name: Check out FirstPair
+        uses: actions/checkout@v5
+        with:
+          repository: firstpair/firstpair
+          path: firstpair
+
+      - name: Install the pinned publishing toolchain
+        run: |
+          mkdir -p "$HOME/src"
+          mv firstpair "$HOME/src/firstpair"
+          "$HOME/src/firstpair/publishing/scripts/install-toolchain.sh"
+
+      - name: Build and validate the book
+        run: |
+          docs/book/build.sh
+          docs/book/validate.sh
+          "$HOME/src/firstpair/publishing/scripts/verify-library-book.sh" \
+            docs/book/dist
+
+      - name: Commit generated artifacts
+        run: |
+          git config user.name "First Pair Builder"
+          git config user.email "builder@firstpair.org"
+          git add docs/book/dist
+          if git diff --cached --quiet; then
+            echo "Book artifacts already current."
+          else
+            git commit -m "Rebuild DNS book with image cover"
+            git pull --rebase origin master
+            git push origin HEAD:master
+          fi

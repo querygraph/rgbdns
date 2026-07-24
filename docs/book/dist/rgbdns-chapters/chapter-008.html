@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Authority: answering from owned facts</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-009.html" accesskey="n" rel="next">Recursion: discovering an answer</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-007.html" accesskey="p" rel="previous">UDP, TCP, EDNS, and truncation</a>
+</span>
+</div>
+</nav>
+<h1 data-number="7" id="authority-answering-from-owned-facts"><span
+class="header-section-number">7</span> Authority: answering from owned
+facts</h1>
+<h2 data-number="7.1" id="finding-the-closest-relevant-authority"><span
+class="header-section-number">7.1</span> Finding the closest relevant
+authority</h2>
+<p>For a question <code>(name, type)</code>, an authoritative server
+determines:</p>
+<ol type="1">
+<li>whether the name lies in a served zone;</li>
+<li>whether a delegation cut is closer than that zone’s apex;</li>
+<li>whether the exact name exists;</li>
+<li>whether the requested RRset exists;</li>
+<li>whether a CNAME or wildcard changes the answer;</li>
+<li>which SOA proves a negative result.</li>
+</ol>
+<p>A query beneath a delegated child should produce a referral, not an
+authoritative negative answer from the parent. A query outside all
+configured zones should normally be refused. These boundary checks
+matter more than a simple map lookup.</p>
+<p>rgbdns’s <code>Zone</code> stores records in a
+<code>BTreeMap&lt;Name, Vec&lt;Record&gt;&gt;</code>, authoritative
+apices and delegation owners in ordered sets, and separate metadata for
+location and activation. Lookup walks name ancestry, recognizes cuts,
+filters visible records, applies exact-name and wildcard rules, and
+returns the typed <code>Lookup</code> outcome.</p>
+<p>The response builder then:</p>
+<ul>
+<li>copies the query ID and relevant RD bit;</li>
+<li>marks authoritative answers with AA;</li>
+<li>expands CNAME chains with a 16-hop limit and visited-name set;</li>
+<li>adds address records for NS, MX, and SRV targets;</li>
+<li>clears AA on referrals;</li>
+<li>adds the SOA to negative answers;</li>
+<li>maps malformed, unsupported, and policy cases to protocol response
+codes.</li>
+</ul>
+<p>The finite CNAME bound and visited set are deliberate
+denial-of-service and correctness controls. A cyclic zone must not turn
+one datagram into unbounded work.</p>
+<h2 data-number="7.2" id="tinydns-data-as-a-source-language"><span
+class="header-section-number">7.2</span> tinydns data as a source
+language</h2>
+<p>djbdns uses a compact line-oriented zone source called
+<code>data</code>. The first character selects a record form. Common
+forms include:</p>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.</code></td>
+<td>zone authority plus NS and address data</td>
+</tr>
+<tr>
+<td><code>&amp;</code></td>
+<td>delegation NS and optional glue</td>
+</tr>
+<tr>
+<td><code>Z</code></td>
+<td>explicit SOA</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>A plus matching reverse PTR</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>A only</td>
+</tr>
+<tr>
+<td><code>6</code></td>
+<td>AAAA plus reverse PTR forms</td>
+</tr>
+<tr>
+<td><code>3</code></td>
+<td>AAAA only</td>
+</tr>
+<tr>
+<td><code>@</code></td>
+<td>MX and optional exchanger address</td>
+</tr>
+<tr>
+<td><code>C</code></td>
+<td>CNAME</td>
+</tr>
+<tr>
+<td><code>^</code></td>
+<td>PTR</td>
+</tr>
+<tr>
+<td><code>'</code></td>
+<td>TXT</td>
+</tr>
+<tr>
+<td><code>S</code></td>
+<td>SRV</td>
+</tr>
+<tr>
+<td><code>:</code></td>
+<td>generic record</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>client-location mapping</td>
+</tr>
+</tbody>
+</table>
+<p>Fields are colon-separated with octal escapes for bytes that would
+otherwise be ambiguous. Optional fields carry TTL, timestamp, and
+location information. The format is terse because it was designed for
+mechanical generation as well as hand editing.</p>
+<p><code>Zone::parse</code> reads this language line by line. It ignores
+blank, comment, and disabled lines; reports the failing line number;
+expands convenience forms into ordinary typed records; validates IPv4,
+flat 32-digit IPv6, names, numeric ranges, and escaped bytes; and
+records authoritative and delegation structure. When an SOA serial is
+omitted, file loading derives a nonzero default from the source
+modification time.</p>
+<p>Timestamp fields use TAI64-style cutoffs. Depending on the marker, a
+record can be visible before or after a specified instant. Location
+codes select records using configured client IPv4 prefixes. rgbdns
+carries that metadata beside the record and evaluates it at lookup
+time.</p>
+<h2 data-number="7.3" id="cdb-compile-once-read-predictably"><span
+class="header-section-number">7.3</span> CDB: compile once, read
+predictably</h2>
+<p>The traditional <code>tinydns-data</code> compiles text into a
+constant database, CDB. The serving process reads the compiled file
+instead of reparsing editable text for every startup or query.
+Compilation also enables atomic replacement: write and validate a new
+file, then rename it into place.</p>
+<p>rgbdns’s <code>src/cdb.rs</code> preserves the djbdns key/value
+layout. <code>compile</code> serializes typed records and metadata;
+<code>load</code> reads entries and reconstructs a <code>Zone</code>.
+The loader does not trust the database merely because it is local. It
+bounds file and entry sizes, validates keys, checks record layouts,
+decodes names and RDATA through explicit lengths, and rejects malformed
+data.</p>
+<p>This is an important general rule: compiled configuration is still
+input. It may be truncated by a failed copy, generated by an older tool,
+or replaced by an attacker with filesystem access. Memory safety should
+not depend on the provenance story being perfect.</p>
+</body>
+</html>

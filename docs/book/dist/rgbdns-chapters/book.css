@@ -1,0 +1,33 @@
+body {
+  font-family: serif;
+  line-height: 1.45;
+  margin: 5%;
+}
+h1, h2, h3 {
+  font-family: sans-serif;
+  line-height: 1.15;
+}
+code, pre {
+  font-family: monospace;
+}
+pre {
+  background: #f4f6f8;
+  border-left: 0.25em solid #476b8e;
+  padding: 0.8em;
+  white-space: pre-wrap;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  border: 1px solid #9aa5b1;
+  padding: 0.35em;
+  vertical-align: top;
+}
+blockquote {
+  border-left: 0.25em solid #9aa5b1;
+  margin-left: 0;
+  padding-left: 1em;
+}
+

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Messages on the wire</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-007.html" accesskey="n" rel="next">UDP, TCP, EDNS, and truncation</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-005.html" accesskey="p" rel="previous">Resource records: typed facts with lifetimes</a>
+</span>
+</div>
+</nav>
+<h1 data-number="5" id="messages-on-the-wire"><span
+class="header-section-number">5</span> Messages on the wire</h1>
+<h2 data-number="5.1" id="the-twelve-byte-header"><span
+class="header-section-number">5.1</span> The twelve-byte header</h2>
+<p>A DNS message begins with a fixed twelve-byte header:</p>
+<pre class="text"><code>0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-------------------------------+-------------------------------+
+|              ID               |            flags              |
++-------------------------------+-------------------------------+
+|          question count       |          answer count         |
++-------------------------------+-------------------------------+
+|         authority count       |         additional count      |
++-------------------------------+-------------------------------+</code></pre>
+<p>The transaction ID lets a client associate a response with a query.
+Important flags include QR (query versus response), opcode, AA
+(authoritative answer), TC (truncated), RD (recursion desired), RA
+(recursion available), and the four-bit response code.</p>
+<p>The four following sections contain questions, answers, authority
+records, and additional records. A normal question carries a name,
+requested type, and class. Resource-record sections add TTL, RDATA
+length, and RDATA.</p>
+<p>All multibyte integers are network byte order. Every count and length
+comes from an untrusted peer. A decoder must prove that bytes exist
+before reading them, cap allocations, reject invalid labels and
+pointers, and finish with a coherent message rather than a partially
+trusted structure.</p>
+<h2 data-number="5.2" id="name-compression"><span
+class="header-section-number">5.2</span> Name compression</h2>
+<p>Repeating full names would waste scarce datagram space. DNS permits a
+name suffix to be replaced by a two-byte pointer whose high bits are
+<code>11</code> and whose remaining bits are an offset earlier in the
+message.</p>
+<p>Compression turns name decoding into graph traversal. A malicious
+packet can contain a pointer loop, excessive indirection, or an offset
+outside the packet. A safe decoder tracks visited offsets or imposes a
+strict jump bound, checks every target, and separately enforces the
+expanded 255-octet name limit.</p>
+<p>rgbdns’s <code>Reader</code> in <code>src/packet.rs</code> keeps all
+reads within a borrowed byte slice. Name decoding validates pointer
+targets and bounds traversal. Record decoding confines each RDATA parser
+to the declared RDLENGTH. EDNS option iteration likewise checks the
+option header and value before advancing.</p>
+<p>The <code>Writer</code> performs the reverse operation. Encoding is
+fallible: counts must fit 16 bits, names and RDATA must fit their
+fields, and the result must remain valid. This symmetry—decode into
+typed data, manipulate typed data, encode with checks—is the packet
+layer’s central safety property.</p>
+<h2 data-number="5.3" id="errors-are-protocol-results"><span
+class="header-section-number">5.3</span> Errors are protocol
+results</h2>
+<p>Several results that sound similar are materially different:</p>
+<ul>
+<li><strong>NOERROR with answers</strong>: the requested RRset
+exists.</li>
+<li><strong>NOERROR without answers</strong>, often called NODATA: the
+name exists but the requested type does not.</li>
+<li><strong>NXDOMAIN</strong>: the queried name does not exist.</li>
+<li><strong>SERVFAIL</strong>: the server could not safely complete
+processing.</li>
+<li><strong>REFUSED</strong>: policy forbids the operation.</li>
+<li><strong>FORMERR</strong>: the message is malformed.</li>
+<li><strong>NOTIMP</strong>: the requested opcode is unsupported.</li>
+</ul>
+<p>Negative answers normally include the zone’s SOA so resolvers can
+cache the negative result. Confusing NODATA with NXDOMAIN can suppress
+other valid types at the same name.</p>
+<p>rgbdns expresses authoritative lookup outcomes as
+<code>Lookup::Answer</code>, <code>Referral</code>, <code>NoData</code>,
+<code>NxDomain</code>, and <code>Refused</code>. That internal sum type
+forces the response builder to handle each protocol meaning
+explicitly.</p>
+</body>
+</html>
