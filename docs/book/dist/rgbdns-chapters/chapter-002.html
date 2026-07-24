@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Preface</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-003.html" accesskey="n" rel="next">The problem DNS solves</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-001.html" accesskey="p" rel="previous">DNS from First Principles</a>
+</span>
+</div>
+</nav>
+<h1 class="unnumbered" id="preface">Preface</h1>
+<p>DNS is often introduced as “the Internet’s phone book.” That metaphor
+is useful for about a minute. A phone book is one database, published in
+editions, mapping people to telephone numbers. DNS is a distributed
+protocol for finding typed, time-limited statements in a delegated tree.
+It has many writers, many readers, caches between them, multiple
+transports, and rules for proving both presence and absence. Names can
+point to addresses, but they can also identify mail exchangers, service
+endpoints, authoritative servers, cryptographic keys, and arbitrary
+text.</p>
+<p>This book develops DNS from those underlying problems. The first half
+builds a mental model independent of any implementation. The second half
+walks through rgbdns, a memory-safe Rust reimplementation of the djbdns
+suite. The aim is not only to explain what each program does, but why
+its boundaries look the way they do: immutable compiled data for
+authority, a separate recursive cache, small diagnostic clients,
+foreground daemons, and stream-oriented logging.</p>
+<p>The code is the final authority for rgbdns behavior. This book
+describes version 0.1.0 as built on 2026-07-23.</p>
+</body>
+</html>

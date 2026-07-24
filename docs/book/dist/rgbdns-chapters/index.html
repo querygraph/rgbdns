@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>DNS from First Principles</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+</span>
+<span class="navlink">
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-001.html" accesskey="n" rel="next">DNS from First Principles</a>
+</span>
+<span class="navlink">
+</span>
+</div>
+</nav>
+<header id="title-block-header">
+<h1 class="title">DNS from First Principles</h1>
+<p class="subtitle">Names, Packets, Authority, Recursion, and the Design
+of rgbdns</p>
+<p class="author">Alexy Khrabrov</p>
+<p class="date">2026-07-24</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="chapter-001.html#dns-from-first-principles"
+id="toc-dns-from-first-principles"><span
+class="toc-section-number">1</span> DNS from First Principles</a>
+<ul>
+<li><a
+href="chapter-001.html#names-packets-authority-recursion-and-the-design-of-rgbdns"
+id="toc-names-packets-authority-recursion-and-the-design-of-rgbdns"><span
+class="toc-section-number">1.1</span> Names, Packets, Authority,
+Recursion, and the Design of rgbdns</a></li>
+</ul></li>
+<li><a href="chapter-002.html#preface" id="toc-preface">Preface</a></li>
+<li><a href="chapter-003.html#the-problem-dns-solves"
+id="toc-the-problem-dns-solves"><span
+class="toc-section-number">2</span> The problem DNS solves</a>
+<ul>
+<li><a href="chapter-003.html#identity-is-not-location"
+id="toc-identity-is-not-location"><span
+class="toc-section-number">2.1</span> Identity is not location</a></li>
+<li><a
+href="chapter-003.html#requirements-that-pull-in-different-directions"
+id="toc-requirements-that-pull-in-different-directions"><span
+class="toc-section-number">2.2</span> Requirements that pull in
+different directions</a></li>
+<li><a href="chapter-003.html#roles-not-just-dns-servers"
+id="toc-roles-not-just-dns-servers"><span
+class="toc-section-number">2.3</span> Roles, not just “DNS
+servers”</a></li>
+</ul></li>
+<li><a href="chapter-004.html#names-form-a-delegated-tree"
+id="toc-names-form-a-delegated-tree"><span
+class="toc-section-number">3</span> Names form a delegated tree</a>
+<ul>
+<li><a href="chapter-004.html#labels-and-the-root"
+id="toc-labels-and-the-root"><span class="toc-section-number">3.1</span>
+Labels and the root</a></li>
+<li><a href="chapter-004.html#zones-are-administrative-cuts"
+id="toc-zones-are-administrative-cuts"><span
+class="toc-section-number">3.2</span> Zones are administrative
+cuts</a></li>
+<li><a href="chapter-004.html#wildcards-are-synthesis-rules"
+id="toc-wildcards-are-synthesis-rules"><span
+class="toc-section-number">3.3</span> Wildcards are synthesis
+rules</a></li>
+</ul></li>
+<li><a
+href="chapter-005.html#resource-records-typed-facts-with-lifetimes"
+id="toc-resource-records-typed-facts-with-lifetimes"><span
+class="toc-section-number">4</span> Resource records: typed facts with
+lifetimes</a>
+<ul>
+<li><a href="chapter-005.html#the-common-envelope"
+id="toc-the-common-envelope"><span class="toc-section-number">4.1</span>
+The common envelope</a></li>
+<li><a href="chapter-005.html#core-types" id="toc-core-types"><span
+class="toc-section-number">4.2</span> Core types</a></li>
+<li><a href="chapter-005.html#additional-data-is-an-optimization"
+id="toc-additional-data-is-an-optimization"><span
+class="toc-section-number">4.3</span> Additional data is an
+optimization</a></li>
+</ul></li>
+<li><a href="chapter-006.html#messages-on-the-wire"
+id="toc-messages-on-the-wire"><span class="toc-section-number">5</span>
+Messages on the wire</a>
+<ul>
+<li><a href="chapter-006.html#the-twelve-byte-header"
+id="toc-the-twelve-byte-header"><span
+class="toc-section-number">5.1</span> The twelve-byte header</a></li>
+<li><a href="chapter-006.html#name-compression"
+id="toc-name-compression"><span class="toc-section-number">5.2</span>
+Name compression</a></li>
+<li><a href="chapter-006.html#errors-are-protocol-results"
+id="toc-errors-are-protocol-results"><span
+class="toc-section-number">5.3</span> Errors are protocol
+results</a></li>
+</ul></li>
+<li><a href="chapter-007.html#udp-tcp-edns-and-truncation"
+id="toc-udp-tcp-edns-and-truncation"><span
+class="toc-section-number">6</span> UDP, TCP, EDNS, and truncation</a>
+<ul>
+<li><a href="chapter-007.html#why-there-are-two-transports"
+id="toc-why-there-are-two-transports"><span
+class="toc-section-number">6.1</span> Why there are two
+transports</a></li>
+<li><a href="chapter-007.html#truncation-must-preserve-a-valid-message"
+id="toc-truncation-must-preserve-a-valid-message"><span
+class="toc-section-number">6.2</span> Truncation must preserve a valid
+message</a></li>
+</ul></li>
+<li><a href="chapter-008.html#authority-answering-from-owned-facts"
+id="toc-authority-answering-from-owned-facts"><span
+class="toc-section-number">7</span> Authority: answering from owned
+facts</a>
+<ul>
+<li><a href="chapter-008.html#finding-the-closest-relevant-authority"
+id="toc-finding-the-closest-relevant-authority"><span
+class="toc-section-number">7.1</span> Finding the closest relevant
+authority</a></li>
+<li><a href="chapter-008.html#tinydns-data-as-a-source-language"
+id="toc-tinydns-data-as-a-source-language"><span
+class="toc-section-number">7.2</span> tinydns data as a source
+language</a></li>
+<li><a href="chapter-008.html#cdb-compile-once-read-predictably"
+id="toc-cdb-compile-once-read-predictably"><span
+class="toc-section-number">7.3</span> CDB: compile once, read
+predictably</a></li>
+</ul></li>
+<li><a href="chapter-009.html#recursion-discovering-an-answer"
+id="toc-recursion-discovering-an-answer"><span
+class="toc-section-number">8</span> Recursion: discovering an answer</a>
+<ul>
+<li><a href="chapter-009.html#iteration-from-the-root"
+id="toc-iteration-from-the-root"><span
+class="toc-section-number">8.1</span> Iteration from the root</a></li>
+<li><a href="chapter-009.html#the-cache-is-part-of-correctness"
+id="toc-the-cache-is-part-of-correctness"><span
+class="toc-section-number">8.2</span> The cache is part of
+correctness</a></li>
+<li><a href="chapter-009.html#forward-zones-and-djbdns-roots"
+id="toc-forward-zones-and-djbdns-roots"><span
+class="toc-section-number">8.3</span> Forward zones and djbdns
+roots</a></li>
+</ul></li>
+<li><a href="chapter-010.html#dnssec-authenticating-the-chain"
+id="toc-dnssec-authenticating-the-chain"><span
+class="toc-section-number">9</span> DNSSEC: authenticating the chain</a>
+<ul>
+<li><a href="chapter-010.html#what-ordinary-dns-cannot-prove"
+id="toc-what-ordinary-dns-cannot-prove"><span
+class="toc-section-number">9.1</span> What ordinary DNS cannot
+prove</a></li>
+<li><a href="chapter-010.html#rgbdns-validation-policy"
+id="toc-rgbdns-validation-policy"><span
+class="toc-section-number">9.2</span> rgbdns validation policy</a></li>
+</ul></li>
+<li><a href="chapter-011.html#zone-transfer-and-secondary-service"
+id="toc-zone-transfer-and-secondary-service"><span
+class="toc-section-number">10</span> Zone transfer and secondary
+service</a>
+<ul>
+<li><a href="chapter-011.html#axfr-is-a-stream-not-a-giant-datagram"
+id="toc-axfr-is-a-stream-not-a-giant-datagram"><span
+class="toc-section-number">10.1</span> AXFR is a stream, not a giant
+datagram</a></li>
+</ul></li>
+<li><a href="chapter-012.html#the-rgbdns-program-family"
+id="toc-the-rgbdns-program-family"><span
+class="toc-section-number">11</span> The rgbdns program family</a>
+<ul>
+<li><a href="chapter-012.html#one-suite-small-purposes"
+id="toc-one-suite-small-purposes"><span
+class="toc-section-number">11.1</span> One suite, small
+purposes</a></li>
+<li><a href="chapter-012.html#specialized-responders"
+id="toc-specialized-responders"><span
+class="toc-section-number">11.2</span> Specialized responders</a></li>
+</ul></li>
+<li><a href="chapter-013.html#client-behavior-and-diagnostics"
+id="toc-client-behavior-and-diagnostics"><span
+class="toc-section-number">12</span> Client behavior and diagnostics</a>
+<ul>
+<li><a href="chapter-013.html#a-query-is-more-than-sending-bytes"
+id="toc-a-query-is-more-than-sending-bytes"><span
+class="toc-section-number">12.1</span> A query is more than sending
+bytes</a></li>
+<li><a href="chapter-013.html#practical-checks"
+id="toc-practical-checks"><span class="toc-section-number">12.2</span>
+Practical checks</a></li>
+</ul></li>
+<li><a href="chapter-014.html#security-engineering-in-rgbdns"
+id="toc-security-engineering-in-rgbdns"><span
+class="toc-section-number">13</span> Security engineering in rgbdns</a>
+<ul>
+<li><a href="chapter-014.html#the-packet-is-hostile"
+id="toc-the-packet-is-hostile"><span
+class="toc-section-number">13.1</span> The packet is hostile</a></li>
+<li><a href="chapter-014.html#least-privilege-and-filesystem-boundaries"
+id="toc-least-privilege-and-filesystem-boundaries"><span
+class="toc-section-number">13.2</span> Least privilege and filesystem
+boundaries</a></li>
+</ul></li>
+<li><a href="chapter-015.html#time-and-logs-tai64n"
+id="toc-time-and-logs-tai64n"><span class="toc-section-number">14</span>
+Time and logs: TAI64N</a>
+<ul>
+<li><a href="chapter-015.html#why-a-dns-suite-contains-time-tools"
+id="toc-why-a-dns-suite-contains-time-tools"><span
+class="toc-section-number">14.1</span> Why a DNS suite contains time
+tools</a></li>
+</ul></li>
+<li><a href="chapter-016.html#running-rgbdns-under-supervision"
+id="toc-running-rgbdns-under-supervision"><span
+class="toc-section-number">15</span> Running rgbdns under
+supervision</a>
+<ul>
+<li><a href="chapter-016.html#the-service-contract"
+id="toc-the-service-contract"><span
+class="toc-section-number">15.1</span> The service contract</a></li>
+<li><a href="chapter-016.html#recommendations"
+id="toc-recommendations"><span class="toc-section-number">15.2</span>
+Recommendations</a></li>
+<li><a href="chapter-016.html#a-practical-selection-rule"
+id="toc-a-practical-selection-rule"><span
+class="toc-section-number">15.3</span> A practical selection
+rule</a></li>
+</ul></li>
+<li><a href="chapter-017.html#operating-an-authoritative-service"
+id="toc-operating-an-authoritative-service"><span
+class="toc-section-number">16</span> Operating an authoritative
+service</a>
+<ul>
+<li><a href="chapter-017.html#build-stage-verify-replace"
+id="toc-build-stage-verify-replace"><span
+class="toc-section-number">16.1</span> Build, stage, verify,
+replace</a></li>
+<li><a href="chapter-017.html#observe-the-right-signals"
+id="toc-observe-the-right-signals"><span
+class="toc-section-number">16.2</span> Observe the right
+signals</a></li>
+</ul></li>
+<li><a href="chapter-018.html#testing-dns-software"
+id="toc-testing-dns-software"><span class="toc-section-number">17</span>
+Testing DNS software</a>
+<ul>
+<li><a href="chapter-018.html#layers-of-evidence"
+id="toc-layers-of-evidence"><span class="toc-section-number">17.1</span>
+Layers of evidence</a></li>
+<li><a href="chapter-018.html#adversarial-cases-worth-keeping"
+id="toc-adversarial-cases-worth-keeping"><span
+class="toc-section-number">17.2</span> Adversarial cases worth
+keeping</a></li>
+<li><a
+href="chapter-018.html#conformance-as-an-executable-specification"
+id="toc-conformance-as-an-executable-specification"><span
+class="toc-section-number">17.3</span> Conformance as an executable
+specification</a></li>
+<li><a href="chapter-018.html#hardening-found-by-conformance-work"
+id="toc-hardening-found-by-conformance-work"><span
+class="toc-section-number">17.4</span> Hardening found by conformance
+work</a></li>
+<li><a
+href="chapter-018.html#benchmarks-and-evidence-driven-optimization"
+id="toc-benchmarks-and-evidence-driven-optimization"><span
+class="toc-section-number">17.5</span> Benchmarks and evidence-driven
+optimization</a></li>
+</ul></li>
+<li><a href="chapter-019.html#reading-the-rgbdns-source"
+id="toc-reading-the-rgbdns-source"><span
+class="toc-section-number">18</span> Reading the rgbdns source</a>
+<ul>
+<li><a href="chapter-019.html#a-path-through-the-code"
+id="toc-a-path-through-the-code"><span
+class="toc-section-number">18.1</span> A path through the code</a></li>
+<li><a href="chapter-019.html#design-patterns-to-carry-elsewhere"
+id="toc-design-patterns-to-carry-elsewhere"><span
+class="toc-section-number">18.2</span> Design patterns to carry
+elsewhere</a></li>
+</ul></li>
+<li><a href="chapter-020.html#where-dns-ends"
+id="toc-where-dns-ends"><span class="toc-section-number">19</span> Where
+DNS ends</a></li>
+<li><a href="chapter-021.html#appendix-a-configuration-quick-reference"
+id="toc-appendix-a-configuration-quick-reference"><span
+class="toc-section-number">20</span> Appendix A: Configuration quick
+reference</a></li>
+<li><a href="chapter-022.html#appendix-b-further-reading"
+id="toc-appendix-b-further-reading"><span
+class="toc-section-number">21</span> Appendix B: Further
+reading</a></li>
+</ul>
+</nav>
+
+</body>
+</html>

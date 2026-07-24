@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Recursion: discovering an answer</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-010.html" accesskey="n" rel="next">DNSSEC: authenticating the chain</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-008.html" accesskey="p" rel="previous">Authority: answering from owned facts</a>
+</span>
+</div>
+</nav>
+<h1 data-number="8" id="recursion-discovering-an-answer"><span
+class="header-section-number">8</span> Recursion: discovering an
+answer</h1>
+<h2 data-number="8.1" id="iteration-from-the-root"><span
+class="header-section-number">8.1</span> Iteration from the root</h2>
+<p>A recursive resolver turns one client request into a bounded sequence
+of queries. For <code>www.example.com. A</code>, a cold lookup is
+approximately:</p>
+<pre class="text"><code>stub → recursive resolver
+          ├─ root:       who serves com?
+          ├─ com server: who serves example.com?
+          └─ example:    what is www.example.com A?
+     ← final answer</code></pre>
+<p>The resolver follows referrals, resolves nameserver addresses when
+glue is insufficient, handles aliases, retries servers and transports,
+and detects loops. It caches useful RRsets so later clients may skip
+most of this path.</p>
+<p>Root hints are not answers to every name. They are bootstrap
+addresses for reaching the root authority. They need periodic
+maintenance because the set can change, though names and anycast make
+changes infrequent.</p>
+<h2 data-number="8.2" id="the-cache-is-part-of-correctness"><span
+class="header-section-number">8.2</span> The cache is part of
+correctness</h2>
+<p>A cache key includes at least name, type, and class. A cached
+positive RRset expires according to TTL. Negative results also have
+bounded lifetimes derived from SOA data. Delegation and
+nameserver-address caches help the iterative algorithm navigate
+efficiently.</p>
+<p>Capacity is as important as time. An attacker can generate endless
+distinct names. An unbounded cache converts traffic into memory
+exhaustion. A practical resolver bounds response cache bytes, nameserver
+cache entries, recursion depth, referral work, packet sizes, concurrent
+operations, and timeouts.</p>
+<p><code>src/bin/dnscache.rs</code> uses Hickory’s recursive zone
+handler inside rgbdns’s process and policy shell. It configures:</p>
+<ul>
+<li>randomized query-name letter case;</li>
+<li>a bounded response cache, defaulting to 16 MiB;</li>
+<li>a bounded nameserver cache;</li>
+<li>bounded ordinary and nameserver recursion depth;</li>
+<li>a 1232-byte EDNS payload;</li>
+<li>UDP and TCP listeners;</li>
+<li>loopback-only clients by default, expanded through
+<code>ALLOW_NETS</code>.</li>
+</ul>
+<p>Configuration values are parsed with explicit minimums and maximums.
+A typo such as an enormous cache size fails startup rather than silently
+allocating an operator’s mistake.</p>
+<h2 data-number="8.3" id="forward-zones-and-djbdns-roots"><span
+class="header-section-number">8.3</span> Forward zones and djbdns
+roots</h2>
+<p>Private namespaces and split DNS often need selected suffixes sent to
+specific servers. rgbdns reads forward-zone configuration from the
+environment and the djbdns-style <code>ROOT/servers</code> directory.
+The filename identifies a suffix and the file lists bounded server
+addresses.</p>
+<p>The special <code>servers/@</code> file represents root servers.
+Hickory consumes a root hints file in master-file syntax, so
+<code>PreparedRoots</code> translates djbdns’s plain address list into a
+private temporary file. Creation uses restrictive permissions and
+cleanup occurs when the prepared object is dropped. This adapter
+preserves the external configuration contract without weakening the
+library boundary.</p>
+<p>Forwarded private zones disable strict case-randomization response
+matching because legacy authorities may canonicalize owner case. They
+retain TCP retry and a bounded cache. This is a scoped compatibility
+decision, not a global removal of query hardening.</p>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>The problem DNS solves</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-004.html" accesskey="n" rel="next">Names form a delegated tree</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-002.html" accesskey="p" rel="previous">Preface</a>
+</span>
+</div>
+</nav>
+<h1 data-number="2" id="the-problem-dns-solves"><span
+class="header-section-number">2</span> The problem DNS solves</h1>
+<h2 data-number="2.1" id="identity-is-not-location"><span
+class="header-section-number">2.1</span> Identity is not location</h2>
+<p>A network delivers packets to addresses. Humans and applications want
+stable identities. Those two things should not be fused.</p>
+<p>Suppose a service is reached at <code>192.0.2.8</code>. If that
+address is embedded in every configuration, moving the service requires
+changing every client. A name such as <code>api.example</code>
+introduces indirection:</p>
+<pre class="text"><code>application → api.example → 192.0.2.8 → packets</code></pre>
+<p>Indirection has a cost: another system must answer the middle
+question. Its benefit is that the service owner can change the answer
+without changing the application. DNS is the globally deployed mechanism
+for this indirection.</p>
+<p>The mapping is not a function from one name to one address. One name
+may have several addresses. The answers may differ by client location. A
+mail domain may name several mail exchangers with preferences. A service
+may delegate a subtree to another organization. The useful abstraction
+is therefore:</p>
+<pre class="text"><code>(owner name, record type, class) → a set of resource records</code></pre>
+<p>The owner and type together select an RRset. “RRset” means all
+resource records with the same owner, type, and class. Implementations
+should normally treat the set as a unit because caches and DNSSEC
+signatures do.</p>
+<h2 data-number="2.2"
+id="requirements-that-pull-in-different-directions"><span
+class="header-section-number">2.2</span> Requirements that pull in
+different directions</h2>
+<p>A global naming system must satisfy conflicting demands:</p>
+<ul>
+<li>It must scale without one central database receiving every
+query.</li>
+<li>Different organizations must control different parts of the
+namespace.</li>
+<li>Changes must propagate, but cached answers are essential for
+performance.</li>
+<li>Replies should usually fit in one datagram, but some answers are
+large.</li>
+<li>Old implementations must coexist with protocol extensions.</li>
+<li>A client needs to distinguish “no such name” from “that name has no
+record of this type.”</li>
+<li>Operators need a way to transfer complete zones and to diagnose
+individual exchanges.</li>
+</ul>
+<p>DNS answers these demands with hierarchy, delegation, caching
+lifetimes, compact binary messages, UDP plus TCP, explicit result codes,
+and typed records. Many operational surprises are direct consequences of
+those design choices rather than random quirks.</p>
+<h2 data-number="2.3" id="roles-not-just-dns-servers"><span
+class="header-section-number">2.3</span> Roles, not just “DNS
+servers”</h2>
+<p>The phrase “DNS server” hides several jobs.</p>
+<p>An <strong>authoritative server</strong> publishes data for zones it
+controls. It answers from configured facts and does not chase referrals
+on behalf of a client.</p>
+<p>A <strong>recursive resolver</strong> accepts a question from a stub
+client, follows the delegation chain, validates and caches what it
+learns, and returns a final answer.</p>
+<p>A <strong>stub resolver</strong> is the client-side library or
+program that sends a recursive query to a configured resolver.</p>
+<p>A <strong>forwarder</strong> sends selected questions to another
+resolver rather than performing iteration itself.</p>
+<p>Keeping these roles distinct is both conceptual hygiene and a
+security boundary. An authoritative daemon does not need a large mutable
+Internet-fed cache. A recursive resolver does not need the private
+machinery used to edit a zone. rgbdns follows the djbdns design and runs
+authority and recursion as different programs.</p>
+</body>
+</html>

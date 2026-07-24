@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Time and logs: TAI64N</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-016.html" accesskey="n" rel="next">Running rgbdns under supervision</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-014.html" accesskey="p" rel="previous">Security engineering in rgbdns</a>
+</span>
+</div>
+</nav>
+<h1 data-number="14" id="time-and-logs-tai64n"><span
+class="header-section-number">14</span> Time and logs: TAI64N</h1>
+<h2 data-number="14.1" id="why-a-dns-suite-contains-time-tools"><span
+class="header-section-number">14.1</span> Why a DNS suite contains time
+tools</h2>
+<p>Long-running daemons need logs, and djb’s tools use TAI64N labels. A
+label has an <code>@</code>, sixteen hexadecimal digits of biased TAI
+seconds, and eight hexadecimal digits of nanoseconds:</p>
+<pre class="text"><code>@4000000037c219bf2ef02e94</code></pre>
+<p>TAI is a continuous atomic timescale. UTC inserts leap seconds, so
+converting between a POSIX/UTC timestamp and TAI requires the applicable
+TAI−UTC offset. The offset was 10 seconds at the Unix epoch convention
+used here and reached 37 seconds after the 2016 leap second.</p>
+<p><code>tai64n</code> timestamps each input line at the moment its
+first bytes are read. <code>tai64nlocal</code> recognizes a valid
+leading label and replaces it with local civil time at nanosecond
+precision. Invalid prefixes pass through unchanged.
+<code>multilog t</code> uses the same label generator, ensuring
+standalone filters and log files agree.</p>
+<p><code>src/tai64.rs</code> contains the complete 1972–2017
+positive-leap transition table. It validates the fixed-width hexadecimal
+form and nanosecond range. Both stream filters use bounded memory: the
+localizer buffers only the 25-byte candidate prefix and streams the rest
+of even an extremely long line. At I/O failure the command exits 111,
+following the daemontools convention.</p>
+<p>TAI64N provides sortable, unambiguous event labels. Converting to
+local time is a presentation step, not the archival representation.</p>
+</body>
+</html>

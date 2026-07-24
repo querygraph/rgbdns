@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Zone transfer and secondary service</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-012.html" accesskey="n" rel="next">The rgbdns program family</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-010.html" accesskey="p" rel="previous">DNSSEC: authenticating the chain</a>
+</span>
+</div>
+</nav>
+<h1 data-number="10" id="zone-transfer-and-secondary-service"><span
+class="header-section-number">10</span> Zone transfer and secondary
+service</h1>
+<h2 data-number="10.1" id="axfr-is-a-stream-not-a-giant-datagram"><span
+class="header-section-number">10.1</span> AXFR is a stream, not a giant
+datagram</h2>
+<p>AXFR transfers a complete zone over TCP. A successful stream begins
+with the zone’s SOA, contains the zone records, and ends with the SOA
+again. The records may span many DNS messages. A client must continue
+until it sees the closing SOA under the transfer rules; reading one
+response is insufficient.</p>
+<p>Transfers reveal the zone contents and can consume resources, so
+authorities normally restrict clients. TSIG is a common authentication
+mechanism in the wider ecosystem, while IP allowlists are a simpler
+policy with weaker identity properties.</p>
+<p><code>src/axfr.rs</code> provides both sides. <code>axfrdns</code>
+accepts TCP only and checks client networks, loopback by default. It
+requires one AXFR question, obtains a boundary-aware transfer from
+<code>Zone</code>, and frames bounded messages.
+<code>Zone::transfer</code> excludes records beneath delegated child
+zones and wraps the result in the apex SOA.</p>
+<p><code>axfr-get</code> generates a random transaction ID, validates
+response identity and shape, collects records until the closing SOA,
+renders them in tinydns source form, writes a temporary output, and
+atomically installs the completed file. The temporary/final path pair
+prevents a failed transfer from replacing usable data with a partial
+zone.</p>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Reading the rgbdns source</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-020.html" accesskey="n" rel="next">Where DNS ends</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-018.html" accesskey="p" rel="previous">Testing DNS software</a>
+</span>
+</div>
+</nav>
+<h1 data-number="18" id="reading-the-rgbdns-source"><span
+class="header-section-number">18</span> Reading the rgbdns source</h1>
+<h2 data-number="18.1" id="a-path-through-the-code"><span
+class="header-section-number">18.1</span> A path through the code</h2>
+<p>Read the project in dependency order:</p>
+<ol type="1">
+<li><code>src/name.rs</code> — the foundational name invariant.</li>
+<li><code>src/packet.rs</code> — types and bounded wire codec.</li>
+<li><code>src/zone.rs</code> — tinydns source and authoritative lookup
+semantics.</li>
+<li><code>src/cdb.rs</code> — compiled compatibility format.</li>
+<li><code>src/server.rs</code> — query validation, answer construction,
+transport limits.</li>
+<li><code>src/client.rs</code> — stub behavior and TCP fallback.</li>
+<li><code>src/axfr.rs</code> — streaming zone movement and atomic
+installation.</li>
+<li><code>src/dnscache_config.rs</code> and
+<code>src/bin/dnscache.rs</code> — iterative recursion, DNSSEC,
+forwarding, access, and resource policy.</li>
+<li><code>src/rbl.rs</code>, <code>src/pick.rs</code>,
+<code>src/wall.rs</code>, and <code>src/special.rs</code> — specialized
+responders.</li>
+<li><code>src/conf.rs</code>, <code>src/setuidgid.rs</code>,
+<code>src/multilog.rs</code>, and <code>src/tai64.rs</code> — deployment
+and operations.</li>
+</ol>
+<p>The binaries in <code>src/bin</code> should then look thin. That is
+intentional. They parse the command contract, load configuration, call a
+library boundary, print diagnostics, and map fatal errors to the suite’s
+exit convention.</p>
+<h2 data-number="18.2" id="design-patterns-to-carry-elsewhere"><span
+class="header-section-number">18.2</span> Design patterns to carry
+elsewhere</h2>
+<p>Several rgbdns choices generalize beyond DNS.</p>
+<p><strong>Parse into valid types.</strong> If an invalid name can
+circulate as an ordinary string, every consumer must rediscover
+validation.</p>
+<p><strong>Bound dimensions independently.</strong> A packet byte limit
+does not replace a compression-depth limit; a cache byte limit does not
+replace a recursion-depth limit.</p>
+<p><strong>Separate policy from mechanism.</strong>
+<code>transport.rs</code> owns bounded UDP and TCP mechanics while the
+authoritative and specialized handlers own answer policy.</p>
+<p><strong>Compile mutable source into immutable serving data.</strong>
+This gives validation, atomic rollout, simple readers, and easy
+rollback.</p>
+<p><strong>Preserve protocol distinctions internally.</strong> A
+<code>Lookup</code> enum prevents NXDOMAIN, NODATA, referral, and
+refusal from collapsing into “no records.”</p>
+<p><strong>Run in the foreground.</strong> It composes with old and new
+supervisors and keeps signals understandable.</p>
+<p><strong>Treat compatibility files as hostile.</strong> Historical
+layout fidelity need not mean historical trust assumptions.</p>
+</body>
+</html>

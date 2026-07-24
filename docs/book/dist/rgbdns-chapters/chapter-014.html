@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Security engineering in rgbdns</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-015.html" accesskey="n" rel="next">Time and logs: TAI64N</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-013.html" accesskey="p" rel="previous">Client behavior and diagnostics</a>
+</span>
+</div>
+</nav>
+<h1 data-number="13" id="security-engineering-in-rgbdns"><span
+class="header-section-number">13</span> Security engineering in
+rgbdns</h1>
+<h2 data-number="13.1" id="the-packet-is-hostile"><span
+class="header-section-number">13.1</span> The packet is hostile</h2>
+<p>DNS combines nearly every parser hazard: nested lengths, compression
+pointers, variable counts, binary strings, recursive relationships, and
+network-facing availability requirements. “Written in Rust” removes
+broad classes of memory corruption, but it does not automatically
+prevent allocation bombs, infinite loops, CPU amplification, path races,
+policy errors, or accepting incoherent messages.</p>
+<p>rgbdns therefore uses several layers:</p>
+<ul>
+<li><code>#![forbid(unsafe_code)]</code> for the library;</li>
+<li>explicit bounds before every wire read;</li>
+<li>validated <code>Name</code>, <code>Message</code>, and
+<code>RData</code> objects;</li>
+<li>limits on compression traversal, aliases, records, files,
+configuration lists, recursion, transfers, and cache sizes;</li>
+<li>cryptographic operating-system randomness for query IDs and
+selection;</li>
+<li>complete-record truncation;</li>
+<li>loopback-only defaults for recursion and transfer;</li>
+<li>atomic replacement for compiled databases and fetched zones;</li>
+<li>no shell interpolation when replacing a process.</li>
+</ul>
+<p>Property tests in <code>tests/packet_properties.rs</code> feed
+arbitrary bytes to the decoder and exercise encode/decode invariants.
+Golden CDB fixtures compare compiled output with the expected djbdns
+layout. Network tests cross real UDP and TCP boundaries. Compatibility
+tests are valuable here because a parser can be safe yet subtly wrong,
+or compatible yet unsafe.</p>
+<h2 data-number="13.2"
+id="least-privilege-and-filesystem-boundaries"><span
+class="header-section-number">13.2</span> Least privilege and filesystem
+boundaries</h2>
+<p>The <code>*-conf</code> commands generate service directories whose
+run scripts execute the daemon under a selected account. rgbdns’s
+<code>setuidgid</code> resolves the user and group, initializes
+supplementary groups, drops GID and UID, verifies the result, and
+directly replaces itself with the target program. Direct replacement
+preserves signals and exit status and avoids an extra shell-owned
+process.</p>
+<p>Generated paths are shell-quoted and support binaries by absolute
+path. Configuration writers reject unsafe existing file types and apply
+intentional modes. CDB and AXFR update workflows install only complete
+outputs.</p>
+<p>Privilege dropping is not a substitute for a restricted service
+account, read-only data, network policy, or supervisor hardening. It is
+one layer in a deployment.</p>
+</body>
+</html>

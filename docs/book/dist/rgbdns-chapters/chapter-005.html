@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Resource records: typed facts with lifetimes</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-006.html" accesskey="n" rel="next">Messages on the wire</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-004.html" accesskey="p" rel="previous">Names form a delegated tree</a>
+</span>
+</div>
+</nav>
+<h1 data-number="4"
+id="resource-records-typed-facts-with-lifetimes"><span
+class="header-section-number">4</span> Resource records: typed facts
+with lifetimes</h1>
+<h2 data-number="4.1" id="the-common-envelope"><span
+class="header-section-number">4.1</span> The common envelope</h2>
+<p>Every resource record has:</p>
+<ul>
+<li>an owner name;</li>
+<li>a numeric type;</li>
+<li>a class, almost always Internet class <code>IN</code>;</li>
+<li>a time to live, or TTL;</li>
+<li>type-specific data called RDATA.</li>
+</ul>
+<p>The TTL is a lease offered to caches. If an authoritative server
+returns a TTL of 300 seconds, a cache may reuse that answer for at most
+five minutes before refreshing it. The TTL does not schedule a change
+and does not guarantee that every cache holds the answer for the full
+interval. It establishes an upper bound.</p>
+<p>Changing a record and then lowering its TTL is too late for clients
+that already cached the older, longer lease. Planned migrations lower
+the TTL at least one old-TTL interval before the change, wait, make the
+change, and later raise it.</p>
+<h2 data-number="4.2" id="core-types"><span
+class="header-section-number">4.2</span> Core types</h2>
+<p><strong>A</strong> maps an owner to an IPv4 address.
+<strong>AAAA</strong> maps it to an IPv6 address. Several records at one
+owner form an address RRset; DNS does not promise that clients use them
+in listed order.</p>
+<p><strong>NS</strong> names an authoritative server for a zone or
+delegation.</p>
+<p><strong>SOA</strong>, the start of authority, identifies the zone and
+carries operational parameters: primary server, responsible mailbox,
+serial, refresh, retry, expire, and negative-cache values. A secondary
+compares serial numbers to decide whether a transfer is needed. Serial
+arithmetic wraps in a defined 32-bit space, so blindly treating it as an
+ordinary integer can be wrong near the boundary.</p>
+<p><strong>CNAME</strong> says that its owner is an alias of another
+name. Except for DNSSEC and narrowly specified metadata, an owner with
+CNAME should not also hold unrelated data. A resolver follows the chain
+while defending against loops and excessive depth.</p>
+<p><strong>MX</strong> names a mail exchanger and gives it a preference.
+Lower numbers are preferred. The target is a name, not an address.</p>
+<p><strong>PTR</strong> provides a name-valued reverse mapping. IPv4
+reverse names live below <code>in-addr.arpa.</code> with octets
+reversed. IPv6 reverse names live below <code>ip6.arpa.</code> with
+hexadecimal nibbles reversed.</p>
+<p><strong>TXT</strong> carries one or more length-delimited byte
+strings. Presentation formats often make it look like one free-form
+string, but the wire format retains segments.</p>
+<p><strong>SRV</strong> names a service endpoint with priority, weight,
+port, and target.</p>
+<p><strong>CAA</strong> constrains which certification authorities may
+issue certificates for a domain.</p>
+<p><strong>OPT</strong> is not ordinary zone data. It is a pseudo-record
+used by EDNS to negotiate UDP payload size and carry extension flags and
+options.</p>
+<p>rgbdns models these forms with <code>RecordType</code>,
+<code>Record</code>, and the <code>RData</code> enum in
+<code>src/packet.rs</code>. Known structured types receive structured
+variants. Unknown types can remain opaque where the format permits,
+preserving extensibility without confusing untrusted lengths with
+trusted objects.</p>
+<h2 data-number="4.3" id="additional-data-is-an-optimization"><span
+class="header-section-number">4.3</span> Additional data is an
+optimization</h2>
+<p>If an answer contains MX, NS, or SRV targets, the server may include
+associated A and AAAA records in the additional section. This can save
+queries. It does not change which RRset directly answers the question,
+and a resolver must apply the correct credibility rules rather than
+trusting unrelated additional data.</p>
+<p>The rgbdns authoritative response path collects target names from
+those record types and adds locally available addresses. It
+de-duplicates targets before lookup and preserves the distinction
+between answers and helpful additionals.</p>
+</body>
+</html>
