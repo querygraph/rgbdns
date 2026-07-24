@@ -1,0 +1,49 @@
+---
+type: "code-file"
+source_path: "src/bin/pickdns.rs"
+language: "rust"
+subsystem: "Command-line programs"
+crate: "pickdns"
+line_count: 21
+fragment_count: 2
+rgbdns_commit: "472c2087"
+---
+
+# src/bin/pickdns.rs
+
+- Subsystem: [[DNS from First Principles/Subsystems/Command-line programs|Command-line programs]]
+- Component: [[DNS from First Principles/Components/pickdns|pickdns]]
+- Source path: `src/bin/pickdns.rs`
+- Lines: 21
+- Summary: Source file in the Command-line programs subsystem.
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-43f5784a63d0|main]]: lines 4-10
+- [[DNS from First Principles/Fragments/rgbdns-frag-ae523517ba27|run]]: lines 11-21
+
+## Full Source
+
+```rust
+use rgbdns::{pick::Database, special};
+use std::sync::Arc;
+
+fn main() {
+    if let Err(error) = run() {
+        eprintln!("pickdns: fatal: {error}");
+        std::process::exit(111);
+    }
+}
+
+fn run() -> Result<(), Box<dyn std::error::Error>> {
+    let data = std::env::var("DATA").unwrap_or_else(|_| "data.cdb".into());
+    let database = Arc::new(Database::from_file(data)?);
+    let handler =
+        Arc::new(move |wire: &[u8], limit: usize, client| database.respond(wire, limit, client));
+    let ip = std::env::var("IP").unwrap_or_else(|_| "0.0.0.0".into());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "53".into());
+    let address = rgbdns::socket_address(&ip, &port)?;
+    special::serve(&address.to_string(), handler)?;
+    Ok(())
+}
+```

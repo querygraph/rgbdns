@@ -1,0 +1,97 @@
+---
+type: "code-file"
+source_path: "docs/compatibility.md"
+language: "markdown"
+subsystem: "Documentation"
+line_count: 72
+fragment_count: 1
+rgbdns_commit: "472c2087"
+---
+
+# docs/compatibility.md
+
+- Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
+- Source path: `docs/compatibility.md`
+- Lines: 72
+- Summary: Compatibility and research ledger
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-e477664e2daf|Compatibility and research ledger]]: lines 1-72
+
+## Full Source
+
+```markdown
+# Compatibility and research ledger
+
+Primary baseline: djbdns 1.05, released 2001-02-11 into the public domain.
+
+Implemented:
+
+- RFC 1034/1035 names, compression decoding, queries and resource records
+- tinydns markers `. & = + @ ' ^ C Z : 3 6 S %`, including client-location
+  selection and query-time TAI64 activation/expiration
+- atomic djbdns-compatible `data.cdb` compilation and bounded, validating CDB
+  loading; a 19-entry fixture including location, timestamp, SRV, and patched
+  IPv6 qualifiers was differentially verified as identical
+  key/value entries against Debian-patched djbdns 1.05
+- fefe-patch flat IPv6 `3`/`6` records, including both `ip6.arpa` and legacy
+  `ip6.int` reverse trees, plus `tinydns-edit` `host6`/`alias6`
+- authoritative A, AAAA, NS, CNAME, SOA, PTR, MX, TXT and opaque RR data
+- wildcard synthesis, NXDOMAIN/NODATA SOA authority, REFUSED outside zones
+- referrals with in-bailiwick glue and correct authoritative-bit behavior
+- EDNS(0), BADVERS, DO-bit echo, whole-record UDP truncation, and DNS over TCP
+- pointer-loop, section-count, label/name, RDLENGTH, and TXT bounds checks
+- randomized property tests and live UDP/TCP integration tests
+- iterative DNSSEC-validating `dnscache`, verified live against signed
+  `cloudflare.com` (AD), authenticated denial, and deliberately bogus
+  `dnssec-failed.org` (SERVFAIL without AD); the opt-in test is
+  `cargo test --test dnscache_network -- --ignored`
+- original one-address-per-line `dnscache` `root/servers/@` root-server files,
+  BIND master-file root hints, and per-domain `root/servers/*` forwarding
+- bounded RFC 5936-style AXFR serving and retrieval, with atomic conversion
+  back to tinydns text and loopback-only service access by default
+- `rbldns` longest-prefix matching, A/TXT responses and address substitution;
+  its CDB compiler is differentially identical to the original fixture
+- `walldns` direct-address and partial/full reverse-tree behavior
+- location-aware `pickdns` with exact CDB compilation and service configuration
+- recursive client tools `dnsip`, `dnsipq`, `dnsip6`, `dnsip6q`, `dnsname`,
+  `dnsmx`, `dnstxt`, and `dnsqr`, plus hardened non-recursive `dnsq`
+- bounded, order-preserving `dnsfilter` and iterative IPv4/IPv6 `dnstrace`
+- `tinydns-edit` add modes and bounded `random-ip`
+- service-directory generators for tinydns, dnscache, rbldns, walldns, and
+  axfrdns (portable generation omits privileged ownership changes)
+- in-suite `setuidgid` and the generated-service `multilog t` surface, plus
+  bounded `s<size>` rotation and `n<count>` retention controls
+- daemontools-compatible `tai64n` and `tai64nlocal`, with a complete
+  1972--2017 leap-second table and ISO local-time rendering
+
+Patch/source corpus searched and tracked:
+
+- Upstream djbdns 1.05 source and documentation at <https://cr.yp.to/djbdns.html>.
+- Debian 1.05-22.1 source, Python autopkgtests, historical `rts.tests`, and
+  patches for long-packet compression, SRV/PTR, recursion depth, the
+  CVE-2012-1191 ghost-domain attack, query merging, SOA caching, root hints,
+  data limits, POSIX types, and modern compilers.
+- Felix von Leitner's IPv6 patch line through test32.
+- FreeBSD's jumbo-p13, persistent-cache, ignoreip2, persistent-mmap, SRV,
+  DNSCurve, and IPv6 options.
+- NetBSD's cache-statistics, ignoreip2, multi-listener, merge-query, and
+  tinydns 64-bit patch options.
+- Gentoo's merged patch set including CVE-2008-4392 query coalescing and SOA
+  caching.
+- tinydnssec's DNSSEC records, signing workflow, EDNS(0), and large-response
+  support.
+- Third-party rbldns per-entry-response and multiple-zone patches.
+- errno, libc, compiler, large-file, and platform portability fixes across
+  Debian, Gentoo, FreeBSD, NetBSD, Ubuntu, and openSUSE packaging.
+
+Remaining compatibility work:
+
+- djbdns `dnscache` cache-dump tooling (the running iterative engine already
+  provides bounded caches,
+  bailiwick enforcement, DNSSEC, randomized ports/IDs/case, TCP fallback,
+  query coalescing, and negative caching)
+- additional RFC vectors and interoperability corpora (CDB compiler
+  compatibility is continuously enforced by patched-C golden-entry tests)
+```

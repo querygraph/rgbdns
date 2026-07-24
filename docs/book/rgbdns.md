@@ -995,6 +995,148 @@ Tests should assert protocol meaning, not only that the process remains alive.
 A safe FORMERR is better than a crash, but a silent NOERROR can still be a
 serious bug.
 
+## Conformance as an executable specification
+
+The conformance suite turns protocol prose into named, reviewable cases. Its
+scope is the DNS surface rgbdns implements; it does not imply support for every
+extension ever assigned by IANA. The principal coverage is:
+
+| Standard | Behavior exercised |
+|---|---|
+| RFC 1035 | header identity, flags, names, compression, typed RDATA, UDP and TCP results |
+| RFC 2181 | in-bailiwick glue, coherent RRset TTLs, duplicate suppression, CNAME exclusivity |
+| RFC 2308 | NXDOMAIN versus NODATA, authoritative SOA, negative-cache TTL |
+| RFC 3597 | unknown QTYPE behavior and lossless opaque RDATA |
+| RFC 4343 | case-insensitive name identity with query-case preservation |
+| RFC 4592 | closest-encloser wildcard synthesis and empty non-terminals |
+| RFC 5936 | AXFR framing, identity, flags, SOA bookends, and zone boundaries |
+| RFC 6891 | one root-owned OPT, payload negotiation, DO, BADVERS, and unknown options |
+| RFC 7766 | TCP framing, connection reuse, pipelining, and full-size responses |
+| RFC 8906 | the authoritative-server matrix for unknown types, opcodes, flags, and EDNS fields |
+| RFC 9619 | exactly one question in a standard query |
+
+This is more useful than a single “RFC compliant” label. A test name identifies
+the rule, a packet fixture demonstrates it, and a failure points to a specific
+semantic regression.
+
+RFC 8906 is especially valuable because it tests how a server behaves at the
+edges of what it understands. An unknown ordinary type is not a protocol
+error: the answer depends on whether the owner name exists. An unknown opcode
+is different. Because that opcode may define a body layout unlike QUERY, the
+server must produce NOTIMP from the header without first interpreting the body
+as an ordinary question. Unknown EDNS options are structurally validated and
+then ignored. An unsupported EDNS version produces BADVERS while retaining an
+OPT response.
+
+The independent `drill` integration test supplies another boundary. It launches
+the real `tinydns` binary and asks the ldns client to make UDP, TCP, EDNS,
+mixed-case, and unknown-type queries. This catches accidental agreement
+between rgbdns's own encoder and decoder: the request and response cross an
+implementation boundary.
+
+The complete focused matrix is:
+
+```sh
+cargo test --test rfc_conformance
+cargo test --test wire_security
+cargo test --test packet_properties
+cargo test --test drill_interop
+```
+
+The generated suite exercises forty thousand cases per complete run. It feeds
+arbitrary bytes to the decoder, reparses every accepted packet, generates
+structured messages for semantic round trips, and changes ASCII letter case
+without changing DNS name identity. A separate truncation corpus tries every
+prefix of a valid structured packet. These properties do not prove the absence
+of all parser defects, but they explore combinations that hand-written examples
+rarely anticipate.
+
+## Hardening found by conformance work
+
+Conformance testing improved the implementation rather than merely describing
+it.
+
+The name decoder now records valid prior name boundaries. A compression
+pointer must be backward *and* must target one of those boundaries. Merely
+pointing at earlier bytes that happen to resemble a label sequence is rejected.
+This closes a class of ambiguous parses without forbidding legal compression.
+
+Stub responses are bound to the request ID, QR bit, opcode, and exact question.
+TCP responses carrying TC are rejected. AXFR applies the same identity checks
+and additionally requires authoritative, non-truncated messages, controlled
+question repetition, an empty authority section, matching opening and closing
+SOAs, and records confined to the requested zone. These rules prevent a
+plausible-looking but unrelated response from being accepted as the answer to
+the outstanding operation.
+
+Zone loading rejects a CNAME owner that also has other data and rejects
+multiple different CNAME targets. Before transmission, RRsets are normalized
+to their minimum TTL and duplicate records are removed. Negative answers cap
+the SOA TTL at the SOA MINIMUM field as RFC 2308 requires. EDNS OPT records in
+the wrong section and duplicate OPT records produce FORMERR.
+
+The UDP and TCP daemons now share one bounded transport module. TCP connections
+carry deadlines, use a fixed worker pool, accept multiple framed queries, and
+support pipelined requests. This removes duplicated socket code while making
+RFC 7766 behavior an invariant shared by the authoritative and specialized
+servers.
+
+## Benchmarks and evidence-driven optimization
+
+Correctness gates run before performance conclusions. The benchmark is a
+dependency-free stable-Rust harness in `benches/dns_core.rs`; the same harness
+is available as `examples/dns_core_bench.rs` for quick release-mode runs:
+
+```sh
+cargo bench --bench dns_core
+RGBDNS_BENCH_ITERATIONS=10000 \
+  cargo run --release --example dns_core_bench
+```
+
+It warms every operation, passes values through `std::hint::black_box`, and
+reports nanoseconds per operation. Measurements are comparable only on the same
+host, toolchain, power state, and iteration count. Wire size is reported beside
+CPU time because DNS compression exchanges encoder work for fewer network
+bytes.
+
+The July 2026 checkpoint used release mode on one aarch64 Android host:
+
+| Operation | Baseline | Optimized | Result |
+|---|---:|---:|---:|
+| Encoded 64-record response | 2,147 bytes | 1,059 bytes | 50.7% smaller |
+| Decode small query | 542 ns | 458 ns | 15.5% faster |
+| Decode 64-record response | 52,661 ns | 29,540 ns | 43.9% faster |
+| Encode 64-record response | 2,318 ns | 5,309 ns | 2.3 times slower |
+| Exact lookup, 1,000 names | 1,262 ns | 1,244 ns | 1.4% faster |
+| NXDOMAIN, 1,000 names | 29,889 ns | 2,726 ns | 11.0 times faster |
+| Small authoritative response | 17,007 ns | 7,714 ns | 54.6% faster |
+| Truncate 200-record response | 3,098,232 ns | 2,570,077 ns | 17.0% faster |
+
+Three structural changes explain most of the gains.
+
+First, `Zone` maintains an index of every node, including empty non-terminals.
+A clearly absent name can return NXDOMAIN without scanning the records of a
+thousand-name zone. Conditional records still take the visibility path, so the
+index does not erase time or location semantics.
+
+Second, response truncation searches the number of tail records to remove
+instead of encoding once for every removed record. It preserves the question
+and OPT record as long as possible and validates the final candidate against
+the transport limit.
+
+Third, the packet writer records complete names and suffixes for RFC 1035
+compression. RRsets tend to repeat the immediately preceding owner, so a
+last-owner cache avoids rebuilding and hashing suffix keys on the dominant
+path. The first compression design encoded the 64-record case in 34,075 ns;
+the cache reduced that to 5,309 ns.
+
+The remaining encoder regression is intentional and visible. Compression makes
+the example packet roughly half as large while taking more local CPU than the
+old uncompressed writer. That is a defensible trade for an authoritative
+server because it reduces datagram pressure, TCP bytes, and downstream decode
+work. Recording the regression matters: optimization should reveal tradeoffs,
+not hide them behind one favorable number.
+
 # Reading the rgbdns source
 
 ## A path through the code
@@ -1030,8 +1172,8 @@ string, every consumer must rediscover validation.
 compression-depth limit; a cache byte limit does not replace a recursion-depth
 limit.
 
-**Separate policy from mechanism.** `special.rs` owns transport while small
-handlers own synthesized-answer policy.
+**Separate policy from mechanism.** `transport.rs` owns bounded UDP and TCP
+mechanics while the authoritative and specialized handlers own answer policy.
 
 **Compile mutable source into immutable serving data.** This gives validation,
 atomic rollout, simple readers, and easy rollback.
@@ -1044,6 +1186,325 @@ signals understandable.
 
 **Treat compatibility files as hostile.** Historical layout fidelity need not
 mean historical trust assumptions.
+
+# Part II: Codebase exploration {-}
+
+The first part built DNS from its protocol obligations. This part reads rgbdns
+as a Rust system. Each chapter follows one execution path, names the abstraction
+that carries the obligation, and links directly to the implementation. The
+Obsidian edition adds live fragment cards beside these links: a reader can move
+from a claim to the exact symbol, then outward to the complete collocated source
+file.
+
+# Rust as a protocol-design tool
+
+The important comparison with the original C is not that Rust uses newer
+syntax. It is that rgbdns can express DNS invariants at boundaries and have the
+compiler preserve them across the program.
+
+The crate begins with `#![forbid(unsafe_code)]` in
+[`src/lib.rs`](../../src/lib.rs). This is stronger than merely having no
+currently known unsafe block: a later contribution cannot introduce one
+without first making an explicit, reviewable change to the crate policy. The
+implementation still performs byte-level packet parsing, binary CDB loading,
+socket I/O, process credential changes, and concurrency. Those jobs do not
+require unchecked pointer arithmetic.
+
+Rust improves the design along four axes.
+
+**Ownership makes lifetime and aliasing rules executable.** A decoded
+`Message` owns its questions and records. A server borrows a `Zone` while
+constructing a response. Shared handlers use `Arc`, making cross-thread
+ownership visible in the type rather than implicit in process convention.
+There is no corresponding path for a response to retain a dangling pointer
+into the query buffer.
+
+**Algebraic data types preserve protocol distinctions.** `RecordType` retains
+unknown numeric types as `Unknown(u16)`. `RData` distinguishes addresses,
+names, MX, SOA, TXT, SRV, CAA, EDNS, and opaque future data. `Lookup`
+distinguishes an answer, referral, NODATA, NXDOMAIN, and refusal. In C these
+states are commonly represented by related integers, nullable pointers, and
+out-parameters. In Rust, a `match` makes the cases locally exhaustive.
+
+**Fallible work is visible.** Parsing and I/O return `Result`; optional facts
+return `Option`. The `?` operator propagates a typed failure without the
+unchecked sentinel values that make C error paths easy to omit. Conversion
+such as `u16::try_from(response.len())` documents the narrowing boundary and
+rejects overflow.
+
+**Concurrency composes with ownership.** The bounded transport layer shares an
+immutable handler through `Arc<Handler>` and gives each TCP connection an
+exclusive mutable `TcpStream`. The compiler prevents a worker from retaining a
+borrow of a stack packet buffer after the buffer is reused.
+
+Rust does not prove the DNS protocol correct. It removes broad classes of
+memory corruption and turns many design assumptions into compile-time or
+construction-time obligations. The remaining protocol work becomes visible
+enough to test directly.
+
+# Valid names instead of hopeful strings
+
+[`Name`](../../src/name.rs) is the first load-bearing abstraction. It stores a
+sequence of byte labels rather than a UTF-8 domain string. Its constructor is
+private to the module; all construction passes through parsing or
+`from_labels`, and both reach the same validation rule:
+
+```rust
+fn validate(labels: &[Vec<u8>]) -> Result<()> {
+    if labels.iter().any(|l| l.is_empty() || l.len() > 63) {
+        return Err(Error::InvalidName(
+            "label must contain 1..=63 octets".into(),
+        ));
+    }
+    let len = 1 + labels.iter().map(|l| l.len() + 1).sum::<usize>();
+    if len > 255 {
+        return Err(Error::InvalidName("wire name exceeds 255 octets".into()));
+    }
+    Ok(())
+}
+```
+
+That small private function changes the rest of the codebase. `Zone` can use
+`Name` as a `BTreeMap` key without rechecking label lengths. The packet writer
+can calculate `wire_len` without wondering whether it will overflow the DNS
+name limit. `parent`, `suffix`, `wildcard`, and `is_subdomain_of` operate on
+labels rather than fragile dotted-string suffixes.
+
+DNS identity is case-insensitive but responses should preserve the query’s
+case. `Name` therefore retains original bytes while implementing `Eq`, `Hash`,
+and `Ord` with ASCII-folded comparisons. In C this invariant must be remembered
+by every hash table and comparison call site. Here it belongs to the key type.
+
+This is a zero-surprise form of abstraction. It adds allocations when a name
+is built, but it removes repeated parsing and validation later. The benchmarked
+hot paths operate on already validated values, while the network boundary
+absorbs the cost once.
+
+# A bounded wire codec
+
+DNS packets are attacker-controlled binary graphs: compression pointers can
+jump backward, names can share suffixes, section counts can lie, and RDATA
+lengths can disagree with actual bytes. [`packet.rs`](../../src/packet.rs)
+contains the codec and deliberately keeps the reader state small:
+
+```rust
+struct Reader<'a> {
+    b: &'a [u8],
+    p: usize,
+    name_offsets: Vec<bool>,
+}
+```
+
+The lifetime on `b` prevents the reader from outliving its input. Every scalar
+read uses slice bounds checks. Name decoding separately limits pointer hops,
+requires pointers to move backward, and records valid prior name boundaries.
+The last rule is stricter than merely checking that a pointer lands inside the
+packet: an interior byte can accidentally look like a valid label.
+
+Decoded records become an `RData` variant. Unknown types are not discarded;
+they become opaque bytes paired with their numeric `RecordType`. This is the
+extension-safe behavior required by modern DNS. It also means an encoder can
+round-trip data it does not understand.
+
+The writer uses compression, but optimization remains subordinate to a valid
+message. A last-owner cache handles repeated owners cheaply while suffix
+sharing reduces wire size across related names. The July 2026 benchmark shows
+the trade: a 64-record answer fell from 2,147 to 1,059 bytes, while compression
+made encoding slower than the uncompressed baseline. On DNS, fewer datagrams
+and less amplification surface can be worth several microseconds of local CPU.
+
+Truncation uses a bounded search for the largest response that fits instead of
+repeatedly rebuilding one record at a time. The result preserves complete
+RRsets and required EDNS state. Performance work is therefore expressed as an
+algorithmic improvement behind the same `Message::encode` contract.
+
+# Zone data as an indexed semantic model
+
+[`Zone`](../../src/zone.rs) is more than a parser for tinydns text. It is the
+semantic index used by authoritative answers:
+
+```rust
+pub struct Zone {
+    records: BTreeMap<Name, Vec<Record>>,
+    metadata: BTreeMap<Name, Vec<RecordMetadata>>,
+    authoritative: BTreeSet<Name>,
+    delegations: BTreeSet<Name>,
+    locations: Vec<(Vec<u8>, [u8; 2])>,
+    current_metadata: RecordMetadata,
+    default_serial: u32,
+    nodes: BTreeSet<Name>,
+    unqualified_nodes: BTreeSet<Name>,
+}
+```
+
+The maps hold records and djbdns location metadata. The sets encode facts that
+would otherwise require scans: zone apexes, delegation cuts, all existing
+nodes, and nodes that exist independently of location-qualified records. This
+all-node index is why the optimized NXDOMAIN benchmark is about eleven times
+faster than the earlier scan-based implementation.
+
+The type also prevents semantic drift. Parsing validates CNAME exclusivity
+once. Lookup returns a `Lookup` enum, so absence cannot collapse into one null
+result:
+
+- `Answer` carries the matching RRset.
+- `Referral` carries delegation NS records and in-bailiwick glue.
+- `NoData` says the name exists but the requested type does not.
+- `NxDomain` says the name itself does not exist.
+- `Refused` says the server is not authoritative for the question.
+
+Wildcard processing uses the `nodes` index to find the closest encloser.
+Delegation processing uses the explicit `delegations` set. Transfer processing
+walks the same model while excluding child-zone contents. One representation
+therefore supplies ordinary answers, negative answers, wildcards, referrals,
+and AXFR without five subtly different interpretations of a zone.
+
+# From query bytes to an authoritative answer
+
+[`server::respond`](../../src/server.rs) is the central authoritative pipeline.
+Its shape is intentionally linear:
+
+1. Reject an unknown opcode from the header without misparsing its body as a
+   standard query.
+2. Decode the packet, mapping malformed standard queries to `FORMERR`.
+3. Enforce one question and valid OPT placement.
+4. Derive the UDP response limit from EDNS and the transport ceiling.
+5. Ask `Zone` for a typed `Lookup`.
+6. Expand bounded CNAME chains and add relevant target addresses.
+7. Normalize RRset TTLs and remove duplicates.
+8. Encode or truncate the response.
+
+The code separates mechanism from policy. [`transport.rs`](../../src/transport.rs)
+knows UDP datagrams, TCP length prefixes, timeouts, persistent connections, and
+a fixed worker bound. It knows nothing about zones. The handler knows DNS
+policy but receives transport limits and client identity as ordinary
+parameters. That separation lets specialized services reuse the network
+machinery without pretending to be authoritative zones.
+
+The original djbdns family achieved robustness partly through small processes.
+rgbdns retains that decomposition while strengthening in-process boundaries.
+The binaries under [`src/bin`](../../src/bin) are mostly adapters: environment,
+configuration, a library call, and the djbdns-compatible fatal exit convention.
+Small executables remain independently supervisable, but common logic is
+testable as ordinary Rust functions.
+
+# CDB compatibility without trusting the file
+
+Compatibility is most valuable at the data boundary. rgbdns reads and writes
+the original tinydns `data.cdb` layout, so operators can preserve compilation
+and rollout habits. [`cdb.rs`](../../src/cdb.rs) does not, however, inherit the
+old assumption that the compiled file is trustworthy.
+
+The loader applies independent limits and checked arithmetic:
+
+- the complete database is capped at one GiB;
+- the 2,048-byte CDB header must exist;
+- every hash-table position and slot count must fit inside the file;
+- key and value lengths use `checked_add`;
+- markers, locations, names, TTLs, cutoffs, and type-specific RDATA are
+  validated before a `Record` enters a `Zone`.
+
+This is a useful modernization pattern: preserve a durable external format,
+replace its implicit in-memory trust model. Operators gain compatibility; the
+serving process receives validated Rust values rather than pointers into a
+memory-mapped byte region.
+
+Compilation likewise crosses an explicit boundary. A parsed `Zone` is written
+to a temporary CDB and then installed through the command workflow. Serving
+data is immutable between deployments. Rust’s ownership does not itself make
+the rollout atomic, but it makes the stages—source text, validated model,
+compiled bytes, installed file—unambiguous.
+
+# Recursion by composition
+
+Authoritative DNS is implemented in rgbdns’s own small model. Recursive DNS,
+DNSSEC validation, caching, and upstream transport are composed from Hickory
+in [`src/bin/dnscache.rs`](../../src/bin/dnscache.rs). This is not a retreat
+from the rewrite; it is a deliberate abstraction boundary.
+
+rgbdns owns policy that must remain djbdns-compatible or operator-visible:
+root hints, forwarding zones, allowed networks, cache budgets, recursion
+limits, EDNS payload, DNSSEC policy, listener addresses, and shutdown.
+Hickory supplies the complex iterative resolver machinery behind typed
+configuration and handler interfaces.
+
+Every operator-controlled dimension is bounded. Cache sizes, recursion depth,
+name-server recursion depth, network lists, timeouts, and TCP message sizes
+have explicit limits. The `bounded_env` generic converts an environment value
+and verifies its range before server construction. A C implementation can do
+the same checks, but Rust makes the parsed type and the allowed range part of
+one reusable function.
+
+Composition also improves performance engineering. The custom authoritative
+path stays small and directly benchmarkable. The resolver can use Tokio and a
+mature async DNS implementation without imposing that runtime on tinydns,
+rbldns, or walldns. Different concurrency models remain behind process and
+library boundaries rather than forcing one architecture across the suite.
+
+# Tests as executable protocol commentary
+
+The strongest claims in this book have executable counterparts.
+[`tests/rfc_conformance.rs`](../../tests/rfc_conformance.rs) names normative
+requirements and constructs exact packets. [`tests/wire_security.rs`](../../tests/wire_security.rs)
+contains a hostile corpus and checks every truncation of a structured packet.
+[`tests/packet_properties.rs`](../../tests/packet_properties.rs) generates
+arbitrary bytes and structured messages:
+
+```rust
+#[test]
+fn arbitrary_packets_never_panic(
+    bytes in prop::collection::vec(any::<u8>(), 0..4096)
+) {
+    let _ = Message::decode(&bytes);
+}
+```
+
+The property suite does not prove that every accepted DNS packet has the
+desired meaning. It establishes three valuable invariants over a large input
+space: decoding never panics, accepted packets can be re-encoded and reparsed,
+and generated structured messages round-trip without semantic loss.
+
+Golden CDB fixtures protect historical compatibility. Live UDP/TCP tests
+exercise connection reuse and framing. `drill` provides an independent
+encoder and decoder. The stable-Rust benchmark in
+[`benches/dns_core.rs`](../../benches/dns_core.rs) measures the functions that
+rgbdns itself owns, and [`docs/performance.md`](../performance.md) records both
+timings and wire size.
+
+This is where Rust most clearly changes the economics of a C rewrite. Memory
+safety removes many failure modes before testing. Property tests can then
+spend their budget on protocol structure rather than rediscovering use-after-
+free and buffer-overrun variants. The remaining failures are more likely to be
+interesting DNS mistakes.
+
+# Abstractions and performance ledger
+
+The rewrite’s gains are not a single “Rust is faster” claim. Some changes buy
+safety, some buy clarity, and some measurably improve a hot path.
+
+| Design move | Rust expression | Operational effect |
+|---|---|---|
+| Valid names at construction | private fields, `FromStr`, `Result` | invalid labels cannot circulate |
+| Complete DNS states | `RecordType`, `RData`, `Lookup` enums | unknown types survive; negative answers stay distinct |
+| Bounded packet access | borrowed slices and checked indexing | malformed packets fail without memory corruption |
+| Shared immutable service state | borrowing and `Arc` | explicit thread-safe ownership |
+| Compatibility quarantine | checked CDB decoder into owned values | old files do not become trusted memory |
+| Independent resource limits | typed bounded configuration | one limit cannot silently stand in for another |
+| All-node zone index | `BTreeSet<Name>` | NXDOMAIN lookup improved about 11× |
+| Compressed writer | bounded suffix reuse | repeated-owner answer became 50.7% smaller |
+| Binary-search truncation | monotone fit search | 200-record truncation improved 17% |
+| Thin binaries | library functions plus small adapters | easier tests and independent supervision |
+
+The encoder example is especially important. Rust did not automatically make
+it faster: compression made encoding 2.3 times slower than the uncompressed
+baseline. But it halved the measured wire size, reduced fragmentation risk,
+and sharply improved the complete authoritative response path. Good systems
+engineering reports the trade rather than reducing it to a language slogan.
+
+The deeper improvement over C is control. The data model says what is valid,
+the compiler checks ownership, the boundaries return typed failure, the tests
+state protocol properties, and benchmarks expose the remaining costs. That
+combination makes rgbdns easier to change without making DNS easier to fool.
 
 # Where DNS ends
 
@@ -1111,4 +1572,3 @@ Implementation and operational references:
 - runit benefits: <https://smarden.org/runit/benefits.html>
 - systemd project documentation: <https://systemd.io/>
 - Hickory DNS: <https://hickory-dns.org/>
-

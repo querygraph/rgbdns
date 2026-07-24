@@ -49,6 +49,11 @@ and security, then maps each concept to rgbdns. It also compares systemd,
 runit, s6/s6-rc, OpenRC, and container-native replacements for
 `svc`/`supervise`.
 
+The committed [Obsidian reader vault](obsidian-vault/RGBDNS%20Book%20Vault)
+adds a codebase-exploration part, collocates the full text/code surface, and
+bundles a reader plugin for chapter navigation and prose-to-code fragment
+jumps. See [the vault guide](docs/OBSIDIAN-VAULT.md) to rebuild and validate it.
+
 Build the FirstPair package with Pandoc and Typst:
 
 ```sh

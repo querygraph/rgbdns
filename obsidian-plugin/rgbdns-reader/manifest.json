@@ -1,0 +1,9 @@
+{
+  "id": "rgbdns-reader",
+  "name": "RGBDNS Book Reader",
+  "version": "0.2.0",
+  "minAppVersion": "1.4.0",
+  "description": "Read DNS from First Principles, navigate chapters, and jump from prose to highlighted rgbdns code.",
+  "author": "First Pair Press",
+  "isDesktopOnly": false
+}

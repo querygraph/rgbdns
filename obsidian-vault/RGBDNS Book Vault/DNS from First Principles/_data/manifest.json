@@ -1,0 +1,10 @@
+{
+  "book": "DNS from First Principles",
+  "rgbdns_root": "/workspace/scratch/7dccd232098d/rgbdns",
+  "rgbdns_commit": "472c2087",
+  "book_commit": "472c2087",
+  "chapter_count": 31,
+  "code_file_count": 89,
+  "fragment_count": 648,
+  "output": "/workspace/scratch/7dccd232098d/rgbdns/obsidian-vault/RGBDNS Book Vault"
+}

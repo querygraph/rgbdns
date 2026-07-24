@@ -1,0 +1,76 @@
+---
+type: "code-file"
+source_path: ".github/workflows/build-book.yml"
+language: "yaml"
+subsystem: "Project automation"
+line_count: 51
+fragment_count: 1
+rgbdns_commit: "472c2087"
+---
+
+# .github/workflows/build-book.yml
+
+- Subsystem: [[DNS from First Principles/Subsystems/Project automation|Project automation]]
+- Source path: `.github/workflows/build-book.yml`
+- Lines: 51
+- Summary: Source file in the Project automation subsystem.
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-5470b504fc32|build-book.yml]]: lines 1-51
+
+## Full Source
+
+```yaml
+name: Build FirstPair Book
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-firstpair-book
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - name: Check out rgbdns
+        uses: actions/checkout@v5
+
+      - name: Check out FirstPair
+        uses: actions/checkout@v5
+        with:
+          repository: firstpair/firstpair
+          path: firstpair
+
+      - name: Install the pinned publishing toolchain
+        run: |
+          mkdir -p "$HOME/src"
+          mv firstpair "$HOME/src/firstpair"
+          "$HOME/src/firstpair/publishing/scripts/install-toolchain.sh"
+
+      - name: Build and validate the book
+        run: |
+          docs/book/build.sh
+          docs/book/validate.sh
+          "$HOME/src/firstpair/publishing/scripts/verify-library-book.sh" \
+            docs/book/dist
+
+      - name: Commit generated artifacts
+        run: |
+          git config user.name "First Pair Builder"
+          git config user.email "builder@firstpair.org"
+          git add docs/book/dist
+          if git diff --cached --quiet; then
+            echo "Book artifacts already current."
+          else
+            git commit -m "Rebuild DNS book with image cover"
+            git pull --rebase origin master
+            git push origin HEAD:master
+          fi
+```

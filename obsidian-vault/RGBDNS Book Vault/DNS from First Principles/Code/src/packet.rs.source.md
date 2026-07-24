@@ -1,0 +1,833 @@
+---
+type: "code-file"
+source_path: "src/packet.rs"
+language: "rust"
+subsystem: "DNS data model and wire codec"
+crate: "rgbdns"
+line_count: 766
+fragment_count: 41
+rgbdns_commit: "472c2087"
+---
+
+# src/packet.rs
+
+- Subsystem: [[DNS from First Principles/Subsystems/DNS data model and wire codec|DNS data model and wire codec]]
+- Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
+- Source path: `src/packet.rs`
+- Lines: 766
+- Summary: Source file in the DNS data model and wire codec subsystem.
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-b92db435b523|RecordType]]: lines 8-27
+- [[DNS from First Principles/Fragments/rgbdns-frag-19e8e1a6ba89|RecordType]]: lines 28-28
+- [[DNS from First Principles/Fragments/rgbdns-frag-e314247d27ae|code]]: lines 29-50
+- [[DNS from First Principles/Fragments/rgbdns-frag-9f94a1e1d010|from_code]]: lines 51-73
+- [[DNS from First Principles/Fragments/rgbdns-frag-e35eb9c748af|std]]: lines 74-74
+- [[DNS from First Principles/Fragments/rgbdns-frag-557f873dfbf4|Err]]: lines 75-75
+- [[DNS from First Principles/Fragments/rgbdns-frag-5f4505fe3381|from_str]]: lines 76-117
+- [[DNS from First Principles/Fragments/rgbdns-frag-1f43add77363|Question]]: lines 118-123
+- [[DNS from First Principles/Fragments/rgbdns-frag-8a53d16528c4|Record]]: lines 124-128
+- [[DNS from First Principles/Fragments/rgbdns-frag-3474979ebcab|Record]]: lines 129-129
+- [[DNS from First Principles/Fragments/rgbdns-frag-1a1d0297797e|rr_type]]: lines 130-135
+- [[DNS from First Principles/Fragments/rgbdns-frag-edc236285edc|RData]]: lines 136-170
+- [[DNS from First Principles/Fragments/rgbdns-frag-69c930612c2c|RData]]: lines 171-171
+- [[DNS from First Principles/Fragments/rgbdns-frag-8e8684a46cf0|rr_type]]: lines 172-188
+- [[DNS from First Principles/Fragments/rgbdns-frag-f8e2f24b275d|Message]]: lines 189-197
+- [[DNS from First Principles/Fragments/rgbdns-frag-4e7a403d313a|Reader]]: lines 198-202
+- [[DNS from First Principles/Fragments/rgbdns-frag-15f97978e254|impl]]: lines 203-203
+- [[DNS from First Principles/Fragments/rgbdns-frag-e1d3b03b1b53|u8]]: lines 204-211
+- [[DNS from First Principles/Fragments/rgbdns-frag-c8980ffb1624|u16]]: lines 212-214
+- [[DNS from First Principles/Fragments/rgbdns-frag-6f81d0442a73|u32]]: lines 215-222
+- [[DNS from First Principles/Fragments/rgbdns-frag-f26143011b10|name]]: lines 223-275
+- [[DNS from First Principles/Fragments/rgbdns-frag-0abc057e0964|record]]: lines 276-356
+- [[DNS from First Principles/Fragments/rgbdns-frag-f2bbdc5532d8|validate_edns_options]]: lines 382-393
+- [[DNS from First Principles/Fragments/rgbdns-frag-005152c879fb|Message]]: lines 394-394
+- [[DNS from First Principles/Fragments/rgbdns-frag-264ff394342c|decode]]: lines 395-439
+- [[DNS from First Principles/Fragments/rgbdns-frag-22f8472ec7a5|encode]]: lines 440-464
+- [[DNS from First Principles/Fragments/rgbdns-frag-56f5b3167168|Writer]]: lines 465-465
+- [[DNS from First Principles/Fragments/rgbdns-frag-cb7b09fc7456|Writer]]: lines 466-466
+- [[DNS from First Principles/Fragments/rgbdns-frag-4aadcae32320|u8]]: lines 467-469
+- [[DNS from First Principles/Fragments/rgbdns-frag-0f2374ca15a3|u16]]: lines 470-472
+- [[DNS from First Principles/Fragments/rgbdns-frag-4dd62ba91963|u32]]: lines 473-475
+- [[DNS from First Principles/Fragments/rgbdns-frag-d6c443bd48a0|name]]: lines 476-516
+- [[DNS from First Principles/Fragments/rgbdns-frag-3013c3b46f39|record]]: lines 517-597
+- [[DNS from First Principles/Fragments/rgbdns-frag-100de01750c5|tests]]: lines 610-612
+- [[DNS from First Principles/Fragments/rgbdns-frag-d0bed6e50fa1|query_roundtrip]]: lines 613-626
+- [[DNS from First Principles/Fragments/rgbdns-frag-418690238dbc|rejects_pointer_loop]]: lines 627-633
+- [[DNS from First Principles/Fragments/rgbdns-frag-c608c25b9171|rejects_trailing_packet_data_and_forward_compression]]: lines 634-653
+- [[DNS from First Principles/Fragments/rgbdns-frag-7f35d0a0682b|structured_records_and_edns_roundtrip]]: lines 654-701
+- [[DNS from First Principles/Fragments/rgbdns-frag-1d93654dc774|encoder_compresses_repeated_names_and_suffixes]]: lines 702-731
+- [[DNS from First Principles/Fragments/rgbdns-frag-a34838047302|rejects_malformed_edns_options_and_address_length]]: lines 732-742
+- [[DNS from First Principles/Fragments/rgbdns-frag-eb96cae774df|parses_standard_and_generic_record_type_names]]: lines 743-766
+
+## Full Source
+
+```rust
+use crate::{Error, Name, Result};
+use std::{
+    collections::HashMap,
+    net::{Ipv4Addr, Ipv6Addr},
+};
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub enum RecordType {
+    A,
+    Ns,
+    Cname,
+    Soa,
+    Ptr,
+    Mx,
+    Txt,
+    Aaaa,
+    Srv,
+    Opt,
+    Caa,
+    Ds,
+    Rrsig,
+    Nsec,
+    Dnskey,
+    Axfr,
+    Any,
+    Unknown(u16),
+}
+impl RecordType {
+    pub fn code(self) -> u16 {
+        match self {
+            Self::A => 1,
+            Self::Ns => 2,
+            Self::Cname => 5,
+            Self::Soa => 6,
+            Self::Ptr => 12,
+            Self::Mx => 15,
+            Self::Txt => 16,
+            Self::Aaaa => 28,
+            Self::Srv => 33,
+            Self::Opt => 41,
+            Self::Ds => 43,
+            Self::Rrsig => 46,
+            Self::Nsec => 47,
+            Self::Dnskey => 48,
+            Self::Axfr => 252,
+            Self::Caa => 257,
+            Self::Any => 255,
+            Self::Unknown(n) => n,
+        }
+    }
+    pub fn from_code(n: u16) -> Self {
+        match n {
+            1 => Self::A,
+            2 => Self::Ns,
+            5 => Self::Cname,
+            6 => Self::Soa,
+            12 => Self::Ptr,
+            15 => Self::Mx,
+            16 => Self::Txt,
+            28 => Self::Aaaa,
+            33 => Self::Srv,
+            41 => Self::Opt,
+            43 => Self::Ds,
+            46 => Self::Rrsig,
+            47 => Self::Nsec,
+            48 => Self::Dnskey,
+            252 => Self::Axfr,
+            257 => Self::Caa,
+            255 => Self::Any,
+            n => Self::Unknown(n),
+        }
+    }
+}
+impl std::str::FromStr for RecordType {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<Self> {
+        Ok(match s.to_ascii_uppercase().as_str() {
+            "A" => Self::A,
+            "NS" => Self::Ns,
+            "CNAME" => Self::Cname,
+            "SOA" => Self::Soa,
+            "PTR" => Self::Ptr,
+            "MX" => Self::Mx,
+            "TXT" => Self::Txt,
+            "AAAA" => Self::Aaaa,
+            "SRV" => Self::Srv,
+            "OPT" => Self::Opt,
+            "CAA" => Self::Caa,
+            "DS" => Self::Ds,
+            "RRSIG" => Self::Rrsig,
+            "NSEC" => Self::Nsec,
+            "DNSKEY" => Self::Dnskey,
+            "AXFR" => Self::Axfr,
+            "ANY" => Self::Any,
+            "HINFO" => Self::Unknown(13),
+            "RP" => Self::Unknown(17),
+            "SIG" => Self::Unknown(24),
+            "KEY" => Self::Unknown(25),
+            "NAPTR" => Self::Unknown(35),
+            "NSEC3" => Self::Unknown(50),
+            "NSEC3PARAM" => Self::Unknown(51),
+            "TLSA" => Self::Unknown(52),
+            "SVCB" => Self::Unknown(64),
+            "HTTPS" => Self::Unknown(65),
+            x => {
+                let number = x.strip_prefix("TYPE").unwrap_or(x);
+                Self::Unknown(
+                    number
+                        .parse()
+                        .map_err(|_| Error::Format("unknown record type"))?,
+                )
+            }
+        })
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Question {
+    pub name: Name,
+    pub qtype: RecordType,
+    pub qclass: u16,
+}
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Record {
+    pub name: Name,
+    pub ttl: u32,
+    pub data: RData,
+}
+impl Record {
+    pub fn rr_type(&self) -> RecordType {
+        self.data.rr_type()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum RData {
+    A(Ipv4Addr),
+    Aaaa(Ipv6Addr),
+    Name(RecordType, Name),
+    Mx(u16, Name),
+    Soa {
+        mname: Name,
+        admin: Name,
+        serial: u32,
+        refresh: u32,
+        retry: u32,
+        expire: u32,
+        minimum: u32,
+    },
+    Txt(Vec<Vec<u8>>),
+    Srv {
+        priority: u16,
+        weight: u16,
+        port: u16,
+        target: Name,
+    },
+    Caa {
+        flags: u8,
+        tag: Vec<u8>,
+        value: Vec<u8>,
+    },
+    Opt {
+        udp_payload: u16,
+        extended_rcode: u8,
+        version: u8,
+        flags: u16,
+        options: Vec<u8>,
+    },
+    Opaque(RecordType, Vec<u8>),
+}
+impl RData {
+    pub fn rr_type(&self) -> RecordType {
+        match self {
+            Self::A(_) => RecordType::A,
+            Self::Aaaa(_) => RecordType::Aaaa,
+            Self::Name(t, _) => *t,
+            Self::Mx(..) => RecordType::Mx,
+            Self::Soa { .. } => RecordType::Soa,
+            Self::Txt(_) => RecordType::Txt,
+            Self::Srv { .. } => RecordType::Srv,
+            Self::Caa { .. } => RecordType::Caa,
+            Self::Opt { .. } => RecordType::Opt,
+            Self::Opaque(t, _) => *t,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct Message {
+    pub id: u16,
+    pub flags: u16,
+    pub questions: Vec<Question>,
+    pub answers: Vec<Record>,
+    pub authorities: Vec<Record>,
+    pub additionals: Vec<Record>,
+}
+
+struct Reader<'a> {
+    b: &'a [u8],
+    p: usize,
+    name_offsets: Vec<bool>,
+}
+impl<'a> Reader<'a> {
+    fn u8(&mut self) -> Result<u8> {
+        let x = *self
+            .b
+            .get(self.p)
+            .ok_or(Error::Format("truncated packet"))?;
+        self.p += 1;
+        Ok(x)
+    }
+    fn u16(&mut self) -> Result<u16> {
+        Ok(u16::from_be_bytes([self.u8()?, self.u8()?]))
+    }
+    fn u32(&mut self) -> Result<u32> {
+        Ok(u32::from_be_bytes([
+            self.u8()?,
+            self.u8()?,
+            self.u8()?,
+            self.u8()?,
+        ]))
+    }
+    fn name(&mut self) -> Result<Name> {
+        let mut labels = Vec::new();
+        let mut pos = self.p;
+        let mut jumped = false;
+        let mut hops = 0;
+        loop {
+            if hops > 128 {
+                return Err(Error::Format("compression pointer loop"));
+            }
+            hops += 1;
+            let n = *self.b.get(pos).ok_or(Error::Format("truncated name"))?;
+            if n & 0xc0 == 0xc0 {
+                let b = *self
+                    .b
+                    .get(pos + 1)
+                    .ok_or(Error::Format("truncated pointer"))?;
+                let q = (((n & 0x3f) as usize) << 8) | b as usize;
+                if q >= pos {
+                    return Err(Error::Format("compression pointer is not backward"));
+                }
+                if !self.name_offsets.get(q).is_some_and(|valid| *valid) {
+                    return Err(Error::Format(
+                        "compression pointer does not target a prior name",
+                    ));
+                }
+                self.name_offsets[pos] = true;
+                if !jumped {
+                    self.p = pos + 2;
+                    jumped = true;
+                }
+                pos = q;
+                continue;
+            }
+            if n & 0xc0 != 0 {
+                return Err(Error::Format("reserved label type"));
+            }
+            self.name_offsets[pos] = true;
+            pos += 1;
+            if n == 0 {
+                if !jumped {
+                    self.p = pos
+                }
+                break;
+            }
+            let end = pos + n as usize;
+            if end > self.b.len() {
+                return Err(Error::Format("truncated label"));
+            }
+            labels.push(self.b[pos..end].to_vec());
+            pos = end;
+        }
+        Name::from_labels(labels)
+    }
+    fn record(&mut self) -> Result<Record> {
+        let name = self.name()?;
+        let typ = RecordType::from_code(self.u16()?);
+        let class = self.u16()?;
+        if typ != RecordType::Opt && class != 1 {
+            return Err(Error::Format("non-IN record"));
+        }
+        let ttl = self.u32()?;
+        let len = self.u16()? as usize;
+        let end = self
+            .p
+            .checked_add(len)
+            .filter(|e| *e <= self.b.len())
+            .ok_or(Error::Format("truncated rdata"))?;
+        let data = match typ {
+            RecordType::A if len == 4 => RData::A(Ipv4Addr::new(
+                self.u8()?,
+                self.u8()?,
+                self.u8()?,
+                self.u8()?,
+            )),
+            RecordType::Aaaa if len == 16 => {
+                let mut x = [0; 16];
+                x.copy_from_slice(&self.b[self.p..end]);
+                self.p = end;
+                RData::Aaaa(x.into())
+            }
+            RecordType::Ns | RecordType::Cname | RecordType::Ptr => RData::Name(typ, self.name()?),
+            RecordType::Mx => {
+                let p = self.u16()?;
+                RData::Mx(p, self.name()?)
+            }
+            RecordType::Srv => RData::Srv {
+                priority: self.u16()?,
+                weight: self.u16()?,
+                port: self.u16()?,
+                target: self.name()?,
+            },
+            RecordType::Soa => RData::Soa {
+                mname: self.name()?,
+                admin: self.name()?,
+                serial: self.u32()?,
+                refresh: self.u32()?,
+                retry: self.u32()?,
+                expire: self.u32()?,
+                minimum: self.u32()?,
+            },
+            RecordType::Caa if len >= 2 => {
+                let flags = self.u8()?;
+                let tag_len = self.u8()? as usize;
+                if self.p + tag_len > end {
+                    return Err(Error::Format("bad CAA tag length"));
+                }
+                let tag = self.b[self.p..self.p + tag_len].to_vec();
+                self.p += tag_len;
+                let value = self.b[self.p..end].to_vec();
+                self.p = end;
+                RData::Caa { flags, tag, value }
+            }
+            RecordType::Opt => {
+                if !name.is_root() {
+                    return Err(Error::Format("OPT owner is not root"));
+                }
+                let options = self.b[self.p..end].to_vec();
+                validate_edns_options(&options)?;
+                self.p = end;
+                RData::Opt {
+                    udp_payload: class,
+                    extended_rcode: (ttl >> 24) as u8,
+                    version: (ttl >> 16) as u8,
+                    flags: ttl as u16,
+                    options,
+                }
+            }
+            RecordType::Txt => {
+                let mut v = Vec::new();
+                while self.p < end {
+                    let n = self.u8()? as usize;
+                    if self.p + n > end {
+                        return Err(Error::Format("bad TXT"));
+                    }
+                    v.push(self.b[self.p..self.p + n].to_vec());
+                    self.p += n
+                }
+                RData::Txt(v)
+            }
+            RecordType::A | RecordType::Aaaa => {
+                return Err(Error::Format("invalid address RDLENGTH"));
+            }
+            _ => {
+                let v = self.b[self.p..end].to_vec();
+                self.p = end;
+                RData::Opaque(typ, v)
+            }
+        };
+        if self.p != end {
+            return Err(Error::Format("rdata length mismatch"));
+        }
+        Ok(Record {
+            name,
+            ttl: if typ == RecordType::Opt { 0 } else { ttl },
+            data,
+        })
+    }
+}
+
+fn validate_edns_options(mut options: &[u8]) -> Result<()> {
+    while !options.is_empty() {
+        if options.len() < 4 {
+            return Err(Error::Format("truncated EDNS option"));
+        }
+        let len = u16::from_be_bytes([options[2], options[3]]) as usize;
+        options = options
+            .get(4 + len..)
+            .ok_or(Error::Format("truncated EDNS option data"))?;
+    }
+    Ok(())
+}
+impl Message {
+    pub fn decode(b: &[u8]) -> Result<Self> {
+        if b.len() < 12 {
+            return Err(Error::Format("short header"));
+        }
+        let mut r = Reader {
+            b,
+            p: 0,
+            name_offsets: vec![false; b.len()],
+        };
+        let id = r.u16()?;
+        let flags = r.u16()?;
+        let qd = r.u16()?;
+        let an = r.u16()?;
+        let ns = r.u16()?;
+        let ar = r.u16()?;
+        if qd > 64 || an > 4096 || ns > 4096 || ar > 4096 {
+            return Err(Error::Format("excessive section count"));
+        }
+        let mut m = Self {
+            id,
+            flags,
+            ..Self::default()
+        };
+        for _ in 0..qd {
+            let name = r.name()?;
+            m.questions.push(Question {
+                name,
+                qtype: RecordType::from_code(r.u16()?),
+                qclass: r.u16()?,
+            })
+        }
+        for _ in 0..an {
+            m.answers.push(r.record()?)
+        }
+        for _ in 0..ns {
+            m.authorities.push(r.record()?)
+        }
+        for _ in 0..ar {
+            m.additionals.push(r.record()?)
+        }
+        if r.p != b.len() {
+            return Err(Error::Format("trailing DNS packet data"));
+        }
+        Ok(m)
+    }
+    pub fn encode(&self) -> Result<Vec<u8>> {
+        let mut w = Writer(Vec::with_capacity(512), HashMap::new(), None);
+        w.u16(self.id);
+        w.u16(self.flags);
+        for n in [
+            self.questions.len(),
+            self.answers.len(),
+            self.authorities.len(),
+            self.additionals.len(),
+        ] {
+            w.u16(u16::try_from(n).map_err(|_| Error::Format("section too large"))?)
+        }
+        for q in &self.questions {
+            w.name(&q.name)?;
+            w.u16(q.qtype.code());
+            w.u16(q.qclass)
+        }
+        for section in [&self.answers, &self.authorities, &self.additionals] {
+            for r in section {
+                w.record(r)?
+            }
+        }
+        Ok(w.0)
+    }
+}
+struct Writer(Vec<u8>, HashMap<Name, u16>, Option<(Name, u16)>);
+impl Writer {
+    fn u8(&mut self, n: u8) {
+        self.0.push(n)
+    }
+    fn u16(&mut self, n: u16) {
+        self.0.extend(n.to_be_bytes())
+    }
+    fn u32(&mut self, n: u32) {
+        self.0.extend(n.to_be_bytes())
+    }
+    fn name(&mut self, n: &Name) -> Result<()> {
+        if n.wire_len() > 255 {
+            return Err(Error::Format("name too long"));
+        }
+        if let Some((last, offset)) = &self.2
+            && last == n
+        {
+            self.u16(0xc000 | *offset);
+            return Ok(());
+        }
+        // Owner names commonly repeat across an RRset. Avoid rebuilding every
+        // possible suffix when the complete name already has a pointer.
+        if let Some(offset) = self.1.get(n).copied() {
+            self.2 = Some((n.clone(), offset));
+            self.u16(0xc000 | offset);
+            return Ok(());
+        }
+        let start = u16::try_from(self.0.len())
+            .ok()
+            .filter(|offset| *offset < 0x4000);
+        let labels = n.labels().collect::<Vec<_>>();
+        for (index, label) in labels.iter().enumerate() {
+            let suffix = n.suffix(index);
+            if let Some(offset) = self.1.get(&suffix).copied() {
+                self.u16(0xc000 | offset);
+                return Ok(());
+            }
+            if let Ok(offset) = u16::try_from(self.0.len())
+                && offset < 0x4000
+            {
+                self.1.entry(suffix).or_insert(offset);
+            }
+            self.u8(label.len() as u8);
+            self.0.extend(*label)
+        }
+        self.u8(0);
+        if let Some(offset) = start {
+            self.2 = Some((n.clone(), offset));
+        }
+        Ok(())
+    }
+    fn record(&mut self, r: &Record) -> Result<()> {
+        self.name(&r.name)?;
+        self.u16(r.rr_type().code());
+        match &r.data {
+            RData::Opt {
+                udp_payload,
+                extended_rcode,
+                version,
+                flags,
+                ..
+            } => {
+                self.u16(*udp_payload);
+                self.u32(
+                    u32::from(*extended_rcode) << 24
+                        | u32::from(*version) << 16
+                        | u32::from(*flags),
+                );
+            }
+            _ => {
+                self.u16(1);
+                self.u32(r.ttl);
+            }
+        }
+        let at = self.0.len();
+        self.u16(0);
+        let start = self.0.len();
+        match &r.data {
+            RData::A(x) => self.0.extend(x.octets()),
+            RData::Aaaa(x) => self.0.extend(x.octets()),
+            RData::Name(_, n) => self.name(n)?,
+            RData::Mx(p, n) => {
+                self.u16(*p);
+                self.name(n)?
+            }
+            RData::Txt(v) => {
+                for s in v {
+                    if s.len() > 255 {
+                        return Err(Error::Format("TXT chunk too long"));
+                    }
+                    self.u8(s.len() as u8);
+                    self.0.extend(s)
+                }
+            }
+            RData::Soa {
+                mname: n,
+                admin,
+                serial,
+                refresh,
+                retry,
+                expire,
+                minimum,
+            } => {
+                self.name(n)?;
+                self.name(admin)?;
+                for x in [serial, refresh, retry, expire, minimum] {
+                    self.u32(*x)
+                }
+            }
+            RData::Srv {
+                priority,
+                weight,
+                port,
+                target,
+            } => {
+                self.u16(*priority);
+                self.u16(*weight);
+                self.u16(*port);
+                self.name(target)?
+            }
+            RData::Caa { flags, tag, value } => {
+                self.u8(*flags);
+                self.u8(tag
+                    .len()
+                    .try_into()
+                    .map_err(|_| Error::Format("CAA tag too long"))?);
+                self.0.extend(tag);
+                self.0.extend(value)
+            }
+            RData::Opt { options, .. } => {
+                validate_edns_options(options)?;
+                self.0.extend(options)
+            }
+            RData::Opaque(_, v) => self.0.extend(v),
+        }
+        let len: u16 = (self.0.len() - start)
+            .try_into()
+            .map_err(|_| Error::Format("rdata too long"))?;
+        self.0[at..at + 2].copy_from_slice(&len.to_be_bytes());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn query_roundtrip() {
+        let m = Message {
+            id: 42,
+            flags: 0x100,
+            questions: vec![Question {
+                name: "Example.COM".parse().unwrap(),
+                qtype: RecordType::A,
+                qclass: 1,
+            }],
+            ..Default::default()
+        };
+        assert_eq!(Message::decode(&m.encode().unwrap()).unwrap(), m)
+    }
+    #[test]
+    fn rejects_pointer_loop() {
+        let mut b = vec![0; 12];
+        b[5] = 1;
+        b.extend([0xc0, 0x0c, 0, 1, 0, 1]);
+        assert!(Message::decode(&b).is_err())
+    }
+    #[test]
+    fn rejects_trailing_packet_data_and_forward_compression() {
+        let mut packet = Message {
+            questions: vec![Question {
+                name: "example".parse().unwrap(),
+                qtype: RecordType::A,
+                qclass: 1,
+            }],
+            ..Default::default()
+        }
+        .encode()
+        .unwrap();
+        packet.push(0);
+        assert!(Message::decode(&packet).is_err());
+
+        let mut forward = vec![0; 12];
+        forward[5] = 1;
+        forward.extend([0xc0, 18, 0, 1, 0, 1, 0]);
+        assert!(Message::decode(&forward).is_err());
+    }
+    #[test]
+    fn structured_records_and_edns_roundtrip() {
+        let records = vec![
+            Record {
+                name: "example".parse().unwrap(),
+                ttl: 60,
+                data: RData::Soa {
+                    mname: "ns.example".parse().unwrap(),
+                    admin: "hostmaster.example".parse().unwrap(),
+                    serial: 1,
+                    refresh: 2,
+                    retry: 3,
+                    expire: 4,
+                    minimum: 5,
+                },
+            },
+            Record {
+                name: "example".parse().unwrap(),
+                ttl: 60,
+                data: RData::Caa {
+                    flags: 0,
+                    tag: b"issue".to_vec(),
+                    value: b"ca.example".to_vec(),
+                },
+            },
+        ];
+        let opt = Record {
+            name: Name::root(),
+            ttl: 0,
+            data: RData::Opt {
+                udp_payload: 1232,
+                extended_rcode: 0,
+                version: 0,
+                flags: 0x8000,
+                options: vec![0, 12, 0, 2, 0xaa, 0xbb],
+            },
+        };
+        let message = Message {
+            answers: records,
+            additionals: vec![opt],
+            ..Default::default()
+        };
+        assert_eq!(
+            Message::decode(&message.encode().unwrap()).unwrap(),
+            message
+        );
+    }
+
+    #[test]
+    fn encoder_compresses_repeated_names_and_suffixes() {
+        let message = Message {
+            questions: vec![Question {
+                name: "www.deep.example".parse().unwrap(),
+                qtype: RecordType::A,
+                qclass: 1,
+            }],
+            answers: vec![
+                Record {
+                    name: "www.deep.example".parse().unwrap(),
+                    ttl: 60,
+                    data: RData::A("192.0.2.1".parse().unwrap()),
+                },
+                Record {
+                    name: "mail.deep.example".parse().unwrap(),
+                    ttl: 60,
+                    data: RData::A("192.0.2.2".parse().unwrap()),
+                },
+            ],
+            ..Message::default()
+        };
+        let wire = message.encode().unwrap();
+        assert!(
+            wire.windows(2)
+                .any(|bytes| bytes[0] & 0xc0 == 0xc0 && bytes[1] == 12)
+        );
+        assert!(wire.len() < 80);
+        assert_eq!(Message::decode(&wire).unwrap(), message);
+    }
+    #[test]
+    fn rejects_malformed_edns_options_and_address_length() {
+        let malformed_opt = [
+            0, 0, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 41, 4, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0,
+        ];
+        assert!(Message::decode(&malformed_opt).is_err());
+        let bad_a = [
+            0, 0, 0x80, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 3, 1, 2, 3,
+        ];
+        assert!(Message::decode(&bad_a).is_err());
+    }
+    #[test]
+    fn parses_standard_and_generic_record_type_names() {
+        for (name, code) in [
+            ("HINFO", 13),
+            ("RP", 17),
+            ("SIG", 24),
+            ("KEY", 25),
+            ("NAPTR", 35),
+            ("NSEC3", 50),
+            ("NSEC3PARAM", 51),
+            ("TLSA", 52),
+            ("SVCB", 64),
+            ("HTTPS", 65),
+            ("TYPE65400", 65400),
+            ("65401", 65401),
+        ] {
+            assert_eq!(
+                name.parse::<RecordType>().unwrap(),
+                RecordType::Unknown(code)
+            );
+        }
+        assert!("TYPEbogus".parse::<RecordType>().is_err());
+        assert!("TYPE65536".parse::<RecordType>().is_err());
+    }
+}
+```

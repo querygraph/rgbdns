@@ -1,0 +1,78 @@
+---
+type: "chapter"
+source_file: "docs/book/rgbdns.md"
+---
+
+# Where DNS ends
+
+DNS establishes named, cacheable facts and, with DNSSEC, their authenticated
+origin. It does not prove that the address belongs to the application a user
+intended, encrypt the subsequent connection, guarantee freshness inside the
+TTL window, or choose a healthy endpoint. TLS identity, application discovery,
+load balancing, routing, and monitoring build on DNS but remain separate
+systems.
+
+That boundary is the best final replacement for the phone-book metaphor. DNS
+is a delegated publication and discovery protocol. Its tree assigns authority;
+its records carry typed statements; its TTLs make caching explicit; its packet
+format makes efficient exchange possible; recursion joins many authorities
+into one answer; DNSSEC authenticates the chain; and supervision keeps the
+implementing processes available without becoming part of the protocol.
+
+rgbdns expresses those ideas as small programs over shared, validated Rust
+types. Understanding the protocol makes the program family unsurprising.
+Reading the program family, in turn, shows how the abstract DNS model becomes
+bounded packets, immutable databases, iterative queries, atomic files, and
+foreground processes.
+
+## Generated Code Fragment Index
+
+These generated links open the collocated rgbdns codebase notes.
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-cfb0faf3b090", "codeNote": "DNS from First Principles/Code/README.md.source", "heading": "rgbdns-frag-cfb0faf3b090: heading rgbdns", "sourcePath": "README.md", "startLine": 1, "endLine": 43}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-31920af81303", "codeNote": "DNS from First Principles/Code/README.md.source", "heading": "rgbdns-frag-31920af81303: heading Book", "sourcePath": "README.md", "startLine": 44, "endLine": 63}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-855d7f20ae34", "codeNote": "DNS from First Principles/Code/README.md.source", "heading": "rgbdns-frag-855d7f20ae34: heading Conformance and performance", "sourcePath": "README.md", "startLine": 64, "endLine": 75}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-d26839b00cc0", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-d26839b00cc0: mod axfr", "sourcePath": "src/lib.rs", "startLine": 3, "endLine": 3}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-c0387f24e3b2", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-c0387f24e3b2: mod cdb", "sourcePath": "src/lib.rs", "startLine": 4, "endLine": 4}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-ea9a942c2c24", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-ea9a942c2c24: mod client", "sourcePath": "src/lib.rs", "startLine": 5, "endLine": 5}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-4ca6b4a66ffe", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-4ca6b4a66ffe: mod conf", "sourcePath": "src/lib.rs", "startLine": 6, "endLine": 6}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-47cdd9e7aa73", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-47cdd9e7aa73: mod dnscache_config", "sourcePath": "src/lib.rs", "startLine": 7, "endLine": 7}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-64be14e515dc", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-64be14e515dc: mod multilog", "sourcePath": "src/lib.rs", "startLine": 8, "endLine": 8}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-1198b492e8d3", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-1198b492e8d3: mod name", "sourcePath": "src/lib.rs", "startLine": 9, "endLine": 9}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-9a69adb381ac", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-9a69adb381ac: mod packet", "sourcePath": "src/lib.rs", "startLine": 10, "endLine": 10}
+```
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-cc4b83e1818c", "codeNote": "DNS from First Principles/Code/src/lib.rs.source", "heading": "rgbdns-frag-cc4b83e1818c: mod pick", "sourcePath": "src/lib.rs", "startLine": 11, "endLine": 11}
+```

@@ -1,0 +1,361 @@
+---
+type: "code-file"
+source_path: "src/tinydns_edit.rs"
+language: "rust"
+subsystem: "Rust library"
+crate: "rgbdns"
+line_count: 319
+fragment_count: 16
+rgbdns_commit: "472c2087"
+---
+
+# src/tinydns_edit.rs
+
+- Subsystem: [[DNS from First Principles/Subsystems/Rust library|Rust library]]
+- Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
+- Source path: `src/tinydns_edit.rs`
+- Lines: 319
+- Summary: Atomic implementation of the original `tinydns-edit add` operations.
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-efba4e2a8a31|Mode]]: lines 12-21
+- [[DNS from First Principles/Fragments/rgbdns-frag-ca2242539643|Mode]]: lines 22-22
+- [[DNS from First Principles/Fragments/rgbdns-frag-5a894e68e606|parse]]: lines 23-37
+- [[DNS from First Principles/Fragments/rgbdns-frag-0c89c4acdd0b|Address]]: lines 38-42
+- [[DNS from First Principles/Fragments/rgbdns-frag-a7a214529645|add]]: lines 43-123
+- [[DNS from First Principles/Fragments/rgbdns-frag-eb88d1a41c23|display_address]]: lines 161-167
+- [[DNS from First Principles/Fragments/rgbdns-frag-e4f33cd6b642|parse_flat_ipv6]]: lines 168-176
+- [[DNS from First Principles/Fragments/rgbdns-frag-29ec21247caf|mark_slot]]: lines 177-197
+- [[DNS from First Principles/Fragments/rgbdns-frag-ba8de1a4016c|name_field]]: lines 198-201
+- [[DNS from First Principles/Fragments/rgbdns-frag-9dd508018661|number]]: lines 202-208
+- [[DNS from First Principles/Fragments/rgbdns-frag-6fdb09a9686a|split_fields]]: lines 209-223
+- [[DNS from First Principles/Fragments/rgbdns-frag-b32bce6896b4|tests]]: lines 224-227
+- [[DNS from First Principles/Fragments/rgbdns-frag-e1966e8f1b30|paths]]: lines 228-243
+- [[DNS from First Principles/Fragments/rgbdns-frag-365aec844a5c|allocates_next_ns_and_mx_slots_atomically]]: lines 244-273
+- [[DNS from First Principles/Fragments/rgbdns-frag-d2d519f43a8b|host_mode_rejects_duplicate_owner_or_address]]: lines 274-300
+- [[DNS from First Principles/Fragments/rgbdns-frag-087a0d573875|ipv6_modes_emit_flat_unambiguous_addresses]]: lines 301-319
+
+## Full Source
+
+```rust
+//! Atomic implementation of the original `tinydns-edit add` operations.
+
+use crate::{Error, Name, Result};
+use std::{
+    fs::{self, File},
+    io::Write,
+    net::{Ipv4Addr, Ipv6Addr},
+    path::Path,
+};
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Mode {
+    Ns,
+    ChildNs,
+    Host,
+    Alias,
+    Mx,
+    Host6,
+    Alias6,
+}
+
+impl Mode {
+    pub fn parse(value: &str) -> Result<Self> {
+        match value {
+            "ns" => Ok(Self::Ns),
+            "childns" => Ok(Self::ChildNs),
+            "host" => Ok(Self::Host),
+            "alias" => Ok(Self::Alias),
+            "mx" => Ok(Self::Mx),
+            "host6" => Ok(Self::Host6),
+            "alias6" => Ok(Self::Alias6),
+            _ => Err(Error::Format("invalid tinydns-edit mode")),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Address {
+    V4(Ipv4Addr),
+    V6(Ipv6Addr),
+}
+
+pub fn add(
+    data: &Path,
+    temporary: &Path,
+    mode: Mode,
+    target: Name,
+    address: Address,
+) -> Result<()> {
+    if matches!(mode, Mode::Host6 | Mode::Alias6) != matches!(address, Address::V6(_)) {
+        return Err(Error::Format("address family does not match edit mode"));
+    }
+    if data == temporary {
+        return Err(Error::Format("data and temporary paths must differ"));
+    }
+    let contents = fs::read_to_string(data)?;
+    let mut used = [false; 26];
+    let mut ttl = match mode {
+        Mode::Ns | Mode::ChildNs => 259_200,
+        _ => 86_400,
+    };
+    for raw in contents.lines() {
+        let line = raw.trim_end_matches([' ', '\t', '\r']);
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let marker = line.as_bytes()[0];
+        let fields = split_fields(&line[1..]);
+        match mode {
+            Mode::Ns | Mode::ChildNs => {
+                let wanted = if mode == Mode::Ns { b'.' } else { b'&' };
+                if marker == wanted && name_field(&fields, 0).as_ref() == Some(&target) {
+                    ttl = number(&fields, 3, 259_200);
+                    mark_slot(&mut used, &fields, 2, "ns", &target);
+                }
+            }
+            Mode::Host if marker == b'=' => {
+                if name_field(&fields, 0).as_ref() == Some(&target) {
+                    return Err(Error::InvalidRecord("host name already used".into()));
+                }
+                if fields
+                    .get(1)
+                    .and_then(|value| value.parse::<Ipv4Addr>().ok())
+                    == match address {
+                        Address::V4(address) => Some(address),
+                        Address::V6(_) => None,
+                    }
+                {
+                    return Err(Error::InvalidRecord("IP address already used".into()));
+                }
+            }
+            Mode::Mx if marker == b'@' && name_field(&fields, 0).as_ref() == Some(&target) => {
+                ttl = number(&fields, 4, 86_400);
+                mark_slot(&mut used, &fields, 2, "mx", &target);
+            }
+            Mode::Host6 if marker == b'6' => {
+                if name_field(&fields, 0).as_ref() == Some(&target) {
+                    return Err(Error::InvalidRecord("host name already used".into()));
+                }
+                if fields.get(1).and_then(|value| parse_flat_ipv6(value).ok())
+                    == match address {
+                        Address::V6(address) => Some(address),
+                        Address::V4(_) => None,
+                    }
+                {
+                    return Err(Error::InvalidRecord("IPv6 address already used".into()));
+                }
+            }
+            _ => {}
+        }
+    }
+    let owner = target.to_string().trim_end_matches('.').to_owned();
+    let line = match mode {
+        Mode::Ns | Mode::ChildNs | Mode::Mx => {
+            let slot = used
+                .iter()
+                .position(|used| !used)
+                .ok_or_else(|| Error::InvalidRecord("too many records for that domain".into()))?;
+            let letter = char::from(b'a' + slot as u8);
+            match mode {
+                Mode::Ns => format!(".{owner}:{}:{letter}:{ttl}", display_address(address)),
+                Mode::ChildNs => {
+                    format!("&{owner}:{}:{letter}:{ttl}", display_address(address))
+                }
+                Mode::Mx => format!("@{owner}:{}:{letter}::{ttl}", display_address(address)),
+                _ => unreachable!(),
+            }
+        }
+        Mode::Host => format!("={owner}:{}:{ttl}", display_address(address)),
+        Mode::Alias => format!("+{owner}:{}:{ttl}", display_address(address)),
+        Mode::Host6 => format!("6{owner}:{}:{ttl}", display_address(address)),
+        Mode::Alias6 => format!("3{owner}:{}:{ttl}", display_address(address)),
+    };
+
+    let mut file = File::create(temporary)?;
+    let result: Result<()> = (|| {
+        file.write_all(contents.as_bytes())?;
+        if !contents.is_empty() && !contents.ends_with('\n') {
+            file.write_all(b"\n")?;
+        }
+        writeln!(file, "{line}")?;
+        file.sync_all()?;
+        Ok(())
+    })();
+    if let Err(error) = result {
+        drop(file);
+        let _ = fs::remove_file(temporary);
+        return Err(error);
+    }
+    drop(file);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mode = fs::metadata(data)?.permissions().mode() & 0o644;
+        fs::set_permissions(temporary, fs::Permissions::from_mode(mode))?;
+    }
+    fs::rename(temporary, data)?;
+    Ok(())
+}
+
+fn display_address(address: Address) -> String {
+    match address {
+        Address::V4(address) => address.to_string(),
+        Address::V6(address) => format!("{:032x}", u128::from(address)),
+    }
+}
+
+fn parse_flat_ipv6(value: &str) -> Result<Ipv6Addr> {
+    if value.len() != 32 || !value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return Err(Error::InvalidRecord("bad flat IPv6 address".into()));
+    }
+    Ok(Ipv6Addr::from(u128::from_str_radix(value, 16).map_err(
+        |_| Error::InvalidRecord("bad flat IPv6 address".into()),
+    )?))
+}
+
+fn mark_slot(used: &mut [bool; 26], fields: &[String], index: usize, role: &str, owner: &Name) {
+    let Some(value) = fields.get(index) else {
+        return;
+    };
+    let expanded = if value.contains('.') {
+        value.clone()
+    } else {
+        format!("{value}.{role}.{owner}")
+    };
+    let Ok(expanded) = expanded.parse::<Name>() else {
+        return;
+    };
+    for (index, slot) in used.iter_mut().enumerate() {
+        let candidate = format!("{}.{role}.{owner}", char::from(b'a' + index as u8));
+        if candidate.parse::<Name>().ok().as_ref() == Some(&expanded) {
+            *slot = true;
+            break;
+        }
+    }
+}
+
+fn name_field(fields: &[String], index: usize) -> Option<Name> {
+    fields.get(index)?.parse().ok()
+}
+
+fn number(fields: &[String], index: usize, default: u32) -> u32 {
+    fields
+        .get(index)
+        .and_then(|value| value.parse().ok())
+        .unwrap_or(default)
+}
+
+fn split_fields(value: &str) -> Vec<String> {
+    let mut fields = vec![String::new()];
+    let mut escaped = false;
+    for character in value.chars() {
+        if character == ':' && !escaped {
+            fields.push(String::new());
+        } else {
+            fields.last_mut().unwrap().push(character);
+        }
+        escaped = character == '\\' && !escaped;
+    }
+    fields
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::SystemTime;
+
+    fn paths() -> (std::path::PathBuf, std::path::PathBuf) {
+        let stem = format!(
+            "rgbdns-edit-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        );
+        (
+            std::env::temp_dir().join(&stem),
+            std::env::temp_dir().join(format!("{stem}.new")),
+        )
+    }
+
+    #[test]
+    fn allocates_next_ns_and_mx_slots_atomically() {
+        let (data, temporary) = paths();
+        fs::write(
+            &data,
+            ".example:192.0.2.1:a:300\n@example:192.0.2.2:a::400\n",
+        )
+        .unwrap();
+        add(
+            &data,
+            &temporary,
+            Mode::Ns,
+            "example".parse().unwrap(),
+            Address::V4("192.0.2.3".parse().unwrap()),
+        )
+        .unwrap();
+        add(
+            &data,
+            &temporary,
+            Mode::Mx,
+            "example".parse().unwrap(),
+            Address::V4("192.0.2.4".parse().unwrap()),
+        )
+        .unwrap();
+        let result = fs::read_to_string(&data).unwrap();
+        fs::remove_file(data).unwrap();
+        assert!(result.contains(".example:192.0.2.3:b:300\n"));
+        assert!(result.contains("@example:192.0.2.4:b::400\n"));
+    }
+
+    #[test]
+    fn host_mode_rejects_duplicate_owner_or_address() {
+        let (data, temporary) = paths();
+        fs::write(&data, "=host.example:192.0.2.1:60\n").unwrap();
+        assert!(
+            add(
+                &data,
+                &temporary,
+                Mode::Host,
+                "host.example".parse().unwrap(),
+                Address::V4("192.0.2.2".parse().unwrap()),
+            )
+            .is_err()
+        );
+        assert!(
+            add(
+                &data,
+                &temporary,
+                Mode::Host,
+                "other.example".parse().unwrap(),
+                Address::V4("192.0.2.1".parse().unwrap()),
+            )
+            .is_err()
+        );
+        fs::remove_file(data).unwrap();
+    }
+
+    #[test]
+    fn ipv6_modes_emit_flat_unambiguous_addresses() {
+        let (data, temporary) = paths();
+        fs::write(&data, "").unwrap();
+        add(
+            &data,
+            &temporary,
+            Mode::Host6,
+            "v6.example".parse().unwrap(),
+            Address::V6("2001:db8::1".parse().unwrap()),
+        )
+        .unwrap();
+        let contents = fs::read_to_string(&data).unwrap();
+        fs::remove_file(data).unwrap();
+        assert_eq!(
+            contents,
+            "6v6.example:20010db8000000000000000000000001:86400\n"
+        );
+    }
+}
+```

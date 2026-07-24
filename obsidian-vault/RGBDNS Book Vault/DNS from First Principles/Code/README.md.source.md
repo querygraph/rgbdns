@@ -1,0 +1,102 @@
+---
+type: "code-file"
+source_path: "README.md"
+language: "markdown"
+subsystem: "Repository and build"
+line_count: 75
+fragment_count: 3
+rgbdns_commit: "472c2087"
+---
+
+# README.md
+
+- Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
+- Source path: `README.md`
+- Lines: 75
+- Summary: rgbdns
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-cfb0faf3b090|rgbdns]]: lines 1-43
+- [[DNS from First Principles/Fragments/rgbdns-frag-31920af81303|Book]]: lines 44-63
+- [[DNS from First Principles/Fragments/rgbdns-frag-855d7f20ae34|Conformance and performance]]: lines 64-75
+
+## Full Source
+
+```markdown
+# rgbdns
+
+`rgbdns` is a memory-safe Rust reimplementation of djbdns. The current runnable
+slice provides djbdns-compatible tinydns text and CDB data, authoritative UDP
+and TCP DNS, a DNSSEC-validating iterative cache, `tinydns-get`,
+`tinydns-data`, `axfrdns`, `axfr-get`, `rbldns`, `walldns`, and `dnsq`, with
+strict bounded packet parsing, IPv4/IPv6, wildcards, negative answers, and safe
+OS-generated query IDs.
+
+```sh
+cargo test
+IP=127.0.0.1 PORT=5353 cargo run --release --bin tinydns
+IP=127.0.0.1 PORT=5354 cargo run --release --bin dnscache
+IP=127.0.0.1 PORT=5355 cargo run --release --bin axfrdns
+cargo run --release --bin axfr-get -- example 127.0.0.1:5355 data.new data.tmp
+```
+
+`tinydns-data` atomically compiles `data` to the original djbdns `data.cdb`
+layout, and `tinydns` reads `data.cdb` by default. The loader bounds the database
+and validates every key, value, name, and RDATA field rather than relying on
+unchecked native-memory parsing. Set `DATA=data` to serve the text form
+directly. See [`docs/compatibility.md`](docs/compatibility.md) for scope and
+research.
+
+`dnscache` performs iteration from `config/root.hints`, validates DNSSEC using
+the bundled root trust anchor, randomizes UDP query IDs, ports, and letter case,
+and only serves loopback clients by default. Set `ALLOW_NETS` to a comma-
+separated CIDR list to authorize additional clients.
+
+`axfrdns` is TCP-only and likewise permits loopback clients by default. Its
+`ALLOW_NETS` setting accepts comma-separated IPv4 or IPv6 CIDRs.
+
+The recursive client commands read `DNSCACHEIP` (a comma-separated list of IP
+or `IP:port` endpoints) when set, otherwise they use `/etc/resolv.conf`.
+
+The `*-conf` commands generate djbdns-style service directories. They reference
+rgbdns's own `setuidgid` and `multilog` binaries by absolute path, so
+daemontools is not a runtime dependency. `multilog t ./main` writes TAI64N
+timestamps to `main/current`; optional `s<size>` and `n<count>` arguments set
+the rotation threshold and retained-file count. Daemons continue to write
+diagnostics to stderr, allowing the same binaries to work under daemontools,
+systemd, containers, or another supervisor.
+
+## Book
+
+[*DNS from First Principles*](docs/book/rgbdns.md) develops the protocol from
+names and packets through authority, recursion, DNSSEC, transfers, operations,
+and security, then maps each concept to rgbdns. It also compares systemd,
+runit, s6/s6-rc, OpenRC, and container-native replacements for
+`svc`/`supervise`.
+
+The committed [Obsidian reader vault](obsidian-vault/RGBDNS%20Book%20Vault)
+adds a codebase-exploration part, collocates the full text/code surface, and
+bundles a reader plugin for chapter navigation and prose-to-code fragment
+jumps. See [the vault guide](docs/OBSIDIAN-VAULT.md) to rebuild and validate it.
+
+Build the FirstPair package with Pandoc and Typst:
+
+```sh
+docs/book/build.sh
+docs/book/validate.sh
+```
+
+## Conformance and performance
+
+[`docs/conformance.md`](docs/conformance.md) maps implemented DNS requirements
+to RFC-numbered, adversarial, property, live-network, and independent ldns
+tests. [`docs/performance.md`](docs/performance.md) documents the stable-Rust
+core benchmark:
+
+```sh
+cargo test --test rfc_conformance
+cargo test --test wire_security
+cargo bench --bench dns_core
+```
+```
