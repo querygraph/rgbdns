@@ -25,6 +25,41 @@ The resulting package is architecture-specific because it contains native Rust
 binaries. Build it on the same Debian architecture as the destination, or use
 a proper Debian cross-build environment.
 
+The install step discovers every binary target through `cargo metadata`; the
+Debian rules do not maintain a second, manually synchronized program list.
+
+## Cloud package build and verification
+
+The `Build Debian package` GitHub Actions workflow runs for relevant changes on
+pull requests and `master`, and can also be started manually:
+
+```sh
+gh workflow run build-deb.yml --ref master
+gh run watch
+```
+
+The workflow builds the native debhelper package on Ubuntu 24.04 with the
+current stable Rust toolchain. It then:
+
+1. inspects the package control metadata and file table with `dpkg-deb`;
+2. rejects `lintian` errors;
+3. installs the package in a clean Ubuntu 24.04 container;
+4. verifies dpkg's installed state, every Cargo binary, service unit, and
+   packaged helper; and
+5. uploads the `.deb` as the `rgbdns-debian-amd64` workflow artifact.
+
+Download a completed build and inspect it locally:
+
+```sh
+gh run download RUN_ID -n rgbdns-debian-amd64 -D dist/cloud-deb
+dpkg-deb --info dist/cloud-deb/rgbdns_*_amd64.deb
+dpkg-deb --contents dist/cloud-deb/rgbdns_*_amd64.deb
+```
+
+The workflow passes `-d` to `dpkg-buildpackage` because Rust comes from the
+pinned Actions toolchain instead of Ubuntu's `cargo` and `rustc` packages.
+Debhelper and all other packaging tools still come from Ubuntu packages.
+
 The package creates:
 
 - system user and group `rgbdns`;
@@ -36,8 +71,9 @@ The package creates:
 The account has no login shell. Services bind privileged port 53 with only
 `CAP_NET_BIND_SERVICE`; they do not run as root. The units make the rest of the
 filesystem read-only, hide home directories and most process information,
-remove privilege escalation, limit address families, and grant write access
-only to the managed zone state.
+remove privilege escalation, lock the process personality, deny writable
+executable memory, limit address families, and grant write access only to the
+managed zone state.
 
 ## Prepare a primary nameserver
 

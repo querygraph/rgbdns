@@ -58,7 +58,7 @@ systemd, containers, or another supervisor.
 
 The repository includes native Debian packaging, hardened systemd services, and
 an idempotent `rgbdns-setup` command for primary and secondary authoritative
-servers. See [`docs/debian.md`](docs/debian.md) for package builds, account and
+servers. See [`docs/DEBIAN.md`](docs/DEBIAN.md) for package builds, account and
 directory layout, tinydns data-file setup, firewalls, AXFR allow-lists, timed
 secondary refresh, verification, upgrades, and troubleshooting.
 

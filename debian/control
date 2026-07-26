@@ -5,6 +5,7 @@ Maintainer: Alexy Khrabrov <deliverable@gmail.com>
 Build-Depends:
  cargo,
  debhelper-compat (= 13),
+ python3,
  rustc
 Standards-Version: 4.7.2
 Homepage: https://github.com/querygraph/rgbdns

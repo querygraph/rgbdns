@@ -15,6 +15,9 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Native Debian packaging with dedicated service accounts, hardened systemd
   units, idempotent primary setup, allow-listed AXFR serving, atomic timed
   secondary synchronization, package build tooling, and an operations guide.
+- Cloud Debian package builds with archive inspection, lintian enforcement,
+  clean-container installation checks, artifact upload, and automatic
+  Cargo-binary discovery.
 - Iterative `dnscache` service with DNSSEC validation, root-hint traversal,
   bailiwick enforcement, bounded response/nameserver caches, query
   case-randomization, EDNS, TCP fallback, and loopback-only access by default.

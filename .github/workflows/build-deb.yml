@@ -1,0 +1,79 @@
+name: Build Debian package
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - debian/**
+      - packaging/**
+      - docs/DEBIAN.md
+      - .github/workflows/build-deb.yml
+  push:
+    branches:
+      - master
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - debian/**
+      - packaging/**
+      - docs/DEBIAN.md
+      - .github/workflows/build-deb.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: debian-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  amd64:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install Debian packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes debhelper lintian
+
+      - name: Build package
+        run: packaging/build-deb.sh -d
+
+      - name: Collect and inspect package
+        run: |
+          mkdir -p dist
+          cp ../rgbdns_*_amd64.deb dist/
+          dpkg-deb --info dist/rgbdns_*_amd64.deb
+          dpkg-deb --contents dist/rgbdns_*_amd64.deb
+          cargo metadata --format-version 1 --no-deps |
+            python3 packaging/cargo-binaries.py > /tmp/expected-binaries
+          dpkg-deb --fsys-tarfile dist/rgbdns_*_amd64.deb |
+            tar -tf - |
+            sed -n 's#^\./usr/bin/##p' |
+            sort > /tmp/packaged-binaries
+          diff -u /tmp/expected-binaries /tmp/packaged-binaries
+          lintian --fail-on error dist/rgbdns_*_amd64.deb
+
+      - name: Verify installed package
+        run: |
+          docker run --rm \
+            --volume "$PWD/dist:/packages:ro" \
+            --volume "$PWD/packaging/verify-deb.sh:/verify-deb.sh:ro" \
+            ubuntu:24.04 \
+            sh -c 'sh /verify-deb.sh /packages/rgbdns_*_amd64.deb'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rgbdns-debian-amd64
+          path: dist/rgbdns_*_amd64.deb
+          if-no-files-found: error
