@@ -1,0 +1,64 @@
+name: Build openSUSE RPM
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - packaging/**
+      - docs/OPENSUSE.md
+      - .github/workflows/build-rpm.yml
+  push:
+    branches:
+      - master
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - packaging/**
+      - docs/OPENSUSE.md
+      - .github/workflows/build-rpm.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opensuse-rpm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  x86_64:
+    runs-on: ubuntu-24.04
+    container: opensuse/leap:16.0
+    timeout-minutes: 40
+    steps:
+      - name: Install checkout prerequisites
+        run: zypper --non-interactive install git gzip tar
+
+      - uses: actions/checkout@v5
+
+      - name: Install RPM build dependencies
+        run: |
+          zypper --non-interactive install \
+            cargo python3 rpm-build rust systemd-rpm-macros
+
+      - name: Build source and binary RPMs
+        run: packaging/build-rpm.sh
+
+      - name: Inspect package
+        run: |
+          rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+          rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+
+      - name: Verify installed package
+        run: packaging/verify-rpm.sh dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rgbdns-opensuse-leap16-x86_64
+          path: |
+            dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+            dist/rpmbuild/SRPMS/rgbdns-*.src.rpm
+          if-no-files-found: error

@@ -54,9 +54,9 @@ the rotation threshold and retained-file count. Daemons continue to write
 diagnostics to stderr, allowing the same binaries to work under daemontools,
 systemd, containers, or another supervisor.
 
-## Debian and systemd
+## Linux packages and systemd
 
-The repository includes native Debian packaging, hardened systemd services, and
+The repository includes native Debian and openSUSE RPM packaging, hardened systemd services, and
 an idempotent `rgbdns-setup` command for primary and secondary authoritative
 servers. See [`docs/DEBIAN.md`](docs/DEBIAN.md) for package builds, account and
 directory layout, tinydns data-file setup, firewalls, AXFR allow-lists, timed
@@ -64,12 +64,27 @@ secondary refresh, verification, upgrades, and troubleshooting. It includes a
 complete `cron.sh` deployment with `52.10.53.234` as the primary address and
 BuddyNS as the secondary network.
 
+For the current openSUSE Leap 16.0 x86_64 AWS Marketplace AMI, see
+[`docs/OPENSUSE.md`](docs/OPENSUSE.md). It covers launch, RPM build and install,
+firewalld, the complete `cron.sh` primary, integrated AXFR, BuddyNS delegation,
+systemd persistence, upgrades, removal, and troubleshooting.
+
 On Debian or Ubuntu, build the package with:
 
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
 sudo apt install ../rgbdns_0.1.1_$(dpkg --print-architecture).deb
+```
+
+On openSUSE Leap 16.0, build the RPM with:
+
+```sh
+sudo zypper --non-interactive install \
+  git cargo rust python3 rpm-build systemd-rpm-macros
+packaging/build-rpm.sh
+sudo zypper --non-interactive --no-gpg-checks install \
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.1.1-1.x86_64.rpm
 ```
 
 ## Book
