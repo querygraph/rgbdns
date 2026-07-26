@@ -7,6 +7,14 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ### Added
 
+- Private ANAME zone directives with CDB persistence, bounded recursive
+  CNAME following, TTL-capped address caching, and authoritative apex-safe
+  A/AAAA synthesis.
+- Manual pages for every command and packaged service helper, installed by the
+  Debian package alongside the rgbdns(7) overview.
+- Native Debian packaging with dedicated service accounts, hardened systemd
+  units, idempotent primary setup, allow-listed AXFR serving, atomic timed
+  secondary synchronization, package build tooling, and an operations guide.
 - Iterative `dnscache` service with DNSSEC validation, root-hint traversal,
   bailiwick enforcement, bounded response/nameserver caches, query
   case-randomization, EDNS, TCP fallback, and loopback-only access by default.

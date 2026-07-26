@@ -1,0 +1,18 @@
+.TH PICKDNS 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+pickdns \- serve location-dependent DNS data
+.SH SYNOPSIS
+.B pickdns
+.SH DESCRIPTION
+Serves the compiled pickdns database over UDP and TCP, selecting answers
+according to the client address.
+.SH ENVIRONMENT
+.TP
+.B DATA
+Database path (default: data.cdb).
+.TP
+.B IP, PORT
+Listen address and port (defaults: 0.0.0.0 and 53).
+.SH SEE ALSO
+.BR pickdns-data (1),
+.BR pickdns-conf (1)

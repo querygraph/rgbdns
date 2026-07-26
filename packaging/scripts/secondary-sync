@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+: "${ZONE:?ZONE is required in /etc/rgbdns/secondary.env}"
+: "${PRIMARY:?PRIMARY is required in /etc/rgbdns/secondary.env}"
+
+state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
+lock_file=${RGBDNS_LOCK_FILE:-/run/rgbdns-secondary.lock}
+cd "$state_dir"
+umask 027
+
+exec 9>"$lock_file"
+/usr/bin/flock -n 9 || {
+    echo "rgbdns-secondary-sync: another transfer is active" >&2
+    exit 0
+}
+
+rm -f data.axfr.tmp
+/usr/bin/axfr-get "$ZONE" "$PRIMARY" data.axfr.new data.axfr.tmp
+mv data.axfr.new data
+/usr/bin/tinydns-data

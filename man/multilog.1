@@ -1,0 +1,28 @@
+.TH MULTILOG 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+multilog \- collect and rotate service logs
+.SH SYNOPSIS
+.B multilog
+.RB [ t ]
+.RB [ s\fIsize\fR ]
+.RB [ n\fIcount\fR ]
+.I directory
+.RI [ directory ...]
+.SH DESCRIPTION
+Copies standard input to a
+.I current
+file in every destination directory. Files rotate before a write would exceed
+99999 bytes, and 10 old files are retained by default.
+.SH OPTIONS
+.TP
+.B t
+Prefix each input line with a TAI64N timestamp.
+.TP
+.BI s size
+Set the rotation size in bytes (1 through 2^40).
+.TP
+.BI n count
+Retain this many rotated files (1 through 10000).
+.SH SEE ALSO
+.BR tai64n (1),
+.BR tai64nlocal (1)

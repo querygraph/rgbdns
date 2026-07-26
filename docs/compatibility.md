@@ -7,6 +7,8 @@ Implemented:
 - RFC 1034/1035 names, compression decoding, queries and resource records
 - tinydns markers `. & = + @ ' ^ C Z : 3 6 S %`, including client-location
   selection and query-time TAI64 activation/expiration
+- private `A` ANAME marker for apex-safe, cached A/AAAA flattening without
+  emitting a wire CNAME
 - atomic djbdns-compatible `data.cdb` compilation and bounded, validating CDB
   loading; a 19-entry fixture including location, timestamp, SRV, and patched
   IPv6 qualifiers was differentially verified as identical

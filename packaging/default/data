@@ -1,0 +1,5 @@
+# Replace example.net and the documentation-only addresses before production.
+Zexample.net:ns1.example.net:hostmaster.example.net:1:16384:2048:1048576:2560:3600
+&example.net:192.0.2.53:ns1.example.net:3600
++ns1.example.net:192.0.2.53:3600
++www.example.net:192.0.2.80:300

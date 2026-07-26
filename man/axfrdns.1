@@ -1,0 +1,23 @@
+.TH AXFRDNS 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+axfrdns \- serve DNS zone transfers
+.SH SYNOPSIS
+.B axfrdns
+.SH DESCRIPTION
+Loads a compiled tinydns database and serves AXFR requests over TCP.
+.SH ENVIRONMENT
+.TP
+.B DATA
+Database path (default: data.cdb).
+.TP
+.B IP
+Listen address (default: 127.0.0.1).
+.TP
+.B PORT
+Listen port (default: 53).
+.TP
+.B ALLOW_NETS
+Comma-separated client CIDRs (default: 127.0.0.0/8,::1/128).
+.SH SEE ALSO
+.BR axfr-get (1),
+.BR axfrdns-conf (1)

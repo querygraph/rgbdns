@@ -1,0 +1,13 @@
+.TH RANDOM-IP 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+random-ip \- generate shuffled IPv4 addresses
+.SH SYNOPSIS
+.B random-ip
+.RI [ count
+.RI [ octet ...]]
+.SH DESCRIPTION
+Prints up to
+.I count
+IPv4 addresses, optionally fixing up to four leading octets. The default
+count is 10000. The count is capped by the size of the remaining address
+space.

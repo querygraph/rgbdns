@@ -1,0 +1,13 @@
+.TH DNSCACHE-CONF 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+dnscache-conf \- create a dnscache service directory
+.SH SYNOPSIS
+.B dnscache-conf
+.I account log-account directory
+.RI [ ip ]
+.SH DESCRIPTION
+Creates an absolute daemontools-style service directory with root hints,
+random seed, logging, and resolver environment.  The default address is
+127.0.0.1.
+.SH SEE ALSO
+.BR dnscache (1)

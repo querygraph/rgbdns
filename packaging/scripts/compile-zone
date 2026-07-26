@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
+cd "$state_dir"
+test -r data
+umask 027
+exec /usr/bin/tinydns-data

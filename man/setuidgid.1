@@ -1,0 +1,11 @@
+.TH SETUIDGID 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+setuidgid \- run a program with another account's identity
+.SH SYNOPSIS
+.B setuidgid
+.I account program
+.RI [ argument ...]
+.SH DESCRIPTION
+Resolves the account, drops supplementary groups and process privileges to
+that account, then replaces itself with the requested program. It must start
+with sufficient privilege to change identity.

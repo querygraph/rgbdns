@@ -1,0 +1,34 @@
+.TH DNSCACHE 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+dnscache \- caching recursive DNS resolver
+.SH SYNOPSIS
+.B dnscache
+.SH DESCRIPTION
+Runs a DNSSEC-validating recursive resolver over UDP and TCP.
+.SH ENVIRONMENT
+.TP
+.B IP, PORT
+Listen address and port (defaults: 127.0.0.1 and 53).
+.TP
+.B ALLOW_NETS
+Comma-separated client CIDRs; defaults to IPv4 and IPv6 loopback.
+.TP
+.B ROOTS
+Path to the root hints file.  Forwarding zones may also be configured as
+documented in
+.BR rgbdns (7).
+.TP
+.B CACHESIZE
+Response cache size, from 1024 through 1073741824 (default: 16777216).
+.TP
+.B NSCACHESIZE
+Nameserver cache entries, from 16 through 1048576 (default: 4096).
+.TP
+.B RECURSION_LIMIT , NS_RECURSION_LIMIT
+Recursion limits (defaults: 64 and 32; range: 1 through 128).
+.TP
+.B RUST_LOG
+Logging filter (default: warn).
+.SH SEE ALSO
+.BR dnscache-conf (1),
+.BR dnsqr (1)

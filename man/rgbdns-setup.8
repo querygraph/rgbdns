@@ -1,0 +1,53 @@
+.TH RGBDNS-SETUP 8 "2026-07-23" "rgbdns 0.1.0" "System Administration"
+.SH NAME
+rgbdns-setup \- configure a packaged rgbdns primary or secondary
+.SH SYNOPSIS
+.B rgbdns-setup primary
+.B --data
+.I file
+.RI [ options ]
+.br
+.B rgbdns-setup secondary
+.B --zone
+.I name
+.B --primary
+.I address[:port]
+.RI [ options ]
+.SH DESCRIPTION
+Creates the rgbdns service account and managed directories, writes service
+environment files, and configures a primary or one-zone secondary. It must be
+run as root. Unless
+.B --no-start
+is used, the applicable systemd services are enabled and started.
+.SH OPTIONS
+.TP
+.BI --listen-ip " address"
+Authoritative listen address (default: 0.0.0.0).
+.TP
+.BI --port " port"
+Authoritative port (default: 53).
+.TP
+.BI --data " file"
+Tinydns-format source file for a primary.
+.TP
+.BI --zone " name"
+Zone transferred by a secondary.
+.TP
+.BI --primary " address[:port]"
+Primary server used by a secondary.
+.TP
+.BI --axfr-listen-ip " address"
+Enable the primary AXFR server on this address.
+.TP
+.BI --axfr-port " port"
+AXFR port (default: 53).
+.TP
+.BI --allow-nets " cidrs"
+Comma-separated client networks permitted to transfer the primary zone.
+.TP
+.B --no-start
+Write configuration without enabling or starting services.
+.SH SEE ALSO
+.BR rgbdns (7),
+.BR tinydns (1),
+.BR axfrdns (1)

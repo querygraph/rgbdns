@@ -1,0 +1,34 @@
+[Unit]
+Description=Fetch and activate an rgbdns secondary zone over AXFR
+Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/etc/rgbdns/secondary.env
+
+[Service]
+Type=oneshot
+User=rgbdns
+Group=rgbdns
+WorkingDirectory=/var/lib/rgbdns/tinydns
+EnvironmentFile=/etc/rgbdns/secondary.env
+ExecStart=/usr/lib/rgbdns/secondary-sync
+ExecStartPost=+/bin/systemctl try-restart rgbdns-tinydns.service
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectProc=invisible
+ProtectSystem=strict
+ReadWritePaths=/var/lib/rgbdns/tinydns /run
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+UMask=0027

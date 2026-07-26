@@ -1,0 +1,23 @@
+.TH SECONDARY-SYNC 8 "2026-07-23" "rgbdns 0.1.0" "System Administration"
+.SH NAME
+secondary-sync \- refresh the packaged secondary zone
+.SH SYNOPSIS
+.B /usr/lib/rgbdns/secondary-sync
+.SH DESCRIPTION
+Internal package helper that locks the refresh operation, fetches the
+configured zone with AXFR, compiles it, and atomically updates the managed
+authoritative database.
+.SH ENVIRONMENT
+.TP
+.B RGBDNS_STATE_DIR
+Override the managed zone directory (default: /var/lib/rgbdns/tinydns).
+.TP
+.B RGBDNS_LOCK_FILE
+Override the lock file (default: /run/rgbdns-secondary.lock).
+.SH FILES
+.TP
+.I /etc/rgbdns/secondary.env
+Defines ZONE and PRIMARY.
+.SH SEE ALSO
+.BR axfr-get (1),
+.BR rgbdns-setup (8)

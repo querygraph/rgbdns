@@ -1,0 +1,13 @@
+.TH TINYDNS-EDIT 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+tinydns-edit \- add a record to tinydns source data
+.SH SYNOPSIS
+.B tinydns-edit
+.I data data.new add mode domain address
+.SH DESCRIPTION
+Adds a record using a temporary file and replaces the data file on success.
+.I mode
+is one of ns, childns, host, alias, mx, host6, or alias6. IPv6 addresses are
+accepted for host6 and alias6; other modes require IPv4.
+.SH SEE ALSO
+.BR tinydns-data (1)

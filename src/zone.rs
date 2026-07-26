@@ -11,6 +11,7 @@ use std::{
 pub struct Zone {
     records: BTreeMap<Name, Vec<Record>>,
     metadata: BTreeMap<Name, Vec<RecordMetadata>>,
+    anames: BTreeMap<Name, Aname>,
     authoritative: BTreeSet<Name>,
     delegations: BTreeSet<Name>,
     locations: Vec<(Vec<u8>, [u8; 2])>,
@@ -18,6 +19,12 @@ pub struct Zone {
     default_serial: u32,
     nodes: BTreeSet<Name>,
     unqualified_nodes: BTreeSet<Name>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct Aname {
+    pub target: Name,
+    pub ttl: u32,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -80,6 +87,30 @@ impl Zone {
                 )));
             }
         }
+        for (owner, aname) in &self.anames {
+            if owner.without_wildcard().is_some() {
+                return Err(Error::InvalidRecord(format!(
+                    "ANAME owner cannot be a wildcard: {owner}"
+                )));
+            }
+            if owner == &aname.target {
+                return Err(Error::InvalidRecord(format!(
+                    "ANAME at {owner} points to itself"
+                )));
+            }
+            if self.records.get(owner).is_some_and(|records| {
+                records.iter().any(|record| {
+                    matches!(
+                        record.rr_type(),
+                        RecordType::A | RecordType::Aaaa | RecordType::Cname
+                    )
+                })
+            }) {
+                return Err(Error::InvalidRecord(format!(
+                    "ANAME at {owner} conflicts with A, AAAA, or CNAME data"
+                )));
+            }
+        }
         Ok(())
     }
     fn add(&mut self, r: Record) {
@@ -113,6 +144,15 @@ impl Zone {
             .iter()
             .map(|(prefix, location)| (prefix.as_slice(), *location))
     }
+    pub(crate) fn aname_entries(&self) -> impl Iterator<Item = (&Name, &Aname)> {
+        self.anames.iter()
+    }
+    pub(crate) fn aname(&self, owner: &Name) -> Option<&Aname> {
+        self.anames.get(owner)
+    }
+    pub(crate) fn has_anames(&self) -> bool {
+        !self.anames.is_empty()
+    }
     pub fn transfer(&self, name: &Name) -> Option<Vec<Record>> {
         if !self.authoritative.contains(name) {
             return None;
@@ -140,9 +180,11 @@ impl Zone {
     pub(crate) fn from_compiled_records(
         records: Vec<(Record, RecordMetadata)>,
         locations: Vec<(Vec<u8>, [u8; 2])>,
+        anames: Vec<(Name, Aname)>,
     ) -> Self {
         let mut zone = Self {
             locations,
+            anames: anames.into_iter().collect(),
             ..Self::default()
         };
         for (record, metadata) in records {
@@ -162,6 +204,14 @@ impl Zone {
         for owner in ns_owners {
             if !zone.authoritative.contains(&owner) {
                 zone.delegations.insert(owner);
+            }
+        }
+        for owner in zone.anames.keys() {
+            let mut node = Some(owner.clone());
+            while let Some(name) = node {
+                zone.nodes.insert(name.clone());
+                zone.unqualified_nodes.insert(name.clone());
+                node = name.parent();
             }
         }
         zone
@@ -200,6 +250,26 @@ impl Zone {
             _ => RecordMetadata::default(),
         };
         match kind {
+            b'A' => {
+                let target = field(&f, 1)?.parse::<Name>()?;
+                let ttl = number_or(&f, 2, 300);
+                if ttl == 0 {
+                    return Err(Error::InvalidRecord("ANAME TTL must be positive".into()));
+                }
+                if let Some(existing) = self.anames.insert(name.clone(), Aname { target, ttl })
+                    && self.anames[&name] != existing
+                {
+                    return Err(Error::InvalidRecord(format!(
+                        "multiple ANAME targets at {name}"
+                    )));
+                }
+                let mut node = Some(name);
+                while let Some(value) = node {
+                    self.nodes.insert(value.clone());
+                    self.unqualified_nodes.insert(value.clone());
+                    node = value.parent();
+                }
+            }
             b'=' | b'+' => {
                 let ttl = number_or(&f, 2, 86400);
                 let ip = field(&f, 1)?
@@ -925,6 +995,34 @@ mod tests {
             Lookup::Answer(records)
                 if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
         ));
+    }
+
+    #[test]
+    fn aname_coexists_with_apex_authority_but_not_address_or_cname_data() {
+        let zone = Zone::parse(
+            ".example:192.0.2.53:ns.example\n\
+             Aexample:hosting.example.net:120\n",
+        )
+        .unwrap();
+        let aname = zone.aname(&"example".parse().unwrap()).unwrap();
+        assert_eq!(aname.target, "hosting.example.net".parse().unwrap());
+        assert_eq!(aname.ttl, 120);
+        assert!(
+            Zone::parse(
+                ".example:192.0.2.53:ns.example\n\
+                 Aexample:hosting.example.net\n\
+                 +example:192.0.2.1\n",
+            )
+            .is_err()
+        );
+        assert!(
+            Zone::parse(
+                ".example:192.0.2.53:ns.example\n\
+                 Aexample:hosting.example.net\n\
+                 Cexample:other.example.net\n",
+            )
+            .is_err()
+        );
     }
 
     #[test]

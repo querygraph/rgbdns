@@ -203,6 +203,12 @@ and narrowly specified metadata, an owner with CNAME should not also hold
 unrelated data. A resolver follows the chain while defending against loops and
 excessive depth.
 
+**ANAME** is not a standard DNS record type in rgbdns. It is authoritative
+server configuration that copies the address meaning of another name onto an
+owner. This distinction matters: clients receive ordinary A or AAAA records,
+not an ANAME record. ANAME can therefore provide address aliasing at a zone
+apex without violating CNAME exclusivity.
+
 **MX** names a mail exchanger and gives it a preference. Lower numbers are
 preferred. The target is a name, not an address.
 
@@ -401,6 +407,7 @@ character selects a record form. Common forms include:
 | `3` | AAAA only |
 | `@` | MX and optional exchanger address |
 | `C` | CNAME |
+| `A` | private ANAME (flattened A/AAAA alias) |
 | `^` | PTR |
 | `'` | TXT |
 | `S` | SRV |
@@ -424,6 +431,125 @@ be visible before or after a specified instant. Location codes select records
 using configured client IPv4 prefixes. rgbdns carries that metadata beside the
 record and evaluates it at lookup time.
 
+## ANAME and apex address flattening
+
+A zone apex necessarily owns SOA and NS data. A CNAME owner, by contrast,
+cannot also own ordinary records. A literal apex CNAME would therefore make
+the zone internally contradictory: the alias rule says the owner has no other
+data while the authority rules require other data at that same owner.
+
+Hosted sites still need a way for `example.com` to track addresses controlled
+by a platform such as `customer.blog-host.example`. DNS providers commonly
+call the solution CNAME flattening, ALIAS, or ANAME. The authoritative server
+resolves the configured target itself and publishes the resulting addresses
+under the configured owner.
+
+rgbdns calls this feature **ANAME** and uses the private `A` source marker:
+
+```text
+# Authority and nameserver address.
+.example.com:192.0.2.53:ns1.example.com
+
+# ANAME owner:target:maximum-ttl
+Aexample.com:customer.blog-host.example:300
+
+# Other apex data remains independent.
+@example.com::mail.example.com:10:3600
+'example.com:v=spf1 -all:3600
+```
+
+The form is:
+
+```text
+Aowner:target:maximum-ttl
+```
+
+The TTL field is optional and defaults to 300 seconds. It is a ceiling, not a
+promise to extend the target’s lifetime. If the upstream address has 45
+seconds remaining and the ANAME limit is 300, rgbdns returns 45. If the
+upstream has 900 seconds remaining, rgbdns returns no more than 300.
+
+ANAME is stored separately from ordinary `Record` values. It can coexist with
+SOA, NS, MX, TXT, CAA, and other non-address data. Zone validation rejects:
+
+- A, AAAA, or CNAME data at the same owner;
+- a wildcard ANAME owner;
+- an owner that targets itself;
+- different ANAME targets at one owner;
+- a zero TTL.
+
+The server only applies ANAME to A and AAAA questions. SOA, NS, MX, TXT, CAA,
+and all other questions continue through normal authoritative lookup. ANAME
+also does not override a delegation cut: a name beneath a delegated child
+still produces a referral from the parent.
+
+For an address question, the response path is:
+
+1. establish that ordinary authoritative lookup reaches the ANAME owner and
+   does not cross a delegation;
+2. query the configured recursive resolver for the target and requested
+   address family;
+3. validate response identity and framing;
+4. follow only a connected CNAME chain beginning at the configured target;
+5. collect the terminal A or AAAA RRset;
+6. replace each terminal owner with the ANAME owner;
+7. cap the remaining TTL and return an authoritative answer.
+
+For example, an upstream result such as:
+
+```text
+customer.blog-host.example. 180 IN CNAME edge.host.example.
+edge.host.example.          120 IN A     192.0.2.80
+```
+
+becomes:
+
+```text
+example.com.                120 IN A     192.0.2.80
+```
+
+The CNAME is deliberately absent. Consumers see a conventional authoritative
+address RRset at the apex.
+
+The resolver cache is shared by requests handled by one server process.
+Positive entries expire with the upstream chain’s shortest relevant TTL.
+Negative results use the authority SOA’s negative TTL when available and 60
+seconds otherwise. The configured ANAME ceiling is applied when constructing
+each response, so two owners may safely share a target while using different
+TTL policies.
+
+Resolution is bounded in the same spirit as the rest of rgbdns:
+
+- CNAME chains stop after 16 links;
+- visited names detect cycles;
+- no more than 64 terminal addresses are accepted;
+- conflicting CNAME targets are rejected;
+- upstream SERVFAIL and other resolver errors become authoritative SERVFAIL,
+  not false NODATA;
+- A and AAAA are cached independently.
+
+`DNSCACHEIP` selects one or more recursive endpoints, separated by commas.
+Each endpoint may be an IP address using port 53 or an explicit socket address.
+Without it, rgbdns reads `/etc/resolv.conf`. A local validating `dnscache` is
+the preferred upstream when operators want DNSSEC validation and a cache shared
+with other local DNS work:
+
+```sh
+DNSCACHEIP=127.0.0.1:5354 IP=0.0.0.0 PORT=53 tinydns
+```
+
+ANAME metadata survives `tinydns-data` compilation through private CDB entries;
+it is not encoded as a made-up public RR type. This retains the source
+semantics across text and CDB operation without teaching ordinary DNS clients
+about a private wire format.
+
+Standard AXFR has no interoperable way to describe this private policy.
+rgbdns therefore does not emit ANAME metadata in AXFR. An independently
+configured secondary needs the same ANAME source directive, while a
+conventional secondary can only serve address snapshots supplied through an
+external materialization workflow. Operators should account for that
+difference before treating ANAME zones as ordinary transferable zones.
+
 ## CDB: compile once, read predictably
 
 The traditional `tinydns-data` compiles text into a constant database, CDB.
@@ -431,8 +557,10 @@ The serving process reads the compiled file instead of reparsing editable text
 for every startup or query. Compilation also enables atomic replacement:
 write and validate a new file, then rename it into place.
 
-rgbdns’s `src/cdb.rs` preserves the djbdns key/value layout. `compile` serializes
-typed records and metadata; `load` reads entries and reconstructs a `Zone`.
+rgbdns’s `src/cdb.rs` preserves the djbdns key/value layout for ordinary
+records and uses a private, NUL-prefixed key namespace for ANAME metadata.
+`compile` serializes typed records and metadata; `load` reads entries and
+reconstructs a `Zone`.
 The loader does not trust the database merely because it is local. It bounds
 file and entry sizes, validates keys, checks record layouts, decodes names and
 RDATA through explicit lengths, and rejects malformed data.
@@ -920,6 +1048,23 @@ wildcard, delegation, negative, IPv4, IPv6, and large-response queries, then
 atomically replace `data.cdb`. Retain the previous known-good database for
 rollback. Query the bound service over both UDP and TCP after deployment.
 
+For an ANAME zone, test the two address families and the unaffected apex
+record types separately:
+
+```sh
+dig @192.0.2.53 example.com A +norecurse
+dig @192.0.2.53 example.com AAAA +norecurse
+dig @192.0.2.53 example.com SOA +norecurse
+dig @192.0.2.53 example.com MX +norecurse
+```
+
+The A and AAAA answers should have the apex as their owner and should not
+contain a CNAME. The SOA and MX answers should come entirely from zone data.
+Repeat the address queries after the target changes and after its TTL expires;
+this verifies refresh behavior rather than only the initial lookup. Also test
+the chosen recursive endpoint independently, because an authoritative ANAME
+lookup cannot succeed when its upstream resolver is unavailable.
+
 Do not expose the recursive service to arbitrary networks by accident. The
 default `ALLOW_NETS` is loopback only because an open resolver can be abused
 for amplification and can consume local capacity. Likewise, expand AXFR
@@ -935,6 +1080,7 @@ Useful signals include:
 - resolver cache capacity and latency percentiles;
 - process restarts and file-descriptor use;
 - root-hint and trust-anchor freshness;
+- ANAME refresh latency, upstream failures, cache misses, and synthesized TTLs;
 - time synchronization;
 - CDB build identity and deployment time.
 
@@ -984,6 +1130,8 @@ Every DNS implementation should retain regression cases for:
 - duplicate or malformed OPT records;
 - tiny advertised transport limits;
 - CNAME loops and excessive chains;
+- ANAME self-reference, upstream CNAME loops, excessive address results, and
+  resolver failure;
 - wildcard names blocked by existing nodes;
 - delegation cuts beneath an authoritative apex;
 - NODATA versus NXDOMAIN;
@@ -1538,7 +1686,7 @@ Common daemon variables include:
 | `PORT` | listen port |
 | `DATA` | authoritative text or CDB path where supported |
 | `ALLOW_NETS` | comma-separated client CIDRs for recursion or transfer |
-| `DNSCACHEIP` | recursive endpoints used by client tools |
+| `DNSCACHEIP` | recursive endpoints used by client tools and ANAME flattening |
 | `CACHESIZE` | bounded recursive response-cache capacity |
 | `NSCACHESIZE` | bounded nameserver-cache entries |
 | `RECURSION_LIMIT` | ordinary recursion depth |

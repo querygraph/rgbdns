@@ -1,0 +1,13 @@
+.TH AXFRDNS-CONF 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+axfrdns-conf \- create an axfrdns service directory
+.SH SYNOPSIS
+.B axfrdns-conf
+.I account log-account directory tinydns-directory ip
+.SH DESCRIPTION
+Creates an absolute daemontools-style service directory, logging setup, run
+script, and environment files.  The tinydns directory must also be absolute.
+The generated AXFR allow-list initially permits only loopback clients.
+.SH SEE ALSO
+.BR axfrdns (1),
+.BR tinydns-conf (1)

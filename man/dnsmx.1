@@ -1,0 +1,11 @@
+.TH DNSMX 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+dnsmx \- look up mail exchangers
+.SH SYNOPSIS
+.B dnsmx
+.RI [ name ...]
+.SH DESCRIPTION
+Performs recursive MX queries and prints each preference and target.  If no MX
+record exists, prints an implicit preference 0 entry for the queried name.
+.SH SEE ALSO
+.BR dnsqr (1)

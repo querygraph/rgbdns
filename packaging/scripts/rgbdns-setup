@@ -1,0 +1,147 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    cat <<'EOF'
+usage:
+  rgbdns-setup primary --data FILE [options]
+  rgbdns-setup secondary --zone NAME --primary ADDRESS[:PORT] [options]
+
+options:
+  --listen-ip ADDRESS       authoritative listen address (default: 0.0.0.0)
+  --port PORT               authoritative port (default: 53)
+  --axfr-listen-ip ADDRESS  enable the primary AXFR server on this address
+  --axfr-port PORT          AXFR port (default: 53)
+  --allow-nets CIDRS        secondary CIDRs allowed to AXFR
+  --no-start                write configuration without enabling services
+
+The primary data file uses tinydns syntax. A secondary fetches exactly one zone
+into its managed data file and refreshes it every five minutes.
+EOF
+}
+
+die() {
+    echo "rgbdns-setup: $*" >&2
+    exit 2
+}
+
+is_wildcard() {
+    [ "$1" = 0.0.0.0 ] || [ "$1" = :: ] || [ "$1" = "[::]" ]
+}
+
+write_env() {
+    file=$1
+    shift
+    umask 027
+    : >"$file"
+    for assignment do
+        case $assignment in
+            *'
+'*) die "environment values must not contain newlines" ;;
+        esac
+        printf '%s\n' "$assignment" >>"$file"
+    done
+    chmod 0640 "$file"
+    chown root:rgbdns "$file"
+}
+
+[ $# -gt 0 ] || { usage >&2; exit 2; }
+case $1 in
+    -h|--help) usage; exit 0 ;;
+esac
+[ "$(id -u)" -eq 0 ] || die "run as root"
+role=$1
+shift
+
+listen_ip=0.0.0.0
+port=53
+axfr_ip=
+axfr_port=53
+allow_nets=
+data_file=
+zone=
+primary=
+start=yes
+
+while [ $# -gt 0 ]; do
+    option=$1
+    shift
+    case $option in
+        --listen-ip|--port|--axfr-listen-ip|--axfr-port|--allow-nets|--data|--zone|--primary)
+            [ $# -gt 0 ] || die "$option requires a value"
+            value=$1
+            shift
+            case $option in
+                --listen-ip) listen_ip=$value ;;
+                --port) port=$value ;;
+                --axfr-listen-ip) axfr_ip=$value ;;
+                --axfr-port) axfr_port=$value ;;
+                --allow-nets) allow_nets=$value ;;
+                --data) data_file=$value ;;
+                --zone) zone=$value ;;
+                --primary) primary=$value ;;
+            esac
+            ;;
+        --no-start) start=no ;;
+        -h|--help) usage; exit 0 ;;
+        *) die "unknown option: $option" ;;
+    esac
+done
+
+case $port:$axfr_port in
+    *[!0-9:]*|:*) die "ports must be decimal integers" ;;
+esac
+[ "$port" -ge 1 ] && [ "$port" -le 65535 ] || die "invalid port: $port"
+[ "$axfr_port" -ge 1 ] && [ "$axfr_port" -le 65535 ] || die "invalid AXFR port: $axfr_port"
+
+getent group rgbdns >/dev/null 2>&1 ||
+    groupadd --system rgbdns
+getent passwd rgbdns >/dev/null 2>&1 ||
+    useradd --system --gid rgbdns --home-dir /var/lib/rgbdns \
+        --shell /usr/sbin/nologin --comment "rgbdns service" rgbdns
+
+install -d -o root -g rgbdns -m 0750 /etc/rgbdns
+install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
+write_env /etc/rgbdns/tinydns.env \
+    "IP=$listen_ip" "PORT=$port" "DATA=/var/lib/rgbdns/tinydns/data.cdb"
+
+case $role in
+    primary)
+        [ -n "$data_file" ] || die "primary requires --data FILE"
+        [ -r "$data_file" ] || die "cannot read data file: $data_file"
+        install -o rgbdns -g rgbdns -m 0640 "$data_file" /var/lib/rgbdns/tinydns/data
+        if [ -n "$axfr_ip" ]; then
+            if [ "$axfr_port" = "$port" ]; then
+                [ "$axfr_ip" != "$listen_ip" ] &&
+                    ! is_wildcard "$listen_ip" &&
+                    ! is_wildcard "$axfr_ip" ||
+                    die "axfrdns cannot share tinydns's TCP address and port"
+            fi
+            [ -n "$allow_nets" ] ||
+                die "--axfr-listen-ip requires --allow-nets"
+            write_env /etc/rgbdns/axfrdns.env \
+                "IP=$axfr_ip" "PORT=$axfr_port" \
+                "DATA=/var/lib/rgbdns/tinydns/data.cdb" \
+                "ALLOW_NETS=$allow_nets"
+        fi
+        runuser -u rgbdns -- /usr/lib/rgbdns/compile-zone
+        ;;
+    secondary)
+        [ -n "$zone" ] || die "secondary requires --zone NAME"
+        [ -n "$primary" ] || die "secondary requires --primary ADDRESS[:PORT]"
+        write_env /etc/rgbdns/secondary.env "ZONE=$zone" "PRIMARY=$primary"
+        ;;
+    *) die "role must be primary or secondary" ;;
+esac
+
+systemctl daemon-reload
+[ "$start" = yes ] || exit 0
+
+if [ "$role" = secondary ]; then
+    systemctl start rgbdns-secondary-sync.service
+    systemctl enable --now rgbdns-secondary-sync.timer
+fi
+systemctl enable --now rgbdns-tinydns.service
+if [ "$role" = primary ] && [ -n "$axfr_ip" ]; then
+    systemctl enable --now rgbdns-axfrdns.service
+fi

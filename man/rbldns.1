@@ -1,0 +1,20 @@
+.TH RBLDNS 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+rbldns \- serve a DNS block-list database
+.SH SYNOPSIS
+.B rbldns
+.SH DESCRIPTION
+Serves a compiled address block-list database beneath the required base name.
+.SH ENVIRONMENT
+.TP
+.B BASE
+Required DNS suffix for block-list queries.
+.TP
+.B DATA
+Database path (default: data.cdb).
+.TP
+.B IP, PORT
+Listen address and port (defaults: 0.0.0.0 and 53).
+.SH SEE ALSO
+.BR rbldns-data (1),
+.BR rbldns-conf (1)

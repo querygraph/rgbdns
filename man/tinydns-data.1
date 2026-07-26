@@ -1,0 +1,23 @@
+.TH TINYDNS-DATA 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+tinydns-data \- compile a tinydns zone database
+.SH SYNOPSIS
+.B tinydns-data
+.SH DESCRIPTION
+Reads tinydns-format zone source from
+.I data
+in the current directory and writes
+.IR data.cdb .
+.SH ANAME
+The rgbdns-specific form
+.BI A owner : target : ttl
+configures address flattening. For A and AAAA queries, tinydns resolves
+.I target
+and returns its addresses with
+.I owner
+as the authoritative record owner. The TTL defaults to 300 and caps the
+upstream TTL. ANAME may coexist with apex authority data, but not with A,
+AAAA, or CNAME data at the same owner.
+.SH SEE ALSO
+.BR tinydns (1),
+.BR tinydns-edit (1)

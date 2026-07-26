@@ -1,0 +1,13 @@
+[Unit]
+Description=Periodically refresh an rgbdns secondary zone
+Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+RandomizedDelaySec=30s
+Persistent=yes
+Unit=rgbdns-secondary-sync.service
+
+[Install]
+WantedBy=timers.target

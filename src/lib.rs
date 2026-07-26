@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod aname;
 pub mod axfr;
 pub mod cdb;
 pub mod client;

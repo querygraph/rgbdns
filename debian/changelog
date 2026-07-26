@@ -1,0 +1,8 @@
+rgbdns (0.1.0) unstable; urgency=medium
+
+  * Initial Debian package.
+  * Add hardened authoritative and AXFR systemd services.
+  * Add timer-driven secondary AXFR synchronization.
+  * Install manual pages for every packaged program.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 23 Jul 2026 17:45:00 -0700

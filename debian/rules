@@ -1,0 +1,44 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE = 1
+export CARGO_HOME = $(CURDIR)/debian/cargo-home
+export CARGO_TARGET_DIR = $(CURDIR)/target
+
+BINS = \
+	axfr-get axfrdns axfrdns-conf dnscache dnscache-conf dnsfilter dnsip \
+	dnsip6 dnsip6q dnsipq dnsmx dnsname dnsq dnsqr dnstrace dnstxt multilog \
+	pickdns pickdns-conf pickdns-data random-ip rbldns rbldns-conf rbldns-data \
+	setuidgid tai64n tai64nlocal tinydns tinydns-conf tinydns-data tinydns-edit \
+	tinydns-get walldns walldns-conf
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	cargo build --release --locked --bins
+
+override_dh_auto_test:
+	cargo test --release --locked --all-targets
+
+override_dh_auto_install:
+	install -d debian/rgbdns/usr/bin
+	for binary in $(BINS); do \
+		install -m 0755 "target/release/$$binary" debian/rgbdns/usr/bin/; \
+	done
+	install -D -m 0755 packaging/scripts/compile-zone \
+		debian/rgbdns/usr/lib/rgbdns/compile-zone
+	install -D -m 0755 packaging/scripts/secondary-sync \
+		debian/rgbdns/usr/lib/rgbdns/secondary-sync
+	install -D -m 0755 packaging/scripts/rgbdns-setup \
+		debian/rgbdns/usr/sbin/rgbdns-setup
+	install -D -m 0644 packaging/default/tinydns.env \
+		debian/rgbdns/etc/rgbdns/tinydns.env
+	install -D -m 0644 packaging/default/data \
+		debian/rgbdns/usr/share/doc/rgbdns/examples/data
+	for unit in packaging/systemd/*; do \
+		install -D -m 0644 "$$unit" \
+			"debian/rgbdns/lib/systemd/system/$$(basename "$$unit")"; \
+	done
+
+override_dh_installsystemd:
+	dh_installsystemd --no-start --no-enable

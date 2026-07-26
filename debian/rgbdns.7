@@ -1,0 +1,43 @@
+.TH RGBDNS 7 "2026-07-23" "rgbdns 0.1.0" "System Administration"
+.SH NAME
+rgbdns \- authoritative DNS, AXFR, recursion, and djbdns-compatible tools
+.SH SYNOPSIS
+.B rgbdns-setup primary
+--data FILE [OPTIONS]
+.br
+.B rgbdns-setup secondary
+--zone NAME --primary ADDRESS[:PORT] [OPTIONS]
+.SH DESCRIPTION
+The Debian package installs the rgbdns program family and hardened systemd
+units. It does not start a DNS service until an administrator supplies a zone
+data file or configures a secondary.
+.PP
+The authoritative server reads
+.IR /var/lib/rgbdns/tinydns/data.cdb .
+The human-editable source is
+.IR /var/lib/rgbdns/tinydns/data .
+The setup command compiles the source atomically before starting the service.
+.SH FILES
+.TP
+.I /etc/rgbdns/tinydns.env
+Authoritative listen address, port, and compiled data path.
+.TP
+.I /etc/rgbdns/axfrdns.env
+Optional AXFR listen address and CIDR allow-list.
+.TP
+.I /etc/rgbdns/secondary.env
+Secondary zone name and primary server endpoint.
+.TP
+.I /var/lib/rgbdns/tinydns/data
+Tinydns-format zone source.
+.SH SERVICES
+.BR rgbdns-tinydns.service ,
+.BR rgbdns-axfrdns.service ,
+.BR rgbdns-secondary-sync.service ,
+and
+.BR rgbdns-secondary-sync.timer .
+.SH DOCUMENTATION
+See
+.I /usr/share/doc/rgbdns/debian.md.gz
+for complete primary, secondary, firewall, testing, and troubleshooting
+instructions.

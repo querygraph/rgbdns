@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+if ! getent group rgbdns >/dev/null 2>&1; then
+    addgroup --system rgbdns
+fi
+if ! getent passwd rgbdns >/dev/null 2>&1; then
+    adduser --system --ingroup rgbdns --home /var/lib/rgbdns \
+        --no-create-home --disabled-login --gecos "rgbdns service" rgbdns
+fi
+install -d -o root -g rgbdns -m 0750 /etc/rgbdns
+install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
+chown root:rgbdns /etc/rgbdns/tinydns.env
+chmod 0640 /etc/rgbdns/tinydns.env
+
+#DEBHELPER#
+
+exit 0

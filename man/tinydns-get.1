@@ -1,0 +1,16 @@
+.TH TINYDNS-GET 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+tinydns-get \- inspect an answer from tinydns source data
+.SH SYNOPSIS
+.B tinydns-get
+.I type name
+.RI [ client-ip ]
+.SH DESCRIPTION
+Reads
+.I data
+from the current directory, evaluates a query without starting a server, and
+prints the decoded response. The optional address controls client-location
+selection.
+.SH SEE ALSO
+.BR tinydns (1),
+.BR tinydns-data (1)

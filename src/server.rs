@@ -10,7 +10,11 @@ use std::{
 };
 
 pub fn respond(zone: &Zone, wire: &[u8], transport_limit: usize) -> Result<Vec<u8>> {
-    respond_over_transport(zone, wire, transport_limit, true, None)
+    let resolver = zone
+        .has_anames()
+        .then(crate::aname::Resolver::from_system)
+        .transpose()?;
+    respond_over_transport(zone, resolver.as_ref(), wire, transport_limit, true, None)
 }
 
 pub fn respond_from(
@@ -19,11 +23,23 @@ pub fn respond_from(
     transport_limit: usize,
     client: IpAddr,
 ) -> Result<Vec<u8>> {
-    respond_over_transport(zone, wire, transport_limit, true, Some(client))
+    let resolver = zone
+        .has_anames()
+        .then(crate::aname::Resolver::from_system)
+        .transpose()?;
+    respond_over_transport(
+        zone,
+        resolver.as_ref(),
+        wire,
+        transport_limit,
+        true,
+        Some(client),
+    )
 }
 
 fn respond_over_transport(
     zone: &Zone,
+    aname_resolver: Option<&crate::aname::Resolver>,
     wire: &[u8],
     transport_limit: usize,
     is_udp: bool,
@@ -111,7 +127,32 @@ fn respond_over_transport(
     if question.qclass != 1 {
         r.flags |= 4
     } else {
-        match zone_lookup(zone, &question.name, question.qtype, client) {
+        let ordinary_lookup = zone_lookup(zone, &question.name, question.qtype, client);
+        let lookup = if matches!(&ordinary_lookup, Lookup::NoData(_) | Lookup::NxDomain(_))
+            && matches!(
+                question.qtype,
+                crate::RecordType::A | crate::RecordType::Aaaa
+            ) {
+            if let Some(aname) = zone.aname(&question.name) {
+                match aname_resolver
+                    .ok_or(crate::Error::Format("ANAME resolver is unavailable"))
+                    .and_then(|resolver| {
+                        resolver.resolve(&question.name, &aname.target, question.qtype, aname.ttl)
+                    }) {
+                    Ok(records) if !records.is_empty() => Lookup::Answer(records),
+                    Ok(_) => ordinary_lookup,
+                    Err(_) => {
+                        r.flags = (r.flags & !0x000f) | 2;
+                        return truncate(r, response_limit);
+                    }
+                }
+            } else {
+                ordinary_lookup
+            }
+        } else {
+            ordinary_lookup
+        };
+        match lookup {
             Lookup::Answer(x) => {
                 r.answers = x;
                 if !matches!(
@@ -344,23 +385,47 @@ fn with_tail_records_removed(response: &Message, mut count: usize) -> Message {
 }
 
 pub fn serve(zone: Zone, addr: &str) -> Result<()> {
+    let resolver = zone
+        .has_anames()
+        .then(crate::aname::Resolver::from_system)
+        .transpose()?
+        .map(Arc::new);
     let zone = Arc::new(zone);
     crate::transport::serve(
         addr,
         Arc::new(move |wire, limit, client| {
-            respond_over_transport(&zone, wire, limit, limit <= 4096, Some(client))
+            respond_over_transport(
+                &zone,
+                resolver.as_deref(),
+                wire,
+                limit,
+                limit <= 4096,
+                Some(client),
+            )
         }),
     )
 }
 
 #[cfg(test)]
 fn serve_sockets(zone: Zone, udp: std::net::UdpSocket, tcp: std::net::TcpListener) -> Result<()> {
+    let resolver = zone
+        .has_anames()
+        .then(crate::aname::Resolver::from_system)
+        .transpose()?
+        .map(Arc::new);
     let zone = Arc::new(zone);
     crate::transport::serve_sockets(
         udp,
         tcp,
         Arc::new(move |wire, limit, client| {
-            respond_over_transport(&zone, wire, limit, limit <= 4096, Some(client))
+            respond_over_transport(
+                &zone,
+                resolver.as_deref(),
+                wire,
+                limit,
+                limit <= 4096,
+                Some(client),
+            )
         }),
     )
 }
@@ -438,6 +503,7 @@ mod tests {
         let response = Message::decode(
             &respond_over_transport(
                 &zone,
+                None,
                 &query("www.example", RecordType::A, None),
                 4096,
                 true,
@@ -501,6 +567,68 @@ mod tests {
         .unwrap();
         assert_eq!(response.flags & 15, 2);
         assert!(response.answers.is_empty());
+    }
+
+    #[test]
+    fn aname_synthesizes_authoritative_addresses_without_emitting_cname() {
+        let upstream = UdpSocket::bind("127.0.0.1:0").unwrap();
+        let upstream_address = upstream.local_addr().unwrap();
+        let upstream_thread = thread::spawn(move || {
+            for address in [
+                RData::A("192.0.2.44".parse().unwrap()),
+                RData::Aaaa("2001:db8::44".parse().unwrap()),
+            ] {
+                let mut wire = [0; 512];
+                let (length, peer) = upstream.recv_from(&mut wire).unwrap();
+                let request = Message::decode(&wire[..length]).unwrap();
+                let response = Message {
+                    id: request.id,
+                    flags: 0x8000 | 0x0100,
+                    questions: request.questions.clone(),
+                    answers: vec![Record {
+                        name: request.questions[0].name.clone(),
+                        ttl: 600,
+                        data: address,
+                    }],
+                    ..Default::default()
+                }
+                .encode()
+                .unwrap();
+                upstream.send_to(&response, peer).unwrap();
+            }
+        });
+        let zone = Zone::parse(
+            ".example:192.0.2.53:ns.example\n\
+             Aexample:blog-host.example.net:120\n",
+        )
+        .unwrap();
+        let resolver = crate::aname::Resolver::new(vec![upstream_address]);
+        for record_type in [RecordType::A, RecordType::Aaaa] {
+            let response = Message::decode(
+                &respond_over_transport(
+                    &zone,
+                    Some(&resolver),
+                    &query("example", record_type, None),
+                    4096,
+                    true,
+                    None,
+                )
+                .unwrap(),
+            )
+            .unwrap();
+            assert_eq!(response.flags & 0x040f, 0x0400);
+            assert_eq!(response.answers.len(), 1);
+            assert_eq!(response.answers[0].name, "example".parse().unwrap());
+            assert_eq!(response.answers[0].rr_type(), record_type);
+            assert!(response.answers[0].ttl <= 120);
+            assert!(
+                response
+                    .answers
+                    .iter()
+                    .all(|record| record.rr_type() != RecordType::Cname)
+            );
+        }
+        upstream_thread.join().unwrap();
     }
 
     #[test]

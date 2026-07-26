@@ -1,0 +1,15 @@
+.TH AXFR-GET 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+axfr-get \- retrieve a DNS zone using AXFR
+.SH SYNOPSIS
+.B axfr-get
+.I zone server[:port] output temporary
+.SH DESCRIPTION
+Requests an AXFR transfer of
+.I zone
+from the numeric server address and writes the result in tinydns data format.
+Port 53 is used when no port is given.  The temporary file is used while
+constructing the output so an incomplete transfer does not replace it.
+.SH SEE ALSO
+.BR axfrdns (1),
+.BR tinydns-data (1)

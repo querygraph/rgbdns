@@ -2,7 +2,7 @@
 
 use crate::{
     Error, Message, Name, RData, Record, RecordType, Result,
-    zone::{RecordMetadata, Zone},
+    zone::{Aname, RecordMetadata, Zone},
 };
 use std::{fs, path::Path};
 
@@ -18,6 +18,15 @@ pub fn compile(zone: &Zone, path: impl AsRef<Path>) -> Result<()> {
         key.extend(prefix);
         writer
             .add(&key, &location)
+            .map_err(|error| Error::Io(std::io::Error::other(error)))?;
+    }
+    for (owner, aname) in zone.aname_entries() {
+        let mut key = b"\0A".to_vec();
+        key.extend(owner.to_wire());
+        let mut value = aname.ttl.to_be_bytes().to_vec();
+        value.extend(aname.target.to_wire());
+        writer
+            .add(&key, &value)
             .map_err(|error| Error::Io(std::io::Error::other(error)))?;
     }
     for (record, metadata) in zone.record_entries() {
@@ -54,6 +63,7 @@ pub fn load(path: impl AsRef<Path>) -> Result<Zone> {
     let entries = read_entries(path)?;
     let mut records = Vec::new();
     let mut locations = Vec::new();
+    let mut anames = Vec::new();
     for (key, value) in entries {
         if key.starts_with(b"\0%") {
             if value.len() != 2 || key.len() > 6 {
@@ -62,9 +72,31 @@ pub fn load(path: impl AsRef<Path>) -> Result<Zone> {
             locations.push((key[2..].to_vec(), [value[0], value[1]]));
             continue;
         }
+        if key.starts_with(b"\0A") {
+            if value.len() < 5 {
+                return Err(Error::Format("short ANAME CDB value"));
+            }
+            let owner = decode_name(&key[2..])?;
+            let ttl = u32::from_be_bytes(
+                value[..4]
+                    .try_into()
+                    .map_err(|_| Error::Format("short ANAME TTL"))?,
+            );
+            if ttl == 0 {
+                return Err(Error::Format("ANAME TTL must be positive"));
+            }
+            anames.push((
+                owner,
+                Aname {
+                    target: decode_name(&value[4..])?,
+                    ttl,
+                },
+            ));
+            continue;
+        }
         records.push(decode_record(&key, &value)?);
     }
-    Ok(Zone::from_compiled_records(records, locations))
+    Ok(Zone::from_compiled_records(records, locations, anames))
 }
 
 pub(crate) fn read_entries(path: impl AsRef<Path>) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
@@ -276,6 +308,7 @@ mod tests {
     fn exact_cdb_roundtrip_preserves_lookup_semantics() {
         let zone = Zone::parse(
             ".example:192.0.2.53:ns.example\n\
+             Aexample:hosting.example.net:120\n\
              +www.example:192.0.2.1:60\n\
              +*.wild.example:192.0.2.2:61\n\
              %aa:192.0.2\n\
@@ -301,6 +334,13 @@ mod tests {
                 if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
                     && records[0].ttl == 60
         ));
+        assert_eq!(
+            loaded.aname(&"example".parse().unwrap()),
+            Some(&Aname {
+                target: "hosting.example.net".parse().unwrap(),
+                ttl: 120,
+            })
+        );
         assert!(matches!(
             loaded.lookup(&"x.wild.example".parse().unwrap(), RecordType::A),
             Lookup::Answer(records) if records[0].ttl == 61

@@ -1,0 +1,14 @@
+.TH DNSTRACE 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+dnstrace \- trace DNS delegation
+.SH SYNOPSIS
+.B dnstrace
+.I type name root-ip
+.RI [ root-ip ...]
+.SH DESCRIPTION
+Follows referrals from the supplied root server addresses, printing queries,
+nameservers, glue addresses, answers, and response codes.  Queries use port
+53 and tracing stops after 64 referrals.
+.SH SEE ALSO
+.BR dnsq (1),
+.BR dnsqr (1)

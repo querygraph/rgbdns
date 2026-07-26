@@ -1,0 +1,13 @@
+.TH DNSFILTER 1 "2026-07-23" "rgbdns 0.1.0" "User Commands"
+.SH NAME
+dnsfilter \- add reverse DNS names to input lines
+.SH SYNOPSIS
+.B dnsfilter
+.RB [ \-c " concurrency" ]
+.RB [ \-l " lines" ]
+.SH DESCRIPTION
+Reads lines from standard input.  When a line begins with an IPv4 address,
+performs a PTR lookup and inserts the result after that address.  Output order
+is preserved.  Defaults are 10 concurrent lookups and batches of 1000 lines.
+.SH SEE ALSO
+.BR dnsname (1)
