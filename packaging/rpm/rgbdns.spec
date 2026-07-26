@@ -63,7 +63,6 @@ getent passwd rgbdns >/dev/null 2>&1 || \
 exit 0
 
 %post
-install -d -o root -g rgbdns -m 0750 %{_sysconfdir}/rgbdns
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer
@@ -81,7 +80,7 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %dir %{_prefix}/lib/rgbdns
 %{_prefix}/lib/rgbdns/compile-zone
 %{_prefix}/lib/rgbdns/secondary-sync
-%dir %{_sysconfdir}/rgbdns
+%attr(0750,root,root) %dir %{_sysconfdir}/rgbdns
 %attr(0640,root,root) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
 %{_unitdir}/rgbdns-tinydns.service
 %{_unitdir}/rgbdns-secondary-sync.service
