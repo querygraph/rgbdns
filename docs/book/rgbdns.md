@@ -695,11 +695,18 @@ normally restrict clients. TSIG is a common authentication mechanism in the
 wider ecosystem, while IP allowlists are a simpler policy with weaker identity
 properties.
 
-`src/axfr.rs` provides both sides. `axfrdns` accepts TCP only and checks client
-networks, loopback by default. It requires one AXFR question, obtains a
-boundary-aware transfer from `Zone`, and frames bounded messages. `Zone::transfer`
-excludes records beneath delegated child zones and wraps the result in the
-apex SOA.
+`src/axfr.rs` provides both sides. The standalone `axfrdns` command accepts TCP
+only and checks client networks, loopback by default. The packaged primary also
+routes AXFR through `tinydns`'s existing TCP listener when `ALLOW_NETS` is set.
+This is required when ordinary authoritative DNS and transfers must share one
+address on port 53: two separate processes cannot own that TCP endpoint.
+
+Both entry points require one AXFR question, obtain a boundary-aware transfer
+from `Zone`, and frame bounded messages. `Zone::transfer` excludes records
+beneath delegated child zones and wraps the result in the apex SOA. The
+integrated listener applies its transfer allow-list only to AXFR; ordinary
+DNS-over-TCP remains reachable by all clients allowed through the network
+firewall.
 
 `axfr-get` generates a random transaction ID, validates response identity and
 shape, collects records until the closing SOA, renders them in tinydns source
@@ -1069,6 +1076,118 @@ Do not expose the recursive service to arbitrary networks by accident. The
 default `ALLOW_NETS` is loopback only because an open resolver can be abused
 for amplification and can consume local capacity. Likewise, expand AXFR
 allowlists only for intended secondaries.
+
+## Case study: cron.sh primary and BuddyNS secondaries
+
+Consider a Debian EC2 instance behind Elastic IP `52.10.53.234`. It is the
+editable primary for `cron.sh`, published as `a.ns.cron.sh`, while BuddyNS
+copies and serves the zone as a secondary. This arrangement illustrates the
+whole operational chain: package installation, zone authority, glue,
+single-address AXFR, delegation, supervision, and updates.
+
+At the network boundary, allow public UDP and TCP port 53. UDP carries most
+queries; TCP is required both for ordinary retry behavior and for AXFR. Do not
+restrict all TCP DNS to the secondary provider. The server distinguishes AXFR
+questions on the shared stream and applies a narrow source allow-list only to
+those transfers. On EC2 the guest usually sees a private address rather than
+the Elastic IP, so listening on `0.0.0.0:53` lets AWS translate traffic for the
+public address.
+
+Build the native package on a Debian or Ubuntu machine of the same
+architecture, copy it to the server, and install it:
+
+```sh
+sudo apt update
+sudo apt install -y build-essential cargo debhelper rustc git
+git clone https://github.com/querygraph/rgbdns.git
+cd rgbdns
+packaging/build-deb.sh
+scp ../rgbdns_0.1.1_amd64.deb admin@52.10.53.234:/tmp/
+ssh admin@52.10.53.234
+sudo apt install -y /tmp/rgbdns_0.1.1_amd64.deb
+```
+
+Installation creates the non-login `rgbdns` account, the protected
+configuration and state directories, and the hardened systemd units. It does
+not start a nameserver. That separation prevents package installation from
+publishing placeholder data.
+
+The primary source includes the SOA, the in-bailiwick primary and its glue, and
+the account-assigned BuddyNS names. The following were assigned to `cron.sh`
+when this example was recorded on 2026-07-26:
+
+```text
+Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026072601:16384:2048:1048576:2560:3600
+&cron.sh:52.10.53.234:a.ns.cron.sh:3600
+&cron.sh::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
+&cron.sh::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
+&cron.sh::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600
++a.ns.cron.sh:52.10.53.234:3600
+```
+
+Store this as `/root/cron.sh.data`, add the application records, and increment
+the SOA serial on every publication. The empty address fields on the BuddyNS
+NS lines are intentional: glue for those names belongs to BuddyNS, not
+`cron.sh`.
+
+BuddyNS publishes the addresses from which its cluster initiates transfers.
+Its current documentation says every published source must be allowed. For an
+IPv4-only primary, express the published IPv4 addresses as exact `/32`
+networks:
+
+```sh
+BUDDYNS_AXFR_V4='108.61.224.67/32,116.203.6.3/32,107.191.99.111/32,193.109.120.66/32,5.223.55.119/32,192.184.93.99/32,103.25.56.55/32,216.73.156.203/32,37.143.61.179/32,195.20.17.193/32,45.77.29.133/32,116.203.0.64/32,167.88.161.228/32,199.195.249.208/32,104.244.78.122/32'
+sudo rgbdns-setup primary \
+  --data /root/cron.sh.data \
+  --listen-ip 0.0.0.0 --port 53 \
+  --allow-nets "$BUDDYNS_AXFR_V4"
+```
+
+Recheck BuddyNS's source list before deployment and after provider network
+changes. The provider's nameserver names are account-assigned as well; use
+BuddyBoard rather than treating the names in this example as global
+constants.
+
+`rgbdns-setup` validates and copies the source, compiles `data.cdb`, writes the
+service environment, enables the service at boot, and starts or restarts
+`rgbdns-tinydns.service`. There is no separate packaged AXFR service in this
+topology. Although the `axfrdns` compatibility command remains installed, a
+second process cannot share `52.10.53.234:53`; the authoritative process
+dispatches allowed AXFR questions to the same bounded AXFR engine.
+
+Before changing delegation, verify ordinary UDP and TCP service:
+
+```sh
+dig @52.10.53.234 cron.sh SOA +norecurse
+dig @52.10.53.234 cron.sh NS +norecurse
+dig @52.10.53.234 a.ns.cron.sh A +norecurse
+dig @52.10.53.234 cron.sh SOA +tcp +norecurse
+systemctl is-enabled rgbdns-tinydns
+systemctl is-active rgbdns-tinydns
+```
+
+In BuddyBoard, add `cron.sh`, set `52.10.53.234:53` as its primary, and require
+the transfer test to succeed. Configure the primary zone's NS RRset and the
+registrar delegation with the same BuddyNS names. Because `a.ns.cron.sh` lies
+inside the delegated zone, the `.sh` registrar also needs the child-host glue
+`a.ns.cron.sh = 52.10.53.234`. Transfer success should precede delegation;
+otherwise the new secondaries may be authoritative but empty or stale.
+
+After propagation, query every delegated authority and compare SOA serials.
+For subsequent changes, edit `/root/cron.sh.data`, increment the serial, and
+rerun the same `rgbdns-setup primary` command with the complete allow-list.
+Compilation precedes restart, and the new process loads one zone snapshot for
+both normal answers and transfers.
+
+Systemd keeps the foreground process alive with `Restart=on-failure` and starts
+the enabled unit after reboot. Operations should monitor unit state, public UDP
+and TCP answers, serial convergence at BuddyNS, transfer failures, and disk
+space. The editable source still needs its own protected backup: secondary DNS
+is availability infrastructure, not configuration backup.
+
+The full command-by-command deployment, AWS rules, BuddyBoard sequence,
+delegation checks, and troubleshooting procedure live in
+[`docs/DEBIAN.md`](../DEBIAN.md).
 
 ## Observe the right signals
 

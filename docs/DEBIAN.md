@@ -1,6 +1,6 @@
 # Installing rgbdns on Debian with systemd
 
-The Debian package installs the complete rgbdns command suite, four systemd
+The Debian package installs the complete rgbdns command suite, three systemd
 units, a dedicated unprivileged account, and `rgbdns-setup`. Installation alone
 does not publish a DNS service. The administrator must choose a primary or
 secondary role and provide the corresponding data.
@@ -180,6 +180,277 @@ axfr-get example.net 192.0.2.53 /tmp/example.data /tmp/example.data.tmp
 ```
 
 An unlisted source is disconnected without receiving zone contents.
+
+## Complete deployment: cron.sh primary with BuddyNS secondaries
+
+This example makes the EC2 host behind Elastic IP `52.10.53.234` the primary
+for `cron.sh` and uses BuddyNS as the public secondary network. The values below
+match the `cron.sh` delegation observed on 2026-07-26:
+
+- primary: `a.ns.cron.sh` at `52.10.53.234`;
+- BuddyNS secondaries:
+  `uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com`,
+  `uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com`,
+  and
+  `uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com`.
+
+BuddyNS names are account-assigned. Use the names shown in BuddyBoard if they
+differ; do not copy these names to another account or zone. BuddyNS also
+changes its transfer-source inventory over time. Recheck its
+[zone-transfer instructions](https://www.buddyns.com/support/setup/zone-transfer/pro/)
+before deploying or whenever BuddyNS announces a network change.
+
+### 1. Prepare the host and network
+
+Attach Elastic IP `52.10.53.234` to the EC2 instance. The guest normally sees
+its private address rather than the Elastic IP, so this example listens on
+`0.0.0.0`; AWS performs the public-address translation.
+
+Before starting rgbdns, find and stop any service already owning DNS ports:
+
+```sh
+sudo ss -lntup '( sport = :53 )'
+systemctl status systemd-resolved named unbound dnsmasq 2>/dev/null || true
+```
+
+Do not disable the host's resolver merely because `systemd-resolved` exists.
+It normally binds a loopback address and can coexist with a service bound to a
+specific private address, but it conflicts with `0.0.0.0:53`. Resolve any
+collision deliberately and confirm `/etc/resolv.conf` still provides working
+recursive DNS for package installation and ANAME lookups.
+
+The EC2 security group must allow:
+
+- UDP 53 from `0.0.0.0/0` for ordinary authoritative DNS;
+- TCP 53 from `0.0.0.0/0` for DNS-over-TCP and AXFR on the same listener;
+- SSH only from the administrator's trusted addresses.
+
+If IPv6 is configured and delegated, add equivalent `::/0` DNS rules. A host
+firewall must allow the same traffic. Do not restrict all TCP 53 traffic to
+BuddyNS: ordinary DNS clients must be able to retry over TCP. rgbdns applies
+the BuddyNS source allow-list only when the TCP question is AXFR.
+
+### 2. Build and install the Debian package
+
+On an amd64 Debian or Ubuntu build machine:
+
+```sh
+sudo apt update
+sudo apt install -y build-essential cargo debhelper rustc git
+git clone https://github.com/querygraph/rgbdns.git
+cd rgbdns
+packaging/build-deb.sh
+dpkg-deb --info ../rgbdns_0.1.1_amd64.deb
+```
+
+Copy the package to the EC2 host, then install it there:
+
+```sh
+scp ../rgbdns_0.1.1_amd64.deb admin@52.10.53.234:/tmp/
+ssh admin@52.10.53.234
+sudo apt update
+sudo apt install -y /tmp/rgbdns_0.1.1_amd64.deb
+dpkg-query -W rgbdns
+```
+
+For an arm64 instance, build an arm64 package in an arm64 Debian environment
+and substitute `_arm64.deb`. Do not copy a Termux/Android Cargo binary into a
+Debian package.
+
+Package installation creates the `rgbdns` account and directories but neither
+enables nor starts DNS. That prevents an empty example zone from becoming
+public accidentally.
+
+### 3. Create the cron.sh primary zone
+
+Create `/root/cron.sh.data` as the canonical editable source:
+
+```sh
+sudo install -m 0600 /dev/null /root/cron.sh.data
+sudo editor /root/cron.sh.data
+```
+
+Use this starting zone, replacing or adding application records as required:
+
+```text
+Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026072601:16384:2048:1048576:2560:3600
+&cron.sh:52.10.53.234:a.ns.cron.sh:3600
+&cron.sh::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
+&cron.sh::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
+&cron.sh::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600
++a.ns.cron.sh:52.10.53.234:3600
+```
+
+The `&` line for `a.ns.cron.sh` publishes both its NS record and IPv4 glue.
+The BuddyNS `&` lines have an empty address field because their address records
+belong to BuddyNS zones. Add web, mail, TXT, CAA, or other records below these
+authority records. Increment the SOA serial for every published change; the
+date-plus-counter form above permits 99 revisions on 2026-07-26.
+
+Compile a disposable copy before changing the live service:
+
+```sh
+work=$(mktemp -d)
+sudo cp /root/cron.sh.data "$work/data"
+sudo chown "$(id -u):$(id -g)" "$work/data"
+(cd "$work" && tinydns-data && tinydns-get soa cron.sh)
+rm -rf "$work"
+```
+
+### 4. Allow every BuddyNS IPv4 transfer source
+
+As of 2026-07-26, BuddyNS publishes these IPv4 transfer sources:
+
+```text
+108.61.224.67
+116.203.6.3
+107.191.99.111
+193.109.120.66
+5.223.55.119
+192.184.93.99
+103.25.56.55
+216.73.156.203
+37.143.61.179
+195.20.17.193
+45.77.29.133
+116.203.0.64
+167.88.161.228
+199.195.249.208
+104.244.78.122
+```
+
+BuddyNS explicitly requires allowing all of its transfer sources. Convert each
+address to an exact `/32`, configure the primary, and start it:
+
+```sh
+BUDDYNS_AXFR_V4='108.61.224.67/32,116.203.6.3/32,107.191.99.111/32,193.109.120.66/32,5.223.55.119/32,192.184.93.99/32,103.25.56.55/32,216.73.156.203/32,37.143.61.179/32,195.20.17.193/32,45.77.29.133/32,116.203.0.64/32,167.88.161.228/32,199.195.249.208/32,104.244.78.122/32'
+sudo rgbdns-setup primary \
+  --data /root/cron.sh.data \
+  --listen-ip 0.0.0.0 \
+  --port 53 \
+  --allow-nets "$BUDDYNS_AXFR_V4"
+```
+
+This copies the source to `/var/lib/rgbdns/tinydns/data`, compiles
+`data.cdb`, writes `/etc/rgbdns/tinydns.env`, enables
+`rgbdns-tinydns.service`, and starts or restarts it. Inspect the result:
+
+```sh
+sudo cat /etc/rgbdns/tinydns.env
+sudo systemctl is-enabled rgbdns-tinydns.service
+sudo systemctl --no-pager --full status rgbdns-tinydns.service
+sudo journalctl -u rgbdns-tinydns.service -b --no-pager
+sudo ss -lntup '( sport = :53 )'
+```
+
+There is deliberately no `rgbdns-axfrdns.service` in this package. The
+standalone `axfrdns` command remains part of the djbdns-compatible tool suite,
+but it cannot bind `52.10.53.234:53` beside `tinydns`. For this one-address
+deployment, `tinydns` recognizes AXFR on its TCP socket and invokes the same
+bounded AXFR implementation after checking `ALLOW_NETS`. Do not launch a
+second `axfrdns` process for this example.
+
+### 5. Verify the primary before delegating
+
+From a machine outside EC2:
+
+```sh
+dig @52.10.53.234 cron.sh SOA +norecurse
+dig @52.10.53.234 cron.sh NS +norecurse
+dig @52.10.53.234 a.ns.cron.sh A +norecurse
+dig @52.10.53.234 cron.sh SOA +tcp +norecurse
+```
+
+All answers should have the `aa` flag, and UDP and TCP SOA answers should
+agree. An AXFR attempt from an address absent from `ALLOW_NETS` should receive
+no zone:
+
+```sh
+dig @52.10.53.234 cron.sh AXFR
+```
+
+To run a positive AXFR test from an administrator host, temporarily add only
+that host's public `/32` to `BUDDYNS_AXFR_V4`, rerun `rgbdns-setup`, test, and
+immediately restore the BuddyNS-only list. The definitive production test is a
+successful transfer initiated by BuddyNS.
+
+### 6. Configure BuddyNS and delegation
+
+In BuddyBoard:
+
+1. Add the zone `cron.sh`.
+2. Set its primary/master server to `52.10.53.234` on port 53.
+3. Use BuddyNS's Target or transfer test and require a successful AXFR.
+4. Record the BuddyNS names assigned to the zone.
+5. Make the zone's NS records exactly match the primary plus the selected
+   BuddyNS names.
+
+At the `.sh` registrar, create or retain the child-host/glue record
+`a.ns.cron.sh = 52.10.53.234`, then delegate `cron.sh` to:
+
+```text
+a.ns.cron.sh
+uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com
+uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com
+uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com
+```
+
+Do not change registrar delegation until BuddyNS reports a successful transfer
+and each server answers the new SOA. Parent delegation and the NS RRset inside
+the zone must agree.
+
+After delegation propagates, query every authority:
+
+```sh
+dig cron.sh NS +trace
+dig @a.ns.cron.sh cron.sh SOA +norecurse
+for ns in \
+  uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com \
+  uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com \
+  uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com
+do
+  dig "@$ns" cron.sh SOA +norecurse +short
+done
+```
+
+The SOA serial must converge on all four servers.
+
+### 7. Publish updates and keep the service running
+
+For each zone change, edit `/root/cron.sh.data`, increment the serial, and
+rerun the same setup command with the complete BuddyNS allow-list:
+
+```sh
+sudo editor /root/cron.sh.data
+BUDDYNS_AXFR_V4='108.61.224.67/32,116.203.6.3/32,107.191.99.111/32,193.109.120.66/32,5.223.55.119/32,192.184.93.99/32,103.25.56.55/32,216.73.156.203/32,37.143.61.179/32,195.20.17.193/32,45.77.29.133/32,116.203.0.64/32,167.88.161.228/32,199.195.249.208/32,104.244.78.122/32'
+sudo rgbdns-setup primary \
+  --data /root/cron.sh.data \
+  --listen-ip 0.0.0.0 --port 53 \
+  --allow-nets "$BUDDYNS_AXFR_V4"
+```
+
+Compilation must succeed before systemd restarts the process. The restarted
+process loads one consistent zone used for ordinary answers and AXFR. BuddyNS
+then refreshes according to its transfer schedule.
+
+`rgbdns-setup` enables the service at boot. The unit runs in the foreground
+under systemd, uses `Restart=on-failure`, and recompiles the managed source
+before each start. Confirm persistence with:
+
+```sh
+sudo systemctl is-enabled rgbdns-tinydns
+sudo systemctl restart rgbdns-tinydns
+sudo reboot
+# reconnect after boot
+systemctl is-active rgbdns-tinydns
+dig @127.0.0.1 cron.sh SOA +norecurse
+```
+
+Monitor at least service state, UDP and TCP queries, SOA serial agreement,
+BuddyNS transfer status, disk space, and upcoming package/security updates.
+Keep `/root/cron.sh.data` and the exact BuddyNS source list in configuration
+management or encrypted backup. A DNS secondary improves serving availability;
+it is not a backup of the editable primary source.
 
 ## Configure a secondary nameserver
 
