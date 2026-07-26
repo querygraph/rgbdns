@@ -3,7 +3,7 @@
 Build an amd64 Debian package on Debian 12 or Ubuntu:
 
 ```sh
-packaging/debian/build-deb.sh
+sh packaging/debian/build-deb.sh
 ```
 
 The package installs the rgbdns program family into `/usr/bin`, the
