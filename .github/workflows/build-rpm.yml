@@ -53,7 +53,7 @@ jobs:
           rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
 
       - name: Verify installed package
-        run: packaging/verify-rpm.sh dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+        run: packaging/verify-rpm.sh dist/rpmbuild/RPMS/x86_64/rgbdns-[0-9]*.x86_64.rpm
 
       - uses: actions/upload-artifact@v4
         with:
