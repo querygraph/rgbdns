@@ -1,0 +1,43 @@
+name: Build Debian package
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - sol/debian
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - packaging/debian/**
+      - .github/workflows/build-deb.yml
+
+permissions:
+  contents: read
+
+jobs:
+  amd64:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dtolnay/rust-toolchain@1.97.0
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build package
+        run: packaging/debian/build-deb.sh
+
+      - name: Inspect package
+        run: |
+          dpkg-deb --info dist/rgbdns_*_amd64.deb
+          dpkg-deb --contents dist/rgbdns_*_amd64.deb
+          lintian --no-tag-display-limit dist/rgbdns_*_amd64.deb
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rgbdns-debian-amd64
+          path: dist/rgbdns_*_amd64.deb
+          if-no-files-found: error
