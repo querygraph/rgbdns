@@ -23,7 +23,8 @@ getent passwd rgbdns
 getent group rgbdns
 test "$(stat -c %U:%G /var/lib/rgbdns/tinydns)" = rgbdns:rgbdns
 test "$(stat -c %a /etc/rgbdns/tinydns.env)" = 640
-systemd-analyze verify \
+ls /usr/share/man/man7/rgbdns.7* >/dev/null
+systemd-analyze --man=no verify \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.timer
