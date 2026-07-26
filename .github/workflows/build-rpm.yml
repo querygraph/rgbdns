@@ -42,7 +42,7 @@ jobs:
       - name: Install RPM build dependencies
         run: |
           zypper --non-interactive install \
-            cargo python3 rpm-build rust systemd-rpm-macros
+            cargo man python3 rpm-build rust systemd-rpm-macros
 
       - name: Build source and binary RPMs
         run: packaging/build-rpm.sh
