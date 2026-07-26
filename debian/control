@@ -18,7 +18,6 @@ Architecture: any
 Depends:
  adduser,
  systemd-sysv,
- util-linux,
  ${misc:Depends},
  ${shlibs:Depends}
 Description: memory-safe DNS server and djbdns-compatible tool suite
