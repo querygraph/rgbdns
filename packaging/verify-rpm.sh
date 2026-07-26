@@ -4,6 +4,8 @@ set -eu
 [ $# -eq 1 ] || { echo "usage: verify-rpm.sh PACKAGE.rpm" >&2; exit 2; }
 package=$1
 
+rpm --query --package --list "$package" |
+    grep -Eq '^/usr/share/man/man7/rgbdns\.7(\.gz)?$'
 zypper --non-interactive --no-gpg-checks install "$package"
 rpm --verify rgbdns
 rpm --query --info rgbdns
@@ -23,7 +25,6 @@ getent passwd rgbdns
 getent group rgbdns
 test "$(stat -c %U:%G /var/lib/rgbdns/tinydns)" = rgbdns:rgbdns
 test "$(stat -c %a /etc/rgbdns/tinydns.env)" = 640
-ls /usr/share/man/man7/rgbdns.7* >/dev/null
 systemd-analyze --man=no verify \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \
