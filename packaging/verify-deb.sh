@@ -28,7 +28,6 @@ done <"$installed_bins"
 
 for unit in \
     rgbdns-tinydns.service \
-    rgbdns-axfrdns.service \
     rgbdns-secondary-sync.service \
     rgbdns-secondary-sync.timer
 do

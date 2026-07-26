@@ -1,3 +1,10 @@
+rgbdns (0.1.1) unstable; urgency=medium
+
+  * Serve allow-listed AXFR through the authoritative TCP listener.
+  * Restart services after setup and clean up stale server roles.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Sun, 26 Jul 2026 12:00:00 -0700
+
 rgbdns (0.1.0) unstable; urgency=medium
 
   * Initial Debian package.

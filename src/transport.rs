@@ -10,25 +10,37 @@ use std::{
 };
 
 pub(crate) type Handler = dyn Fn(&[u8], usize, IpAddr) -> Result<Vec<u8>> + Send + Sync;
+pub(crate) type StreamHandler = dyn Fn(&[u8], IpAddr) -> Result<Option<Vec<Vec<u8>>>> + Send + Sync;
 
 const TCP_WORKERS: usize = 32;
 const TCP_TIMEOUT: Duration = Duration::from_secs(10);
 
-pub(crate) fn serve(address: &str, handler: Arc<Handler>) -> Result<()> {
+pub(crate) fn serve(
+    address: &str,
+    handler: Arc<Handler>,
+    stream_handler: Option<Arc<StreamHandler>>,
+) -> Result<()> {
     serve_sockets(
         UdpSocket::bind(address)?,
         TcpListener::bind(address)?,
         handler,
+        stream_handler,
     )
 }
 
-pub(crate) fn serve_sockets(udp: UdpSocket, tcp: TcpListener, handler: Arc<Handler>) -> Result<()> {
+pub(crate) fn serve_sockets(
+    udp: UdpSocket,
+    tcp: TcpListener,
+    handler: Arc<Handler>,
+    stream_handler: Option<Arc<StreamHandler>>,
+) -> Result<()> {
     let udp_handler = handler.clone();
     thread::spawn(move || serve_udp(udp, &udp_handler));
 
     let mut workers = Vec::with_capacity(TCP_WORKERS);
     for _ in 0..TCP_WORKERS {
         let handler = handler.clone();
+        let stream_handler = stream_handler.clone();
         let listener = tcp.try_clone()?;
         workers.push(thread::spawn(move || {
             for stream in listener.incoming() {
@@ -41,7 +53,7 @@ pub(crate) fn serve_sockets(udp: UdpSocket, tcp: TcpListener, handler: Arc<Handl
                 };
                 let _ = stream.set_read_timeout(Some(TCP_TIMEOUT));
                 let _ = stream.set_write_timeout(Some(TCP_TIMEOUT));
-                serve_tcp_connection(&mut stream, client, &handler);
+                serve_tcp_connection(&mut stream, client, &handler, stream_handler.as_ref());
             }
         }));
     }
@@ -62,7 +74,12 @@ fn serve_udp(socket: UdpSocket, handler: &Arc<Handler>) {
     }
 }
 
-fn serve_tcp_connection(stream: &mut TcpStream, client: IpAddr, handler: &Arc<Handler>) {
+fn serve_tcp_connection(
+    stream: &mut TcpStream,
+    client: IpAddr,
+    handler: &Arc<Handler>,
+    stream_handler: Option<&Arc<StreamHandler>>,
+) {
     loop {
         let mut length = [0; 2];
         if stream.read_exact(&mut length).is_err() {
@@ -72,17 +89,26 @@ fn serve_tcp_connection(stream: &mut TcpStream, client: IpAddr, handler: &Arc<Ha
         if stream.read_exact(&mut packet).is_err() {
             return;
         }
-        let Ok(response) = handler(&packet, u16::MAX as usize, client) else {
-            continue;
+        let responses = match stream_handler
+            .map(|stream_handler| stream_handler(&packet, client))
+            .transpose()
+        {
+            Ok(Some(Some(responses))) => responses,
+            Ok(_) => match handler(&packet, u16::MAX as usize, client) {
+                Ok(response) => vec![response],
+                Err(_) => continue,
+            },
+            Err(_) => return,
         };
-        let Ok(response_length) = u16::try_from(response.len()) else {
-            return;
-        };
-        let mut framed = Vec::with_capacity(response.len() + 2);
-        framed.extend(response_length.to_be_bytes());
-        framed.extend(response);
-        if stream.write_all(&framed).is_err() {
-            return;
+        for response in responses {
+            let Ok(response_length) = u16::try_from(response.len()) else {
+                return;
+            };
+            if stream.write_all(&response_length.to_be_bytes()).is_err()
+                || stream.write_all(&response).is_err()
+            {
+                return;
+            }
         }
     }
 }

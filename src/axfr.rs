@@ -61,15 +61,28 @@ pub fn serve_listener(
 
 fn serve_connection(zone: &Zone, stream: &mut TcpStream) -> Result<()> {
     let query = read_message(stream)?;
+    for wire in response_wires(zone, query)? {
+        stream.write_all(&(wire.len() as u16).to_be_bytes())?;
+        stream.write_all(&wire)?;
+    }
+    Ok(())
+}
+
+pub(crate) fn response_wires(zone: &Zone, query: Message) -> Result<Vec<Vec<u8>>> {
     if query.flags & 0x8000 != 0 {
         return Err(Error::Format("received an AXFR response as a query"));
     }
     if query.questions.len() != 1 {
-        return write_response(stream, query.id, None, 1, Vec::new());
+        return Ok(vec![response_wire(query.id, None, 1, Vec::new())?]);
     }
     let question = query.questions[0].clone();
     if query.flags & 0x7800 != 0 {
-        return write_response(stream, query.id, Some(question), 4, Vec::new());
+        return Ok(vec![response_wire(
+            query.id,
+            Some(question),
+            4,
+            Vec::new(),
+        )?]);
     }
     if !query.answers.is_empty()
         || !query.authorities.is_empty()
@@ -80,14 +93,30 @@ fn serve_connection(zone: &Zone, stream: &mut TcpStream) -> Result<()> {
             .count()
             > 1
     {
-        return write_response(stream, query.id, Some(question), 1, Vec::new());
+        return Ok(vec![response_wire(
+            query.id,
+            Some(question),
+            1,
+            Vec::new(),
+        )?]);
     }
     if question.qclass != 1 || question.qtype != RecordType::Axfr {
-        return write_response(stream, query.id, Some(question), 4, Vec::new());
+        return Ok(vec![response_wire(
+            query.id,
+            Some(question),
+            4,
+            Vec::new(),
+        )?]);
     }
     let Some(records) = zone.transfer(&question.name) else {
-        return write_response(stream, query.id, Some(question), 5, Vec::new());
+        return Ok(vec![response_wire(
+            query.id,
+            Some(question),
+            5,
+            Vec::new(),
+        )?]);
     };
+    let mut responses = Vec::new();
     let mut first = true;
     let mut batch = Vec::new();
     for record in records {
@@ -104,36 +133,24 @@ fn serve_connection(zone: &Zone, stream: &mut TcpStream) -> Result<()> {
         if batch.is_empty() {
             return Err(Error::Format("AXFR record exceeds DNS TCP framing"));
         }
-        write_response(
-            stream,
+        responses.push(response_wire(
             query.id,
             first.then(|| question.clone()),
             0,
             std::mem::take(&mut batch),
-        )?;
+        )?);
         first = false;
         batch.push(record);
     }
     if !batch.is_empty() {
-        write_response(stream, query.id, first.then_some(question), 0, batch)?;
+        responses.push(response_wire(
+            query.id,
+            first.then_some(question),
+            0,
+            batch,
+        )?);
     }
-    Ok(())
-}
-
-fn write_response(
-    stream: &mut TcpStream,
-    id: u16,
-    question: Option<Question>,
-    rcode: u16,
-    answers: Vec<Record>,
-) -> Result<()> {
-    let wire = response_wire(id, question, rcode, answers)?;
-    if wire.len() > MAX_TCP_MESSAGE {
-        return Err(Error::Format("AXFR message exceeds DNS TCP framing"));
-    }
-    stream.write_all(&(wire.len() as u16).to_be_bytes())?;
-    stream.write_all(&wire)?;
-    Ok(())
+    Ok(responses)
 }
 
 fn response_wire(

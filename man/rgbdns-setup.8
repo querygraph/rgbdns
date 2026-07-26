@@ -1,4 +1,4 @@
-.TH RGBDNS-SETUP 8 "2026-07-23" "rgbdns 0.1.0" "System Administration"
+.TH RGBDNS-SETUP 8 "2026-07-26" "rgbdns 0.1.1" "System Administration"
 .SH NAME
 rgbdns-setup \- configure a packaged rgbdns primary or secondary
 .SH SYNOPSIS
@@ -36,18 +36,12 @@ Zone transferred by a secondary.
 .BI --primary " address[:port]"
 Primary server used by a secondary.
 .TP
-.BI --axfr-listen-ip " address"
-Enable the primary AXFR server on this address.
-.TP
-.BI --axfr-port " port"
-AXFR port (default: 53).
-.TP
 .BI --allow-nets " cidrs"
-Comma-separated client networks permitted to transfer the primary zone.
+Enable integrated AXFR for these comma-separated client networks. Transfers
+use the authoritative TCP address and port.
 .TP
 .B --no-start
 Write configuration without enabling or starting services.
 .SH SEE ALSO
 .BR rgbdns (7),
-.BR tinydns (1),
-.BR axfrdns (1)
+.BR tinydns (1)

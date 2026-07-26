@@ -391,6 +391,20 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
         .transpose()?
         .map(Arc::new);
     let zone = Arc::new(zone);
+    let allowed = std::env::var("ALLOW_NETS")
+        .ok()
+        .map(|value| {
+            value
+                .split(',')
+                .map(str::trim)
+                .filter(|value| !value.is_empty())
+                .map(str::parse::<ipnet::IpNet>)
+                .collect::<std::result::Result<Vec<_>, _>>()
+                .map_err(|_| Error::Format("invalid ALLOW_NETS"))
+        })
+        .transpose()?
+        .map(Arc::new);
+    let stream_handler = allowed.map(|allowed| axfr_stream_handler(zone.clone(), allowed));
     crate::transport::serve(
         addr,
         Arc::new(move |wire, limit, client| {
@@ -403,17 +417,45 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
                 Some(client),
             )
         }),
+        stream_handler,
     )
 }
 
+fn axfr_stream_handler(
+    zone: Arc<Zone>,
+    allowed: Arc<Vec<ipnet::IpNet>>,
+) -> Arc<crate::transport::StreamHandler> {
+    Arc::new(move |wire: &[u8], client: IpAddr| {
+        let Ok(query) = Message::decode(wire) else {
+            return Ok(None);
+        };
+        let is_axfr =
+            query.questions.len() == 1 && query.questions[0].qtype == crate::RecordType::Axfr;
+        if !is_axfr {
+            return Ok(None);
+        }
+        if !allowed.iter().any(|network| network.contains(&client)) {
+            return Err(Error::Format("AXFR client is not allowed"));
+        }
+        crate::axfr::response_wires(&zone, query).map(Some)
+    })
+}
+
 #[cfg(test)]
-fn serve_sockets(zone: Zone, udp: std::net::UdpSocket, tcp: std::net::TcpListener) -> Result<()> {
+fn serve_sockets(
+    zone: Zone,
+    udp: std::net::UdpSocket,
+    tcp: std::net::TcpListener,
+    allowed: Option<Vec<ipnet::IpNet>>,
+) -> Result<()> {
     let resolver = zone
         .has_anames()
         .then(crate::aname::Resolver::from_system)
         .transpose()?
         .map(Arc::new);
     let zone = Arc::new(zone);
+    let stream_handler =
+        allowed.map(|allowed| axfr_stream_handler(zone.clone(), Arc::new(allowed)));
     crate::transport::serve_sockets(
         udp,
         tcp,
@@ -427,6 +469,7 @@ fn serve_sockets(zone: Zone, udp: std::net::UdpSocket, tcp: std::net::TcpListene
                 Some(client),
             )
         }),
+        stream_handler,
     )
 }
 
@@ -722,7 +765,7 @@ mod tests {
             data.push_str(&format!("+many.example:192.0.2.{}\n", index % 250 + 1));
         }
         let zone = Zone::parse(&data).unwrap();
-        thread::spawn(move || serve_sockets(zone, udp, tcp).unwrap());
+        thread::spawn(move || serve_sockets(zone, udp, tcp, None).unwrap());
 
         let request = query("www.example", RecordType::A, None);
         let udp_client = UdpSocket::bind("127.0.0.1:0").unwrap();
@@ -763,5 +806,28 @@ mod tests {
         let response = Message::decode(&response).unwrap();
         assert_eq!(response.flags & 0x0200, 0);
         assert_eq!(response.answers.len(), 80, "{response:#?}");
+    }
+
+    #[test]
+    fn integrated_tcp_listener_serves_axfr() {
+        let tcp = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = tcp.local_addr().unwrap();
+        let udp = UdpSocket::bind(address).unwrap();
+        let zone = Zone::parse(
+            "Zexample:ns.example:hostmaster.example:7:8:9:10:11:12\n\
+             &example:192.0.2.53:ns.example:300\n\
+             +www.example:192.0.2.1:60\n",
+        )
+        .unwrap();
+        thread::spawn(move || {
+            serve_sockets(zone, udp, tcp, Some(vec!["127.0.0.0/8".parse().unwrap()])).unwrap()
+        });
+
+        let records = crate::axfr::fetch(address, "example".parse().unwrap()).unwrap();
+        assert_eq!(records.first(), records.last());
+        assert!(records.iter().any(|record| {
+            record.name == "www.example".parse().unwrap()
+                && record.data == RData::A("192.0.2.1".parse().unwrap())
+        }));
     }
 }

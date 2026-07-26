@@ -67,7 +67,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.1.0_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.1.1_$(dpkg --print-architecture).deb
 ```
 
 ## Book

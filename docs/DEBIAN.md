@@ -16,7 +16,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.1.0_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.1.1_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -66,7 +66,7 @@ The package creates:
 - configuration directory `/etc/rgbdns`, owned by `root:rgbdns`;
 - state directory `/var/lib/rgbdns/tinydns`, owned by `rgbdns:rgbdns`;
 - commands in `/usr/bin` and the setup command in `/usr/sbin`;
-- systemd units for authoritative DNS, AXFR serving, and secondary refresh.
+- systemd units for authoritative DNS with integrated AXFR and secondary refresh.
 
 The account has no login shell. Services bind privileged port 53 with only
 `CAP_NET_BIND_SERVICE`; they do not run as root. The units make the rest of the
@@ -132,58 +132,51 @@ sudo systemctl restart rgbdns-tinydns
 
 ## Serve AXFR to secondary nameservers
 
-`tinydns` already owns both UDP and TCP on its configured endpoint. The
-separate `axfrdns` process therefore needs either:
-
-- another local IP on TCP port 53; or
-- a different TCP port, normally only for private networks, NAT, or testing.
+`tinydns` handles ordinary DNS and AXFR through the same TCP listener. AXFR is
+disabled unless an explicit client allow-list is configured.
 
 AXFR has no TSIG implementation in this release. Its security boundary is the
 explicit source-address CIDR allow-list, so use narrow secondary addresses and
 enforce the same policy in the host and perimeter firewalls.
 
-For a primary whose ordinary DNS address is `192.0.2.53`, serve transfers on a
-second address and allow two secondary hosts:
+Allow two secondary hosts to transfer from the ordinary DNS endpoint:
 
 ```sh
 sudo rgbdns-setup primary \
   --data /root/example.net.data \
   --listen-ip 192.0.2.53 \
-  --axfr-listen-ip 192.0.2.54 \
   --allow-nets 198.51.100.10/32,2001:db8:100::10/128
 ```
 
-For a lab using one address, choose a non-conflicting port:
+For a local lab:
 
 ```sh
 sudo rgbdns-setup primary \
   --data /root/example.net.data \
   --listen-ip 127.0.0.1 --port 5353 \
-  --axfr-listen-ip 127.0.0.1 --axfr-port 5354 \
   --allow-nets 127.0.0.1/32
 ```
 
-The generated `/etc/rgbdns/axfrdns.env` contains `IP`, `PORT`, `DATA`, and
-`ALLOW_NETS`. Protect that file as configuration even though the allow-list is
-not a secret.
+The generated `/etc/rgbdns/tinydns.env` includes `ALLOW_NETS`. Protect that
+file as configuration even though the allow-list is not a secret.
 
 For nftables, a narrowly scoped IPv4 rule resembles:
 
 ```nft
 ip saddr { 198.51.100.10, 198.51.100.11 } \
-  ip daddr 192.0.2.54 tcp dport 53 accept
+  ip daddr 192.0.2.53 tcp dport 53 accept
 ```
 
-Permit both UDP and TCP 53 to the public authoritative endpoint, but only TCP
-to the AXFR endpoint. Adjust the example to the host's existing table and chain
-rather than pasting it blindly.
+Permit UDP and TCP 53 to the public authoritative endpoint. The application
+allow-list restricts AXFR; adjust the example to the host's existing table and
+chain rather than pasting it blindly.
 
 Test a transfer from an allowed secondary:
 
 ```sh
-dig +tcp AXFR example.net @192.0.2.54
+dig +tcp AXFR example.net @192.0.2.53
 # or:
-axfr-get example.net 192.0.2.54 /tmp/example.data /tmp/example.data.tmp
+axfr-get example.net 192.0.2.53 /tmp/example.data /tmp/example.data.tmp
 ```
 
 An unlisted source is disconnected without receiving zone contents.
@@ -256,8 +249,8 @@ the zone's change rate and the primary's transfer budget.
 Inspect units and logs:
 
 ```sh
-systemctl status rgbdns-tinydns rgbdns-axfrdns
-journalctl -u rgbdns-tinydns -u rgbdns-axfrdns
+systemctl status rgbdns-tinydns
+journalctl -u rgbdns-tinydns
 ss -lntup | grep ':53'
 ```
 
