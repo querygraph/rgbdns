@@ -1,0 +1,9 @@
+# Replace these documentation records before delegation, then run:
+#   cd /var/lib/rgbdns/tinydns
+#   sudo -u rgbdns /usr/bin/tinydns-data
+#
+# Primary authoritative server and glue:
+.example.com:192.0.2.53:a.ns.example.com
+# Apex and common host:
++example.com:192.0.2.80
++www.example.com:192.0.2.80
