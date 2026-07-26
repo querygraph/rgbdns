@@ -23,9 +23,11 @@ mkdir -p "$topdir"/BUILD "$topdir"/BUILDROOT "$topdir"/RPMS \
     "$topdir"/SOURCES "$topdir"/SPECS "$topdir"/SRPMS
 
 archive="$topdir/SOURCES/rgbdns-$version.tar.gz"
-git ls-files --cached --others --exclude-standard -z |
-    tar --null --files-from=- --transform "s,^,rgbdns-$version/," \
-        --create --gzip --file "$archive"
+file_list="$topdir/SOURCES/rgbdns-$version.files"
+git -c "safe.directory=$repo" \
+    ls-files --cached --others --exclude-standard -z >"$file_list"
+tar --null --files-from="$file_list" --transform "s,^,rgbdns-$version/," \
+    --create --gzip --file "$archive"
 cp packaging/rpm/rgbdns.spec "$topdir/SPECS/rgbdns.spec"
 
 exec rpmbuild -ba \
