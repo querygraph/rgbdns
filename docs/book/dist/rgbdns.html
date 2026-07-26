@@ -1453,16 +1453,16 @@ protected configuration and state directories, and the hardened systemd
 units. It does not start a nameserver. That separation prevents package
 installation from publishing placeholder data.</p>
 <p>The primary source includes the SOA, the in-bailiwick primary and its
-glue, and the account-assigned BuddyNS names. The following were
-assigned to <code>cron.sh</code> when this example was recorded on
-2026-07-26:</p>
+glue, and the account-assigned BuddyNS names. In schematic form:</p>
 <pre class="text"><code>Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026072601:16384:2048:1048576:2560:3600
 &amp;cron.sh:52.10.53.234:a.ns.cron.sh:3600
-&amp;cron.sh::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
-&amp;cron.sh::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
-&amp;cron.sh::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600
+&amp;cron.sh::&lt;BuddyNS name 1&gt;:3600
+&amp;cron.sh::&lt;BuddyNS name 2&gt;:3600
+&amp;cron.sh::&lt;BuddyNS name 3&gt;:3600
 +a.ns.cron.sh:52.10.53.234:3600</code></pre>
-<p>Store this as <code>/root/cron.sh.data</code>, add the application
+<p>Replace the placeholders with the names shown in BuddyBoard. The
+complete, directly compilable source is in the Debian deployment guide.
+Store it as <code>/root/cron.sh.data</code>, add the application
 records, and increment the SOA serial on every publication. The empty
 address fields on the BuddyNS NS lines are intentional: glue for those
 names belongs to BuddyNS, not <code>cron.sh</code>.</p>
@@ -1470,11 +1470,14 @@ names belongs to BuddyNS, not <code>cron.sh</code>.</p>
 transfers. Its current documentation says every published source must be
 allowed. For an IPv4-only primary, express the published IPv4 addresses
 as exact <code>/32</code> networks:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="va">BUDDYNS_AXFR_V4</span><span class="op">=</span><span class="st">&#39;108.61.224.67/32,116.203.6.3/32,107.191.99.111/32,193.109.120.66/32,5.223.55.119/32,192.184.93.99/32,103.25.56.55/32,216.73.156.203/32,37.143.61.179/32,195.20.17.193/32,45.77.29.133/32,116.203.0.64/32,167.88.161.228/32,199.195.249.208/32,104.244.78.122/32&#39;</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup primary <span class="dt">\</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data</span> /root/cron.sh.data <span class="dt">\</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="at">--port</span> 53 <span class="dt">\</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> <span class="st">&quot;</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="va">BUDDYNS_AXFR_V4</span><span class="op">=</span><span class="st">&#39;108.61.224.67/32,116.203.6.3/32&#39;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="va">BUDDYNS_AXFR_V4</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">,107.191.99.111/32&quot;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="va">BUDDYNS_AXFR_V4</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">,193.109.120.66/32&quot;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Append every remaining /32 from BuddyNS&#39;s current list.</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup primary <span class="dt">\</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data</span> /root/cron.sh.data <span class="dt">\</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="at">--port</span> 53 <span class="dt">\</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> <span class="st">&quot;</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">&quot;</span></span></code></pre></div>
 <p>Recheck BuddyNS’s source list before deployment and after provider
 network changes. The provider’s nameserver names are account-assigned as
 well; use BuddyBoard rather than treating the names in this example as
@@ -1516,8 +1519,10 @@ answers, serial convergence at BuddyNS, transfer failures, and disk
 space. The editable source still needs its own protected backup:
 secondary DNS is availability infrastructure, not configuration
 backup.</p>
-<p>The full command-by-command deployment, AWS rules, BuddyBoard
-sequence, delegation checks, and troubleshooting procedure live in <a href="../DEBIAN.md"><code>docs/DEBIAN.md</code></a>.</p>
+<p>The full allow-list, command-by-command deployment, AWS rules,
+BuddyBoard sequence, delegation checks, and troubleshooting procedure
+live in the <a href="https://github.com/querygraph/rgbdns/blob/master/docs/DEBIAN.md"><code>docs/DEBIAN.md</code>
+deployment guide</a>.</p>
 <h2 data-number="15.3" id="observe-the-right-signals"><span class="header-section-number">15.3</span> Observe the right signals</h2>
 <p>Useful signals include:</p>
 <ul>
@@ -1872,12 +1877,13 @@ tool</h1>
 <p>The important comparison with the original C is not that Rust uses
 newer syntax. It is that rgbdns can express DNS invariants at boundaries
 and have the compiler preserve them across the program.</p>
-<p>The crate begins with <code>#![forbid(unsafe_code)]</code> in <a href="../../src/lib.rs"><code>src/lib.rs</code></a>. This is stronger
-than merely having no currently known unsafe block: a later contribution
-cannot introduce one without first making an explicit, reviewable change
-to the crate policy. The implementation still performs byte-level packet
-parsing, binary CDB loading, socket I/O, process credential changes, and
-concurrency. Those jobs do not require unchecked pointer arithmetic.</p>
+<p>The crate begins with <code>#![forbid(unsafe_code)]</code> in <a href="https://github.com/querygraph/rgbdns/blob/master/src/lib.rs"><code>src/lib.rs</code></a>.
+This is stronger than merely having no currently known unsafe block: a
+later contribution cannot introduce one without first making an
+explicit, reviewable change to the crate policy. The implementation
+still performs byte-level packet parsing, binary CDB loading, socket
+I/O, process credential changes, and concurrency. Those jobs do not
+require unchecked pointer arithmetic.</p>
 <p>Rust improves the design along four axes.</p>
 <p><strong>Ownership makes lifetime and aliasing rules
 executable.</strong> A decoded <code>Message</code> owns its questions
@@ -1912,11 +1918,11 @@ compile-time or construction-time obligations. The remaining protocol
 work becomes visible enough to test directly.</p>
 <h1 data-number="19" id="valid-names-instead-of-hopeful-strings"><span class="header-section-number">19</span> Valid names instead of hopeful
 strings</h1>
-<p><a href="../../src/name.rs"><code>Name</code></a> is the first
-load-bearing abstraction. It stores a sequence of byte labels rather
-than a UTF-8 domain string. Its constructor is private to the module;
-all construction passes through parsing or <code>from_labels</code>, and
-both reach the same validation rule:</p>
+<p><a href="https://github.com/querygraph/rgbdns/blob/master/src/name.rs"><code>Name</code></a>
+is the first load-bearing abstraction. It stores a sequence of byte
+labels rather than a UTF-8 domain string. Its constructor is private to
+the module; all construction passes through parsing or
+<code>from_labels</code>, and both reach the same validation rule:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> validate(labels<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;</span>]) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> labels<span class="op">.</span>iter()<span class="op">.</span>any(<span class="op">|</span>l<span class="op">|</span> l<span class="op">.</span>is_empty() <span class="op">||</span> l<span class="op">.</span>len() <span class="op">&gt;</span> <span class="dv">63</span>) <span class="op">{</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="cn">Err</span>(<span class="bu">Error</span><span class="pp">::</span>InvalidName(</span>
@@ -1949,8 +1955,8 @@ network boundary absorbs the cost once.</p>
 <h1 data-number="20" id="a-bounded-wire-codec"><span class="header-section-number">20</span> A bounded wire codec</h1>
 <p>DNS packets are attacker-controlled binary graphs: compression
 pointers can jump backward, names can share suffixes, section counts can
-lie, and RDATA lengths can disagree with actual bytes. <a href="../../src/packet.rs"><code>packet.rs</code></a> contains the codec
-and deliberately keeps the reader state small:</p>
+lie, and RDATA lengths can disagree with actual bytes. <a href="https://github.com/querygraph/rgbdns/blob/master/src/packet.rs"><code>packet.rs</code></a>
+contains the codec and deliberately keeps the reader state small:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Reader<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span> <span class="op">{</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    b<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> [<span class="dt">u8</span>]<span class="op">,</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    p<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
@@ -1981,9 +1987,9 @@ therefore expressed as an algorithmic improvement behind the same
 <code>Message::encode</code> contract.</p>
 <h1 data-number="21" id="zone-data-as-an-indexed-semantic-model"><span class="header-section-number">21</span> Zone data as an indexed semantic
 model</h1>
-<p><a href="../../src/zone.rs"><code>Zone</code></a> is more than a
-parser for tinydns text. It is the semantic index used by authoritative
-answers:</p>
+<p><a href="https://github.com/querygraph/rgbdns/blob/master/src/zone.rs"><code>Zone</code></a>
+is more than a parser for tinydns text. It is the semantic index used by
+authoritative answers:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> Zone <span class="op">{</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    records<span class="op">:</span> BTreeMap<span class="op">&lt;</span>Name<span class="op">,</span> <span class="dt">Vec</span><span class="op">&lt;</span>Record<span class="op">&gt;&gt;,</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    metadata<span class="op">:</span> BTreeMap<span class="op">&lt;</span>Name<span class="op">,</span> <span class="dt">Vec</span><span class="op">&lt;</span>RecordMetadata<span class="op">&gt;&gt;,</span></span>
@@ -2022,8 +2028,9 @@ supplies ordinary answers, negative answers, wildcards, referrals, and
 AXFR without five subtly different interpretations of a zone.</p>
 <h1 data-number="22" id="from-query-bytes-to-an-authoritative-answer"><span class="header-section-number">22</span> From query bytes to an
 authoritative answer</h1>
-<p><a href="../../src/server.rs"><code>server::respond</code></a> is the
-central authoritative pipeline. Its shape is intentionally linear:</p>
+<p><a href="https://github.com/querygraph/rgbdns/blob/master/src/server.rs"><code>server::respond</code></a>
+is the central authoritative pipeline. Its shape is intentionally
+linear:</p>
 <ol type="1">
 <li>Reject an unknown opcode from the header without misparsing its body
 as a standard query.</li>
@@ -2037,25 +2044,27 @@ ceiling.</li>
 <li>Normalize RRset TTLs and remove duplicates.</li>
 <li>Encode or truncate the response.</li>
 </ol>
-<p>The code separates mechanism from policy. <a href="../../src/transport.rs"><code>transport.rs</code></a> knows UDP
-datagrams, TCP length prefixes, timeouts, persistent connections, and a
-fixed worker bound. It knows nothing about zones. The handler knows DNS
-policy but receives transport limits and client identity as ordinary
-parameters. That separation lets specialized services reuse the network
-machinery without pretending to be authoritative zones.</p>
+<p>The code separates mechanism from policy. <a href="https://github.com/querygraph/rgbdns/blob/master/src/transport.rs"><code>transport.rs</code></a>
+knows UDP datagrams, TCP length prefixes, timeouts, persistent
+connections, and a fixed worker bound. It knows nothing about zones. The
+handler knows DNS policy but receives transport limits and client
+identity as ordinary parameters. That separation lets specialized
+services reuse the network machinery without pretending to be
+authoritative zones.</p>
 <p>The original djbdns family achieved robustness partly through small
 processes. rgbdns retains that decomposition while strengthening
-in-process boundaries. The binaries under <a href="../../src/bin"><code>src/bin</code></a> are mostly adapters:
-environment, configuration, a library call, and the djbdns-compatible
-fatal exit convention. Small executables remain independently
-supervisable, but common logic is testable as ordinary Rust
-functions.</p>
+in-process boundaries. The binaries under <a href="https://github.com/querygraph/rgbdns/tree/master/src/bin"><code>src/bin</code></a>
+are mostly adapters: environment, configuration, a library call, and the
+djbdns-compatible fatal exit convention. Small executables remain
+independently supervisable, but common logic is testable as ordinary
+Rust functions.</p>
 <h1 data-number="23" id="cdb-compatibility-without-trusting-the-file"><span class="header-section-number">23</span> CDB compatibility without
 trusting the file</h1>
 <p>Compatibility is most valuable at the data boundary. rgbdns reads and
 writes the original tinydns <code>data.cdb</code> layout, so operators
-can preserve compilation and rollout habits. <a href="../../src/cdb.rs"><code>cdb.rs</code></a> does not, however,
-inherit the old assumption that the compiled file is trustworthy.</p>
+can preserve compilation and rollout habits. <a href="https://github.com/querygraph/rgbdns/blob/master/src/cdb.rs"><code>cdb.rs</code></a>
+does not, however, inherit the old assumption that the compiled file is
+trustworthy.</p>
 <p>The loader applies independent limits and checked arithmetic:</p>
 <ul>
 <li>the complete database is capped at one GiB;</li>
@@ -2080,7 +2089,7 @@ installed file—unambiguous.</p>
 <h1 data-number="24" id="recursion-by-composition"><span class="header-section-number">24</span> Recursion by composition</h1>
 <p>Authoritative DNS is implemented in rgbdns’s own small model.
 Recursive DNS, DNSSEC validation, caching, and upstream transport are
-composed from Hickory in <a href="../../src/bin/dnscache.rs"><code>src/bin/dnscache.rs</code></a>.
+composed from Hickory in <a href="https://github.com/querygraph/rgbdns/blob/master/src/bin/dnscache.rs"><code>src/bin/dnscache.rs</code></a>.
 This is not a retreat from the rewrite; it is a deliberate abstraction
 boundary.</p>
 <p>rgbdns owns policy that must remain djbdns-compatible or
@@ -2103,10 +2112,10 @@ models remain behind process and library boundaries rather than forcing
 one architecture across the suite.</p>
 <h1 data-number="25" id="tests-as-executable-protocol-commentary"><span class="header-section-number">25</span> Tests as executable protocol
 commentary</h1>
-<p>The strongest claims in this book have executable counterparts. <a href="../../tests/rfc_conformance.rs"><code>tests/rfc_conformance.rs</code></a>
-names normative requirements and constructs exact packets. <a href="../../tests/wire_security.rs"><code>tests/wire_security.rs</code></a>
+<p>The strongest claims in this book have executable counterparts. <a href="https://github.com/querygraph/rgbdns/blob/master/tests/rfc_conformance.rs"><code>tests/rfc_conformance.rs</code></a>
+names normative requirements and constructs exact packets. <a href="https://github.com/querygraph/rgbdns/blob/master/tests/wire_security.rs"><code>tests/wire_security.rs</code></a>
 contains a hostile corpus and checks every truncation of a structured
-packet. <a href="../../tests/packet_properties.rs"><code>tests/packet_properties.rs</code></a>
+packet. <a href="https://github.com/querygraph/rgbdns/blob/master/tests/packet_properties.rs"><code>tests/packet_properties.rs</code></a>
 generates arbitrary bytes and structured messages:</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span>test<span class="at">]</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> arbitrary_packets_never_panic(</span>
@@ -2121,9 +2130,9 @@ re-encoded and reparsed, and generated structured messages round-trip
 without semantic loss.</p>
 <p>Golden CDB fixtures protect historical compatibility. Live UDP/TCP
 tests exercise connection reuse and framing. <code>drill</code> provides
-an independent encoder and decoder. The stable-Rust benchmark in <a href="../../benches/dns_core.rs"><code>benches/dns_core.rs</code></a>
-measures the functions that rgbdns itself owns, and <a href="../performance.md"><code>docs/performance.md</code></a> records
-both timings and wire size.</p>
+an independent encoder and decoder. The stable-Rust benchmark in <a href="https://github.com/querygraph/rgbdns/blob/master/benches/dns_core.rs"><code>benches/dns_core.rs</code></a>
+measures the functions that rgbdns itself owns, and <a href="https://github.com/querygraph/rgbdns/blob/master/docs/performance.md"><code>docs/performance.md</code></a>
+records both timings and wire size.</p>
 <p>This is where Rust most clearly changes the economics of a C rewrite.
 Memory safety removes many failure modes before testing. Property tests
 can then spend their budget on protocol structure rather than
