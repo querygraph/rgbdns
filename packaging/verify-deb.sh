@@ -16,6 +16,7 @@ trap 'rm -f "$installed_bins"' EXIT HUP INT TERM
 dpkg-deb --fsys-tarfile "$package" |
     tar -tf - |
     sed -n 's#^\./usr/bin/##p' |
+    sed '/^$/d' |
     sort >"$installed_bins"
 
 dpkg-deb --control "$package" /tmp/rgbdns-control

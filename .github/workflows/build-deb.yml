@@ -60,6 +60,7 @@ jobs:
           dpkg-deb --fsys-tarfile dist/rgbdns_*_amd64.deb |
             tar -tf - |
             sed -n 's#^\./usr/bin/##p' |
+            sed '/^$/d' |
             sort > /tmp/packaged-binaries
           diff -u /tmp/expected-binaries /tmp/packaged-binaries
           lintian --fail-on error dist/rgbdns_*_amd64.deb
