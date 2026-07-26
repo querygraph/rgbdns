@@ -5,9 +5,9 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>Where DNS ends</title>
+  <title>Part II: Codebase exploration</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -48,32 +48,20 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-021.html" accesskey="n" rel="next">Appendix A: Configuration quick reference</a>
+<span class="navlink-label">Next:</span> <a href="chapter-021.html" accesskey="n" rel="next">Rust as a protocol-design tool</a>
 </span>
 <span class="navlink">
 <span class="navlink-label">Previous:</span> <a href="chapter-019.html" accesskey="p" rel="previous">Reading the rgbdns source</a>
 </span>
 </div>
 </nav>
-<h1 data-number="19" id="where-dns-ends"><span
-class="header-section-number">19</span> Where DNS ends</h1>
-<p>DNS establishes named, cacheable facts and, with DNSSEC, their
-authenticated origin. It does not prove that the address belongs to the
-application a user intended, encrypt the subsequent connection,
-guarantee freshness inside the TTL window, or choose a healthy endpoint.
-TLS identity, application discovery, load balancing, routing, and
-monitoring build on DNS but remain separate systems.</p>
-<p>That boundary is the best final replacement for the phone-book
-metaphor. DNS is a delegated publication and discovery protocol. Its
-tree assigns authority; its records carry typed statements; its TTLs
-make caching explicit; its packet format makes efficient exchange
-possible; recursion joins many authorities into one answer; DNSSEC
-authenticates the chain; and supervision keeps the implementing
-processes available without becoming part of the protocol.</p>
-<p>rgbdns expresses those ideas as small programs over shared, validated
-Rust types. Understanding the protocol makes the program family
-unsurprising. Reading the program family, in turn, shows how the
-abstract DNS model becomes bounded packets, immutable databases,
-iterative queries, atomic files, and foreground processes.</p>
+<h1 class="unnumbered" id="part-ii-codebase-exploration">Part II:
+Codebase exploration</h1>
+<p>The first part built DNS from its protocol obligations. This part
+reads rgbdns as a Rust system. Each chapter follows one execution path,
+names the abstraction that carries the obligation, and links directly to
+the implementation. The Obsidian edition adds live fragment cards beside
+these links: a reader can move from a claim to the exact symbol, then
+outward to the complete collocated source file.</p>
 </body>
 </html>

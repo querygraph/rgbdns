@@ -7,7 +7,7 @@
   <meta name="author" content="Alexy Khrabrov" />
   <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>DNS from First Principles</title>
+  <title>Recursion by composition</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -48,21 +48,38 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-002.html" accesskey="n" rel="next">Preface</a>
+<span class="navlink-label">Next:</span> <a href="chapter-028.html" accesskey="n" rel="next">Tests as executable protocol commentary</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="index.html" accesskey="p" rel="previous">DNS from First Principles</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-026.html" accesskey="p" rel="previous">CDB compatibility without trusting the file</a>
 </span>
 </div>
 </nav>
-<h1 data-number="1" id="dns-from-first-principles"><span
-class="header-section-number">1</span> DNS from First Principles</h1>
-<h2 data-number="1.1"
-id="names-packets-authority-recursion-and-the-design-of-rgbdns"><span
-class="header-section-number">1.1</span> Names, Packets, Authority,
-Recursion, and the Design of rgbdns</h2>
-<p>Alexy Khrabrov</p>
-<p>Version 0.1.1 · 2026-07-23</p>
-<p>Released into the public domain under the Unlicense.</p>
+<h1 data-number="25" id="recursion-by-composition"><span
+class="header-section-number">25</span> Recursion by composition</h1>
+<p>Authoritative DNS is implemented in rgbdns’s own small model.
+Recursive DNS, DNSSEC validation, caching, and upstream transport are
+composed from Hickory in <a
+href="https://github.com/querygraph/rgbdns/blob/master/src/bin/dnscache.rs"><code>src/bin/dnscache.rs</code></a>.
+This is not a retreat from the rewrite; it is a deliberate abstraction
+boundary.</p>
+<p>rgbdns owns policy that must remain djbdns-compatible or
+operator-visible: root hints, forwarding zones, allowed networks, cache
+budgets, recursion limits, EDNS payload, DNSSEC policy, listener
+addresses, and shutdown. Hickory supplies the complex iterative resolver
+machinery behind typed configuration and handler interfaces.</p>
+<p>Every operator-controlled dimension is bounded. Cache sizes,
+recursion depth, name-server recursion depth, network lists, timeouts,
+and TCP message sizes have explicit limits. The <code>bounded_env</code>
+generic converts an environment value and verifies its range before
+server construction. A C implementation can do the same checks, but Rust
+makes the parsed type and the allowed range part of one reusable
+function.</p>
+<p>Composition also improves performance engineering. The custom
+authoritative path stays small and directly benchmarkable. The resolver
+can use Tokio and a mature async DNS implementation without imposing
+that runtime on tinydns, rbldns, or walldns. Different concurrency
+models remain behind process and library boundaries rather than forcing
+one architecture across the suite.</p>
 </body>
 </html>

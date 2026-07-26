@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Authority: answering from owned facts</title>
   <style>
@@ -33,6 +33,71 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="book.css" />
 </head>
@@ -146,6 +211,10 @@ forms include:</p>
 <td>CNAME</td>
 </tr>
 <tr>
+<td><code>A</code></td>
+<td>private ANAME (flattened A/AAAA alias)</td>
+</tr>
+<tr>
 <td><code>^</code></td>
 <td>PTR</td>
 </tr>
@@ -183,8 +252,108 @@ record can be visible before or after a specified instant. Location
 codes select records using configured client IPv4 prefixes. rgbdns
 carries that metadata beside the record and evaluates it at lookup
 time.</p>
-<h2 data-number="7.3" id="cdb-compile-once-read-predictably"><span
-class="header-section-number">7.3</span> CDB: compile once, read
+<h2 data-number="7.3" id="aname-and-apex-address-flattening"><span
+class="header-section-number">7.3</span> ANAME and apex address
+flattening</h2>
+<p>A zone apex necessarily owns SOA and NS data. A CNAME owner, by
+contrast, cannot also own ordinary records. A literal apex CNAME would
+therefore make the zone internally contradictory: the alias rule says
+the owner has no other data while the authority rules require other data
+at that same owner.</p>
+<p>Hosted sites still need a way for <code>example.com</code> to track
+addresses controlled by a platform such as
+<code>customer.blog-host.example</code>. DNS providers commonly call the
+solution CNAME flattening, ALIAS, or ANAME. The authoritative server
+resolves the configured target itself and publishes the resulting
+addresses under the configured owner.</p>
+<p>rgbdns calls this feature <strong>ANAME</strong> and uses the private
+<code>A</code> source marker:</p>
+<pre class="text"><code># Authority and nameserver address.
+.example.com:192.0.2.53:ns1.example.com
+
+# ANAME owner:target:maximum-ttl
+Aexample.com:customer.blog-host.example:300
+
+# Other apex data remains independent.
+@example.com::mail.example.com:10:3600
+&#39;example.com:v=spf1 -all:3600</code></pre>
+<p>The form is:</p>
+<pre class="text"><code>Aowner:target:maximum-ttl</code></pre>
+<p>The TTL field is optional and defaults to 300 seconds. It is a
+ceiling, not a promise to extend the target’s lifetime. If the upstream
+address has 45 seconds remaining and the ANAME limit is 300, rgbdns
+returns 45. If the upstream has 900 seconds remaining, rgbdns returns no
+more than 300.</p>
+<p>ANAME is stored separately from ordinary <code>Record</code> values.
+It can coexist with SOA, NS, MX, TXT, CAA, and other non-address data.
+Zone validation rejects:</p>
+<ul>
+<li>A, AAAA, or CNAME data at the same owner;</li>
+<li>a wildcard ANAME owner;</li>
+<li>an owner that targets itself;</li>
+<li>different ANAME targets at one owner;</li>
+<li>a zero TTL.</li>
+</ul>
+<p>The server only applies ANAME to A and AAAA questions. SOA, NS, MX,
+TXT, CAA, and all other questions continue through normal authoritative
+lookup. ANAME also does not override a delegation cut: a name beneath a
+delegated child still produces a referral from the parent.</p>
+<p>For an address question, the response path is:</p>
+<ol type="1">
+<li>establish that ordinary authoritative lookup reaches the ANAME owner
+and does not cross a delegation;</li>
+<li>query the configured recursive resolver for the target and requested
+address family;</li>
+<li>validate response identity and framing;</li>
+<li>follow only a connected CNAME chain beginning at the configured
+target;</li>
+<li>collect the terminal A or AAAA RRset;</li>
+<li>replace each terminal owner with the ANAME owner;</li>
+<li>cap the remaining TTL and return an authoritative answer.</li>
+</ol>
+<p>For example, an upstream result such as:</p>
+<pre class="text"><code>customer.blog-host.example. 180 IN CNAME edge.host.example.
+edge.host.example.          120 IN A     192.0.2.80</code></pre>
+<p>becomes:</p>
+<pre class="text"><code>example.com.                120 IN A     192.0.2.80</code></pre>
+<p>The CNAME is deliberately absent. Consumers see a conventional
+authoritative address RRset at the apex.</p>
+<p>The resolver cache is shared by requests handled by one server
+process. Positive entries expire with the upstream chain’s shortest
+relevant TTL. Negative results use the authority SOA’s negative TTL when
+available and 60 seconds otherwise. The configured ANAME ceiling is
+applied when constructing each response, so two owners may safely share
+a target while using different TTL policies.</p>
+<p>Resolution is bounded in the same spirit as the rest of rgbdns:</p>
+<ul>
+<li>CNAME chains stop after 16 links;</li>
+<li>visited names detect cycles;</li>
+<li>no more than 64 terminal addresses are accepted;</li>
+<li>conflicting CNAME targets are rejected;</li>
+<li>upstream SERVFAIL and other resolver errors become authoritative
+SERVFAIL, not false NODATA;</li>
+<li>A and AAAA are cached independently.</li>
+</ul>
+<p><code>DNSCACHEIP</code> selects one or more recursive endpoints,
+separated by commas. Each endpoint may be an IP address using port 53 or
+an explicit socket address. Without it, rgbdns reads
+<code>/etc/resolv.conf</code>. A local validating <code>dnscache</code>
+is the preferred upstream when operators want DNSSEC validation and a
+cache shared with other local DNS work:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">DNSCACHEIP</span><span class="op">=</span>127.0.0.1:5354 <span class="va">IP</span><span class="op">=</span>0.0.0.0 <span class="va">PORT</span><span class="op">=</span>53 <span class="ex">tinydns</span></span></code></pre></div>
+<p>ANAME metadata survives <code>tinydns-data</code> compilation through
+private CDB entries; it is not encoded as a made-up public RR type. This
+retains the source semantics across text and CDB operation without
+teaching ordinary DNS clients about a private wire format.</p>
+<p>Standard AXFR has no interoperable way to describe this private
+policy. rgbdns therefore does not emit ANAME metadata in AXFR. An
+independently configured secondary needs the same ANAME source
+directive, while a conventional secondary can only serve address
+snapshots supplied through an external materialization workflow.
+Operators should account for that difference before treating ANAME zones
+as ordinary transferable zones.</p>
+<h2 data-number="7.4" id="cdb-compile-once-read-predictably"><span
+class="header-section-number">7.4</span> CDB: compile once, read
 predictably</h2>
 <p>The traditional <code>tinydns-data</code> compiles text into a
 constant database, CDB. The serving process reads the compiled file
@@ -192,12 +361,13 @@ instead of reparsing editable text for every startup or query.
 Compilation also enables atomic replacement: write and validate a new
 file, then rename it into place.</p>
 <p>rgbdns’s <code>src/cdb.rs</code> preserves the djbdns key/value
-layout. <code>compile</code> serializes typed records and metadata;
-<code>load</code> reads entries and reconstructs a <code>Zone</code>.
-The loader does not trust the database merely because it is local. It
-bounds file and entry sizes, validates keys, checks record layouts,
-decodes names and RDATA through explicit lengths, and rejects malformed
-data.</p>
+layout for ordinary records and uses a private, NUL-prefixed key
+namespace for ANAME metadata. <code>compile</code> serializes typed
+records and metadata; <code>load</code> reads entries and reconstructs a
+<code>Zone</code>. The loader does not trust the database merely because
+it is local. It bounds file and entry sizes, validates keys, checks
+record layouts, decodes names and RDATA through explicit lengths, and
+rejects malformed data.</p>
 <p>This is an important general rule: compiled configuration is still
 input. It may be truncated by a failed copy, generated by an older tool,
 or replaced by an attacker with filesystem access. Memory safety should

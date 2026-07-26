@@ -7,7 +7,7 @@
   <meta name="author" content="Alexy Khrabrov" />
   <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>Client behavior and diagnostics</title>
+  <title>A bounded wire codec</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -113,60 +113,48 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-014.html" accesskey="n" rel="next">Security engineering in rgbdns</a>
+<span class="navlink-label">Next:</span> <a href="chapter-024.html" accesskey="n" rel="next">Zone data as an indexed semantic model</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-012.html" accesskey="p" rel="previous">The rgbdns program family</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-022.html" accesskey="p" rel="previous">Valid names instead of hopeful strings</a>
 </span>
 </div>
 </nav>
-<h1 data-number="12" id="client-behavior-and-diagnostics"><span
-class="header-section-number">12</span> Client behavior and
-diagnostics</h1>
-<h2 data-number="12.1" id="a-query-is-more-than-sending-bytes"><span
-class="header-section-number">12.1</span> A query is more than sending
-bytes</h2>
-<p>A DNS client creates a random transaction ID, encodes one question,
-sends it to an intended server, receives a response, and validates at
-least:</p>
-<ul>
-<li>source endpoint where the transport permits;</li>
-<li>transaction ID;</li>
-<li>QR and response shape;</li>
-<li>matching question;</li>
-<li>declared section lengths and names;</li>
-<li>truncation, with TCP retry when needed.</li>
-</ul>
-<p><code>src/client.rs</code> reads <code>DNSCACHEIP</code> or
-<code>/etc/resolv.conf</code>, supports IPv4 and IPv6 socket syntax,
-gets IDs from the operating system, applies UDP timeouts, rejects
-mismatched responses, and retries truncated UDP replies over TCP. The
-small command binaries format results for different use cases, while
-<code>dnsq</code> allows an explicit server and <code>dnsqr</code> uses
-recursive configuration.</p>
-<p><code>dnstrace</code> is conceptually different from a recursive
-lookup: it exposes the delegation path and intermediate authority so an
-operator can see where the chain stops. Good diagnosis asks four
-separate questions:</p>
-<ol type="1">
-<li>What did the stub send?</li>
-<li>What did the recursive resolver cache or validate?</li>
-<li>What delegation did the parent publish?</li>
-<li>What does the authoritative server say directly?</li>
-</ol>
-<p>Testing only the final application collapses all four layers and
-encourages guessing.</p>
-<h2 data-number="12.2" id="practical-checks"><span
-class="header-section-number">12.2</span> Practical checks</h2>
-<p>When a name fails, inspect type, server, flags, and authority section
-rather than asking only whether an address appeared.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> A www.example.com 192.0.2.53</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> AAAA www.example.com 192.0.2.53</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> SOA example.com 192.0.2.53</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dnstrace</span> A www.example.com</span></code></pre></div>
-<p>Compare UDP and TCP when answers are large. Query the parent-side NS
-records and the child authority separately. An NXDOMAIN with an SOA is
-different from a timeout, SERVFAIL, or REFUSED, and each points to a
-different layer.</p>
+<h1 data-number="21" id="a-bounded-wire-codec"><span
+class="header-section-number">21</span> A bounded wire codec</h1>
+<p>DNS packets are attacker-controlled binary graphs: compression
+pointers can jump backward, names can share suffixes, section counts can
+lie, and RDATA lengths can disagree with actual bytes. <a
+href="https://github.com/querygraph/rgbdns/blob/master/src/packet.rs"><code>packet.rs</code></a>
+contains the codec and deliberately keeps the reader state small:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Reader<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    b<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> [<span class="dt">u8</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    p<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    name_offsets<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">bool</span><span class="op">&gt;,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The lifetime on <code>b</code> prevents the reader from outliving its
+input. Every scalar read uses slice bounds checks. Name decoding
+separately limits pointer hops, requires pointers to move backward, and
+records valid prior name boundaries. The last rule is stricter than
+merely checking that a pointer lands inside the packet: an interior byte
+can accidentally look like a valid label.</p>
+<p>Decoded records become an <code>RData</code> variant. Unknown types
+are not discarded; they become opaque bytes paired with their numeric
+<code>RecordType</code>. This is the extension-safe behavior required by
+modern DNS. It also means an encoder can round-trip data it does not
+understand.</p>
+<p>The writer uses compression, but optimization remains subordinate to
+a valid message. A last-owner cache handles repeated owners cheaply
+while suffix sharing reduces wire size across related names. The July
+2026 benchmark shows the trade: a 64-record answer fell from 2,147 to
+1,059 bytes, while compression made encoding slower than the
+uncompressed baseline. On DNS, fewer datagrams and less amplification
+surface can be worth several microseconds of local CPU.</p>
+<p>Truncation uses a bounded search for the largest response that fits
+instead of repeatedly rebuilding one record at a time. The result
+preserves complete RRsets and required EDNS state. Performance work is
+therefore expressed as an algorithmic improvement behind the same
+<code>Message::encode</code> contract.</p>
 </body>
 </html>

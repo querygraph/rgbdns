@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Resource records: typed facts with lifetimes</title>
   <style>
@@ -96,6 +96,12 @@ ordinary integer can be wrong near the boundary.</p>
 name. Except for DNSSEC and narrowly specified metadata, an owner with
 CNAME should not also hold unrelated data. A resolver follows the chain
 while defending against loops and excessive depth.</p>
+<p><strong>ANAME</strong> is not a standard DNS record type in rgbdns.
+It is authoritative server configuration that copies the address meaning
+of another name onto an owner. This distinction matters: clients receive
+ordinary A or AAAA records, not an ANAME record. ANAME can therefore
+provide address aliasing at a zone apex without violating CNAME
+exclusivity.</p>
 <p><strong>MX</strong> names a mail exchanger and gives it a preference.
 Lower numbers are preferred. The target is a name, not an address.</p>
 <p><strong>PTR</strong> provides a name-valued reverse mapping. IPv4

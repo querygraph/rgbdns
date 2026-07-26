@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Zone transfer and secondary service</title>
   <style>
@@ -70,12 +70,20 @@ response is insufficient.</p>
 authorities normally restrict clients. TSIG is a common authentication
 mechanism in the wider ecosystem, while IP allowlists are a simpler
 policy with weaker identity properties.</p>
-<p><code>src/axfr.rs</code> provides both sides. <code>axfrdns</code>
-accepts TCP only and checks client networks, loopback by default. It
-requires one AXFR question, obtains a boundary-aware transfer from
-<code>Zone</code>, and frames bounded messages.
+<p><code>src/axfr.rs</code> provides both sides. The standalone
+<code>axfrdns</code> command accepts TCP only and checks client
+networks, loopback by default. The packaged primary also routes AXFR
+through <code>tinydns</code>’s existing TCP listener when
+<code>ALLOW_NETS</code> is set. This is required when ordinary
+authoritative DNS and transfers must share one address on port 53: two
+separate processes cannot own that TCP endpoint.</p>
+<p>Both entry points require one AXFR question, obtain a boundary-aware
+transfer from <code>Zone</code>, and frame bounded messages.
 <code>Zone::transfer</code> excludes records beneath delegated child
-zones and wraps the result in the apex SOA.</p>
+zones and wraps the result in the apex SOA. The integrated listener
+applies its transfer allow-list only to AXFR; ordinary DNS-over-TCP
+remains reachable by all clients allowed through the network
+firewall.</p>
 <p><code>axfr-get</code> generates a random transaction ID, validates
 response identity and shape, collects records until the closing SOA,
 renders them in tinydns source form, writes a temporary output, and

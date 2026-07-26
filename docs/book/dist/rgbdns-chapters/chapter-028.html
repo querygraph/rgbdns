@@ -7,7 +7,7 @@
   <meta name="author" content="Alexy Khrabrov" />
   <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>Client behavior and diagnostics</title>
+  <title>Tests as executable protocol commentary</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -113,60 +113,47 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-014.html" accesskey="n" rel="next">Security engineering in rgbdns</a>
+<span class="navlink-label">Next:</span> <a href="chapter-029.html" accesskey="n" rel="next">Abstractions and performance ledger</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-012.html" accesskey="p" rel="previous">The rgbdns program family</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-027.html" accesskey="p" rel="previous">Recursion by composition</a>
 </span>
 </div>
 </nav>
-<h1 data-number="12" id="client-behavior-and-diagnostics"><span
-class="header-section-number">12</span> Client behavior and
-diagnostics</h1>
-<h2 data-number="12.1" id="a-query-is-more-than-sending-bytes"><span
-class="header-section-number">12.1</span> A query is more than sending
-bytes</h2>
-<p>A DNS client creates a random transaction ID, encodes one question,
-sends it to an intended server, receives a response, and validates at
-least:</p>
-<ul>
-<li>source endpoint where the transport permits;</li>
-<li>transaction ID;</li>
-<li>QR and response shape;</li>
-<li>matching question;</li>
-<li>declared section lengths and names;</li>
-<li>truncation, with TCP retry when needed.</li>
-</ul>
-<p><code>src/client.rs</code> reads <code>DNSCACHEIP</code> or
-<code>/etc/resolv.conf</code>, supports IPv4 and IPv6 socket syntax,
-gets IDs from the operating system, applies UDP timeouts, rejects
-mismatched responses, and retries truncated UDP replies over TCP. The
-small command binaries format results for different use cases, while
-<code>dnsq</code> allows an explicit server and <code>dnsqr</code> uses
-recursive configuration.</p>
-<p><code>dnstrace</code> is conceptually different from a recursive
-lookup: it exposes the delegation path and intermediate authority so an
-operator can see where the chain stops. Good diagnosis asks four
-separate questions:</p>
-<ol type="1">
-<li>What did the stub send?</li>
-<li>What did the recursive resolver cache or validate?</li>
-<li>What delegation did the parent publish?</li>
-<li>What does the authoritative server say directly?</li>
-</ol>
-<p>Testing only the final application collapses all four layers and
-encourages guessing.</p>
-<h2 data-number="12.2" id="practical-checks"><span
-class="header-section-number">12.2</span> Practical checks</h2>
-<p>When a name fails, inspect type, server, flags, and authority section
-rather than asking only whether an address appeared.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> A www.example.com 192.0.2.53</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> AAAA www.example.com 192.0.2.53</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> SOA example.com 192.0.2.53</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dnstrace</span> A www.example.com</span></code></pre></div>
-<p>Compare UDP and TCP when answers are large. Query the parent-side NS
-records and the child authority separately. An NXDOMAIN with an SOA is
-different from a timeout, SERVFAIL, or REFUSED, and each points to a
-different layer.</p>
+<h1 data-number="26" id="tests-as-executable-protocol-commentary"><span
+class="header-section-number">26</span> Tests as executable protocol
+commentary</h1>
+<p>The strongest claims in this book have executable counterparts. <a
+href="https://github.com/querygraph/rgbdns/blob/master/tests/rfc_conformance.rs"><code>tests/rfc_conformance.rs</code></a>
+names normative requirements and constructs exact packets. <a
+href="https://github.com/querygraph/rgbdns/blob/master/tests/wire_security.rs"><code>tests/wire_security.rs</code></a>
+contains a hostile corpus and checks every truncation of a structured
+packet. <a
+href="https://github.com/querygraph/rgbdns/blob/master/tests/packet_properties.rs"><code>tests/packet_properties.rs</code></a>
+generates arbitrary bytes and structured messages:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span>test<span class="at">]</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> arbitrary_packets_never_panic(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    bytes <span class="kw">in</span> <span class="pp">prop::collection::</span>vec(<span class="pp">any::</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;</span>()<span class="op">,</span> <span class="dv">0</span><span class="op">..</span><span class="dv">4096</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>) <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> _ <span class="op">=</span> <span class="pp">Message::</span>decode(<span class="op">&amp;</span>bytes)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The property suite does not prove that every accepted DNS packet has
+the desired meaning. It establishes three valuable invariants over a
+large input space: decoding never panics, accepted packets can be
+re-encoded and reparsed, and generated structured messages round-trip
+without semantic loss.</p>
+<p>Golden CDB fixtures protect historical compatibility. Live UDP/TCP
+tests exercise connection reuse and framing. <code>drill</code> provides
+an independent encoder and decoder. The stable-Rust benchmark in <a
+href="https://github.com/querygraph/rgbdns/blob/master/benches/dns_core.rs"><code>benches/dns_core.rs</code></a>
+measures the functions that rgbdns itself owns, and <a
+href="https://github.com/querygraph/rgbdns/blob/master/docs/performance.md"><code>docs/performance.md</code></a>
+records both timings and wire size.</p>
+<p>This is where Rust most clearly changes the economics of a C rewrite.
+Memory safety removes many failure modes before testing. Property tests
+can then spend their budget on protocol structure rather than
+rediscovering use-after- free and buffer-overrun variants. The remaining
+failures are more likely to be interesting DNS mistakes.</p>
 </body>
 </html>

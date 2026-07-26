@@ -7,7 +7,7 @@
   <meta name="author" content="Alexy Khrabrov" />
   <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>DNS from First Principles</title>
+  <title>Where DNS ends</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -48,21 +48,32 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-002.html" accesskey="n" rel="next">Preface</a>
+<span class="navlink-label">Next:</span> <a href="chapter-031.html" accesskey="n" rel="next">Appendix A: Configuration quick reference</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="index.html" accesskey="p" rel="previous">DNS from First Principles</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-029.html" accesskey="p" rel="previous">Abstractions and performance ledger</a>
 </span>
 </div>
 </nav>
-<h1 data-number="1" id="dns-from-first-principles"><span
-class="header-section-number">1</span> DNS from First Principles</h1>
-<h2 data-number="1.1"
-id="names-packets-authority-recursion-and-the-design-of-rgbdns"><span
-class="header-section-number">1.1</span> Names, Packets, Authority,
-Recursion, and the Design of rgbdns</h2>
-<p>Alexy Khrabrov</p>
-<p>Version 0.1.1 · 2026-07-23</p>
-<p>Released into the public domain under the Unlicense.</p>
+<h1 data-number="28" id="where-dns-ends"><span
+class="header-section-number">28</span> Where DNS ends</h1>
+<p>DNS establishes named, cacheable facts and, with DNSSEC, their
+authenticated origin. It does not prove that the address belongs to the
+application a user intended, encrypt the subsequent connection,
+guarantee freshness inside the TTL window, or choose a healthy endpoint.
+TLS identity, application discovery, load balancing, routing, and
+monitoring build on DNS but remain separate systems.</p>
+<p>That boundary is the best final replacement for the phone-book
+metaphor. DNS is a delegated publication and discovery protocol. Its
+tree assigns authority; its records carry typed statements; its TTLs
+make caching explicit; its packet format makes efficient exchange
+possible; recursion joins many authorities into one answer; DNSSEC
+authenticates the chain; and supervision keeps the implementing
+processes available without becoming part of the protocol.</p>
+<p>rgbdns expresses those ideas as small programs over shared, validated
+Rust types. Understanding the protocol makes the program family
+unsurprising. Reading the program family, in turn, shows how the
+abstract DNS model becomes bounded packets, immutable databases,
+iterative queries, atomic files, and foreground processes.</p>
 </body>
 </html>

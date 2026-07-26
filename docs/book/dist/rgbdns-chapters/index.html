@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>DNS from First Principles</title>
   <style>
@@ -57,7 +57,7 @@
 <p class="subtitle">Names, Packets, Authority, Recursion, and the Design
 of rgbdns</p>
 <p class="author">Alexy Khrabrov</p>
-<p class="date">2026-07-24</p>
+<p class="date">2026-07-26</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
@@ -162,9 +162,13 @@ authority</a></li>
 id="toc-tinydns-data-as-a-source-language"><span
 class="toc-section-number">7.2</span> tinydns data as a source
 language</a></li>
+<li><a href="chapter-008.html#aname-and-apex-address-flattening"
+id="toc-aname-and-apex-address-flattening"><span
+class="toc-section-number">7.3</span> ANAME and apex address
+flattening</a></li>
 <li><a href="chapter-008.html#cdb-compile-once-read-predictably"
 id="toc-cdb-compile-once-read-predictably"><span
-class="toc-section-number">7.3</span> CDB: compile once, read
+class="toc-section-number">7.4</span> CDB: compile once, read
 predictably</a></li>
 </ul></li>
 <li><a href="chapter-009.html#recursion-discovering-an-answer"
@@ -275,9 +279,14 @@ service</a>
 id="toc-build-stage-verify-replace"><span
 class="toc-section-number">16.1</span> Build, stage, verify,
 replace</a></li>
+<li><a
+href="chapter-017.html#case-study-cron.sh-primary-and-buddyns-secondaries"
+id="toc-case-study-cron.sh-primary-and-buddyns-secondaries"><span
+class="toc-section-number">16.2</span> Case study: cron.sh primary and
+BuddyNS secondaries</a></li>
 <li><a href="chapter-017.html#observe-the-right-signals"
 id="toc-observe-the-right-signals"><span
-class="toc-section-number">16.2</span> Observe the right
+class="toc-section-number">16.3</span> Observe the right
 signals</a></li>
 </ul></li>
 <li><a href="chapter-018.html#testing-dns-software"
@@ -318,16 +327,55 @@ id="toc-design-patterns-to-carry-elsewhere"><span
 class="toc-section-number">18.2</span> Design patterns to carry
 elsewhere</a></li>
 </ul></li>
-<li><a href="chapter-020.html#where-dns-ends"
-id="toc-where-dns-ends"><span class="toc-section-number">19</span> Where
+<li><a href="chapter-020.html#part-ii-codebase-exploration"
+id="toc-part-ii-codebase-exploration">Part II: Codebase
+exploration</a></li>
+<li><a href="chapter-021.html#rust-as-a-protocol-design-tool"
+id="toc-rust-as-a-protocol-design-tool"><span
+class="toc-section-number">19</span> Rust as a protocol-design
+tool</a></li>
+<li><a href="chapter-022.html#valid-names-instead-of-hopeful-strings"
+id="toc-valid-names-instead-of-hopeful-strings"><span
+class="toc-section-number">20</span> Valid names instead of hopeful
+strings</a></li>
+<li><a href="chapter-023.html#a-bounded-wire-codec"
+id="toc-a-bounded-wire-codec"><span class="toc-section-number">21</span>
+A bounded wire codec</a></li>
+<li><a href="chapter-024.html#zone-data-as-an-indexed-semantic-model"
+id="toc-zone-data-as-an-indexed-semantic-model"><span
+class="toc-section-number">22</span> Zone data as an indexed semantic
+model</a></li>
+<li><a
+href="chapter-025.html#from-query-bytes-to-an-authoritative-answer"
+id="toc-from-query-bytes-to-an-authoritative-answer"><span
+class="toc-section-number">23</span> From query bytes to an
+authoritative answer</a></li>
+<li><a
+href="chapter-026.html#cdb-compatibility-without-trusting-the-file"
+id="toc-cdb-compatibility-without-trusting-the-file"><span
+class="toc-section-number">24</span> CDB compatibility without trusting
+the file</a></li>
+<li><a href="chapter-027.html#recursion-by-composition"
+id="toc-recursion-by-composition"><span
+class="toc-section-number">25</span> Recursion by composition</a></li>
+<li><a href="chapter-028.html#tests-as-executable-protocol-commentary"
+id="toc-tests-as-executable-protocol-commentary"><span
+class="toc-section-number">26</span> Tests as executable protocol
+commentary</a></li>
+<li><a href="chapter-029.html#abstractions-and-performance-ledger"
+id="toc-abstractions-and-performance-ledger"><span
+class="toc-section-number">27</span> Abstractions and performance
+ledger</a></li>
+<li><a href="chapter-030.html#where-dns-ends"
+id="toc-where-dns-ends"><span class="toc-section-number">28</span> Where
 DNS ends</a></li>
-<li><a href="chapter-021.html#appendix-a-configuration-quick-reference"
+<li><a href="chapter-031.html#appendix-a-configuration-quick-reference"
 id="toc-appendix-a-configuration-quick-reference"><span
-class="toc-section-number">20</span> Appendix A: Configuration quick
+class="toc-section-number">29</span> Appendix A: Configuration quick
 reference</a></li>
-<li><a href="chapter-022.html#appendix-b-further-reading"
+<li><a href="chapter-032.html#appendix-b-further-reading"
 id="toc-appendix-b-further-reading"><span
-class="toc-section-number">21</span> Appendix B: Further
+class="toc-section-number">30</span> Appendix B: Further
 reading</a></li>
 </ul>
 </nav>

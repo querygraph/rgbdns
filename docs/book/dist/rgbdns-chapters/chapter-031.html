@@ -7,7 +7,7 @@
   <meta name="author" content="Alexy Khrabrov" />
   <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>DNS from First Principles</title>
+  <title>Appendix A: Configuration quick reference</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -48,21 +48,73 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-002.html" accesskey="n" rel="next">Preface</a>
+<span class="navlink-label">Next:</span> <a href="chapter-032.html" accesskey="n" rel="next">Appendix B: Further reading</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="index.html" accesskey="p" rel="previous">DNS from First Principles</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-030.html" accesskey="p" rel="previous">Where DNS ends</a>
 </span>
 </div>
 </nav>
-<h1 data-number="1" id="dns-from-first-principles"><span
-class="header-section-number">1</span> DNS from First Principles</h1>
-<h2 data-number="1.1"
-id="names-packets-authority-recursion-and-the-design-of-rgbdns"><span
-class="header-section-number">1.1</span> Names, Packets, Authority,
-Recursion, and the Design of rgbdns</h2>
-<p>Alexy Khrabrov</p>
-<p>Version 0.1.1 · 2026-07-23</p>
-<p>Released into the public domain under the Unlicense.</p>
+<h1 data-number="29" id="appendix-a-configuration-quick-reference"><span
+class="header-section-number">29</span> Appendix A: Configuration quick
+reference</h1>
+<p>Common daemon variables include:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IP</code></td>
+<td>listen address</td>
+</tr>
+<tr>
+<td><code>PORT</code></td>
+<td>listen port</td>
+</tr>
+<tr>
+<td><code>DATA</code></td>
+<td>authoritative text or CDB path where supported</td>
+</tr>
+<tr>
+<td><code>ALLOW_NETS</code></td>
+<td>comma-separated client CIDRs for recursion or transfer</td>
+</tr>
+<tr>
+<td><code>DNSCACHEIP</code></td>
+<td>recursive endpoints used by client tools and ANAME flattening</td>
+</tr>
+<tr>
+<td><code>CACHESIZE</code></td>
+<td>bounded recursive response-cache capacity</td>
+</tr>
+<tr>
+<td><code>NSCACHESIZE</code></td>
+<td>bounded nameserver-cache entries</td>
+</tr>
+<tr>
+<td><code>RECURSION_LIMIT</code></td>
+<td>ordinary recursion depth</td>
+</tr>
+<tr>
+<td><code>NS_RECURSION_LIMIT</code></td>
+<td>nameserver-resolution recursion depth</td>
+</tr>
+<tr>
+<td><code>ROOT</code></td>
+<td>djbdns-compatible resolver configuration root</td>
+</tr>
+</tbody>
+</table>
+<p>Use the command’s <code>*-conf</code> generator as a starting point,
+then adapt the foreground <code>run</code> contract to the chosen native
+supervisor.</p>
 </body>
 </html>

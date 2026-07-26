@@ -7,7 +7,7 @@
   <meta name="author" content="Alexy Khrabrov" />
   <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>DNS from First Principles</title>
+  <title>Appendix B: Further reading</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -48,21 +48,47 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-002.html" accesskey="n" rel="next">Preface</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="index.html" accesskey="p" rel="previous">DNS from First Principles</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-031.html" accesskey="p" rel="previous">Appendix A: Configuration quick reference</a>
 </span>
 </div>
 </nav>
-<h1 data-number="1" id="dns-from-first-principles"><span
-class="header-section-number">1</span> DNS from First Principles</h1>
-<h2 data-number="1.1"
-id="names-packets-authority-recursion-and-the-design-of-rgbdns"><span
-class="header-section-number">1.1</span> Names, Packets, Authority,
-Recursion, and the Design of rgbdns</h2>
-<p>Alexy Khrabrov</p>
-<p>Version 0.1.1 · 2026-07-23</p>
-<p>Released into the public domain under the Unlicense.</p>
+<h1 data-number="30" id="appendix-b-further-reading"><span
+class="header-section-number">30</span> Appendix B: Further reading</h1>
+<p>The protocol is defined across many RFCs. A productive sequence
+is:</p>
+<ul>
+<li>RFC 1034, <em>Domain Names—Concepts and Facilities</em>.</li>
+<li>RFC 1035, <em>Domain Names—Implementation and
+Specification</em>.</li>
+<li>RFC 2181, clarifications including RRset and credibility rules.</li>
+<li>RFC 2308, negative caching.</li>
+<li>RFC 6891, Extension Mechanisms for DNS (EDNS(0)).</li>
+<li>RFC 7766, DNS over TCP requirements.</li>
+<li>RFC 4033, RFC 4034, and RFC 4035, DNSSEC.</li>
+<li>RFC 5155, NSEC3.</li>
+<li>RFC 5936, AXFR.</li>
+<li>RFC 1982, serial number arithmetic.</li>
+</ul>
+<p>Implementation and operational references:</p>
+<ul>
+<li>The djbdns documentation: <a href="https://cr.yp.to/djbdns.html"
+class="uri">https://cr.yp.to/djbdns.html</a></li>
+<li>TAI64N format and tools: <a
+href="https://cr.yp.to/daemontools/tai64n.html"
+class="uri">https://cr.yp.to/daemontools/tai64n.html</a></li>
+<li>s6 overview: <a href="https://skarnet.org/software/s6/overview.html"
+class="uri">https://skarnet.org/software/s6/overview.html</a></li>
+<li>s6-rc overview: <a
+href="https://skarnet.org/software/s6-rc/overview.html"
+class="uri">https://skarnet.org/software/s6-rc/overview.html</a></li>
+<li>runit benefits: <a href="https://smarden.org/runit/benefits.html"
+class="uri">https://smarden.org/runit/benefits.html</a></li>
+<li>systemd project documentation: <a href="https://systemd.io/"
+class="uri">https://systemd.io/</a></li>
+<li>Hickory DNS: <a href="https://hickory-dns.org/"
+class="uri">https://hickory-dns.org/</a></li>
+</ul>
 </body>
 </html>

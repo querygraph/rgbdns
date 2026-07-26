@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov" />
+  <meta name="dcterms.date" content="2026-07-26" />
+  <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
+  <title>Abstractions and performance ledger</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">DNS from First Principles</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">DNS from First Principles</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-030.html" accesskey="n" rel="next">Where DNS ends</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-028.html" accesskey="p" rel="previous">Tests as executable protocol commentary</a>
+</span>
+</div>
+</nav>
+<h1 data-number="27" id="abstractions-and-performance-ledger"><span
+class="header-section-number">27</span> Abstractions and performance
+ledger</h1>
+<p>The rewrite’s gains are not a single “Rust is faster” claim. Some
+changes buy safety, some buy clarity, and some measurably improve a hot
+path.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Design move</th>
+<th>Rust expression</th>
+<th>Operational effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid names at construction</td>
+<td>private fields, <code>FromStr</code>, <code>Result</code></td>
+<td>invalid labels cannot circulate</td>
+</tr>
+<tr>
+<td>Complete DNS states</td>
+<td><code>RecordType</code>, <code>RData</code>, <code>Lookup</code>
+enums</td>
+<td>unknown types survive; negative answers stay distinct</td>
+</tr>
+<tr>
+<td>Bounded packet access</td>
+<td>borrowed slices and checked indexing</td>
+<td>malformed packets fail without memory corruption</td>
+</tr>
+<tr>
+<td>Shared immutable service state</td>
+<td>borrowing and <code>Arc</code></td>
+<td>explicit thread-safe ownership</td>
+</tr>
+<tr>
+<td>Compatibility quarantine</td>
+<td>checked CDB decoder into owned values</td>
+<td>old files do not become trusted memory</td>
+</tr>
+<tr>
+<td>Independent resource limits</td>
+<td>typed bounded configuration</td>
+<td>one limit cannot silently stand in for another</td>
+</tr>
+<tr>
+<td>All-node zone index</td>
+<td><code>BTreeSet&lt;Name&gt;</code></td>
+<td>NXDOMAIN lookup improved about 11×</td>
+</tr>
+<tr>
+<td>Compressed writer</td>
+<td>bounded suffix reuse</td>
+<td>repeated-owner answer became 50.7% smaller</td>
+</tr>
+<tr>
+<td>Binary-search truncation</td>
+<td>monotone fit search</td>
+<td>200-record truncation improved 17%</td>
+</tr>
+<tr>
+<td>Thin binaries</td>
+<td>library functions plus small adapters</td>
+<td>easier tests and independent supervision</td>
+</tr>
+</tbody>
+</table>
+<p>The encoder example is especially important. Rust did not
+automatically make it faster: compression made encoding 2.3 times slower
+than the uncompressed baseline. But it halved the measured wire size,
+reduced fragmentation risk, and sharply improved the complete
+authoritative response path. Good systems engineering reports the trade
+rather than reducing it to a language slogan.</p>
+<p>The deeper improvement over C is control. The data model says what is
+valid, the compiler checks ownership, the boundaries return typed
+failure, the tests state protocol properties, and benchmarks expose the
+remaining costs. That combination makes rgbdns easier to change without
+making DNS easier to fool.</p>
+</body>
+</html>

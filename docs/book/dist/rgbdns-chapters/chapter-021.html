@@ -5,9 +5,9 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>Appendix A: Configuration quick reference</title>
+  <title>Rust as a protocol-design tool</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -48,73 +48,58 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-022.html" accesskey="n" rel="next">Appendix B: Further reading</a>
+<span class="navlink-label">Next:</span> <a href="chapter-022.html" accesskey="n" rel="next">Valid names instead of hopeful strings</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-020.html" accesskey="p" rel="previous">Where DNS ends</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-020.html" accesskey="p" rel="previous">Part II: Codebase exploration</a>
 </span>
 </div>
 </nav>
-<h1 data-number="20" id="appendix-a-configuration-quick-reference"><span
-class="header-section-number">20</span> Appendix A: Configuration quick
-reference</h1>
-<p>Common daemon variables include:</p>
-<table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>IP</code></td>
-<td>listen address</td>
-</tr>
-<tr>
-<td><code>PORT</code></td>
-<td>listen port</td>
-</tr>
-<tr>
-<td><code>DATA</code></td>
-<td>authoritative text or CDB path where supported</td>
-</tr>
-<tr>
-<td><code>ALLOW_NETS</code></td>
-<td>comma-separated client CIDRs for recursion or transfer</td>
-</tr>
-<tr>
-<td><code>DNSCACHEIP</code></td>
-<td>recursive endpoints used by client tools</td>
-</tr>
-<tr>
-<td><code>CACHESIZE</code></td>
-<td>bounded recursive response-cache capacity</td>
-</tr>
-<tr>
-<td><code>NSCACHESIZE</code></td>
-<td>bounded nameserver-cache entries</td>
-</tr>
-<tr>
-<td><code>RECURSION_LIMIT</code></td>
-<td>ordinary recursion depth</td>
-</tr>
-<tr>
-<td><code>NS_RECURSION_LIMIT</code></td>
-<td>nameserver-resolution recursion depth</td>
-</tr>
-<tr>
-<td><code>ROOT</code></td>
-<td>djbdns-compatible resolver configuration root</td>
-</tr>
-</tbody>
-</table>
-<p>Use the command’s <code>*-conf</code> generator as a starting point,
-then adapt the foreground <code>run</code> contract to the chosen native
-supervisor.</p>
+<h1 data-number="19" id="rust-as-a-protocol-design-tool"><span
+class="header-section-number">19</span> Rust as a protocol-design
+tool</h1>
+<p>The important comparison with the original C is not that Rust uses
+newer syntax. It is that rgbdns can express DNS invariants at boundaries
+and have the compiler preserve them across the program.</p>
+<p>The crate begins with <code>#![forbid(unsafe_code)]</code> in <a
+href="https://github.com/querygraph/rgbdns/blob/master/src/lib.rs"><code>src/lib.rs</code></a>.
+This is stronger than merely having no currently known unsafe block: a
+later contribution cannot introduce one without first making an
+explicit, reviewable change to the crate policy. The implementation
+still performs byte-level packet parsing, binary CDB loading, socket
+I/O, process credential changes, and concurrency. Those jobs do not
+require unchecked pointer arithmetic.</p>
+<p>Rust improves the design along four axes.</p>
+<p><strong>Ownership makes lifetime and aliasing rules
+executable.</strong> A decoded <code>Message</code> owns its questions
+and records. A server borrows a <code>Zone</code> while constructing a
+response. Shared handlers use <code>Arc</code>, making cross-thread
+ownership visible in the type rather than implicit in process
+convention. There is no corresponding path for a response to retain a
+dangling pointer into the query buffer.</p>
+<p><strong>Algebraic data types preserve protocol distinctions.</strong>
+<code>RecordType</code> retains unknown numeric types as
+<code>Unknown(u16)</code>. <code>RData</code> distinguishes addresses,
+names, MX, SOA, TXT, SRV, CAA, EDNS, and opaque future data.
+<code>Lookup</code> distinguishes an answer, referral, NODATA, NXDOMAIN,
+and refusal. In C these states are commonly represented by related
+integers, nullable pointers, and out-parameters. In Rust, a
+<code>match</code> makes the cases locally exhaustive.</p>
+<p><strong>Fallible work is visible.</strong> Parsing and I/O return
+<code>Result</code>; optional facts return <code>Option</code>. The
+<code>?</code> operator propagates a typed failure without the unchecked
+sentinel values that make C error paths easy to omit. Conversion such as
+<code>u16::try_from(response.len())</code> documents the narrowing
+boundary and rejects overflow.</p>
+<p><strong>Concurrency composes with ownership.</strong> The bounded
+transport layer shares an immutable handler through
+<code>Arc&lt;Handler&gt;</code> and gives each TCP connection an
+exclusive mutable <code>TcpStream</code>. The compiler prevents a worker
+from retaining a borrow of a stack packet buffer after the buffer is
+reused.</p>
+<p>Rust does not prove the DNS protocol correct. It removes broad
+classes of memory corruption and turns many design assumptions into
+compile-time or construction-time obligations. The remaining protocol
+work becomes visible enough to test directly.</p>
 </body>
 </html>

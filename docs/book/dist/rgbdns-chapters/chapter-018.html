@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-24" />
+  <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Testing DNS software</title>
   <style>
@@ -151,6 +151,8 @@ keeping</h2>
 <li>duplicate or malformed OPT records;</li>
 <li>tiny advertised transport limits;</li>
 <li>CNAME loops and excessive chains;</li>
+<li>ANAME self-reference, upstream CNAME loops, excessive address
+results, and resolver failure;</li>
 <li>wildcard names blocked by existing nodes;</li>
 <li>delegation cuts beneath an authoritative apex;</li>
 <li>NODATA versus NXDOMAIN;</li>

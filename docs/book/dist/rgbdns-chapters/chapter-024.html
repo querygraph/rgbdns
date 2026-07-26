@@ -7,7 +7,7 @@
   <meta name="author" content="Alexy Khrabrov" />
   <meta name="dcterms.date" content="2026-07-26" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
-  <title>Client behavior and diagnostics</title>
+  <title>Zone data as an indexed semantic model</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -113,60 +113,56 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-014.html" accesskey="n" rel="next">Security engineering in rgbdns</a>
+<span class="navlink-label">Next:</span> <a href="chapter-025.html" accesskey="n" rel="next">From query bytes to an authoritative answer</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-012.html" accesskey="p" rel="previous">The rgbdns program family</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-023.html" accesskey="p" rel="previous">A bounded wire codec</a>
 </span>
 </div>
 </nav>
-<h1 data-number="12" id="client-behavior-and-diagnostics"><span
-class="header-section-number">12</span> Client behavior and
-diagnostics</h1>
-<h2 data-number="12.1" id="a-query-is-more-than-sending-bytes"><span
-class="header-section-number">12.1</span> A query is more than sending
-bytes</h2>
-<p>A DNS client creates a random transaction ID, encodes one question,
-sends it to an intended server, receives a response, and validates at
-least:</p>
+<h1 data-number="22" id="zone-data-as-an-indexed-semantic-model"><span
+class="header-section-number">22</span> Zone data as an indexed semantic
+model</h1>
+<p><a
+href="https://github.com/querygraph/rgbdns/blob/master/src/zone.rs"><code>Zone</code></a>
+is more than a parser for tinydns text. It is the semantic index used by
+authoritative answers:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> Zone <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    records<span class="op">:</span> BTreeMap<span class="op">&lt;</span>Name<span class="op">,</span> <span class="dt">Vec</span><span class="op">&lt;</span>Record<span class="op">&gt;&gt;,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    metadata<span class="op">:</span> BTreeMap<span class="op">&lt;</span>Name<span class="op">,</span> <span class="dt">Vec</span><span class="op">&lt;</span>RecordMetadata<span class="op">&gt;&gt;,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    authoritative<span class="op">:</span> BTreeSet<span class="op">&lt;</span>Name<span class="op">&gt;,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    delegations<span class="op">:</span> BTreeSet<span class="op">&lt;</span>Name<span class="op">&gt;,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    locations<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>(<span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;,</span> [<span class="dt">u8</span><span class="op">;</span> <span class="dv">2</span>])<span class="op">&gt;,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    current_metadata<span class="op">:</span> RecordMetadata<span class="op">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    default_serial<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    nodes<span class="op">:</span> BTreeSet<span class="op">&lt;</span>Name<span class="op">&gt;,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    unqualified_nodes<span class="op">:</span> BTreeSet<span class="op">&lt;</span>Name<span class="op">&gt;,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The maps hold records and djbdns location metadata. The sets encode
+facts that would otherwise require scans: zone apexes, delegation cuts,
+all existing nodes, and nodes that exist independently of
+location-qualified records. This all-node index is why the optimized
+NXDOMAIN benchmark is about eleven times faster than the earlier
+scan-based implementation.</p>
+<p>The type also prevents semantic drift. Parsing validates CNAME
+exclusivity once. Lookup returns a <code>Lookup</code> enum, so absence
+cannot collapse into one null result:</p>
 <ul>
-<li>source endpoint where the transport permits;</li>
-<li>transaction ID;</li>
-<li>QR and response shape;</li>
-<li>matching question;</li>
-<li>declared section lengths and names;</li>
-<li>truncation, with TCP retry when needed.</li>
+<li><code>Answer</code> carries the matching RRset.</li>
+<li><code>Referral</code> carries delegation NS records and in-bailiwick
+glue.</li>
+<li><code>NoData</code> says the name exists but the requested type does
+not.</li>
+<li><code>NxDomain</code> says the name itself does not exist.</li>
+<li><code>Refused</code> says the server is not authoritative for the
+question.</li>
 </ul>
-<p><code>src/client.rs</code> reads <code>DNSCACHEIP</code> or
-<code>/etc/resolv.conf</code>, supports IPv4 and IPv6 socket syntax,
-gets IDs from the operating system, applies UDP timeouts, rejects
-mismatched responses, and retries truncated UDP replies over TCP. The
-small command binaries format results for different use cases, while
-<code>dnsq</code> allows an explicit server and <code>dnsqr</code> uses
-recursive configuration.</p>
-<p><code>dnstrace</code> is conceptually different from a recursive
-lookup: it exposes the delegation path and intermediate authority so an
-operator can see where the chain stops. Good diagnosis asks four
-separate questions:</p>
-<ol type="1">
-<li>What did the stub send?</li>
-<li>What did the recursive resolver cache or validate?</li>
-<li>What delegation did the parent publish?</li>
-<li>What does the authoritative server say directly?</li>
-</ol>
-<p>Testing only the final application collapses all four layers and
-encourages guessing.</p>
-<h2 data-number="12.2" id="practical-checks"><span
-class="header-section-number">12.2</span> Practical checks</h2>
-<p>When a name fails, inspect type, server, flags, and authority section
-rather than asking only whether an address appeared.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> A www.example.com 192.0.2.53</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> AAAA www.example.com 192.0.2.53</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dnsq</span> SOA example.com 192.0.2.53</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dnstrace</span> A www.example.com</span></code></pre></div>
-<p>Compare UDP and TCP when answers are large. Query the parent-side NS
-records and the child authority separately. An NXDOMAIN with an SOA is
-different from a timeout, SERVFAIL, or REFUSED, and each points to a
-different layer.</p>
+<p>Wildcard processing uses the <code>nodes</code> index to find the
+closest encloser. Delegation processing uses the explicit
+<code>delegations</code> set. Transfer processing walks the same model
+while excluding child-zone contents. One representation therefore
+supplies ordinary answers, negative answers, wildcards, referrals, and
+AXFR without five subtly different interpretations of a zone.</p>
 </body>
 </html>
