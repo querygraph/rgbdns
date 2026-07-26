@@ -4,9 +4,9 @@ source_path: "src/transport.rs"
 language: "rust"
 subsystem: "Transport and zone transfer"
 crate: "rgbdns"
-line_count: 88
-fragment_count: 7
-rgbdns_commit: "472c2087"
+line_count: 114
+fragment_count: 8
+rgbdns_commit: "79502939"
 ---
 
 # src/transport.rs
@@ -14,18 +14,19 @@ rgbdns_commit: "472c2087"
 - Subsystem: [[DNS from First Principles/Subsystems/Transport and zone transfer|Transport and zone transfer]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/transport.rs`
-- Lines: 88
+- Lines: 114
 - Summary: Shared bounded UDP and persistent DNS-over-TCP serving.
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-c52452849aa8|Handler]]: lines 12-13
-- [[DNS from First Principles/Fragments/rgbdns-frag-6a51bd4e6d23|TCP_WORKERS]]: lines 14-14
-- [[DNS from First Principles/Fragments/rgbdns-frag-95473ddcb34a|TCP_TIMEOUT]]: lines 15-16
-- [[DNS from First Principles/Fragments/rgbdns-frag-02bc3279cfc3|serve]]: lines 17-24
-- [[DNS from First Principles/Fragments/rgbdns-frag-047fdcb9b19e|serve_sockets]]: lines 25-53
-- [[DNS from First Principles/Fragments/rgbdns-frag-601011fcc16d|serve_udp]]: lines 54-64
-- [[DNS from First Principles/Fragments/rgbdns-frag-a0dfeb34bf30|serve_tcp_connection]]: lines 65-88
+- [[DNS from First Principles/Fragments/rgbdns-frag-6acd0c6e28f0|Handler]]: lines 12-12
+- [[DNS from First Principles/Fragments/rgbdns-frag-7a901ddd4a4d|StreamHandler]]: lines 13-14
+- [[DNS from First Principles/Fragments/rgbdns-frag-30b85bbe7549|TCP_WORKERS]]: lines 15-15
+- [[DNS from First Principles/Fragments/rgbdns-frag-b702cb6d3dcf|TCP_TIMEOUT]]: lines 16-17
+- [[DNS from First Principles/Fragments/rgbdns-frag-b6fb71c6843c|serve]]: lines 18-30
+- [[DNS from First Principles/Fragments/rgbdns-frag-0e863fd80bd5|serve_sockets]]: lines 31-65
+- [[DNS from First Principles/Fragments/rgbdns-frag-a0394db83dec|serve_udp]]: lines 66-76
+- [[DNS from First Principles/Fragments/rgbdns-frag-fac10ff0d148|serve_tcp_connection]]: lines 77-114
 
 ## Full Source
 
@@ -42,25 +43,37 @@ use std::{
 };
 
 pub(crate) type Handler = dyn Fn(&[u8], usize, IpAddr) -> Result<Vec<u8>> + Send + Sync;
+pub(crate) type StreamHandler = dyn Fn(&[u8], IpAddr) -> Result<Option<Vec<Vec<u8>>>> + Send + Sync;
 
 const TCP_WORKERS: usize = 32;
 const TCP_TIMEOUT: Duration = Duration::from_secs(10);
 
-pub(crate) fn serve(address: &str, handler: Arc<Handler>) -> Result<()> {
+pub(crate) fn serve(
+    address: &str,
+    handler: Arc<Handler>,
+    stream_handler: Option<Arc<StreamHandler>>,
+) -> Result<()> {
     serve_sockets(
         UdpSocket::bind(address)?,
         TcpListener::bind(address)?,
         handler,
+        stream_handler,
     )
 }
 
-pub(crate) fn serve_sockets(udp: UdpSocket, tcp: TcpListener, handler: Arc<Handler>) -> Result<()> {
+pub(crate) fn serve_sockets(
+    udp: UdpSocket,
+    tcp: TcpListener,
+    handler: Arc<Handler>,
+    stream_handler: Option<Arc<StreamHandler>>,
+) -> Result<()> {
     let udp_handler = handler.clone();
     thread::spawn(move || serve_udp(udp, &udp_handler));
 
     let mut workers = Vec::with_capacity(TCP_WORKERS);
     for _ in 0..TCP_WORKERS {
         let handler = handler.clone();
+        let stream_handler = stream_handler.clone();
         let listener = tcp.try_clone()?;
         workers.push(thread::spawn(move || {
             for stream in listener.incoming() {
@@ -73,7 +86,7 @@ pub(crate) fn serve_sockets(udp: UdpSocket, tcp: TcpListener, handler: Arc<Handl
                 };
                 let _ = stream.set_read_timeout(Some(TCP_TIMEOUT));
                 let _ = stream.set_write_timeout(Some(TCP_TIMEOUT));
-                serve_tcp_connection(&mut stream, client, &handler);
+                serve_tcp_connection(&mut stream, client, &handler, stream_handler.as_ref());
             }
         }));
     }
@@ -94,7 +107,12 @@ fn serve_udp(socket: UdpSocket, handler: &Arc<Handler>) {
     }
 }
 
-fn serve_tcp_connection(stream: &mut TcpStream, client: IpAddr, handler: &Arc<Handler>) {
+fn serve_tcp_connection(
+    stream: &mut TcpStream,
+    client: IpAddr,
+    handler: &Arc<Handler>,
+    stream_handler: Option<&Arc<StreamHandler>>,
+) {
     loop {
         let mut length = [0; 2];
         if stream.read_exact(&mut length).is_err() {
@@ -104,17 +122,26 @@ fn serve_tcp_connection(stream: &mut TcpStream, client: IpAddr, handler: &Arc<Ha
         if stream.read_exact(&mut packet).is_err() {
             return;
         }
-        let Ok(response) = handler(&packet, u16::MAX as usize, client) else {
-            continue;
+        let responses = match stream_handler
+            .map(|stream_handler| stream_handler(&packet, client))
+            .transpose()
+        {
+            Ok(Some(Some(responses))) => responses,
+            Ok(_) => match handler(&packet, u16::MAX as usize, client) {
+                Ok(response) => vec![response],
+                Err(_) => continue,
+            },
+            Err(_) => return,
         };
-        let Ok(response_length) = u16::try_from(response.len()) else {
-            return;
-        };
-        let mut framed = Vec::with_capacity(response.len() + 2);
-        framed.extend(response_length.to_be_bytes());
-        framed.extend(response);
-        if stream.write_all(&framed).is_err() {
-            return;
+        for response in responses {
+            let Ok(response_length) = u16::try_from(response.len()) else {
+                return;
+            };
+            if stream.write_all(&response_length.to_be_bytes()).is_err()
+                || stream.write_all(&response).is_err()
+            {
+                return;
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ language: "python"
 subsystem: "Developer scripts"
 line_count: 208
 fragment_count: 7
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # scripts/check-obsidian-vault.py

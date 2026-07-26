@@ -31,6 +31,6 @@ end_line: 10
 
 ```rust
 pub fn serve(address: &str, handler: Arc<Handler>) -> Result<()> {
-    crate::transport::serve(address, handler)
+    crate::transport::serve(address, handler, None)
 }
 ```

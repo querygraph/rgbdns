@@ -30,7 +30,7 @@ end_line: 81
 ```toml
 [package]
 name = "rgbdns"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "Unlicense"
 description = "A safe, faithful Rust reimplementation of the djbdns suite"

@@ -3,16 +3,16 @@ type: "code-file"
 source_path: "docs/book/rgbdns.md"
 language: "markdown"
 subsystem: "Documentation"
-line_count: 1574
-fragment_count: 73
-rgbdns_commit: "472c2087"
+line_count: 1844
+fragment_count: 79
+rgbdns_commit: "79502939"
 ---
 
 # docs/book/rgbdns.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 - Source path: `docs/book/rgbdns.md`
-- Lines: 1574
+- Lines: 1844
 - Summary: Preface {-}
 
 ## Extracted Fragments
@@ -28,68 +28,74 @@ rgbdns_commit: "472c2087"
 - [[DNS from First Principles/Fragments/rgbdns-frag-51a5941fd70a|Wildcards are synthesis rules]]: lines 150-162
 - [[DNS from First Principles/Fragments/rgbdns-frag-de085d43cf9f|Resource records typed facts with lifetimes]]: lines 163-164
 - [[DNS from First Principles/Fragments/rgbdns-frag-23b5c2816ab6|The common envelope]]: lines 165-185
-- [[DNS from First Principles/Fragments/rgbdns-frag-fe7f8140d5e8|Core types]]: lines 186-229
-- [[DNS from First Principles/Fragments/rgbdns-frag-43c02c0a823e|Additional data is an optimization]]: lines 230-240
-- [[DNS from First Principles/Fragments/rgbdns-frag-eb9d3e452f40|Messages on the wire]]: lines 241-242
-- [[DNS from First Principles/Fragments/rgbdns-frag-a3f35901d5b4|The twelve-byte header]]: lines 243-272
-- [[DNS from First Principles/Fragments/rgbdns-frag-fbd1b1fbb43d|Name compression]]: lines 273-293
-- [[DNS from First Principles/Fragments/rgbdns-frag-624140d845f9|Errors are protocol results]]: lines 294-314
-- [[DNS from First Principles/Fragments/rgbdns-frag-43ec87deb16f|UDP, TCP, EDNS, and truncation]]: lines 315-316
-- [[DNS from First Principles/Fragments/rgbdns-frag-d63c1242dccf|Why there are two transports]]: lines 317-333
-- [[DNS from First Principles/Fragments/rgbdns-frag-1a10503616a0|Truncation must preserve a valid message]]: lines 334-349
-- [[DNS from First Principles/Fragments/rgbdns-frag-41adbea4974a|Authority answering from owned facts]]: lines 350-351
-- [[DNS from First Principles/Fragments/rgbdns-frag-960bc4cb629c|Finding the closest relevant authority]]: lines 352-387
-- [[DNS from First Principles/Fragments/rgbdns-frag-63834e67c47c|tinydns data as a source language]]: lines 388-426
-- [[DNS from First Principles/Fragments/rgbdns-frag-ca644dad4381|CDB compile once, read predictably]]: lines 427-444
-- [[DNS from First Principles/Fragments/rgbdns-frag-648843af2689|Recursion discovering an answer]]: lines 445-446
-- [[DNS from First Principles/Fragments/rgbdns-frag-e506ae19305f|Iteration from the root]]: lines 447-467
-- [[DNS from First Principles/Fragments/rgbdns-frag-d9c373e2b341|The cache is part of correctness]]: lines 468-494
-- [[DNS from First Principles/Fragments/rgbdns-frag-c764dd996363|Forward zones and djbdns roots]]: lines 495-513
-- [[DNS from First Principles/Fragments/rgbdns-frag-2ccbcd602255|DNSSEC authenticating the chain]]: lines 514-515
-- [[DNS from First Principles/Fragments/rgbdns-frag-9b2e36ed71f1|What ordinary DNS cannot prove]]: lines 516-542
-- [[DNS from First Principles/Fragments/rgbdns-frag-c43eb5a0148e|rgbdns validation policy]]: lines 543-555
-- [[DNS from First Principles/Fragments/rgbdns-frag-a6135ec2f6ae|Zone transfer and secondary service]]: lines 556-557
-- [[DNS from First Principles/Fragments/rgbdns-frag-07f2c55f81e8|AXFR is a stream, not a giant datagram]]: lines 558-581
-- [[DNS from First Principles/Fragments/rgbdns-frag-8b428b64887e|The rgbdns program family]]: lines 582-583
-- [[DNS from First Principles/Fragments/rgbdns-frag-a2269ad59adf|One suite, small purposes]]: lines 584-605
-- [[DNS from First Principles/Fragments/rgbdns-frag-bcdc357e6f0e|Specialized responders]]: lines 606-627
-- [[DNS from First Principles/Fragments/rgbdns-frag-8083fad7e534|Client behavior and diagnostics]]: lines 628-629
-- [[DNS from First Principles/Fragments/rgbdns-frag-75c48d40ec52|A query is more than sending bytes]]: lines 630-659
-- [[DNS from First Principles/Fragments/rgbdns-frag-bdfeae62924f|Practical checks]]: lines 660-675
-- [[DNS from First Principles/Fragments/rgbdns-frag-10819b91ef1d|Security engineering in rgbdns]]: lines 676-677
-- [[DNS from First Principles/Fragments/rgbdns-frag-43621c072e7b|The packet is hostile]]: lines 678-705
-- [[DNS from First Principles/Fragments/rgbdns-frag-c3c2a07d858c|Least privilege and filesystem boundaries]]: lines 706-722
-- [[DNS from First Principles/Fragments/rgbdns-frag-03c6b7721e84|Time and logs TAI64N]]: lines 723-724
-- [[DNS from First Principles/Fragments/rgbdns-frag-91de68807d7b|Why a DNS suite contains time tools]]: lines 725-754
-- [[DNS from First Principles/Fragments/rgbdns-frag-14c10ed54df3|Running rgbdns under supervision]]: lines 755-756
-- [[DNS from First Principles/Fragments/rgbdns-frag-1a2af1c4ea11|The service contract]]: lines 757-777
-- [[DNS from First Principles/Fragments/rgbdns-frag-0d9042da275d|Recommendations]]: lines 778-858
-- [[DNS from First Principles/Fragments/rgbdns-frag-b31b353bc960|A practical selection rule]]: lines 891-905
-- [[DNS from First Principles/Fragments/rgbdns-frag-7fb4fbaac681|Operating an authoritative service]]: lines 906-907
-- [[DNS from First Principles/Fragments/rgbdns-frag-4c4b17d589da|Build, stage, verify, replace]]: lines 908-927
-- [[DNS from First Principles/Fragments/rgbdns-frag-6388ea48d62f|Observe the right signals]]: lines 928-951
-- [[DNS from First Principles/Fragments/rgbdns-frag-9a933a905efd|Testing DNS software]]: lines 952-953
-- [[DNS from First Principles/Fragments/rgbdns-frag-7e3a735bbfd9|Layers of evidence]]: lines 954-975
-- [[DNS from First Principles/Fragments/rgbdns-frag-ad144c2245be|Adversarial cases worth keeping]]: lines 976-997
-- [[DNS from First Principles/Fragments/rgbdns-frag-b26f03721239|Conformance as an executable specification]]: lines 998-1053
-- [[DNS from First Principles/Fragments/rgbdns-frag-651c3fbb1e55|Hardening found by conformance work]]: lines 1054-1083
-- [[DNS from First Principles/Fragments/rgbdns-frag-48f744ec0b5c|Benchmarks and evidence-driven optimization]]: lines 1084-1139
-- [[DNS from First Principles/Fragments/rgbdns-frag-c61169a3a6a7|Reading the rgbdns source]]: lines 1140-1141
-- [[DNS from First Principles/Fragments/rgbdns-frag-dda542b689d6|A path through the code]]: lines 1142-1163
-- [[DNS from First Principles/Fragments/rgbdns-frag-d95a4349f84b|Design patterns to carry elsewhere]]: lines 1164-1189
-- [[DNS from First Principles/Fragments/rgbdns-frag-ca35e832f4e0|Part II Codebase exploration {-}]]: lines 1190-1198
-- [[DNS from First Principles/Fragments/rgbdns-frag-d6879609a68f|Rust as a protocol-design tool]]: lines 1199-1244
-- [[DNS from First Principles/Fragments/rgbdns-frag-6a0458e430a4|Valid names instead of hopeful strings]]: lines 1245-1282
-- [[DNS from First Principles/Fragments/rgbdns-frag-1f189575f361|A bounded wire codec]]: lines 1283-1320
-- [[DNS from First Principles/Fragments/rgbdns-frag-9180700c9bfd|Zone data as an indexed semantic model]]: lines 1321-1361
-- [[DNS from First Principles/Fragments/rgbdns-frag-29f0b4cd6305|From query bytes to an authoritative answer]]: lines 1362-1390
-- [[DNS from First Principles/Fragments/rgbdns-frag-8fac9335b83d|CDB compatibility without trusting the file]]: lines 1391-1417
-- [[DNS from First Principles/Fragments/rgbdns-frag-5763dc47d15d|Recursion by composition]]: lines 1418-1443
-- [[DNS from First Principles/Fragments/rgbdns-frag-1221e3ff915b|Tests as executable protocol commentary]]: lines 1444-1479
-- [[DNS from First Principles/Fragments/rgbdns-frag-513fe5bd319b|Abstractions and performance ledger]]: lines 1480-1508
-- [[DNS from First Principles/Fragments/rgbdns-frag-cb7dc774f54f|Where DNS ends]]: lines 1509-1530
-- [[DNS from First Principles/Fragments/rgbdns-frag-29b0066bd3e1|Appendix A Configuration quick reference]]: lines 1531-1550
-- [[DNS from First Principles/Fragments/rgbdns-frag-468dd69b399f|Appendix B Further reading]]: lines 1551-1574
+- [[DNS from First Principles/Fragments/rgbdns-frag-71f49c8d8dc6|Core types]]: lines 186-235
+- [[DNS from First Principles/Fragments/rgbdns-frag-d62bb10ff90c|Additional data is an optimization]]: lines 236-246
+- [[DNS from First Principles/Fragments/rgbdns-frag-e85087767dc9|Messages on the wire]]: lines 247-248
+- [[DNS from First Principles/Fragments/rgbdns-frag-72916395675b|The twelve-byte header]]: lines 249-278
+- [[DNS from First Principles/Fragments/rgbdns-frag-060ba4ce151e|Name compression]]: lines 279-299
+- [[DNS from First Principles/Fragments/rgbdns-frag-0d0e813e38f5|Errors are protocol results]]: lines 300-320
+- [[DNS from First Principles/Fragments/rgbdns-frag-c5639d87e4d2|UDP, TCP, EDNS, and truncation]]: lines 321-322
+- [[DNS from First Principles/Fragments/rgbdns-frag-0e38bf950ab7|Why there are two transports]]: lines 323-339
+- [[DNS from First Principles/Fragments/rgbdns-frag-e78faa9dfca9|Truncation must preserve a valid message]]: lines 340-355
+- [[DNS from First Principles/Fragments/rgbdns-frag-a78e7071915e|Authority answering from owned facts]]: lines 356-357
+- [[DNS from First Principles/Fragments/rgbdns-frag-b22a6e76e4c7|Finding the closest relevant authority]]: lines 358-393
+- [[DNS from First Principles/Fragments/rgbdns-frag-057397ce29bc|tinydns data as a source language]]: lines 394-433
+- [[DNS from First Principles/Fragments/rgbdns-frag-425f4904b6d4|ANAME and apex address flattening]]: lines 434-449
+- [[DNS from First Principles/Fragments/rgbdns-frag-657b5ba34ebd|Authority and nameserver address]]: lines 450-452
+- [[DNS from First Principles/Fragments/rgbdns-frag-1a6bc17026f7|ANAME owner target maximum-ttl]]: lines 453-455
+- [[DNS from First Principles/Fragments/rgbdns-frag-b62ce97d1c7b|Other apex data remains independent]]: lines 456-536
+- [[DNS from First Principles/Fragments/rgbdns-frag-883d5fd2b4b9|CDB compile once, read predictably]]: lines 553-572
+- [[DNS from First Principles/Fragments/rgbdns-frag-e96d9749679a|Recursion discovering an answer]]: lines 573-574
+- [[DNS from First Principles/Fragments/rgbdns-frag-c4a749071fe5|Iteration from the root]]: lines 575-595
+- [[DNS from First Principles/Fragments/rgbdns-frag-f84889822c05|The cache is part of correctness]]: lines 596-622
+- [[DNS from First Principles/Fragments/rgbdns-frag-d9dbd7c4df58|Forward zones and djbdns roots]]: lines 623-641
+- [[DNS from First Principles/Fragments/rgbdns-frag-c6c1e361c52f|DNSSEC authenticating the chain]]: lines 642-643
+- [[DNS from First Principles/Fragments/rgbdns-frag-c9531cad5a02|What ordinary DNS cannot prove]]: lines 644-670
+- [[DNS from First Principles/Fragments/rgbdns-frag-6f7da27b85d9|rgbdns validation policy]]: lines 671-683
+- [[DNS from First Principles/Fragments/rgbdns-frag-e73e14b2ae1a|Zone transfer and secondary service]]: lines 684-685
+- [[DNS from First Principles/Fragments/rgbdns-frag-fe771d38cd6b|AXFR is a stream, not a giant datagram]]: lines 686-716
+- [[DNS from First Principles/Fragments/rgbdns-frag-68aa9ff6d6fa|The rgbdns program family]]: lines 717-718
+- [[DNS from First Principles/Fragments/rgbdns-frag-8468b7292533|One suite, small purposes]]: lines 719-740
+- [[DNS from First Principles/Fragments/rgbdns-frag-03b2cc53a1c8|Specialized responders]]: lines 741-762
+- [[DNS from First Principles/Fragments/rgbdns-frag-264e7fe31095|Client behavior and diagnostics]]: lines 763-764
+- [[DNS from First Principles/Fragments/rgbdns-frag-ad9aa9b9f6be|A query is more than sending bytes]]: lines 765-794
+- [[DNS from First Principles/Fragments/rgbdns-frag-b40033089bdf|Practical checks]]: lines 795-810
+- [[DNS from First Principles/Fragments/rgbdns-frag-d86cf51f5e30|Security engineering in rgbdns]]: lines 811-812
+- [[DNS from First Principles/Fragments/rgbdns-frag-675a90298dbe|The packet is hostile]]: lines 813-840
+- [[DNS from First Principles/Fragments/rgbdns-frag-bca8456c1e8a|Least privilege and filesystem boundaries]]: lines 841-857
+- [[DNS from First Principles/Fragments/rgbdns-frag-63b6be0b3b83|Time and logs TAI64N]]: lines 858-859
+- [[DNS from First Principles/Fragments/rgbdns-frag-941f4c95493f|Why a DNS suite contains time tools]]: lines 860-889
+- [[DNS from First Principles/Fragments/rgbdns-frag-fa6ee034cfed|Running rgbdns under supervision]]: lines 890-891
+- [[DNS from First Principles/Fragments/rgbdns-frag-5af9939eacfc|The service contract]]: lines 892-912
+- [[DNS from First Principles/Fragments/rgbdns-frag-e80a21df7fe1|Recommendations]]: lines 913-993
+- [[DNS from First Principles/Fragments/rgbdns-frag-4b2d88be347b|A practical selection rule]]: lines 1026-1040
+- [[DNS from First Principles/Fragments/rgbdns-frag-51aa994381a6|Operating an authoritative service]]: lines 1041-1042
+- [[DNS from First Principles/Fragments/rgbdns-frag-5b84d150797c|Build, stage, verify, replace]]: lines 1043-1079
+- [[DNS from First Principles/Fragments/rgbdns-frag-604b6ff56e55|Case study cron.sh primary and BuddyNS secondaries]]: lines 1080-1141
+- [[DNS from First Principles/Fragments/rgbdns-frag-1568b60975fb|Append every remaining 32 from BuddyNS's current list]]: lines 1142-1194
+- [[DNS from First Principles/Fragments/rgbdns-frag-1c12785a949f|Observe the right signals]]: lines 1195-1219
+- [[DNS from First Principles/Fragments/rgbdns-frag-a76d9160643d|Testing DNS software]]: lines 1220-1221
+- [[DNS from First Principles/Fragments/rgbdns-frag-db65ba809c6a|Layers of evidence]]: lines 1222-1243
+- [[DNS from First Principles/Fragments/rgbdns-frag-44f080bc9086|Adversarial cases worth keeping]]: lines 1244-1267
+- [[DNS from First Principles/Fragments/rgbdns-frag-adc4310d7e3c|Conformance as an executable specification]]: lines 1268-1323
+- [[DNS from First Principles/Fragments/rgbdns-frag-618eb0363b2b|Hardening found by conformance work]]: lines 1324-1353
+- [[DNS from First Principles/Fragments/rgbdns-frag-6271b6cb7110|Benchmarks and evidence-driven optimization]]: lines 1354-1409
+- [[DNS from First Principles/Fragments/rgbdns-frag-887b285da96f|Reading the rgbdns source]]: lines 1410-1411
+- [[DNS from First Principles/Fragments/rgbdns-frag-ad53076dfbcd|A path through the code]]: lines 1412-1433
+- [[DNS from First Principles/Fragments/rgbdns-frag-a31a615a1d14|Design patterns to carry elsewhere]]: lines 1434-1459
+- [[DNS from First Principles/Fragments/rgbdns-frag-26b28417cd3e|Part II Codebase exploration {-}]]: lines 1460-1468
+- [[DNS from First Principles/Fragments/rgbdns-frag-599f16ab274c|Rust as a protocol-design tool]]: lines 1469-1514
+- [[DNS from First Principles/Fragments/rgbdns-frag-a772e04cdd1d|Valid names instead of hopeful strings]]: lines 1515-1552
+- [[DNS from First Principles/Fragments/rgbdns-frag-832fd18340b5|A bounded wire codec]]: lines 1553-1590
+- [[DNS from First Principles/Fragments/rgbdns-frag-cb6afbfd2103|Zone data as an indexed semantic model]]: lines 1591-1631
+- [[DNS from First Principles/Fragments/rgbdns-frag-5d2c2249fe7a|From query bytes to an authoritative answer]]: lines 1632-1660
+- [[DNS from First Principles/Fragments/rgbdns-frag-827441da6822|CDB compatibility without trusting the file]]: lines 1661-1687
+- [[DNS from First Principles/Fragments/rgbdns-frag-5d932c6cd4d6|Recursion by composition]]: lines 1688-1713
+- [[DNS from First Principles/Fragments/rgbdns-frag-251d4b52fa84|Tests as executable protocol commentary]]: lines 1714-1749
+- [[DNS from First Principles/Fragments/rgbdns-frag-8fac7ccb8910|Abstractions and performance ledger]]: lines 1750-1778
+- [[DNS from First Principles/Fragments/rgbdns-frag-dc8850828d5c|Where DNS ends]]: lines 1779-1800
+- [[DNS from First Principles/Fragments/rgbdns-frag-20532ab9b198|Appendix A Configuration quick reference]]: lines 1801-1820
+- [[DNS from First Principles/Fragments/rgbdns-frag-384670652192|Appendix B Further reading]]: lines 1821-1844
 
 ## Full Source
 
@@ -299,6 +305,12 @@ and narrowly specified metadata, an owner with CNAME should not also hold
 unrelated data. A resolver follows the chain while defending against loops and
 excessive depth.
 
+**ANAME** is not a standard DNS record type in rgbdns. It is authoritative
+server configuration that copies the address meaning of another name onto an
+owner. This distinction matters: clients receive ordinary A or AAAA records,
+not an ANAME record. ANAME can therefore provide address aliasing at a zone
+apex without violating CNAME exclusivity.
+
 **MX** names a mail exchanger and gives it a preference. Lower numbers are
 preferred. The target is a name, not an address.
 
@@ -497,6 +509,7 @@ character selects a record form. Common forms include:
 | `3` | AAAA only |
 | `@` | MX and optional exchanger address |
 | `C` | CNAME |
+| `A` | private ANAME (flattened A/AAAA alias) |
 | `^` | PTR |
 | `'` | TXT |
 | `S` | SRV |
@@ -520,6 +533,125 @@ be visible before or after a specified instant. Location codes select records
 using configured client IPv4 prefixes. rgbdns carries that metadata beside the
 record and evaluates it at lookup time.
 
+## ANAME and apex address flattening
+
+A zone apex necessarily owns SOA and NS data. A CNAME owner, by contrast,
+cannot also own ordinary records. A literal apex CNAME would therefore make
+the zone internally contradictory: the alias rule says the owner has no other
+data while the authority rules require other data at that same owner.
+
+Hosted sites still need a way for `example.com` to track addresses controlled
+by a platform such as `customer.blog-host.example`. DNS providers commonly
+call the solution CNAME flattening, ALIAS, or ANAME. The authoritative server
+resolves the configured target itself and publishes the resulting addresses
+under the configured owner.
+
+rgbdns calls this feature **ANAME** and uses the private `A` source marker:
+
+```text
+# Authority and nameserver address.
+.example.com:192.0.2.53:ns1.example.com
+
+# ANAME owner:target:maximum-ttl
+Aexample.com:customer.blog-host.example:300
+
+# Other apex data remains independent.
+@example.com::mail.example.com:10:3600
+'example.com:v=spf1 -all:3600
+```
+
+The form is:
+
+```text
+Aowner:target:maximum-ttl
+```
+
+The TTL field is optional and defaults to 300 seconds. It is a ceiling, not a
+promise to extend the target’s lifetime. If the upstream address has 45
+seconds remaining and the ANAME limit is 300, rgbdns returns 45. If the
+upstream has 900 seconds remaining, rgbdns returns no more than 300.
+
+ANAME is stored separately from ordinary `Record` values. It can coexist with
+SOA, NS, MX, TXT, CAA, and other non-address data. Zone validation rejects:
+
+- A, AAAA, or CNAME data at the same owner;
+- a wildcard ANAME owner;
+- an owner that targets itself;
+- different ANAME targets at one owner;
+- a zero TTL.
+
+The server only applies ANAME to A and AAAA questions. SOA, NS, MX, TXT, CAA,
+and all other questions continue through normal authoritative lookup. ANAME
+also does not override a delegation cut: a name beneath a delegated child
+still produces a referral from the parent.
+
+For an address question, the response path is:
+
+1. establish that ordinary authoritative lookup reaches the ANAME owner and
+   does not cross a delegation;
+2. query the configured recursive resolver for the target and requested
+   address family;
+3. validate response identity and framing;
+4. follow only a connected CNAME chain beginning at the configured target;
+5. collect the terminal A or AAAA RRset;
+6. replace each terminal owner with the ANAME owner;
+7. cap the remaining TTL and return an authoritative answer.
+
+For example, an upstream result such as:
+
+```text
+customer.blog-host.example. 180 IN CNAME edge.host.example.
+edge.host.example.          120 IN A     192.0.2.80
+```
+
+becomes:
+
+```text
+example.com.                120 IN A     192.0.2.80
+```
+
+The CNAME is deliberately absent. Consumers see a conventional authoritative
+address RRset at the apex.
+
+The resolver cache is shared by requests handled by one server process.
+Positive entries expire with the upstream chain’s shortest relevant TTL.
+Negative results use the authority SOA’s negative TTL when available and 60
+seconds otherwise. The configured ANAME ceiling is applied when constructing
+each response, so two owners may safely share a target while using different
+TTL policies.
+
+Resolution is bounded in the same spirit as the rest of rgbdns:
+
+- CNAME chains stop after 16 links;
+- visited names detect cycles;
+- no more than 64 terminal addresses are accepted;
+- conflicting CNAME targets are rejected;
+- upstream SERVFAIL and other resolver errors become authoritative SERVFAIL,
+  not false NODATA;
+- A and AAAA are cached independently.
+
+`DNSCACHEIP` selects one or more recursive endpoints, separated by commas.
+Each endpoint may be an IP address using port 53 or an explicit socket address.
+Without it, rgbdns reads `/etc/resolv.conf`. A local validating `dnscache` is
+the preferred upstream when operators want DNSSEC validation and a cache shared
+with other local DNS work:
+
+```sh
+DNSCACHEIP=127.0.0.1:5354 IP=0.0.0.0 PORT=53 tinydns
+```
+
+ANAME metadata survives `tinydns-data` compilation through private CDB entries;
+it is not encoded as a made-up public RR type. This retains the source
+semantics across text and CDB operation without teaching ordinary DNS clients
+about a private wire format.
+
+Standard AXFR has no interoperable way to describe this private policy.
+rgbdns therefore does not emit ANAME metadata in AXFR. An independently
+configured secondary needs the same ANAME source directive, while a
+conventional secondary can only serve address snapshots supplied through an
+external materialization workflow. Operators should account for that
+difference before treating ANAME zones as ordinary transferable zones.
+
 ## CDB: compile once, read predictably
 
 The traditional `tinydns-data` compiles text into a constant database, CDB.
@@ -527,8 +659,10 @@ The serving process reads the compiled file instead of reparsing editable text
 for every startup or query. Compilation also enables atomic replacement:
 write and validate a new file, then rename it into place.
 
-rgbdns’s `src/cdb.rs` preserves the djbdns key/value layout. `compile` serializes
-typed records and metadata; `load` reads entries and reconstructs a `Zone`.
+rgbdns’s `src/cdb.rs` preserves the djbdns key/value layout for ordinary
+records and uses a private, NUL-prefixed key namespace for ANAME metadata.
+`compile` serializes typed records and metadata; `load` reads entries and
+reconstructs a `Zone`.
 The loader does not trust the database merely because it is local. It bounds
 file and entry sizes, validates keys, checks record layouts, decodes names and
 RDATA through explicit lengths, and rejects malformed data.
@@ -663,11 +797,18 @@ normally restrict clients. TSIG is a common authentication mechanism in the
 wider ecosystem, while IP allowlists are a simpler policy with weaker identity
 properties.
 
-`src/axfr.rs` provides both sides. `axfrdns` accepts TCP only and checks client
-networks, loopback by default. It requires one AXFR question, obtains a
-boundary-aware transfer from `Zone`, and frames bounded messages. `Zone::transfer`
-excludes records beneath delegated child zones and wraps the result in the
-apex SOA.
+`src/axfr.rs` provides both sides. The standalone `axfrdns` command accepts TCP
+only and checks client networks, loopback by default. The packaged primary also
+routes AXFR through `tinydns`'s existing TCP listener when `ALLOW_NETS` is set.
+This is required when ordinary authoritative DNS and transfers must share one
+address on port 53: two separate processes cannot own that TCP endpoint.
+
+Both entry points require one AXFR question, obtain a boundary-aware transfer
+from `Zone`, and frame bounded messages. `Zone::transfer` excludes records
+beneath delegated child zones and wraps the result in the apex SOA. The
+integrated listener applies its transfer allow-list only to AXFR; ordinary
+DNS-over-TCP remains reachable by all clients allowed through the network
+firewall.
 
 `axfr-get` generates a random transaction ID, validates response identity and
 shape, collects records until the closing SOA, renders them in tinydns source
@@ -1016,10 +1157,142 @@ wildcard, delegation, negative, IPv4, IPv6, and large-response queries, then
 atomically replace `data.cdb`. Retain the previous known-good database for
 rollback. Query the bound service over both UDP and TCP after deployment.
 
+For an ANAME zone, test the two address families and the unaffected apex
+record types separately:
+
+```sh
+dig @192.0.2.53 example.com A +norecurse
+dig @192.0.2.53 example.com AAAA +norecurse
+dig @192.0.2.53 example.com SOA +norecurse
+dig @192.0.2.53 example.com MX +norecurse
+```
+
+The A and AAAA answers should have the apex as their owner and should not
+contain a CNAME. The SOA and MX answers should come entirely from zone data.
+Repeat the address queries after the target changes and after its TTL expires;
+this verifies refresh behavior rather than only the initial lookup. Also test
+the chosen recursive endpoint independently, because an authoritative ANAME
+lookup cannot succeed when its upstream resolver is unavailable.
+
 Do not expose the recursive service to arbitrary networks by accident. The
 default `ALLOW_NETS` is loopback only because an open resolver can be abused
 for amplification and can consume local capacity. Likewise, expand AXFR
 allowlists only for intended secondaries.
+
+## Case study: cron.sh primary and BuddyNS secondaries
+
+Consider a Debian EC2 instance behind Elastic IP `52.10.53.234`. It is the
+editable primary for `cron.sh`, published as `a.ns.cron.sh`, while BuddyNS
+copies and serves the zone as a secondary. This arrangement illustrates the
+whole operational chain: package installation, zone authority, glue,
+single-address AXFR, delegation, supervision, and updates.
+
+At the network boundary, allow public UDP and TCP port 53. UDP carries most
+queries; TCP is required both for ordinary retry behavior and for AXFR. Do not
+restrict all TCP DNS to the secondary provider. The server distinguishes AXFR
+questions on the shared stream and applies a narrow source allow-list only to
+those transfers. On EC2 the guest usually sees a private address rather than
+the Elastic IP, so listening on `0.0.0.0:53` lets AWS translate traffic for the
+public address.
+
+Build the native package on a Debian or Ubuntu machine of the same
+architecture, copy it to the server, and install it:
+
+```sh
+sudo apt update
+sudo apt install -y build-essential cargo debhelper rustc git
+git clone https://github.com/querygraph/rgbdns.git
+cd rgbdns
+packaging/build-deb.sh
+scp ../rgbdns_0.1.1_amd64.deb admin@52.10.53.234:/tmp/
+ssh admin@52.10.53.234
+sudo apt install -y /tmp/rgbdns_0.1.1_amd64.deb
+```
+
+Installation creates the non-login `rgbdns` account, the protected
+configuration and state directories, and the hardened systemd units. It does
+not start a nameserver. That separation prevents package installation from
+publishing placeholder data.
+
+The primary source includes the SOA, the in-bailiwick primary and its glue, and
+the account-assigned BuddyNS names. In schematic form:
+
+```text
+Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026072601:16384:2048:1048576:2560:3600
+&cron.sh:52.10.53.234:a.ns.cron.sh:3600
+&cron.sh::<BuddyNS name 1>:3600
+&cron.sh::<BuddyNS name 2>:3600
+&cron.sh::<BuddyNS name 3>:3600
++a.ns.cron.sh:52.10.53.234:3600
+```
+
+Replace the placeholders with the names shown in BuddyBoard. The complete,
+directly compilable source is in the Debian deployment guide. Store it as
+`/root/cron.sh.data`, add the application records, and increment the SOA serial
+on every publication. The empty address fields on the BuddyNS NS lines are
+intentional: glue for those names belongs to BuddyNS, not `cron.sh`.
+
+BuddyNS publishes the addresses from which its cluster initiates transfers.
+Its current documentation says every published source must be allowed. For an
+IPv4-only primary, express the published IPv4 addresses as exact `/32`
+networks:
+
+```sh
+BUDDYNS_AXFR_V4='108.61.224.67/32,116.203.6.3/32'
+BUDDYNS_AXFR_V4="$BUDDYNS_AXFR_V4,107.191.99.111/32"
+BUDDYNS_AXFR_V4="$BUDDYNS_AXFR_V4,193.109.120.66/32"
+# Append every remaining /32 from BuddyNS's current list.
+sudo rgbdns-setup primary \
+  --data /root/cron.sh.data \
+  --listen-ip 0.0.0.0 --port 53 \
+  --allow-nets "$BUDDYNS_AXFR_V4"
+```
+
+Recheck BuddyNS's source list before deployment and after provider network
+changes. The provider's nameserver names are account-assigned as well; use
+BuddyBoard rather than treating the names in this example as global
+constants.
+
+`rgbdns-setup` validates and copies the source, compiles `data.cdb`, writes the
+service environment, enables the service at boot, and starts or restarts
+`rgbdns-tinydns.service`. There is no separate packaged AXFR service in this
+topology. Although the `axfrdns` compatibility command remains installed, a
+second process cannot share `52.10.53.234:53`; the authoritative process
+dispatches allowed AXFR questions to the same bounded AXFR engine.
+
+Before changing delegation, verify ordinary UDP and TCP service:
+
+```sh
+dig @52.10.53.234 cron.sh SOA +norecurse
+dig @52.10.53.234 cron.sh NS +norecurse
+dig @52.10.53.234 a.ns.cron.sh A +norecurse
+dig @52.10.53.234 cron.sh SOA +tcp +norecurse
+systemctl is-enabled rgbdns-tinydns
+systemctl is-active rgbdns-tinydns
+```
+
+In BuddyBoard, add `cron.sh`, set `52.10.53.234:53` as its primary, and require
+the transfer test to succeed. Configure the primary zone's NS RRset and the
+registrar delegation with the same BuddyNS names. Because `a.ns.cron.sh` lies
+inside the delegated zone, the `.sh` registrar also needs the child-host glue
+`a.ns.cron.sh = 52.10.53.234`. Transfer success should precede delegation;
+otherwise the new secondaries may be authoritative but empty or stale.
+
+After propagation, query every delegated authority and compare SOA serials.
+For subsequent changes, edit `/root/cron.sh.data`, increment the serial, and
+rerun the same `rgbdns-setup primary` command with the complete allow-list.
+Compilation precedes restart, and the new process loads one zone snapshot for
+both normal answers and transfers.
+
+Systemd keeps the foreground process alive with `Restart=on-failure` and starts
+the enabled unit after reboot. Operations should monitor unit state, public UDP
+and TCP answers, serial convergence at BuddyNS, transfer failures, and disk
+space. The editable source still needs its own protected backup: secondary DNS
+is availability infrastructure, not configuration backup.
+
+The full allow-list, command-by-command deployment, AWS rules, BuddyBoard
+sequence, delegation checks, and troubleshooting procedure live in the
+[`docs/DEBIAN.md` deployment guide](https://github.com/querygraph/rgbdns/blob/master/docs/DEBIAN.md).
 
 ## Observe the right signals
 
@@ -1031,6 +1304,7 @@ Useful signals include:
 - resolver cache capacity and latency percentiles;
 - process restarts and file-descriptor use;
 - root-hint and trust-anchor freshness;
+- ANAME refresh latency, upstream failures, cache misses, and synthesized TTLs;
 - time synchronization;
 - CDB build identity and deployment time.
 
@@ -1080,6 +1354,8 @@ Every DNS implementation should retain regression cases for:
 - duplicate or malformed OPT records;
 - tiny advertised transport limits;
 - CNAME loops and excessive chains;
+- ANAME self-reference, upstream CNAME loops, excessive address results, and
+  resolver failure;
 - wildcard names blocked by existing nodes;
 - delegation cuts beneath an authoritative apex;
 - NODATA versus NXDOMAIN;
@@ -1299,7 +1575,7 @@ syntax. It is that rgbdns can express DNS invariants at boundaries and have the
 compiler preserve them across the program.
 
 The crate begins with `#![forbid(unsafe_code)]` in
-[`src/lib.rs`](../../src/lib.rs). This is stronger than merely having no
+[`src/lib.rs`](https://github.com/querygraph/rgbdns/blob/master/src/lib.rs). This is stronger than merely having no
 currently known unsafe block: a later contribution cannot introduce one
 without first making an explicit, reviewable change to the crate policy. The
 implementation still performs byte-level packet parsing, binary CDB loading,
@@ -1340,7 +1616,7 @@ enough to test directly.
 
 # Valid names instead of hopeful strings
 
-[`Name`](../../src/name.rs) is the first load-bearing abstraction. It stores a
+[`Name`](https://github.com/querygraph/rgbdns/blob/master/src/name.rs) is the first load-bearing abstraction. It stores a
 sequence of byte labels rather than a UTF-8 domain string. Its constructor is
 private to the module; all construction passes through parsing or
 `from_labels`, and both reach the same validation rule:
@@ -1380,7 +1656,7 @@ absorbs the cost once.
 
 DNS packets are attacker-controlled binary graphs: compression pointers can
 jump backward, names can share suffixes, section counts can lie, and RDATA
-lengths can disagree with actual bytes. [`packet.rs`](../../src/packet.rs)
+lengths can disagree with actual bytes. [`packet.rs`](https://github.com/querygraph/rgbdns/blob/master/src/packet.rs)
 contains the codec and deliberately keeps the reader state small:
 
 ```rust
@@ -1416,7 +1692,7 @@ algorithmic improvement behind the same `Message::encode` contract.
 
 # Zone data as an indexed semantic model
 
-[`Zone`](../../src/zone.rs) is more than a parser for tinydns text. It is the
+[`Zone`](https://github.com/querygraph/rgbdns/blob/master/src/zone.rs) is more than a parser for tinydns text. It is the
 semantic index used by authoritative answers:
 
 ```rust
@@ -1457,7 +1733,7 @@ and AXFR without five subtly different interpretations of a zone.
 
 # From query bytes to an authoritative answer
 
-[`server::respond`](../../src/server.rs) is the central authoritative pipeline.
+[`server::respond`](https://github.com/querygraph/rgbdns/blob/master/src/server.rs) is the central authoritative pipeline.
 Its shape is intentionally linear:
 
 1. Reject an unknown opcode from the header without misparsing its body as a
@@ -1470,7 +1746,7 @@ Its shape is intentionally linear:
 7. Normalize RRset TTLs and remove duplicates.
 8. Encode or truncate the response.
 
-The code separates mechanism from policy. [`transport.rs`](../../src/transport.rs)
+The code separates mechanism from policy. [`transport.rs`](https://github.com/querygraph/rgbdns/blob/master/src/transport.rs)
 knows UDP datagrams, TCP length prefixes, timeouts, persistent connections, and
 a fixed worker bound. It knows nothing about zones. The handler knows DNS
 policy but receives transport limits and client identity as ordinary
@@ -1479,7 +1755,7 @@ machinery without pretending to be authoritative zones.
 
 The original djbdns family achieved robustness partly through small processes.
 rgbdns retains that decomposition while strengthening in-process boundaries.
-The binaries under [`src/bin`](../../src/bin) are mostly adapters: environment,
+The binaries under [`src/bin`](https://github.com/querygraph/rgbdns/tree/master/src/bin) are mostly adapters: environment,
 configuration, a library call, and the djbdns-compatible fatal exit convention.
 Small executables remain independently supervisable, but common logic is
 testable as ordinary Rust functions.
@@ -1488,7 +1764,7 @@ testable as ordinary Rust functions.
 
 Compatibility is most valuable at the data boundary. rgbdns reads and writes
 the original tinydns `data.cdb` layout, so operators can preserve compilation
-and rollout habits. [`cdb.rs`](../../src/cdb.rs) does not, however, inherit the
+and rollout habits. [`cdb.rs`](https://github.com/querygraph/rgbdns/blob/master/src/cdb.rs) does not, however, inherit the
 old assumption that the compiled file is trustworthy.
 
 The loader applies independent limits and checked arithmetic:
@@ -1515,7 +1791,7 @@ compiled bytes, installed file—unambiguous.
 
 Authoritative DNS is implemented in rgbdns’s own small model. Recursive DNS,
 DNSSEC validation, caching, and upstream transport are composed from Hickory
-in [`src/bin/dnscache.rs`](../../src/bin/dnscache.rs). This is not a retreat
+in [`src/bin/dnscache.rs`](https://github.com/querygraph/rgbdns/blob/master/src/bin/dnscache.rs). This is not a retreat
 from the rewrite; it is a deliberate abstraction boundary.
 
 rgbdns owns policy that must remain djbdns-compatible or operator-visible:
@@ -1540,10 +1816,10 @@ library boundaries rather than forcing one architecture across the suite.
 # Tests as executable protocol commentary
 
 The strongest claims in this book have executable counterparts.
-[`tests/rfc_conformance.rs`](../../tests/rfc_conformance.rs) names normative
-requirements and constructs exact packets. [`tests/wire_security.rs`](../../tests/wire_security.rs)
+[`tests/rfc_conformance.rs`](https://github.com/querygraph/rgbdns/blob/master/tests/rfc_conformance.rs) names normative
+requirements and constructs exact packets. [`tests/wire_security.rs`](https://github.com/querygraph/rgbdns/blob/master/tests/wire_security.rs)
 contains a hostile corpus and checks every truncation of a structured packet.
-[`tests/packet_properties.rs`](../../tests/packet_properties.rs) generates
+[`tests/packet_properties.rs`](https://github.com/querygraph/rgbdns/blob/master/tests/packet_properties.rs) generates
 arbitrary bytes and structured messages:
 
 ```rust
@@ -1563,8 +1839,8 @@ and generated structured messages round-trip without semantic loss.
 Golden CDB fixtures protect historical compatibility. Live UDP/TCP tests
 exercise connection reuse and framing. `drill` provides an independent
 encoder and decoder. The stable-Rust benchmark in
-[`benches/dns_core.rs`](../../benches/dns_core.rs) measures the functions that
-rgbdns itself owns, and [`docs/performance.md`](../performance.md) records both
+[`benches/dns_core.rs`](https://github.com/querygraph/rgbdns/blob/master/benches/dns_core.rs) measures the functions that
+rgbdns itself owns, and [`docs/performance.md`](https://github.com/querygraph/rgbdns/blob/master/docs/performance.md) records both
 timings and wire size.
 
 This is where Rust most clearly changes the economics of a C rewrite. Memory
@@ -1634,7 +1910,7 @@ Common daemon variables include:
 | `PORT` | listen port |
 | `DATA` | authoritative text or CDB path where supported |
 | `ALLOW_NETS` | comma-separated client CIDRs for recursion or transfer |
-| `DNSCACHEIP` | recursive endpoints used by client tools |
+| `DNSCACHEIP` | recursive endpoints used by client tools and ANAME flattening |
 | `CACHESIZE` | bounded recursive response-cache capacity |
 | `NSCACHESIZE` | bounded nameserver-cache entries |
 | `RECURSION_LIMIT` | ordinary recursion depth |

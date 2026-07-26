@@ -5,7 +5,7 @@ language: "markdown"
 subsystem: "Documentation"
 line_count: 34
 fragment_count: 3
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # docs/OBSIDIAN-VAULT.md

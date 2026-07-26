@@ -342,9 +342,25 @@ def inventory_codebase(rgbdns_root: Path) -> list[SourceFile]:
 def manuscript_chapters() -> list[tuple[str, str, str]]:
     """Split the canonical single-file manuscript into stable Obsidian notes."""
     text = MANUSCRIPT.read_text(encoding="utf-8")
-    chunks = re.split(r"(?m)(?=^# )", text)
+    lines = text.splitlines()
+    starts: list[int] = []
+    fence: str | None = None
+    for index, line in enumerate(lines):
+        stripped = line.lstrip()
+        marker = stripped[:3]
+        if marker in {"```", "~~~"}:
+            if fence is None:
+                fence = marker
+            elif marker == fence:
+                fence = None
+            continue
+        if fence is None and line.startswith("# "):
+            starts.append(index)
+
     chapters: list[tuple[str, str, str]] = []
-    for index, chunk in enumerate(filter(str.strip, chunks), start=1):
+    for index, start in enumerate(starts, start=1):
+        end = starts[index] if index < len(starts) else len(lines)
+        chunk = "\n".join(lines[start:end]).rstrip()
         first = chunk.splitlines()[0]
         title = re.sub(r"\s+\{[^}]+\}\s*$", "", first[2:]).strip()
         note = f"{VAULT_BOOK}/Chapters/{index:02d}-{slug(title, 72)}"

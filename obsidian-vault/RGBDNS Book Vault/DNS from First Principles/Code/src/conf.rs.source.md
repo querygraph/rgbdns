@@ -6,7 +6,7 @@ subsystem: "Operations and supervision"
 crate: "rgbdns"
 line_count: 299
 fragment_count: 13
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/conf.rs

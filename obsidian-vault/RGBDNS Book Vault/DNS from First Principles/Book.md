@@ -1,10 +1,10 @@
 ---
 type: "book"
-rgbdns_commit: "472c2087"
-book_commit: "472c2087"
+rgbdns_commit: "79502939"
+book_commit: "79502939"
 chapter_count: 31
-code_file_count: 89
-fragment_count: 648
+code_file_count: 96
+fragment_count: 696
 ---
 
 # DNS from First Principles

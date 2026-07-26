@@ -6,7 +6,7 @@ subsystem: "Specialized responders"
 crate: "rgbdns"
 line_count: 10
 fragment_count: 2
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/special.rs
@@ -33,6 +33,6 @@ use std::sync::Arc;
 pub type Handler = crate::transport::Handler;
 
 pub fn serve(address: &str, handler: Arc<Handler>) -> Result<()> {
-    crate::transport::serve(address, handler)
+    crate::transport::serve(address, handler, None)
 }
 ```

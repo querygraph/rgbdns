@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "dnscache"
 line_count: 180
 fragment_count: 5
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/bin/dnscache.rs

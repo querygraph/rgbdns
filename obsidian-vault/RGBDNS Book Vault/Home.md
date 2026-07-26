@@ -1,8 +1,8 @@
 ---
 type: "vault"
 book: "DNS from First Principles"
-rgbdns_commit: "472c2087"
-book_commit: "472c2087"
+rgbdns_commit: "79502939"
+book_commit: "79502939"
 ---
 
 # DNS from First Principles

@@ -10,6 +10,16 @@
     "type": "fragment-file"
   },
   {
+    "from": "DNS from First Principles/Code/github/workflows/build-deb.yml.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e7de0cb9814b",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e7de0cb9814b",
+    "to": "DNS from First Principles/Code/github/workflows/build-deb.yml.source",
+    "type": "fragment-file"
+  },
+  {
     "from": "DNS from First Principles/Code/github/workflows/ci.yml.source",
     "to": "DNS from First Principles/Fragments/rgbdns-frag-2c928fa0e845",
     "type": "file-fragment"
@@ -91,31 +101,41 @@
   },
   {
     "from": "DNS from First Principles/Code/README.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-cfb0faf3b090",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5a01ae2d3ddb",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-cfb0faf3b090",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5a01ae2d3ddb",
     "to": "DNS from First Principles/Code/README.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/README.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-31920af81303",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c24b9da16705",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-31920af81303",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c24b9da16705",
     "to": "DNS from First Principles/Code/README.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/README.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-855d7f20ae34",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-003170c20cd5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-855d7f20ae34",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-003170c20cd5",
+    "to": "DNS from First Principles/Code/README.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/README.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-851308e1cfeb",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-851308e1cfeb",
     "to": "DNS from First Principles/Code/README.md.source",
     "type": "fragment-file"
   },
@@ -167,6 +187,116 @@
   {
     "from": "DNS from First Principles/Fragments/rgbdns-frag-338839f8fb49",
     "to": "DNS from First Principles/Code/book.build.json.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-81df593d6869",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-81df593d6869",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-144c116f58ed",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-144c116f58ed",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-50a9a26b8c55",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-50a9a26b8c55",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-005744bec3e6",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-005744bec3e6",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-1091bd4c7132",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-1091bd4c7132",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-7c93e1160231",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-7c93e1160231",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-533b9c153533",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-533b9c153533",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b4a5eea5ec0c",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b4a5eea5ec0c",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d39318b29e35",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d39318b29e35",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c5ffd76a5d56",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c5ffd76a5d56",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/DEBIAN.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-fcd83bef23f0",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-fcd83bef23f0",
+    "to": "DNS from First Principles/Code/docs/DEBIAN.md.source",
     "type": "fragment-file"
   },
   {
@@ -461,621 +591,681 @@
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-fe7f8140d5e8",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-71f49c8d8dc6",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-fe7f8140d5e8",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-71f49c8d8dc6",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-43c02c0a823e",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d62bb10ff90c",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-43c02c0a823e",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d62bb10ff90c",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-eb9d3e452f40",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e85087767dc9",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-eb9d3e452f40",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e85087767dc9",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a3f35901d5b4",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-72916395675b",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a3f35901d5b4",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-72916395675b",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-fbd1b1fbb43d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-060ba4ce151e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-fbd1b1fbb43d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-060ba4ce151e",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-624140d845f9",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-0d0e813e38f5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-624140d845f9",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-0d0e813e38f5",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-43ec87deb16f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c5639d87e4d2",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-43ec87deb16f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c5639d87e4d2",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d63c1242dccf",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-0e38bf950ab7",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d63c1242dccf",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-0e38bf950ab7",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1a10503616a0",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e78faa9dfca9",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1a10503616a0",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e78faa9dfca9",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-41adbea4974a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a78e7071915e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-41adbea4974a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a78e7071915e",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-960bc4cb629c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b22a6e76e4c7",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-960bc4cb629c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b22a6e76e4c7",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-63834e67c47c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-057397ce29bc",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-63834e67c47c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-057397ce29bc",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-ca644dad4381",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-425f4904b6d4",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-ca644dad4381",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-425f4904b6d4",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-648843af2689",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-657b5ba34ebd",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-648843af2689",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-657b5ba34ebd",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-e506ae19305f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-1a6bc17026f7",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-e506ae19305f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-1a6bc17026f7",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d9c373e2b341",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b62ce97d1c7b",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d9c373e2b341",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b62ce97d1c7b",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c764dd996363",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-883d5fd2b4b9",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c764dd996363",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-883d5fd2b4b9",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-2ccbcd602255",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e96d9749679a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-2ccbcd602255",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e96d9749679a",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9b2e36ed71f1",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c4a749071fe5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9b2e36ed71f1",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c4a749071fe5",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c43eb5a0148e",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f84889822c05",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c43eb5a0148e",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f84889822c05",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a6135ec2f6ae",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d9dbd7c4df58",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a6135ec2f6ae",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d9dbd7c4df58",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-07f2c55f81e8",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c6c1e361c52f",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-07f2c55f81e8",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c6c1e361c52f",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-8b428b64887e",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c9531cad5a02",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-8b428b64887e",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c9531cad5a02",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a2269ad59adf",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6f7da27b85d9",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a2269ad59adf",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6f7da27b85d9",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-bcdc357e6f0e",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e73e14b2ae1a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-bcdc357e6f0e",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e73e14b2ae1a",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-8083fad7e534",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-fe771d38cd6b",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-8083fad7e534",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-fe771d38cd6b",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-75c48d40ec52",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-68aa9ff6d6fa",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-75c48d40ec52",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-68aa9ff6d6fa",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-bdfeae62924f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-8468b7292533",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-bdfeae62924f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-8468b7292533",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-10819b91ef1d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-03b2cc53a1c8",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-10819b91ef1d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-03b2cc53a1c8",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-43621c072e7b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-264e7fe31095",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-43621c072e7b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-264e7fe31095",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c3c2a07d858c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ad9aa9b9f6be",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c3c2a07d858c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ad9aa9b9f6be",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-03c6b7721e84",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b40033089bdf",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-03c6b7721e84",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b40033089bdf",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-91de68807d7b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d86cf51f5e30",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-91de68807d7b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d86cf51f5e30",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-14c10ed54df3",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-675a90298dbe",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-14c10ed54df3",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-675a90298dbe",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1a2af1c4ea11",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-bca8456c1e8a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1a2af1c4ea11",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-bca8456c1e8a",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-0d9042da275d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-63b6be0b3b83",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-0d9042da275d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-63b6be0b3b83",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-b31b353bc960",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-941f4c95493f",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-b31b353bc960",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-941f4c95493f",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-7fb4fbaac681",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-fa6ee034cfed",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-7fb4fbaac681",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-fa6ee034cfed",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4c4b17d589da",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5af9939eacfc",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4c4b17d589da",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5af9939eacfc",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-6388ea48d62f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e80a21df7fe1",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-6388ea48d62f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e80a21df7fe1",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9a933a905efd",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-4b2d88be347b",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9a933a905efd",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-4b2d88be347b",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-7e3a735bbfd9",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-51aa994381a6",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-7e3a735bbfd9",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-51aa994381a6",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-ad144c2245be",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5b84d150797c",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-ad144c2245be",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5b84d150797c",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-b26f03721239",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-604b6ff56e55",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-b26f03721239",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-604b6ff56e55",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-651c3fbb1e55",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-1568b60975fb",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-651c3fbb1e55",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-1568b60975fb",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-48f744ec0b5c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-1c12785a949f",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-48f744ec0b5c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-1c12785a949f",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c61169a3a6a7",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a76d9160643d",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c61169a3a6a7",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a76d9160643d",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-dda542b689d6",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-db65ba809c6a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-dda542b689d6",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-db65ba809c6a",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d95a4349f84b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-44f080bc9086",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d95a4349f84b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-44f080bc9086",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-ca35e832f4e0",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-adc4310d7e3c",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-ca35e832f4e0",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-adc4310d7e3c",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d6879609a68f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-618eb0363b2b",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d6879609a68f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-618eb0363b2b",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-6a0458e430a4",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6271b6cb7110",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-6a0458e430a4",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6271b6cb7110",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1f189575f361",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-887b285da96f",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1f189575f361",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-887b285da96f",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9180700c9bfd",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ad53076dfbcd",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9180700c9bfd",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ad53076dfbcd",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-29f0b4cd6305",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a31a615a1d14",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-29f0b4cd6305",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a31a615a1d14",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-8fac9335b83d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-26b28417cd3e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-8fac9335b83d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-26b28417cd3e",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-5763dc47d15d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-599f16ab274c",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-5763dc47d15d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-599f16ab274c",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1221e3ff915b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a772e04cdd1d",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1221e3ff915b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a772e04cdd1d",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-513fe5bd319b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-832fd18340b5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-513fe5bd319b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-832fd18340b5",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-cb7dc774f54f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-cb6afbfd2103",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-cb7dc774f54f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-cb6afbfd2103",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-29b0066bd3e1",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5d2c2249fe7a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-29b0066bd3e1",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5d2c2249fe7a",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-468dd69b399f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-827441da6822",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-468dd69b399f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-827441da6822",
+    "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5d932c6cd4d6",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5d932c6cd4d6",
+    "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-251d4b52fa84",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-251d4b52fa84",
+    "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-8fac7ccb8910",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-8fac7ccb8910",
+    "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-dc8850828d5c",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-dc8850828d5c",
+    "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-20532ab9b198",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-20532ab9b198",
+    "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-384670652192",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-384670652192",
     "to": "DNS from First Principles/Code/docs/book/rgbdns.md.source",
     "type": "fragment-file"
   },
@@ -1091,11 +1281,11 @@
   },
   {
     "from": "DNS from First Principles/Code/docs/compatibility.md.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-e477664e2daf",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c1bcd98d6c46",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-e477664e2daf",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c1bcd98d6c46",
     "to": "DNS from First Principles/Code/docs/compatibility.md.source",
     "type": "fragment-file"
   },
@@ -1197,6 +1387,46 @@
   {
     "from": "DNS from First Principles/Fragments/rgbdns-frag-2f4368432de7",
     "to": "DNS from First Principles/Code/obsidian-plugin/rgbdns-reader/styles.css.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/packaging/build-deb.sh.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-0cc16f57b712",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-0cc16f57b712",
+    "to": "DNS from First Principles/Code/packaging/build-deb.sh.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/packaging/cargo-binaries.py.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3212e074767a",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3212e074767a",
+    "to": "DNS from First Principles/Code/packaging/cargo-binaries.py.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/packaging/default/tinydns.env.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-211708b5ce49",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-211708b5ce49",
+    "to": "DNS from First Principles/Code/packaging/default/tinydns.env.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/packaging/verify-deb.sh.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-79b8154f3b7b",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-79b8154f3b7b",
+    "to": "DNS from First Principles/Code/packaging/verify-deb.sh.source",
     "type": "fragment-file"
   },
   {
@@ -1391,121 +1621,121 @@
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-0a450270b95a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5fe89c86fc54",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-0a450270b95a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5fe89c86fc54",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-63e34ad48617",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6616eeda0eb5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-63e34ad48617",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6616eeda0eb5",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a66cb0fd078a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5cc71bf08187",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a66cb0fd078a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5cc71bf08187",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-569ebe0793f1",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-8c6f87b3e8be",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-569ebe0793f1",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-8c6f87b3e8be",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1425ddcffad2",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-21b62d47f194",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1425ddcffad2",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-21b62d47f194",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4302b6369fa0",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-30f951300b24",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4302b6369fa0",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-30f951300b24",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-52188f6fab55",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3f8c0be55fcf",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-52188f6fab55",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3f8c0be55fcf",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-e91f6f32bf5b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-0a3e9642ceaa",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-e91f6f32bf5b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-0a3e9642ceaa",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-eaeef8aad13a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-51da6540a1a5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-eaeef8aad13a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-51da6540a1a5",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-887fe5344145",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-99bc96942e75",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-887fe5344145",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-99bc96942e75",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-745e0bd50d8f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-1eac6942e335",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-745e0bd50d8f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-1eac6942e335",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-68082ce5cc47",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c1baa20d0152",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-68082ce5cc47",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c1baa20d0152",
     "to": "DNS from First Principles/Code/scripts/build-obsidian-vault.py.source",
     "type": "fragment-file"
   },
@@ -1580,6 +1810,156 @@
     "type": "fragment-file"
   },
   {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-0eb12106aceb",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-0eb12106aceb",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-82b35b6804ab",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-82b35b6804ab",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3d0508ce22a6",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3d0508ce22a6",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-163088533e30",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-163088533e30",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-57473282a4ff",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-57473282a4ff",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3570b5155e9d",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3570b5155e9d",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a5b88df041d6",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a5b88df041d6",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-583cdf24733b",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-583cdf24733b",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ab345aca2e36",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ab345aca2e36",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c4b0676dbea8",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c4b0676dbea8",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b8118dfc2f5e",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b8118dfc2f5e",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-07fa4d90c701",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-07fa4d90c701",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-bca7f405b15b",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-bca7f405b15b",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-9f56afdfcc8f",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-9f56afdfcc8f",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/aname.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d418530011a5",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d418530011a5",
+    "to": "DNS from First Principles/Code/src/aname.rs.source",
+    "type": "fragment-file"
+  },
+  {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
     "to": "DNS from First Principles/Fragments/rgbdns-frag-ad1ed1e4cb84",
     "type": "file-fragment"
@@ -1641,151 +2021,151 @@
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-2554d1b3665a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-4d44b9b57c53",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-2554d1b3665a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-4d44b9b57c53",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-8c366d542d3c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c4eddbb40457",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-8c366d542d3c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c4eddbb40457",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4268f778fa47",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ca8414b505a4",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4268f778fa47",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ca8414b505a4",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-454fe9e80b77",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-678d90c8e377",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-454fe9e80b77",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-678d90c8e377",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-3985e9023e0b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-83eeb011f0b6",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-3985e9023e0b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-83eeb011f0b6",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a31c068b7119",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-35c24cd23185",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a31c068b7119",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-35c24cd23185",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-83d521fef5d6",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3875bb7b1985",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-83d521fef5d6",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3875bb7b1985",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-0b1febdb552a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-2ff6549bf9ff",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-0b1febdb552a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-2ff6549bf9ff",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-cce2751e8a7e",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d0d89aa0192c",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-cce2751e8a7e",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d0d89aa0192c",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-bcdced1d52db",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a716ad34eead",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-bcdced1d52db",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a716ad34eead",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-7d0ccc73f8dd",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-7486a2a93364",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-7d0ccc73f8dd",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-7486a2a93364",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-e67d14654aa5",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ba79974c4829",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-e67d14654aa5",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ba79974c4829",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-e933ea2326bd",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5d9c78436686",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-e933ea2326bd",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5d9c78436686",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-f6fb2ad2e665",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-747c9f2e6a62",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-f6fb2ad2e665",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-747c9f2e6a62",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/axfr.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9990017fae6d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-481ffa0043ef",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9990017fae6d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-481ffa0043ef",
     "to": "DNS from First Principles/Code/src/axfr.rs.source",
     "type": "fragment-file"
   },
@@ -2451,101 +2831,101 @@
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4a9794b88127",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f318af8bdeaa",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4a9794b88127",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f318af8bdeaa",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-83b463908a3c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f67eebb3c015",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-83b463908a3c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f67eebb3c015",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9e8e0d51389c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-916ec1cbc28e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9e8e0d51389c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-916ec1cbc28e",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4a71bdeba2ec",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f9047bc1a1a2",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4a71bdeba2ec",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f9047bc1a1a2",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a98232a8cdb0",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-bf06479bb119",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a98232a8cdb0",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-bf06479bb119",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1cfb12457767",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f2d13363a376",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1cfb12457767",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f2d13363a376",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-908320134aee",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ca380a5004ce",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-908320134aee",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ca380a5004ce",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-489b39a43ae6",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-9cc58af3bb02",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-489b39a43ae6",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-9cc58af3bb02",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-563d0d5def13",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d600fc524f2b",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-563d0d5def13",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d600fc524f2b",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/cdb.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-af1b07391a27",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-428b1ce3e4be",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-af1b07391a27",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-428b1ce3e4be",
     "to": "DNS from First Principles/Code/src/cdb.rs.source",
     "type": "fragment-file"
   },
@@ -3011,281 +3391,291 @@
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d26839b00cc0",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f52ccf723277",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d26839b00cc0",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f52ccf723277",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c0387f24e3b2",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-4a817a7124e1",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c0387f24e3b2",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-4a817a7124e1",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-ea9a942c2c24",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ef82c203a6e1",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-ea9a942c2c24",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ef82c203a6e1",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4ca6b4a66ffe",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ac93886065b4",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4ca6b4a66ffe",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ac93886065b4",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-47cdd9e7aa73",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-558fa31b05c5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-47cdd9e7aa73",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-558fa31b05c5",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-64be14e515dc",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-fa79f1453710",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-64be14e515dc",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-fa79f1453710",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1198b492e8d3",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-060fb35dda55",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1198b492e8d3",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-060fb35dda55",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9a69adb381ac",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-9b91c16392f6",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9a69adb381ac",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-9b91c16392f6",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-cc4b83e1818c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-fb88c09e6337",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-cc4b83e1818c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-fb88c09e6337",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-b32ba925e7c1",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-09f6fa5decbe",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-b32ba925e7c1",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-09f6fa5decbe",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-fc0223cab124",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6e6427a50d71",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-fc0223cab124",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6e6427a50d71",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-17439937a795",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e5dfdf77ddb4",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-17439937a795",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e5dfdf77ddb4",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-53eaa3274eb7",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-4399bf8d7bca",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-53eaa3274eb7",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-4399bf8d7bca",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-bd03ec8b2f1a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a9b71133a8a7",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-bd03ec8b2f1a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a9b71133a8a7",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-3a23dfdf3153",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c381c3286bae",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-3a23dfdf3153",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c381c3286bae",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-65d3faf4b4df",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3cb5aab2f951",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-65d3faf4b4df",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3cb5aab2f951",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-45a926c96a17",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-65d27f5c3043",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-45a926c96a17",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-65d27f5c3043",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-460d033a70bc",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6f2db39a6784",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-460d033a70bc",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6f2db39a6784",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a504095bfade",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3591e119df49",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a504095bfade",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3591e119df49",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1f2f52292c17",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-cf6623db375a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1f2f52292c17",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-cf6623db375a",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-762fbc6aec4b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-81662b0f8334",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-762fbc6aec4b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-81662b0f8334",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-aafca40edd3c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b7a10a8752c6",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-aafca40edd3c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b7a10a8752c6",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-096bc6ecb319",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-767195231108",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-096bc6ecb319",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-767195231108",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c25798b08316",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-02f6775511ec",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c25798b08316",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-02f6775511ec",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-961bde153386",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3fe85af2221d",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-961bde153386",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3fe85af2221d",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-54ed88397082",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-4373cfd6a122",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-54ed88397082",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-4373cfd6a122",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d546da74e4e8",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-2c97a1c68bb4",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d546da74e4e8",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-2c97a1c68bb4",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/lib.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9f5243a9e8af",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-dd954b8525ae",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9f5243a9e8af",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-dd954b8525ae",
+    "to": "DNS from First Principles/Code/src/lib.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/lib.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-61289dbc0218",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-61289dbc0218",
     "to": "DNS from First Principles/Code/src/lib.rs.source",
     "type": "fragment-file"
   },
@@ -4621,231 +5011,261 @@
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9111a59a3049",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d3da65fbc724",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9111a59a3049",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d3da65fbc724",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-722e4576ccbc",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e0990e79e0f5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-722e4576ccbc",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e0990e79e0f5",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-2f2af75ed065",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-85698b1ce866",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-2f2af75ed065",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-85698b1ce866",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-ae38d008c815",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-413307db626e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-ae38d008c815",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-413307db626e",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-7320f5c3210a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ff4f3e36f844",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-7320f5c3210a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ff4f3e36f844",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-220d6f0cbcdb",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-aba7f2385996",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-220d6f0cbcdb",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-aba7f2385996",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-096ea17b82aa",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-8a745a4a8208",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-096ea17b82aa",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-8a745a4a8208",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c9eb8bdf42ba",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-4625cc9215e0",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c9eb8bdf42ba",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-4625cc9215e0",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4dd75158d5d2",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-cb35766a16c9",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4dd75158d5d2",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-cb35766a16c9",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-f8e1052e7132",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b79b1695d38f",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-f8e1052e7132",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b79b1695d38f",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-bb3db60b9e88",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-0f2b54775d5e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-bb3db60b9e88",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-0f2b54775d5e",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1e7091c46f9a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-31d10be4bc98",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1e7091c46f9a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-31d10be4bc98",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-8a23f9d6fa9e",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-76bf4ddcc8ad",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-8a23f9d6fa9e",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-76bf4ddcc8ad",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4350cacf3568",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-053b53ae57e0",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4350cacf3568",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-053b53ae57e0",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-0cf5f1aebbd7",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-20be16ba4c51",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-0cf5f1aebbd7",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-20be16ba4c51",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-24eb49b3e883",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6ee0c357f63d",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-24eb49b3e883",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6ee0c357f63d",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-86e49ea9f22b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-138ac655395d",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-86e49ea9f22b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-138ac655395d",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-564c75db45be",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-78a254dd8c92",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-564c75db45be",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-78a254dd8c92",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-af48654cc6f2",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-8f699a31cc8b",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-af48654cc6f2",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-8f699a31cc8b",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-b5ef588ef89f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-80e9e786f228",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-b5ef588ef89f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-80e9e786f228",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4ad9f36d2277",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a64686cbedbb",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4ad9f36d2277",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a64686cbedbb",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-2c1337a1892b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5c417caa83ca",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-2c1337a1892b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5c417caa83ca",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/server.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-83ee748c0fa8",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-4020f1673346",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-83ee748c0fa8",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-4020f1673346",
+    "to": "DNS from First Principles/Code/src/server.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/server.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-afd2662300da",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-afd2662300da",
+    "to": "DNS from First Principles/Code/src/server.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/server.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6c49d3a84895",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6c49d3a84895",
+    "to": "DNS from First Principles/Code/src/server.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/server.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-95f0d422d9b2",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-95f0d422d9b2",
     "to": "DNS from First Principles/Code/src/server.rs.source",
     "type": "fragment-file"
   },
@@ -5281,71 +5701,81 @@
   },
   {
     "from": "DNS from First Principles/Code/src/transport.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c52452849aa8",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6acd0c6e28f0",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c52452849aa8",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6acd0c6e28f0",
     "to": "DNS from First Principles/Code/src/transport.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/transport.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-6a51bd4e6d23",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-7a901ddd4a4d",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-6a51bd4e6d23",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-7a901ddd4a4d",
     "to": "DNS from First Principles/Code/src/transport.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/transport.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-95473ddcb34a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-30b85bbe7549",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-95473ddcb34a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-30b85bbe7549",
     "to": "DNS from First Principles/Code/src/transport.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/transport.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-02bc3279cfc3",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b702cb6d3dcf",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-02bc3279cfc3",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b702cb6d3dcf",
     "to": "DNS from First Principles/Code/src/transport.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/transport.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-047fdcb9b19e",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b6fb71c6843c",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-047fdcb9b19e",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b6fb71c6843c",
     "to": "DNS from First Principles/Code/src/transport.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/transport.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-601011fcc16d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-0e863fd80bd5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-601011fcc16d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-0e863fd80bd5",
     "to": "DNS from First Principles/Code/src/transport.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/transport.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a0dfeb34bf30",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a0394db83dec",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a0dfeb34bf30",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a0394db83dec",
+    "to": "DNS from First Principles/Code/src/transport.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/transport.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-fac10ff0d148",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-fac10ff0d148",
     "to": "DNS from First Principles/Code/src/transport.rs.source",
     "type": "fragment-file"
   },
@@ -5401,441 +5831,491 @@
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-5daeaba252f4",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ebf4f59215f2",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-5daeaba252f4",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ebf4f59215f2",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a0b9f93ab964",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e1d80abe1755",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a0b9f93ab964",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e1d80abe1755",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-4249e6c1545c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5c488af2e254",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-4249e6c1545c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5c488af2e254",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-360cf843ad86",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6e8fb6392f7c",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-360cf843ad86",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6e8fb6392f7c",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-9cc348c66b0c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-4c56545e9677",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-9cc348c66b0c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-4c56545e9677",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-335bf172fd62",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a7aa463839ef",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-335bf172fd62",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a7aa463839ef",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c86fa04276bf",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-647126fbe1a0",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c86fa04276bf",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-647126fbe1a0",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-ac11c87f4704",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f4af87c101c0",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-ac11c87f4704",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f4af87c101c0",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-b71e2be5914b",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-1711d6afe285",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-b71e2be5914b",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-1711d6afe285",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-ad2f12a33827",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-3696486a4c17",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-ad2f12a33827",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-3696486a4c17",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-cd7a32739724",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6d6177059c97",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-cd7a32739724",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6d6177059c97",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-5c5554d5e7d7",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-0a5708d8a33e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-5c5554d5e7d7",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-0a5708d8a33e",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-feffd7465076",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-03c0b885e743",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-feffd7465076",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-03c0b885e743",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-df128c63224a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-eeabfb747faa",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-df128c63224a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-eeabfb747faa",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-38090045fa8a",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5071faf9bdcf",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-38090045fa8a",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5071faf9bdcf",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-397c4f5dc7bc",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-18ca4be2b107",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-397c4f5dc7bc",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-18ca4be2b107",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-82a55e8d4986",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-2080b97a017a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-82a55e8d4986",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-2080b97a017a",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-acbff3f901b2",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d8c4e0aee989",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-acbff3f901b2",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d8c4e0aee989",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-0dd21c16e7b9",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-948bf6e5feb7",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-0dd21c16e7b9",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-948bf6e5feb7",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d7e0cd8b2e4f",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-1c0a72894bbe",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d7e0cd8b2e4f",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-1c0a72894bbe",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-0155711b7b03",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-5e582526ed53",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-0155711b7b03",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-5e582526ed53",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d6b7f8d36179",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f88b0dcce53a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d6b7f8d36179",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f88b0dcce53a",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-e1ca3db94035",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-6df7a8cc5d4f",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-e1ca3db94035",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-6df7a8cc5d4f",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-db46c882156d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ed0bf3adfed0",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-db46c882156d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ed0bf3adfed0",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-d6016dd9041c",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-7f213f06d1f1",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-d6016dd9041c",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-7f213f06d1f1",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-f52648c5b1ec",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-ce4d21a9257e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-f52648c5b1ec",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-ce4d21a9257e",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-136174e58903",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-66afd2f4765a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-136174e58903",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-66afd2f4765a",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-a34fb5a033af",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-1dcae386e987",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-a34fb5a033af",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-1dcae386e987",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-ace5d7b6b93d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-bbbc1b59c145",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-ace5d7b6b93d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-bbbc1b59c145",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-40e285b5fae4",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e7d0187f26d5",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-40e285b5fae4",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e7d0187f26d5",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-e32683aea517",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-fce321309f41",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-e32683aea517",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-fce321309f41",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-1b0b9ad83c14",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b85693859c2a",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-1b0b9ad83c14",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b85693859c2a",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-721d1cbba723",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-72f85a565c18",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-721d1cbba723",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-72f85a565c18",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-0eb5901d07d1",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-8019a4049ec2",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-0eb5901d07d1",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-8019a4049ec2",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-db64e53049f9",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-fefef3c64e8e",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-db64e53049f9",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-fefef3c64e8e",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-89ba6b3ea320",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-d484f0dd4859",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-89ba6b3ea320",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-d484f0dd4859",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-c292ee23c8bf",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-9e00c4c01f81",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-c292ee23c8bf",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-9e00c4c01f81",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-e49f18aa0a17",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-c624c9699d4f",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-e49f18aa0a17",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-c624c9699d4f",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-6ec46b786254",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-a0256b2e6482",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-6ec46b786254",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-a0256b2e6482",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-91fad3d9554d",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-b62c04c16359",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-91fad3d9554d",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-b62c04c16359",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-df64dce34289",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-30f3da1f3cc7",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-df64dce34289",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-30f3da1f3cc7",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-7b4ba45cc378",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-61b0c4c70016",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-7b4ba45cc378",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-61b0c4c70016",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-0e6a66d6e1b2",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-67422069cdc9",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-0e6a66d6e1b2",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-67422069cdc9",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },
   {
     "from": "DNS from First Principles/Code/src/zone.rs.source",
-    "to": "DNS from First Principles/Fragments/rgbdns-frag-78d680edcc10",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-474931ff0bc3",
     "type": "file-fragment"
   },
   {
-    "from": "DNS from First Principles/Fragments/rgbdns-frag-78d680edcc10",
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-474931ff0bc3",
+    "to": "DNS from First Principles/Code/src/zone.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/zone.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-e6cf835581fe",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-e6cf835581fe",
+    "to": "DNS from First Principles/Code/src/zone.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/zone.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-f9ed7fd4df7e",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-f9ed7fd4df7e",
+    "to": "DNS from First Principles/Code/src/zone.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/zone.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-857a1ab82fb7",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-857a1ab82fb7",
+    "to": "DNS from First Principles/Code/src/zone.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/zone.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-970bdea3e765",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-970bdea3e765",
+    "to": "DNS from First Principles/Code/src/zone.rs.source",
+    "type": "fragment-file"
+  },
+  {
+    "from": "DNS from First Principles/Code/src/zone.rs.source",
+    "to": "DNS from First Principles/Fragments/rgbdns-frag-863520344cf9",
+    "type": "file-fragment"
+  },
+  {
+    "from": "DNS from First Principles/Fragments/rgbdns-frag-863520344cf9",
     "to": "DNS from First Principles/Code/src/zone.rs.source",
     "type": "fragment-file"
   },

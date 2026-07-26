@@ -6,7 +6,7 @@ subsystem: "DNS data model and wire codec"
 crate: "rgbdns"
 line_count: 232
 fragment_count: 33
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/name.rs

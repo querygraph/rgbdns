@@ -4,9 +4,9 @@ source_path: "src/cdb.rs"
 language: "rust"
 subsystem: "Authoritative service"
 crate: "rgbdns"
-line_count: 331
+line_count: 371
 fragment_count: 12
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/cdb.rs
@@ -14,23 +14,23 @@ rgbdns_commit: "472c2087"
 - Subsystem: [[DNS from First Principles/Subsystems/Authoritative service|Authoritative service]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/cdb.rs`
-- Lines: 331
+- Lines: 371
 - Summary: djbdns-compatible `data.cdb` compilation and bounded loading.
 
 ## Extracted Fragments
 
 - [[DNS from First Principles/Fragments/rgbdns-frag-e5fff4b8cb2b|HEADER_LEN]]: lines 9-9
 - [[DNS from First Principles/Fragments/rgbdns-frag-4907bb687e44|MAX_DATABASE_SIZE]]: lines 10-11
-- [[DNS from First Principles/Fragments/rgbdns-frag-4a9794b88127|compile]]: lines 12-52
-- [[DNS from First Principles/Fragments/rgbdns-frag-83b463908a3c|load]]: lines 53-69
-- [[DNS from First Principles/Fragments/rgbdns-frag-9e8e0d51389c|read_entries]]: lines 70-124
-- [[DNS from First Principles/Fragments/rgbdns-frag-4a71bdeba2ec|decode_record]]: lines 125-178
-- [[DNS from First Principles/Fragments/rgbdns-frag-a98232a8cdb0|encode_rdata]]: lines 179-237
-- [[DNS from First Principles/Fragments/rgbdns-frag-1cfb12457767|decode_name]]: lines 238-264
-- [[DNS from First Principles/Fragments/rgbdns-frag-908320134aee|le_u32]]: lines 265-269
-- [[DNS from First Principles/Fragments/rgbdns-frag-489b39a43ae6|tests]]: lines 270-275
-- [[DNS from First Principles/Fragments/rgbdns-frag-563d0d5def13|exact_cdb_roundtrip_preserves_lookup_semantics]]: lines 276-324
-- [[DNS from First Principles/Fragments/rgbdns-frag-af1b07391a27|rejects_truncated_database]]: lines 325-331
+- [[DNS from First Principles/Fragments/rgbdns-frag-f318af8bdeaa|compile]]: lines 12-61
+- [[DNS from First Principles/Fragments/rgbdns-frag-f67eebb3c015|load]]: lines 62-101
+- [[DNS from First Principles/Fragments/rgbdns-frag-916ec1cbc28e|read_entries]]: lines 102-156
+- [[DNS from First Principles/Fragments/rgbdns-frag-f9047bc1a1a2|decode_record]]: lines 157-210
+- [[DNS from First Principles/Fragments/rgbdns-frag-bf06479bb119|encode_rdata]]: lines 211-269
+- [[DNS from First Principles/Fragments/rgbdns-frag-f2d13363a376|decode_name]]: lines 270-296
+- [[DNS from First Principles/Fragments/rgbdns-frag-ca380a5004ce|le_u32]]: lines 297-301
+- [[DNS from First Principles/Fragments/rgbdns-frag-9cc58af3bb02|tests]]: lines 302-307
+- [[DNS from First Principles/Fragments/rgbdns-frag-d600fc524f2b|exact_cdb_roundtrip_preserves_lookup_semantics]]: lines 308-364
+- [[DNS from First Principles/Fragments/rgbdns-frag-428b1ce3e4be|rejects_truncated_database]]: lines 365-371
 
 ## Full Source
 
@@ -39,7 +39,7 @@ rgbdns_commit: "472c2087"
 
 use crate::{
     Error, Message, Name, RData, Record, RecordType, Result,
-    zone::{RecordMetadata, Zone},
+    zone::{Aname, RecordMetadata, Zone},
 };
 use std::{fs, path::Path};
 
@@ -55,6 +55,15 @@ pub fn compile(zone: &Zone, path: impl AsRef<Path>) -> Result<()> {
         key.extend(prefix);
         writer
             .add(&key, &location)
+            .map_err(|error| Error::Io(std::io::Error::other(error)))?;
+    }
+    for (owner, aname) in zone.aname_entries() {
+        let mut key = b"\0A".to_vec();
+        key.extend(owner.to_wire());
+        let mut value = aname.ttl.to_be_bytes().to_vec();
+        value.extend(aname.target.to_wire());
+        writer
+            .add(&key, &value)
             .map_err(|error| Error::Io(std::io::Error::other(error)))?;
     }
     for (record, metadata) in zone.record_entries() {
@@ -91,6 +100,7 @@ pub fn load(path: impl AsRef<Path>) -> Result<Zone> {
     let entries = read_entries(path)?;
     let mut records = Vec::new();
     let mut locations = Vec::new();
+    let mut anames = Vec::new();
     for (key, value) in entries {
         if key.starts_with(b"\0%") {
             if value.len() != 2 || key.len() > 6 {
@@ -99,9 +109,31 @@ pub fn load(path: impl AsRef<Path>) -> Result<Zone> {
             locations.push((key[2..].to_vec(), [value[0], value[1]]));
             continue;
         }
+        if key.starts_with(b"\0A") {
+            if value.len() < 5 {
+                return Err(Error::Format("short ANAME CDB value"));
+            }
+            let owner = decode_name(&key[2..])?;
+            let ttl = u32::from_be_bytes(
+                value[..4]
+                    .try_into()
+                    .map_err(|_| Error::Format("short ANAME TTL"))?,
+            );
+            if ttl == 0 {
+                return Err(Error::Format("ANAME TTL must be positive"));
+            }
+            anames.push((
+                owner,
+                Aname {
+                    target: decode_name(&value[4..])?,
+                    ttl,
+                },
+            ));
+            continue;
+        }
         records.push(decode_record(&key, &value)?);
     }
-    Ok(Zone::from_compiled_records(records, locations))
+    Ok(Zone::from_compiled_records(records, locations, anames))
 }
 
 pub(crate) fn read_entries(path: impl AsRef<Path>) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
@@ -313,6 +345,7 @@ mod tests {
     fn exact_cdb_roundtrip_preserves_lookup_semantics() {
         let zone = Zone::parse(
             ".example:192.0.2.53:ns.example\n\
+             Aexample:hosting.example.net:120\n\
              +www.example:192.0.2.1:60\n\
              +*.wild.example:192.0.2.2:61\n\
              %aa:192.0.2\n\
@@ -338,6 +371,13 @@ mod tests {
                 if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
                     && records[0].ttl == 60
         ));
+        assert_eq!(
+            loaded.aname(&"example".parse().unwrap()),
+            Some(&Aname {
+                target: "hosting.example.net".parse().unwrap(),
+                ttl: 120,
+            })
+        );
         assert!(matches!(
             loaded.lookup(&"x.wild.example".parse().unwrap(), RecordType::A),
             Lookup::Answer(records) if records[0].ttl == 61

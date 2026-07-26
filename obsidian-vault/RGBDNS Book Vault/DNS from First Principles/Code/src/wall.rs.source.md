@@ -6,7 +6,7 @@ subsystem: "Specialized responders"
 crate: "rgbdns"
 line_count: 104
 fragment_count: 5
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/wall.rs

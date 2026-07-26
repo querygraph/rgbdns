@@ -6,10 +6,10 @@ It packages the complete book together with the complete text/code surface of rg
 ## Contents
 
 - Book chapters: 31
-- rgbdns code-file notes: 89
-- Generated code fragments: 648
-- rgbdns source commit: `472c2087`
-- Book source commit: `472c2087`
+- rgbdns code-file notes: 96
+- Generated code fragments: 696
+- rgbdns source commit: `79502939`
+- Book source commit: `79502939`
 
 ## Start Here
 

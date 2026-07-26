@@ -7,7 +7,7 @@ source_file: "docs/book/rgbdns.md"
 
 DNS packets are attacker-controlled binary graphs: compression pointers can
 jump backward, names can share suffixes, section counts can lie, and RDATA
-lengths can disagree with actual bytes. [`packet.rs`](../../src/packet.rs)
+lengths can disagree with actual bytes. [`packet.rs`](https://github.com/querygraph/rgbdns/blob/master/src/packet.rs)
 contains the codec and deliberately keeps the reader state small:
 
 ```rust

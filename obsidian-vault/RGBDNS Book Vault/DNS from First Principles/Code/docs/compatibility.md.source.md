@@ -3,21 +3,21 @@ type: "code-file"
 source_path: "docs/compatibility.md"
 language: "markdown"
 subsystem: "Documentation"
-line_count: 72
+line_count: 74
 fragment_count: 1
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # docs/compatibility.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 - Source path: `docs/compatibility.md`
-- Lines: 72
+- Lines: 74
 - Summary: Compatibility and research ledger
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-e477664e2daf|Compatibility and research ledger]]: lines 1-72
+- [[DNS from First Principles/Fragments/rgbdns-frag-c1bcd98d6c46|Compatibility and research ledger]]: lines 1-74
 
 ## Full Source
 
@@ -31,6 +31,8 @@ Implemented:
 - RFC 1034/1035 names, compression decoding, queries and resource records
 - tinydns markers `. & = + @ ' ^ C Z : 3 6 S %`, including client-location
   selection and query-time TAI64 activation/expiration
+- private `A` ANAME marker for apex-safe, cached A/AAAA flattening without
+  emitting a wire CNAME
 - atomic djbdns-compatible `data.cdb` compilation and bounded, validating CDB
   loading; a 19-entry fixture including location, timestamp, SRV, and patched
   IPv6 qualifiers was differentially verified as identical

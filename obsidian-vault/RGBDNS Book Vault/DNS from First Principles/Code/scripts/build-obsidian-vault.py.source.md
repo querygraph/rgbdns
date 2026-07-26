@@ -3,16 +3,16 @@ type: "code-file"
 source_path: "scripts/build-obsidian-vault.py"
 language: "python"
 subsystem: "Developer scripts"
-line_count: 778
+line_count: 794
 fragment_count: 31
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # scripts/build-obsidian-vault.py
 
 - Subsystem: [[DNS from First Principles/Subsystems/Developer scripts|Developer scripts]]
 - Source path: `scripts/build-obsidian-vault.py`
-- Lines: 778
+- Lines: 794
 - Summary: Build an Obsidian vault edition for the RGBDNS Rust book.
 
 ## Extracted Fragments
@@ -36,18 +36,18 @@ rgbdns_commit: "472c2087"
 - [[DNS from First Principles/Fragments/rgbdns-frag-dc0f85fcbcf3|fragment_id]]: lines 267-271
 - [[DNS from First Principles/Fragments/rgbdns-frag-d6b1c2eb5152|extract_fragments]]: lines 272-315
 - [[DNS from First Principles/Fragments/rgbdns-frag-74b6413eb5f6|inventory_codebase]]: lines 316-341
-- [[DNS from First Principles/Fragments/rgbdns-frag-0a450270b95a|manuscript_chapters]]: lines 342-354
-- [[DNS from First Principles/Fragments/rgbdns-frag-63e34ad48617|choose_chapter_fragments]]: lines 355-387
-- [[DNS from First Principles/Fragments/rgbdns-frag-a66cb0fd078a|render_fragment_block]]: lines 388-399
-- [[DNS from First Principles/Fragments/rgbdns-frag-569ebe0793f1|render_chapter]]: lines 400-413
-- [[DNS from First Principles/Fragments/rgbdns-frag-1425ddcffad2|render_source_file]]: lines 414-437
-- [[DNS from First Principles/Fragments/rgbdns-frag-4302b6369fa0|render_fragment_note]]: lines 438-465
-- [[DNS from First Principles/Fragments/rgbdns-frag-52188f6fab55|render_index]]: lines 466-472
-- [[DNS from First Principles/Fragments/rgbdns-frag-e91f6f32bf5b|render_vault_readme]]: lines 473-517
-- [[DNS from First Principles/Fragments/rgbdns-frag-eaeef8aad13a|copy_plugin]]: lines 518-526
-- [[DNS from First Principles/Fragments/rgbdns-frag-887fe5344145|copy_book_assets]]: lines 527-533
-- [[DNS from First Principles/Fragments/rgbdns-frag-745e0bd50d8f|build_vault]]: lines 534-614
-- [[DNS from First Principles/Fragments/rgbdns-frag-68082ce5cc47|main]]: lines 767-778
+- [[DNS from First Principles/Fragments/rgbdns-frag-5fe89c86fc54|manuscript_chapters]]: lines 342-370
+- [[DNS from First Principles/Fragments/rgbdns-frag-6616eeda0eb5|choose_chapter_fragments]]: lines 371-403
+- [[DNS from First Principles/Fragments/rgbdns-frag-5cc71bf08187|render_fragment_block]]: lines 404-415
+- [[DNS from First Principles/Fragments/rgbdns-frag-8c6f87b3e8be|render_chapter]]: lines 416-429
+- [[DNS from First Principles/Fragments/rgbdns-frag-21b62d47f194|render_source_file]]: lines 430-453
+- [[DNS from First Principles/Fragments/rgbdns-frag-30f951300b24|render_fragment_note]]: lines 454-481
+- [[DNS from First Principles/Fragments/rgbdns-frag-3f8c0be55fcf|render_index]]: lines 482-488
+- [[DNS from First Principles/Fragments/rgbdns-frag-0a3e9642ceaa|render_vault_readme]]: lines 489-533
+- [[DNS from First Principles/Fragments/rgbdns-frag-51da6540a1a5|copy_plugin]]: lines 534-542
+- [[DNS from First Principles/Fragments/rgbdns-frag-99bc96942e75|copy_book_assets]]: lines 543-549
+- [[DNS from First Principles/Fragments/rgbdns-frag-1eac6942e335|build_vault]]: lines 550-630
+- [[DNS from First Principles/Fragments/rgbdns-frag-c1baa20d0152|main]]: lines 783-794
 
 ## Full Source
 
@@ -396,9 +396,25 @@ def inventory_codebase(rgbdns_root: Path) -> list[SourceFile]:
 def manuscript_chapters() -> list[tuple[str, str, str]]:
     """Split the canonical single-file manuscript into stable Obsidian notes."""
     text = MANUSCRIPT.read_text(encoding="utf-8")
-    chunks = re.split(r"(?m)(?=^# )", text)
+    lines = text.splitlines()
+    starts: list[int] = []
+    fence: str | None = None
+    for index, line in enumerate(lines):
+        stripped = line.lstrip()
+        marker = stripped[:3]
+        if marker in {"```", "~~~"}:
+            if fence is None:
+                fence = marker
+            elif marker == fence:
+                fence = None
+            continue
+        if fence is None and line.startswith("# "):
+            starts.append(index)
+
     chapters: list[tuple[str, str, str]] = []
-    for index, chunk in enumerate(filter(str.strip, chunks), start=1):
+    for index, start in enumerate(starts, start=1):
+        end = starts[index] if index < len(starts) else len(lines)
+        chunk = "\n".join(lines[start:end]).rstrip()
         first = chunk.splitlines()[0]
         title = re.sub(r"\s+\{[^}]+\}\s*$", "", first[2:]).strip()
         note = f"{VAULT_BOOK}/Chapters/{index:02d}-{slug(title, 72)}"

@@ -5,7 +5,7 @@ source_file: "docs/book/rgbdns.md"
 
 # Valid names instead of hopeful strings
 
-[`Name`](../../src/name.rs) is the first load-bearing abstraction. It stores a
+[`Name`](https://github.com/querygraph/rgbdns/blob/master/src/name.rs) is the first load-bearing abstraction. It stores a
 sequence of byte labels rather than a UTF-8 domain string. Its constructor is
 private to the module; all construction passes through parsing or
 `from_labels`, and both reach the same validation rule:

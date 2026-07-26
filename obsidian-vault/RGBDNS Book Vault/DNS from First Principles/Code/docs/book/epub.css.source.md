@@ -5,7 +5,7 @@ language: "css"
 subsystem: "Documentation"
 line_count: 33
 fragment_count: 1
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # docs/book/epub.css

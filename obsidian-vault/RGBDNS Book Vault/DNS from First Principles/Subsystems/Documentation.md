@@ -1,11 +1,12 @@
 ---
 type: "subsystem"
 subsystem: "Documentation"
-file_count: 13
+file_count: 14
 ---
 
 # Documentation
 
+- [[DNS from First Principles/Code/docs/DEBIAN.md.source|docs/DEBIAN.md]]
 - [[DNS from First Principles/Code/docs/OBSIDIAN-VAULT.md.source|docs/OBSIDIAN-VAULT.md]]
 - [[DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source|docs/blog/announcing-rgbdns/post.md]]
 - [[DNS from First Principles/Code/docs/book/README.md.source|docs/book/README.md]]

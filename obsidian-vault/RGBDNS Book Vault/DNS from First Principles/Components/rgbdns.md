@@ -1,11 +1,12 @@
 ---
 type: "component"
 component: "rgbdns"
-file_count: 19
+file_count: 20
 ---
 
 # rgbdns
 
+- [[DNS from First Principles/Code/src/aname.rs.source|src/aname.rs]]
 - [[DNS from First Principles/Code/src/axfr.rs.source|src/axfr.rs]]
 - [[DNS from First Principles/Code/src/cdb.rs.source|src/cdb.rs]]
 - [[DNS from First Principles/Code/src/client.rs.source|src/client.rs]]

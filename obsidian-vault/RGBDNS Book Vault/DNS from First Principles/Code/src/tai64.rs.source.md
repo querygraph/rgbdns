@@ -6,7 +6,7 @@ subsystem: "Operations and supervision"
 crate: "rgbdns"
 line_count: 239
 fragment_count: 17
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/tai64.rs

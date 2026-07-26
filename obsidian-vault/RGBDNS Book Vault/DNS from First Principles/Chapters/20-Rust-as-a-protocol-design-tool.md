@@ -10,7 +10,7 @@ syntax. It is that rgbdns can express DNS invariants at boundaries and have the
 compiler preserve them across the program.
 
 The crate begins with `#![forbid(unsafe_code)]` in
-[`src/lib.rs`](../../src/lib.rs). This is stronger than merely having no
+[`src/lib.rs`](https://github.com/querygraph/rgbdns/blob/master/src/lib.rs). This is stronger than merely having no
 currently known unsafe block: a later contribution cannot introduce one
 without first making an explicit, reviewable change to the crate policy. The
 implementation still performs byte-level packet parsing, binary CDB loading,

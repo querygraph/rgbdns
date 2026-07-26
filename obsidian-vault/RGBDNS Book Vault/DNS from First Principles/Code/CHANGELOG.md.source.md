@@ -3,16 +3,16 @@ type: "code-file"
 source_path: "CHANGELOG.md"
 language: "markdown"
 subsystem: "Repository and build"
-line_count: 133
+line_count: 144
 fragment_count: 2
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # CHANGELOG.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 - Source path: `CHANGELOG.md`
-- Lines: 133
+- Lines: 144
 - Summary: Changelog
 
 ## Extracted Fragments
@@ -32,6 +32,17 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ### Added
 
+- Private ANAME zone directives with CDB persistence, bounded recursive
+  CNAME following, TTL-capped address caching, and authoritative apex-safe
+  A/AAAA synthesis.
+- Manual pages for every command and packaged service helper, installed by the
+  Debian package alongside the rgbdns(7) overview.
+- Native Debian packaging with dedicated service accounts, hardened systemd
+  units, idempotent primary setup, allow-listed AXFR serving, atomic timed
+  secondary synchronization, package build tooling, and an operations guide.
+- Cloud Debian package builds with archive inspection, lintian enforcement,
+  clean-container installation checks, artifact upload, and automatic
+  Cargo-binary discovery.
 - Iterative `dnscache` service with DNSSEC validation, root-hint traversal,
   bailiwick enforcement, bounded response/nameserver caches, query
   case-randomization, EDNS, TCP fallback, and loopback-only access by default.

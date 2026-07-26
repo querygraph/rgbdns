@@ -3,23 +3,24 @@ type: "code-file"
 source_path: "README.md"
 language: "markdown"
 subsystem: "Repository and build"
-line_count: 75
-fragment_count: 3
-rgbdns_commit: "472c2087"
+line_count: 106
+fragment_count: 4
+rgbdns_commit: "79502939"
 ---
 
 # README.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 - Source path: `README.md`
-- Lines: 75
+- Lines: 106
 - Summary: rgbdns
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-cfb0faf3b090|rgbdns]]: lines 1-43
-- [[DNS from First Principles/Fragments/rgbdns-frag-31920af81303|Book]]: lines 44-63
-- [[DNS from First Principles/Fragments/rgbdns-frag-855d7f20ae34|Conformance and performance]]: lines 64-75
+- [[DNS from First Principles/Fragments/rgbdns-frag-5a01ae2d3ddb|rgbdns]]: lines 1-56
+- [[DNS from First Principles/Fragments/rgbdns-frag-c24b9da16705|Debian and systemd]]: lines 57-74
+- [[DNS from First Principles/Fragments/rgbdns-frag-003170c20cd5|Book]]: lines 75-94
+- [[DNS from First Principles/Fragments/rgbdns-frag-851308e1cfeb|Conformance and performance]]: lines 95-106
 
 ## Full Source
 
@@ -59,6 +60,19 @@ separated CIDR list to authorize additional clients.
 The recursive client commands read `DNSCACHEIP` (a comma-separated list of IP
 or `IP:port` endpoints) when set, otherwise they use `/etc/resolv.conf`.
 
+rgbdns supports private ANAME directives for CNAME-like apex hosting without
+placing an invalid CNAME on the wire:
+
+```text
+.example.com:192.0.2.53:ns1.example.com
+Aexample.com:customer.blog-host.example:300
+```
+
+The `A` line resolves the target and synthesizes authoritative A and AAAA
+answers owned by `example.com`; 300 seconds is the TTL cap. It may coexist
+with the apex SOA, NS, MX, and TXT records, but not with A, AAAA, or CNAME at
+the same owner. ANAME resolution uses `DNSCACHEIP` or `/etc/resolv.conf`.
+
 The `*-conf` commands generate djbdns-style service directories. They reference
 rgbdns's own `setuidgid` and `multilog` binaries by absolute path, so
 daemontools is not a runtime dependency. `multilog t ./main` writes TAI64N
@@ -66,6 +80,24 @@ timestamps to `main/current`; optional `s<size>` and `n<count>` arguments set
 the rotation threshold and retained-file count. Daemons continue to write
 diagnostics to stderr, allowing the same binaries to work under daemontools,
 systemd, containers, or another supervisor.
+
+## Debian and systemd
+
+The repository includes native Debian packaging, hardened systemd services, and
+an idempotent `rgbdns-setup` command for primary and secondary authoritative
+servers. See [`docs/DEBIAN.md`](docs/DEBIAN.md) for package builds, account and
+directory layout, tinydns data-file setup, firewalls, AXFR allow-lists, timed
+secondary refresh, verification, upgrades, and troubleshooting. It includes a
+complete `cron.sh` deployment with `52.10.53.234` as the primary address and
+BuddyNS as the secondary network.
+
+On Debian or Ubuntu, build the package with:
+
+```sh
+sudo apt install build-essential cargo debhelper rustc
+packaging/build-deb.sh
+sudo apt install ../rgbdns_0.1.1_$(dpkg --print-architecture).deb
+```
 
 ## Book
 

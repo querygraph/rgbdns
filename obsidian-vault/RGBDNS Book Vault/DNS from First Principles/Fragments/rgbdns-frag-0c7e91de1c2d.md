@@ -32,6 +32,17 @@ end_line: 86
 
 ### Added
 
+- Private ANAME zone directives with CDB persistence, bounded recursive
+  CNAME following, TTL-capped address caching, and authoritative apex-safe
+  A/AAAA synthesis.
+- Manual pages for every command and packaged service helper, installed by the
+  Debian package alongside the rgbdns(7) overview.
+- Native Debian packaging with dedicated service accounts, hardened systemd
+  units, idempotent primary setup, allow-listed AXFR serving, atomic timed
+  secondary synchronization, package build tooling, and an operations guide.
+- Cloud Debian package builds with archive inspection, lintian enforcement,
+  clean-container installation checks, artifact upload, and automatic
+  Cargo-binary discovery.
 - Iterative `dnscache` service with DNSSEC validation, root-hint traversal,
   bailiwick enforcement, bounded response/nameserver caches, query
   case-randomization, EDNS, TCP fallback, and loopback-only access by default.
@@ -98,15 +109,4 @@ end_line: 86
   refusal behavior.
 - Location-aware `pickdns`, atomic `pickdns-data`, and `pickdns-conf`, with
   unbiased address shuffling, original three-answer/TTL behavior, fallback
-  locations, and differentially identical CDB entries.
-- Shared bounded stub resolver with OS-random query IDs, connected UDP source
-  validation, retries, resolver configuration, and automatic TCP fallback.
-- Runnable `dnsip`, `dnsipq`, `dnsname`, `dnsmx`, `dnstxt`, and `dnsqr`
-  clients; `dnsq` now uses the hardened shared transport.
-- Patched-suite `dnsip6` and `dnsip6q` AAAA lookup clients.
-- Bounded-concurrency, order-preserving `dnsfilter` and an IPv4/IPv6-capable
-  iterative `dnstrace` with referral/glue reporting and depth limits.
-- Atomic `tinydns-edit add` operations with original duplicate checks, TTL
-  inheritance, permissions, and NS/MX slot allocation, differentially verified
-  against djbdns.
 ```

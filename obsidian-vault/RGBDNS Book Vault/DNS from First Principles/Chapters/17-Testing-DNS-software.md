@@ -38,6 +38,8 @@ Every DNS implementation should retain regression cases for:
 - duplicate or malformed OPT records;
 - tiny advertised transport limits;
 - CNAME loops and excessive chains;
+- ANAME self-reference, upstream CNAME loops, excessive address results, and
+  resolver failure;
 - wildcard names blocked by existing nodes;
 - delegation cuts beneath an authoritative apex;
 - NODATA versus NXDOMAIN;

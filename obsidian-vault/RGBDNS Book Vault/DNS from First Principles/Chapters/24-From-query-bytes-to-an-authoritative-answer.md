@@ -5,7 +5,7 @@ source_file: "docs/book/rgbdns.md"
 
 # From query bytes to an authoritative answer
 
-[`server::respond`](../../src/server.rs) is the central authoritative pipeline.
+[`server::respond`](https://github.com/querygraph/rgbdns/blob/master/src/server.rs) is the central authoritative pipeline.
 Its shape is intentionally linear:
 
 1. Reject an unknown opcode from the header without misparsing its body as a
@@ -18,7 +18,7 @@ Its shape is intentionally linear:
 7. Normalize RRset TTLs and remove duplicates.
 8. Encode or truncate the response.
 
-The code separates mechanism from policy. [`transport.rs`](../../src/transport.rs)
+The code separates mechanism from policy. [`transport.rs`](https://github.com/querygraph/rgbdns/blob/master/src/transport.rs)
 knows UDP datagrams, TCP length prefixes, timeouts, persistent connections, and
 a fixed worker bound. It knows nothing about zones. The handler knows DNS
 policy but receives transport limits and client identity as ordinary
@@ -27,7 +27,7 @@ machinery without pretending to be authoritative zones.
 
 The original djbdns family achieved robustness partly through small processes.
 rgbdns retains that decomposition while strengthening in-process boundaries.
-The binaries under [`src/bin`](../../src/bin) are mostly adapters: environment,
+The binaries under [`src/bin`](https://github.com/querygraph/rgbdns/tree/master/src/bin) are mostly adapters: environment,
 configuration, a library call, and the djbdns-compatible fatal exit convention.
 Small executables remain independently supervisable, but common logic is
 testable as ordinary Rust functions.
@@ -45,41 +45,41 @@ These generated links open the collocated rgbdns codebase notes.
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-4a9794b88127", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-4a9794b88127: fn compile", "sourcePath": "src/cdb.rs", "startLine": 12, "endLine": 52}
+{"id": "rgbdns-frag-f318af8bdeaa", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-f318af8bdeaa: fn compile", "sourcePath": "src/cdb.rs", "startLine": 12, "endLine": 61}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-83b463908a3c", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-83b463908a3c: fn load", "sourcePath": "src/cdb.rs", "startLine": 53, "endLine": 69}
+{"id": "rgbdns-frag-f67eebb3c015", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-f67eebb3c015: fn load", "sourcePath": "src/cdb.rs", "startLine": 62, "endLine": 101}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-9e8e0d51389c", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-9e8e0d51389c: fn read_entries", "sourcePath": "src/cdb.rs", "startLine": 70, "endLine": 124}
+{"id": "rgbdns-frag-916ec1cbc28e", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-916ec1cbc28e: fn read_entries", "sourcePath": "src/cdb.rs", "startLine": 102, "endLine": 156}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-4a71bdeba2ec", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-4a71bdeba2ec: fn decode_record", "sourcePath": "src/cdb.rs", "startLine": 125, "endLine": 178}
+{"id": "rgbdns-frag-f9047bc1a1a2", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-f9047bc1a1a2: fn decode_record", "sourcePath": "src/cdb.rs", "startLine": 157, "endLine": 210}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-a98232a8cdb0", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-a98232a8cdb0: fn encode_rdata", "sourcePath": "src/cdb.rs", "startLine": 179, "endLine": 237}
+{"id": "rgbdns-frag-bf06479bb119", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-bf06479bb119: fn encode_rdata", "sourcePath": "src/cdb.rs", "startLine": 211, "endLine": 269}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1cfb12457767", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-1cfb12457767: fn decode_name", "sourcePath": "src/cdb.rs", "startLine": 238, "endLine": 264}
+{"id": "rgbdns-frag-f2d13363a376", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-f2d13363a376: fn decode_name", "sourcePath": "src/cdb.rs", "startLine": 270, "endLine": 296}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-908320134aee", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-908320134aee: fn le_u32", "sourcePath": "src/cdb.rs", "startLine": 265, "endLine": 269}
+{"id": "rgbdns-frag-ca380a5004ce", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-ca380a5004ce: fn le_u32", "sourcePath": "src/cdb.rs", "startLine": 297, "endLine": 301}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-489b39a43ae6", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-489b39a43ae6: mod tests", "sourcePath": "src/cdb.rs", "startLine": 270, "endLine": 275}
+{"id": "rgbdns-frag-9cc58af3bb02", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-9cc58af3bb02: mod tests", "sourcePath": "src/cdb.rs", "startLine": 302, "endLine": 307}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-563d0d5def13", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-563d0d5def13: fn exact_cdb_roundtrip_preserves_lookup_semantics", "sourcePath": "src/cdb.rs", "startLine": 276, "endLine": 324}
+{"id": "rgbdns-frag-d600fc524f2b", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-d600fc524f2b: fn exact_cdb_roundtrip_preserves_lookup_semantics", "sourcePath": "src/cdb.rs", "startLine": 308, "endLine": 364}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-af1b07391a27", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-af1b07391a27: fn rejects_truncated_database", "sourcePath": "src/cdb.rs", "startLine": 325, "endLine": 331}
+{"id": "rgbdns-frag-428b1ce3e4be", "codeNote": "DNS from First Principles/Code/src/cdb.rs.source", "heading": "rgbdns-frag-428b1ce3e4be: fn rejects_truncated_database", "sourcePath": "src/cdb.rs", "startLine": 365, "endLine": 371}
 ```

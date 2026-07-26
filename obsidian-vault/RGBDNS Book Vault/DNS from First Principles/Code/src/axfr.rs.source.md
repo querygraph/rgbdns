@@ -4,9 +4,9 @@ source_path: "src/axfr.rs"
 language: "rust"
 subsystem: "Transport and zone transfer"
 crate: "rgbdns"
-line_count: 457
+line_count: 474
 fragment_count: 21
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/axfr.rs
@@ -14,7 +14,7 @@ rgbdns_commit: "472c2087"
 - Subsystem: [[DNS from First Principles/Subsystems/Transport and zone transfer|Transport and zone transfer]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/axfr.rs`
-- Lines: 457
+- Lines: 474
 - Summary: Bounded DNS-over-TCP full-zone transfers.
 
 ## Extracted Fragments
@@ -25,21 +25,21 @@ rgbdns_commit: "472c2087"
 - [[DNS from First Principles/Fragments/rgbdns-frag-aee4934c3db3|MAX_TRANSFER_BYTES]]: lines 18-19
 - [[DNS from First Principles/Fragments/rgbdns-frag-884813b3737c|serve]]: lines 20-27
 - [[DNS from First Principles/Fragments/rgbdns-frag-9a2021bd9440|serve_listener]]: lines 28-61
-- [[DNS from First Principles/Fragments/rgbdns-frag-2554d1b3665a|serve_connection]]: lines 62-122
-- [[DNS from First Principles/Fragments/rgbdns-frag-8c366d542d3c|write_response]]: lines 123-138
-- [[DNS from First Principles/Fragments/rgbdns-frag-4268f778fa47|response_wire]]: lines 139-154
-- [[DNS from First Principles/Fragments/rgbdns-frag-454fe9e80b77|read_message]]: lines 155-162
-- [[DNS from First Principles/Fragments/rgbdns-frag-3985e9023e0b|fetch]]: lines 163-229
-- [[DNS from First Principles/Fragments/rgbdns-frag-a31c068b7119|validate_axfr_message]]: lines 230-255
-- [[DNS from First Principles/Fragments/rgbdns-frag-83d521fef5d6|random_id]]: lines 256-262
-- [[DNS from First Principles/Fragments/rgbdns-frag-0b1febdb552a|write_tinydns]]: lines 263-287
-- [[DNS from First Principles/Fragments/rgbdns-frag-cce2751e8a7e|tinydns_line]]: lines 288-339
-- [[DNS from First Principles/Fragments/rgbdns-frag-bcdced1d52db|escape]]: lines 340-352
-- [[DNS from First Principles/Fragments/rgbdns-frag-7d0ccc73f8dd|tests]]: lines 353-357
-- [[DNS from First Principles/Fragments/rgbdns-frag-e67d14654aa5|temp_path]]: lines 358-369
-- [[DNS from First Principles/Fragments/rgbdns-frag-e933ea2326bd|live_transfer_has_matching_soa_bookends]]: lines 370-397
-- [[DNS from First Principles/Fragments/rgbdns-frag-f6fb2ad2e665|exported_tinydns_text_roundtrips]]: lines 398-422
-- [[DNS from First Principles/Fragments/rgbdns-frag-9990017fae6d|axfr_client_rejects_spoofable_or_structurally_invalid_messages]]: lines 423-457
+- [[DNS from First Principles/Fragments/rgbdns-frag-4d44b9b57c53|serve_connection]]: lines 62-70
+- [[DNS from First Principles/Fragments/rgbdns-frag-c4eddbb40457|response_wires]]: lines 71-151
+- [[DNS from First Principles/Fragments/rgbdns-frag-ca8414b505a4|response_wire]]: lines 156-171
+- [[DNS from First Principles/Fragments/rgbdns-frag-678d90c8e377|read_message]]: lines 172-179
+- [[DNS from First Principles/Fragments/rgbdns-frag-83eeb011f0b6|fetch]]: lines 180-246
+- [[DNS from First Principles/Fragments/rgbdns-frag-35c24cd23185|validate_axfr_message]]: lines 247-272
+- [[DNS from First Principles/Fragments/rgbdns-frag-3875bb7b1985|random_id]]: lines 273-279
+- [[DNS from First Principles/Fragments/rgbdns-frag-2ff6549bf9ff|write_tinydns]]: lines 280-304
+- [[DNS from First Principles/Fragments/rgbdns-frag-d0d89aa0192c|tinydns_line]]: lines 305-356
+- [[DNS from First Principles/Fragments/rgbdns-frag-a716ad34eead|escape]]: lines 357-369
+- [[DNS from First Principles/Fragments/rgbdns-frag-7486a2a93364|tests]]: lines 370-374
+- [[DNS from First Principles/Fragments/rgbdns-frag-ba79974c4829|temp_path]]: lines 375-386
+- [[DNS from First Principles/Fragments/rgbdns-frag-5d9c78436686|live_transfer_has_matching_soa_bookends]]: lines 387-414
+- [[DNS from First Principles/Fragments/rgbdns-frag-747c9f2e6a62|exported_tinydns_text_roundtrips]]: lines 415-439
+- [[DNS from First Principles/Fragments/rgbdns-frag-481ffa0043ef|axfr_client_rejects_spoofable_or_structurally_invalid_messages]]: lines 440-474
 
 ## Full Source
 
@@ -107,15 +107,28 @@ pub fn serve_listener(
 
 fn serve_connection(zone: &Zone, stream: &mut TcpStream) -> Result<()> {
     let query = read_message(stream)?;
+    for wire in response_wires(zone, query)? {
+        stream.write_all(&(wire.len() as u16).to_be_bytes())?;
+        stream.write_all(&wire)?;
+    }
+    Ok(())
+}
+
+pub(crate) fn response_wires(zone: &Zone, query: Message) -> Result<Vec<Vec<u8>>> {
     if query.flags & 0x8000 != 0 {
         return Err(Error::Format("received an AXFR response as a query"));
     }
     if query.questions.len() != 1 {
-        return write_response(stream, query.id, None, 1, Vec::new());
+        return Ok(vec![response_wire(query.id, None, 1, Vec::new())?]);
     }
     let question = query.questions[0].clone();
     if query.flags & 0x7800 != 0 {
-        return write_response(stream, query.id, Some(question), 4, Vec::new());
+        return Ok(vec![response_wire(
+            query.id,
+            Some(question),
+            4,
+            Vec::new(),
+        )?]);
     }
     if !query.answers.is_empty()
         || !query.authorities.is_empty()
@@ -126,14 +139,30 @@ fn serve_connection(zone: &Zone, stream: &mut TcpStream) -> Result<()> {
             .count()
             > 1
     {
-        return write_response(stream, query.id, Some(question), 1, Vec::new());
+        return Ok(vec![response_wire(
+            query.id,
+            Some(question),
+            1,
+            Vec::new(),
+        )?]);
     }
     if question.qclass != 1 || question.qtype != RecordType::Axfr {
-        return write_response(stream, query.id, Some(question), 4, Vec::new());
+        return Ok(vec![response_wire(
+            query.id,
+            Some(question),
+            4,
+            Vec::new(),
+        )?]);
     }
     let Some(records) = zone.transfer(&question.name) else {
-        return write_response(stream, query.id, Some(question), 5, Vec::new());
+        return Ok(vec![response_wire(
+            query.id,
+            Some(question),
+            5,
+            Vec::new(),
+        )?]);
     };
+    let mut responses = Vec::new();
     let mut first = true;
     let mut batch = Vec::new();
     for record in records {
@@ -150,36 +179,24 @@ fn serve_connection(zone: &Zone, stream: &mut TcpStream) -> Result<()> {
         if batch.is_empty() {
             return Err(Error::Format("AXFR record exceeds DNS TCP framing"));
         }
-        write_response(
-            stream,
+        responses.push(response_wire(
             query.id,
             first.then(|| question.clone()),
             0,
             std::mem::take(&mut batch),
-        )?;
+        )?);
         first = false;
         batch.push(record);
     }
     if !batch.is_empty() {
-        write_response(stream, query.id, first.then_some(question), 0, batch)?;
+        responses.push(response_wire(
+            query.id,
+            first.then_some(question),
+            0,
+            batch,
+        )?);
     }
-    Ok(())
-}
-
-fn write_response(
-    stream: &mut TcpStream,
-    id: u16,
-    question: Option<Question>,
-    rcode: u16,
-    answers: Vec<Record>,
-) -> Result<()> {
-    let wire = response_wire(id, question, rcode, answers)?;
-    if wire.len() > MAX_TCP_MESSAGE {
-        return Err(Error::Format("AXFR message exceeds DNS TCP framing"));
-    }
-    stream.write_all(&(wire.len() as u16).to_be_bytes())?;
-    stream.write_all(&wire)?;
-    Ok(())
+    Ok(responses)
 }
 
 fn response_wire(

@@ -5,7 +5,7 @@ language: ""
 subsystem: "Repository and build"
 line_count: 1930
 fragment_count: 1
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # Cargo.lock
@@ -1085,7 +1085,7 @@ checksum = "1e061d1b48cb8d38042de4ae0a7a6401009d6143dc80d2e2d6f31f0bdd6470c7"
 
 [[package]]
 name = "rgbdns"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cdb",
  "chrono",

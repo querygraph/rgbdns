@@ -5,7 +5,7 @@ language: "toml"
 subsystem: "Repository and build"
 line_count: 204
 fragment_count: 1
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # Cargo.toml
@@ -24,7 +24,7 @@ rgbdns_commit: "472c2087"
 ```toml
 [package]
 name = "rgbdns"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "Unlicense"
 description = "A safe, faithful Rust reimplementation of the djbdns suite"

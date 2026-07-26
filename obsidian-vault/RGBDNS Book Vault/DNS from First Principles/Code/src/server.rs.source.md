@@ -4,9 +4,9 @@ source_path: "src/server.rs"
 language: "rust"
 subsystem: "Authoritative service"
 crate: "rgbdns"
-line_count: 639
-fragment_count: 23
-rgbdns_commit: "472c2087"
+line_count: 833
+fragment_count: 26
+rgbdns_commit: "79502939"
 ---
 
 # src/server.rs
@@ -14,34 +14,37 @@ rgbdns_commit: "472c2087"
 - Subsystem: [[DNS from First Principles/Subsystems/Authoritative service|Authoritative service]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/server.rs`
-- Lines: 639
+- Lines: 833
 - Summary: Source file in the Authoritative service subsystem.
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-9111a59a3049|respond]]: lines 12-15
-- [[DNS from First Principles/Fragments/rgbdns-frag-722e4576ccbc|respond_from]]: lines 16-24
-- [[DNS from First Principles/Fragments/rgbdns-frag-2f2af75ed065|respond_over_transport]]: lines 25-105
-- [[DNS from First Principles/Fragments/rgbdns-frag-ae38d008c815|normalize_rrsets]]: lines 155-178
-- [[DNS from First Principles/Fragments/rgbdns-frag-7320f5c3210a|negative_soa]]: lines 179-185
-- [[DNS from First Principles/Fragments/rgbdns-frag-220d6f0cbcdb|error_response]]: lines 186-197
-- [[DNS from First Principles/Fragments/rgbdns-frag-096ea17b82aa|zone_lookup]]: lines 198-209
-- [[DNS from First Principles/Fragments/rgbdns-frag-c9eb8bdf42ba|expand_cname_chain]]: lines 210-250
-- [[DNS from First Principles/Fragments/rgbdns-frag-4dd75158d5d2|add_target_addresses]]: lines 251-277
-- [[DNS from First Principles/Fragments/rgbdns-frag-f8e1052e7132|truncate]]: lines 278-319
-- [[DNS from First Principles/Fragments/rgbdns-frag-bb3db60b9e88|with_tail_records_removed]]: lines 320-345
-- [[DNS from First Principles/Fragments/rgbdns-frag-1e7091c46f9a|serve]]: lines 346-356
-- [[DNS from First Principles/Fragments/rgbdns-frag-8a23f9d6fa9e|serve_sockets]]: lines 357-368
-- [[DNS from First Principles/Fragments/rgbdns-frag-4350cacf3568|tests]]: lines 369-378
-- [[DNS from First Principles/Fragments/rgbdns-frag-0cf5f1aebbd7|query]]: lines 379-406
-- [[DNS from First Principles/Fragments/rgbdns-frag-24eb49b3e883|referral_has_no_aa_and_contains_bailiwick_glue]]: lines 407-429
-- [[DNS from First Principles/Fragments/rgbdns-frag-86e49ea9f22b|client_address_selects_tinydns_location]]: lines 430-463
-- [[DNS from First Principles/Fragments/rgbdns-frag-564c75db45be|expands_bounded_cname_chains_and_target_additionals]]: lines 464-490
-- [[DNS from First Principles/Fragments/rgbdns-frag-af48654cc6f2|cname_loops_return_servfail_with_bounded_work]]: lines 491-506
-- [[DNS from First Principles/Fragments/rgbdns-frag-b5ef588ef89f|malformed_queries_get_bounded_formerr_and_unknown_opcode_gets_notimp]]: lines 507-532
-- [[DNS from First Principles/Fragments/rgbdns-frag-4ad9f36d2277|edns_negotiation_and_bad_version]]: lines 533-572
-- [[DNS from First Principles/Fragments/rgbdns-frag-2c1337a1892b|legacy_udp_is_limited_to_512_and_keeps_whole_records]]: lines 573-587
-- [[DNS from First Principles/Fragments/rgbdns-frag-83ee748c0fa8|live_udp_and_tcp_service]]: lines 588-639
+- [[DNS from First Principles/Fragments/rgbdns-frag-d3da65fbc724|respond]]: lines 12-19
+- [[DNS from First Principles/Fragments/rgbdns-frag-e0990e79e0f5|respond_from]]: lines 20-39
+- [[DNS from First Principles/Fragments/rgbdns-frag-85698b1ce866|respond_over_transport]]: lines 40-120
+- [[DNS from First Principles/Fragments/rgbdns-frag-413307db626e|normalize_rrsets]]: lines 196-219
+- [[DNS from First Principles/Fragments/rgbdns-frag-ff4f3e36f844|negative_soa]]: lines 220-226
+- [[DNS from First Principles/Fragments/rgbdns-frag-aba7f2385996|error_response]]: lines 227-238
+- [[DNS from First Principles/Fragments/rgbdns-frag-8a745a4a8208|zone_lookup]]: lines 239-250
+- [[DNS from First Principles/Fragments/rgbdns-frag-4625cc9215e0|expand_cname_chain]]: lines 251-291
+- [[DNS from First Principles/Fragments/rgbdns-frag-cb35766a16c9|add_target_addresses]]: lines 292-318
+- [[DNS from First Principles/Fragments/rgbdns-frag-b79b1695d38f|truncate]]: lines 319-360
+- [[DNS from First Principles/Fragments/rgbdns-frag-0f2b54775d5e|with_tail_records_removed]]: lines 361-386
+- [[DNS from First Principles/Fragments/rgbdns-frag-31d10be4bc98|serve]]: lines 387-423
+- [[DNS from First Principles/Fragments/rgbdns-frag-76bf4ddcc8ad|axfr_stream_handler]]: lines 424-444
+- [[DNS from First Principles/Fragments/rgbdns-frag-053b53ae57e0|serve_sockets]]: lines 445-476
+- [[DNS from First Principles/Fragments/rgbdns-frag-20be16ba4c51|tests]]: lines 477-486
+- [[DNS from First Principles/Fragments/rgbdns-frag-6ee0c357f63d|query]]: lines 487-514
+- [[DNS from First Principles/Fragments/rgbdns-frag-138ac655395d|referral_has_no_aa_and_contains_bailiwick_glue]]: lines 515-537
+- [[DNS from First Principles/Fragments/rgbdns-frag-78a254dd8c92|client_address_selects_tinydns_location]]: lines 538-572
+- [[DNS from First Principles/Fragments/rgbdns-frag-8f699a31cc8b|expands_bounded_cname_chains_and_target_additionals]]: lines 573-599
+- [[DNS from First Principles/Fragments/rgbdns-frag-80e9e786f228|cname_loops_return_servfail_with_bounded_work]]: lines 600-615
+- [[DNS from First Principles/Fragments/rgbdns-frag-a64686cbedbb|aname_synthesizes_authoritative_addresses_without_emitting_cname]]: lines 616-677
+- [[DNS from First Principles/Fragments/rgbdns-frag-5c417caa83ca|malformed_queries_get_bounded_formerr_and_unknown_opcode_gets_notimp]]: lines 678-703
+- [[DNS from First Principles/Fragments/rgbdns-frag-4020f1673346|edns_negotiation_and_bad_version]]: lines 704-743
+- [[DNS from First Principles/Fragments/rgbdns-frag-afd2662300da|legacy_udp_is_limited_to_512_and_keeps_whole_records]]: lines 744-758
+- [[DNS from First Principles/Fragments/rgbdns-frag-6c49d3a84895|live_udp_and_tcp_service]]: lines 759-811
+- [[DNS from First Principles/Fragments/rgbdns-frag-95f0d422d9b2|integrated_tcp_listener_serves_axfr]]: lines 812-833
 
 ## Full Source
 
@@ -58,7 +61,11 @@ use std::{
 };
 
 pub fn respond(zone: &Zone, wire: &[u8], transport_limit: usize) -> Result<Vec<u8>> {
-    respond_over_transport(zone, wire, transport_limit, true, None)
+    let resolver = zone
+        .has_anames()
+        .then(crate::aname::Resolver::from_system)
+        .transpose()?;
+    respond_over_transport(zone, resolver.as_ref(), wire, transport_limit, true, None)
 }
 
 pub fn respond_from(
@@ -67,11 +74,23 @@ pub fn respond_from(
     transport_limit: usize,
     client: IpAddr,
 ) -> Result<Vec<u8>> {
-    respond_over_transport(zone, wire, transport_limit, true, Some(client))
+    let resolver = zone
+        .has_anames()
+        .then(crate::aname::Resolver::from_system)
+        .transpose()?;
+    respond_over_transport(
+        zone,
+        resolver.as_ref(),
+        wire,
+        transport_limit,
+        true,
+        Some(client),
+    )
 }
 
 fn respond_over_transport(
     zone: &Zone,
+    aname_resolver: Option<&crate::aname::Resolver>,
     wire: &[u8],
     transport_limit: usize,
     is_udp: bool,
@@ -159,7 +178,32 @@ fn respond_over_transport(
     if question.qclass != 1 {
         r.flags |= 4
     } else {
-        match zone_lookup(zone, &question.name, question.qtype, client) {
+        let ordinary_lookup = zone_lookup(zone, &question.name, question.qtype, client);
+        let lookup = if matches!(&ordinary_lookup, Lookup::NoData(_) | Lookup::NxDomain(_))
+            && matches!(
+                question.qtype,
+                crate::RecordType::A | crate::RecordType::Aaaa
+            ) {
+            if let Some(aname) = zone.aname(&question.name) {
+                match aname_resolver
+                    .ok_or(crate::Error::Format("ANAME resolver is unavailable"))
+                    .and_then(|resolver| {
+                        resolver.resolve(&question.name, &aname.target, question.qtype, aname.ttl)
+                    }) {
+                    Ok(records) if !records.is_empty() => Lookup::Answer(records),
+                    Ok(_) => ordinary_lookup,
+                    Err(_) => {
+                        r.flags = (r.flags & !0x000f) | 2;
+                        return truncate(r, response_limit);
+                    }
+                }
+            } else {
+                ordinary_lookup
+            }
+        } else {
+            ordinary_lookup
+        };
+        match lookup {
             Lookup::Answer(x) => {
                 r.answers = x;
                 if !matches!(
@@ -392,24 +436,91 @@ fn with_tail_records_removed(response: &Message, mut count: usize) -> Message {
 }
 
 pub fn serve(zone: Zone, addr: &str) -> Result<()> {
+    let resolver = zone
+        .has_anames()
+        .then(crate::aname::Resolver::from_system)
+        .transpose()?
+        .map(Arc::new);
     let zone = Arc::new(zone);
+    let allowed = std::env::var("ALLOW_NETS")
+        .ok()
+        .map(|value| {
+            value
+                .split(',')
+                .map(str::trim)
+                .filter(|value| !value.is_empty())
+                .map(str::parse::<ipnet::IpNet>)
+                .collect::<std::result::Result<Vec<_>, _>>()
+                .map_err(|_| Error::Format("invalid ALLOW_NETS"))
+        })
+        .transpose()?
+        .map(Arc::new);
+    let stream_handler = allowed.map(|allowed| axfr_stream_handler(zone.clone(), allowed));
     crate::transport::serve(
         addr,
         Arc::new(move |wire, limit, client| {
-            respond_over_transport(&zone, wire, limit, limit <= 4096, Some(client))
+            respond_over_transport(
+                &zone,
+                resolver.as_deref(),
+                wire,
+                limit,
+                limit <= 4096,
+                Some(client),
+            )
         }),
+        stream_handler,
     )
 }
 
+fn axfr_stream_handler(
+    zone: Arc<Zone>,
+    allowed: Arc<Vec<ipnet::IpNet>>,
+) -> Arc<crate::transport::StreamHandler> {
+    Arc::new(move |wire: &[u8], client: IpAddr| {
+        let Ok(query) = Message::decode(wire) else {
+            return Ok(None);
+        };
+        let is_axfr =
+            query.questions.len() == 1 && query.questions[0].qtype == crate::RecordType::Axfr;
+        if !is_axfr {
+            return Ok(None);
+        }
+        if !allowed.iter().any(|network| network.contains(&client)) {
+            return Err(Error::Format("AXFR client is not allowed"));
+        }
+        crate::axfr::response_wires(&zone, query).map(Some)
+    })
+}
+
 #[cfg(test)]
-fn serve_sockets(zone: Zone, udp: std::net::UdpSocket, tcp: std::net::TcpListener) -> Result<()> {
+fn serve_sockets(
+    zone: Zone,
+    udp: std::net::UdpSocket,
+    tcp: std::net::TcpListener,
+    allowed: Option<Vec<ipnet::IpNet>>,
+) -> Result<()> {
+    let resolver = zone
+        .has_anames()
+        .then(crate::aname::Resolver::from_system)
+        .transpose()?
+        .map(Arc::new);
     let zone = Arc::new(zone);
+    let stream_handler =
+        allowed.map(|allowed| axfr_stream_handler(zone.clone(), Arc::new(allowed)));
     crate::transport::serve_sockets(
         udp,
         tcp,
         Arc::new(move |wire, limit, client| {
-            respond_over_transport(&zone, wire, limit, limit <= 4096, Some(client))
+            respond_over_transport(
+                &zone,
+                resolver.as_deref(),
+                wire,
+                limit,
+                limit <= 4096,
+                Some(client),
+            )
         }),
+        stream_handler,
     )
 }
 
@@ -486,6 +597,7 @@ mod tests {
         let response = Message::decode(
             &respond_over_transport(
                 &zone,
+                None,
                 &query("www.example", RecordType::A, None),
                 4096,
                 true,
@@ -549,6 +661,68 @@ mod tests {
         .unwrap();
         assert_eq!(response.flags & 15, 2);
         assert!(response.answers.is_empty());
+    }
+
+    #[test]
+    fn aname_synthesizes_authoritative_addresses_without_emitting_cname() {
+        let upstream = UdpSocket::bind("127.0.0.1:0").unwrap();
+        let upstream_address = upstream.local_addr().unwrap();
+        let upstream_thread = thread::spawn(move || {
+            for address in [
+                RData::A("192.0.2.44".parse().unwrap()),
+                RData::Aaaa("2001:db8::44".parse().unwrap()),
+            ] {
+                let mut wire = [0; 512];
+                let (length, peer) = upstream.recv_from(&mut wire).unwrap();
+                let request = Message::decode(&wire[..length]).unwrap();
+                let response = Message {
+                    id: request.id,
+                    flags: 0x8000 | 0x0100,
+                    questions: request.questions.clone(),
+                    answers: vec![Record {
+                        name: request.questions[0].name.clone(),
+                        ttl: 600,
+                        data: address,
+                    }],
+                    ..Default::default()
+                }
+                .encode()
+                .unwrap();
+                upstream.send_to(&response, peer).unwrap();
+            }
+        });
+        let zone = Zone::parse(
+            ".example:192.0.2.53:ns.example\n\
+             Aexample:blog-host.example.net:120\n",
+        )
+        .unwrap();
+        let resolver = crate::aname::Resolver::new(vec![upstream_address]);
+        for record_type in [RecordType::A, RecordType::Aaaa] {
+            let response = Message::decode(
+                &respond_over_transport(
+                    &zone,
+                    Some(&resolver),
+                    &query("example", record_type, None),
+                    4096,
+                    true,
+                    None,
+                )
+                .unwrap(),
+            )
+            .unwrap();
+            assert_eq!(response.flags & 0x040f, 0x0400);
+            assert_eq!(response.answers.len(), 1);
+            assert_eq!(response.answers[0].name, "example".parse().unwrap());
+            assert_eq!(response.answers[0].rr_type(), record_type);
+            assert!(response.answers[0].ttl <= 120);
+            assert!(
+                response
+                    .answers
+                    .iter()
+                    .all(|record| record.rr_type() != RecordType::Cname)
+            );
+        }
+        upstream_thread.join().unwrap();
     }
 
     #[test]
@@ -642,7 +816,7 @@ mod tests {
             data.push_str(&format!("+many.example:192.0.2.{}\n", index % 250 + 1));
         }
         let zone = Zone::parse(&data).unwrap();
-        thread::spawn(move || serve_sockets(zone, udp, tcp).unwrap());
+        thread::spawn(move || serve_sockets(zone, udp, tcp, None).unwrap());
 
         let request = query("www.example", RecordType::A, None);
         let udp_client = UdpSocket::bind("127.0.0.1:0").unwrap();
@@ -683,6 +857,29 @@ mod tests {
         let response = Message::decode(&response).unwrap();
         assert_eq!(response.flags & 0x0200, 0);
         assert_eq!(response.answers.len(), 80, "{response:#?}");
+    }
+
+    #[test]
+    fn integrated_tcp_listener_serves_axfr() {
+        let tcp = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = tcp.local_addr().unwrap();
+        let udp = UdpSocket::bind(address).unwrap();
+        let zone = Zone::parse(
+            "Zexample:ns.example:hostmaster.example:7:8:9:10:11:12\n\
+             &example:192.0.2.53:ns.example:300\n\
+             +www.example:192.0.2.1:60\n",
+        )
+        .unwrap();
+        thread::spawn(move || {
+            serve_sockets(zone, udp, tcp, Some(vec!["127.0.0.0/8".parse().unwrap()])).unwrap()
+        });
+
+        let records = crate::axfr::fetch(address, "example".parse().unwrap()).unwrap();
+        assert_eq!(records.first(), records.last());
+        assert!(records.iter().any(|record| {
+            record.name == "www.example".parse().unwrap()
+                && record.data == RData::A("192.0.2.1".parse().unwrap())
+        }));
     }
 }
 ```

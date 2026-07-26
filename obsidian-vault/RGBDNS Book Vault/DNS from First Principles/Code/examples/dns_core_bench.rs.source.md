@@ -5,7 +5,7 @@ language: "rust"
 subsystem: "Tests and performance"
 line_count: 1
 fragment_count: 1
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # examples/dns_core_bench.rs

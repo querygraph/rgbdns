@@ -7,7 +7,7 @@ source_file: "docs/book/rgbdns.md"
 
 Authoritative DNS is implemented in rgbdns’s own small model. Recursive DNS,
 DNSSEC validation, caching, and upstream transport are composed from Hickory
-in [`src/bin/dnscache.rs`](../../src/bin/dnscache.rs). This is not a retreat
+in [`src/bin/dnscache.rs`](https://github.com/querygraph/rgbdns/blob/master/src/bin/dnscache.rs). This is not a retreat
 from the rewrite; it is a deliberate abstraction boundary.
 
 rgbdns owns policy that must remain djbdns-compatible or operator-visible:

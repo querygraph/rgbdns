@@ -5,7 +5,7 @@ language: "json"
 subsystem: "Repository and build"
 line_count: 9
 fragment_count: 1
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # obsidian-plugin/rgbdns-reader/manifest.json

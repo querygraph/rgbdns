@@ -8,6 +8,14 @@
     "end_line": 51
   },
   {
+    "name": "build-deb.yml",
+    "kind": "file",
+    "fragment_id": "rgbdns-frag-e7de0cb9814b",
+    "source_path": ".github/workflows/build-deb.yml",
+    "start_line": 1,
+    "end_line": 80
+  },
+  {
     "name": "ci.yml",
     "kind": "file",
     "fragment_id": "rgbdns-frag-2c928fa0e845",
@@ -74,26 +82,34 @@
   {
     "name": "rgbdns",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-cfb0faf3b090",
+    "fragment_id": "rgbdns-frag-5a01ae2d3ddb",
     "source_path": "README.md",
     "start_line": 1,
-    "end_line": 43
+    "end_line": 56
+  },
+  {
+    "name": "Debian and systemd",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-c24b9da16705",
+    "source_path": "README.md",
+    "start_line": 57,
+    "end_line": 74
   },
   {
     "name": "Book",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-31920af81303",
+    "fragment_id": "rgbdns-frag-003170c20cd5",
     "source_path": "README.md",
-    "start_line": 44,
-    "end_line": 63
+    "start_line": 75,
+    "end_line": 94
   },
   {
     "name": "Conformance and performance",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-855d7f20ae34",
+    "fragment_id": "rgbdns-frag-851308e1cfeb",
     "source_path": "README.md",
-    "start_line": 64,
-    "end_line": 75
+    "start_line": 95,
+    "end_line": 106
   },
   {
     "name": "DEFAULT_ITERATIONS",
@@ -134,6 +150,94 @@
     "source_path": "book.build.json",
     "start_line": 1,
     "end_line": 55
+  },
+  {
+    "name": "Installing rgbdns on Debian with systemd",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-81df593d6869",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 1,
+    "end_line": 7
+  },
+  {
+    "name": "Build and install the package",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-144c116f58ed",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 8,
+    "end_line": 30
+  },
+  {
+    "name": "Cloud package build and verification",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-50a9a26b8c55",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 31,
+    "end_line": 77
+  },
+  {
+    "name": "Prepare a primary nameserver",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-005744bec3e6",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 78,
+    "end_line": 132
+  },
+  {
+    "name": "Serve AXFR to secondary nameservers",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-1091bd4c7132",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 133,
+    "end_line": 177
+  },
+  {
+    "name": "or",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-7c93e1160231",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 178,
+    "end_line": 183
+  },
+  {
+    "name": "Complete deployment cron.sh primary with BuddyNS secondaries",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-533b9c153533",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 184,
+    "end_line": 264
+  },
+  {
+    "name": "reconnect after boot",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-b4a5eea5ec0c",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 444,
+    "end_line": 454
+  },
+  {
+    "name": "Configure a secondary nameserver",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-d39318b29e35",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 455,
+    "end_line": 517
+  },
+  {
+    "name": "Verify service behavior",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-c5ffd76a5d56",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 518,
+    "end_line": 539
+  },
+  {
+    "name": "Upgrades, removal, and troubleshooting",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-fcd83bef23f0",
+    "source_path": "docs/DEBIAN.md",
+    "start_line": 540,
+    "end_line": 561
   },
   {
     "name": "DNS from First Principles Obsidian vault",
@@ -370,498 +474,546 @@
   {
     "name": "Core types",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-fe7f8140d5e8",
+    "fragment_id": "rgbdns-frag-71f49c8d8dc6",
     "source_path": "docs/book/rgbdns.md",
     "start_line": 186,
-    "end_line": 229
+    "end_line": 235
   },
   {
     "name": "Additional data is an optimization",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-43c02c0a823e",
+    "fragment_id": "rgbdns-frag-d62bb10ff90c",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 230,
-    "end_line": 240
+    "start_line": 236,
+    "end_line": 246
   },
   {
     "name": "Messages on the wire",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-eb9d3e452f40",
+    "fragment_id": "rgbdns-frag-e85087767dc9",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 241,
-    "end_line": 242
+    "start_line": 247,
+    "end_line": 248
   },
   {
     "name": "The twelve-byte header",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-a3f35901d5b4",
+    "fragment_id": "rgbdns-frag-72916395675b",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 243,
-    "end_line": 272
+    "start_line": 249,
+    "end_line": 278
   },
   {
     "name": "Name compression",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-fbd1b1fbb43d",
+    "fragment_id": "rgbdns-frag-060ba4ce151e",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 273,
-    "end_line": 293
+    "start_line": 279,
+    "end_line": 299
   },
   {
     "name": "Errors are protocol results",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-624140d845f9",
+    "fragment_id": "rgbdns-frag-0d0e813e38f5",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 294,
-    "end_line": 314
+    "start_line": 300,
+    "end_line": 320
   },
   {
     "name": "UDP, TCP, EDNS, and truncation",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-43ec87deb16f",
+    "fragment_id": "rgbdns-frag-c5639d87e4d2",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 315,
-    "end_line": 316
+    "start_line": 321,
+    "end_line": 322
   },
   {
     "name": "Why there are two transports",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-d63c1242dccf",
+    "fragment_id": "rgbdns-frag-0e38bf950ab7",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 317,
-    "end_line": 333
+    "start_line": 323,
+    "end_line": 339
   },
   {
     "name": "Truncation must preserve a valid message",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-1a10503616a0",
+    "fragment_id": "rgbdns-frag-e78faa9dfca9",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 334,
-    "end_line": 349
+    "start_line": 340,
+    "end_line": 355
   },
   {
     "name": "Authority answering from owned facts",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-41adbea4974a",
+    "fragment_id": "rgbdns-frag-a78e7071915e",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 350,
-    "end_line": 351
+    "start_line": 356,
+    "end_line": 357
   },
   {
     "name": "Finding the closest relevant authority",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-960bc4cb629c",
+    "fragment_id": "rgbdns-frag-b22a6e76e4c7",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 352,
-    "end_line": 387
+    "start_line": 358,
+    "end_line": 393
   },
   {
     "name": "tinydns data as a source language",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-63834e67c47c",
+    "fragment_id": "rgbdns-frag-057397ce29bc",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 388,
-    "end_line": 426
+    "start_line": 394,
+    "end_line": 433
+  },
+  {
+    "name": "ANAME and apex address flattening",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-425f4904b6d4",
+    "source_path": "docs/book/rgbdns.md",
+    "start_line": 434,
+    "end_line": 449
+  },
+  {
+    "name": "Authority and nameserver address",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-657b5ba34ebd",
+    "source_path": "docs/book/rgbdns.md",
+    "start_line": 450,
+    "end_line": 452
+  },
+  {
+    "name": "ANAME owner target maximum-ttl",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-1a6bc17026f7",
+    "source_path": "docs/book/rgbdns.md",
+    "start_line": 453,
+    "end_line": 455
+  },
+  {
+    "name": "Other apex data remains independent",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-b62ce97d1c7b",
+    "source_path": "docs/book/rgbdns.md",
+    "start_line": 456,
+    "end_line": 536
   },
   {
     "name": "CDB compile once, read predictably",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-ca644dad4381",
+    "fragment_id": "rgbdns-frag-883d5fd2b4b9",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 427,
-    "end_line": 444
+    "start_line": 553,
+    "end_line": 572
   },
   {
     "name": "Recursion discovering an answer",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-648843af2689",
+    "fragment_id": "rgbdns-frag-e96d9749679a",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 445,
-    "end_line": 446
+    "start_line": 573,
+    "end_line": 574
   },
   {
     "name": "Iteration from the root",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-e506ae19305f",
+    "fragment_id": "rgbdns-frag-c4a749071fe5",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 447,
-    "end_line": 467
+    "start_line": 575,
+    "end_line": 595
   },
   {
     "name": "The cache is part of correctness",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-d9c373e2b341",
+    "fragment_id": "rgbdns-frag-f84889822c05",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 468,
-    "end_line": 494
+    "start_line": 596,
+    "end_line": 622
   },
   {
     "name": "Forward zones and djbdns roots",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-c764dd996363",
+    "fragment_id": "rgbdns-frag-d9dbd7c4df58",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 495,
-    "end_line": 513
+    "start_line": 623,
+    "end_line": 641
   },
   {
     "name": "DNSSEC authenticating the chain",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-2ccbcd602255",
+    "fragment_id": "rgbdns-frag-c6c1e361c52f",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 514,
-    "end_line": 515
+    "start_line": 642,
+    "end_line": 643
   },
   {
     "name": "What ordinary DNS cannot prove",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-9b2e36ed71f1",
+    "fragment_id": "rgbdns-frag-c9531cad5a02",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 516,
-    "end_line": 542
+    "start_line": 644,
+    "end_line": 670
   },
   {
     "name": "rgbdns validation policy",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-c43eb5a0148e",
+    "fragment_id": "rgbdns-frag-6f7da27b85d9",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 543,
-    "end_line": 555
+    "start_line": 671,
+    "end_line": 683
   },
   {
     "name": "Zone transfer and secondary service",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-a6135ec2f6ae",
+    "fragment_id": "rgbdns-frag-e73e14b2ae1a",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 556,
-    "end_line": 557
+    "start_line": 684,
+    "end_line": 685
   },
   {
     "name": "AXFR is a stream, not a giant datagram",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-07f2c55f81e8",
+    "fragment_id": "rgbdns-frag-fe771d38cd6b",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 558,
-    "end_line": 581
+    "start_line": 686,
+    "end_line": 716
   },
   {
     "name": "The rgbdns program family",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-8b428b64887e",
+    "fragment_id": "rgbdns-frag-68aa9ff6d6fa",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 582,
-    "end_line": 583
+    "start_line": 717,
+    "end_line": 718
   },
   {
     "name": "One suite, small purposes",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-a2269ad59adf",
+    "fragment_id": "rgbdns-frag-8468b7292533",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 584,
-    "end_line": 605
+    "start_line": 719,
+    "end_line": 740
   },
   {
     "name": "Specialized responders",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-bcdc357e6f0e",
+    "fragment_id": "rgbdns-frag-03b2cc53a1c8",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 606,
-    "end_line": 627
+    "start_line": 741,
+    "end_line": 762
   },
   {
     "name": "Client behavior and diagnostics",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-8083fad7e534",
+    "fragment_id": "rgbdns-frag-264e7fe31095",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 628,
-    "end_line": 629
+    "start_line": 763,
+    "end_line": 764
   },
   {
     "name": "A query is more than sending bytes",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-75c48d40ec52",
+    "fragment_id": "rgbdns-frag-ad9aa9b9f6be",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 630,
-    "end_line": 659
+    "start_line": 765,
+    "end_line": 794
   },
   {
     "name": "Practical checks",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-bdfeae62924f",
+    "fragment_id": "rgbdns-frag-b40033089bdf",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 660,
-    "end_line": 675
+    "start_line": 795,
+    "end_line": 810
   },
   {
     "name": "Security engineering in rgbdns",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-10819b91ef1d",
+    "fragment_id": "rgbdns-frag-d86cf51f5e30",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 676,
-    "end_line": 677
+    "start_line": 811,
+    "end_line": 812
   },
   {
     "name": "The packet is hostile",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-43621c072e7b",
+    "fragment_id": "rgbdns-frag-675a90298dbe",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 678,
-    "end_line": 705
+    "start_line": 813,
+    "end_line": 840
   },
   {
     "name": "Least privilege and filesystem boundaries",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-c3c2a07d858c",
+    "fragment_id": "rgbdns-frag-bca8456c1e8a",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 706,
-    "end_line": 722
+    "start_line": 841,
+    "end_line": 857
   },
   {
     "name": "Time and logs TAI64N",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-03c6b7721e84",
+    "fragment_id": "rgbdns-frag-63b6be0b3b83",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 723,
-    "end_line": 724
+    "start_line": 858,
+    "end_line": 859
   },
   {
     "name": "Why a DNS suite contains time tools",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-91de68807d7b",
+    "fragment_id": "rgbdns-frag-941f4c95493f",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 725,
-    "end_line": 754
+    "start_line": 860,
+    "end_line": 889
   },
   {
     "name": "Running rgbdns under supervision",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-14c10ed54df3",
+    "fragment_id": "rgbdns-frag-fa6ee034cfed",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 755,
-    "end_line": 756
+    "start_line": 890,
+    "end_line": 891
   },
   {
     "name": "The service contract",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-1a2af1c4ea11",
+    "fragment_id": "rgbdns-frag-5af9939eacfc",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 757,
-    "end_line": 777
+    "start_line": 892,
+    "end_line": 912
   },
   {
     "name": "Recommendations",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-0d9042da275d",
+    "fragment_id": "rgbdns-frag-e80a21df7fe1",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 778,
-    "end_line": 858
+    "start_line": 913,
+    "end_line": 993
   },
   {
     "name": "A practical selection rule",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-b31b353bc960",
+    "fragment_id": "rgbdns-frag-4b2d88be347b",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 891,
-    "end_line": 905
+    "start_line": 1026,
+    "end_line": 1040
   },
   {
     "name": "Operating an authoritative service",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-7fb4fbaac681",
+    "fragment_id": "rgbdns-frag-51aa994381a6",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 906,
-    "end_line": 907
+    "start_line": 1041,
+    "end_line": 1042
   },
   {
     "name": "Build, stage, verify, replace",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-4c4b17d589da",
+    "fragment_id": "rgbdns-frag-5b84d150797c",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 908,
-    "end_line": 927
+    "start_line": 1043,
+    "end_line": 1079
+  },
+  {
+    "name": "Case study cron.sh primary and BuddyNS secondaries",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-604b6ff56e55",
+    "source_path": "docs/book/rgbdns.md",
+    "start_line": 1080,
+    "end_line": 1141
+  },
+  {
+    "name": "Append every remaining 32 from BuddyNS's current list",
+    "kind": "heading",
+    "fragment_id": "rgbdns-frag-1568b60975fb",
+    "source_path": "docs/book/rgbdns.md",
+    "start_line": 1142,
+    "end_line": 1194
   },
   {
     "name": "Observe the right signals",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-6388ea48d62f",
+    "fragment_id": "rgbdns-frag-1c12785a949f",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 928,
-    "end_line": 951
+    "start_line": 1195,
+    "end_line": 1219
   },
   {
     "name": "Testing DNS software",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-9a933a905efd",
+    "fragment_id": "rgbdns-frag-a76d9160643d",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 952,
-    "end_line": 953
+    "start_line": 1220,
+    "end_line": 1221
   },
   {
     "name": "Layers of evidence",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-7e3a735bbfd9",
+    "fragment_id": "rgbdns-frag-db65ba809c6a",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 954,
-    "end_line": 975
+    "start_line": 1222,
+    "end_line": 1243
   },
   {
     "name": "Adversarial cases worth keeping",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-ad144c2245be",
+    "fragment_id": "rgbdns-frag-44f080bc9086",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 976,
-    "end_line": 997
+    "start_line": 1244,
+    "end_line": 1267
   },
   {
     "name": "Conformance as an executable specification",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-b26f03721239",
+    "fragment_id": "rgbdns-frag-adc4310d7e3c",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 998,
-    "end_line": 1053
+    "start_line": 1268,
+    "end_line": 1323
   },
   {
     "name": "Hardening found by conformance work",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-651c3fbb1e55",
+    "fragment_id": "rgbdns-frag-618eb0363b2b",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1054,
-    "end_line": 1083
+    "start_line": 1324,
+    "end_line": 1353
   },
   {
     "name": "Benchmarks and evidence-driven optimization",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-48f744ec0b5c",
+    "fragment_id": "rgbdns-frag-6271b6cb7110",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1084,
-    "end_line": 1139
+    "start_line": 1354,
+    "end_line": 1409
   },
   {
     "name": "Reading the rgbdns source",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-c61169a3a6a7",
+    "fragment_id": "rgbdns-frag-887b285da96f",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1140,
-    "end_line": 1141
+    "start_line": 1410,
+    "end_line": 1411
   },
   {
     "name": "A path through the code",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-dda542b689d6",
+    "fragment_id": "rgbdns-frag-ad53076dfbcd",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1142,
-    "end_line": 1163
+    "start_line": 1412,
+    "end_line": 1433
   },
   {
     "name": "Design patterns to carry elsewhere",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-d95a4349f84b",
+    "fragment_id": "rgbdns-frag-a31a615a1d14",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1164,
-    "end_line": 1189
+    "start_line": 1434,
+    "end_line": 1459
   },
   {
     "name": "Part II Codebase exploration {-}",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-ca35e832f4e0",
+    "fragment_id": "rgbdns-frag-26b28417cd3e",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1190,
-    "end_line": 1198
+    "start_line": 1460,
+    "end_line": 1468
   },
   {
     "name": "Rust as a protocol-design tool",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-d6879609a68f",
+    "fragment_id": "rgbdns-frag-599f16ab274c",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1199,
-    "end_line": 1244
+    "start_line": 1469,
+    "end_line": 1514
   },
   {
     "name": "Valid names instead of hopeful strings",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-6a0458e430a4",
+    "fragment_id": "rgbdns-frag-a772e04cdd1d",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1245,
-    "end_line": 1282
+    "start_line": 1515,
+    "end_line": 1552
   },
   {
     "name": "A bounded wire codec",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-1f189575f361",
+    "fragment_id": "rgbdns-frag-832fd18340b5",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1283,
-    "end_line": 1320
+    "start_line": 1553,
+    "end_line": 1590
   },
   {
     "name": "Zone data as an indexed semantic model",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-9180700c9bfd",
+    "fragment_id": "rgbdns-frag-cb6afbfd2103",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1321,
-    "end_line": 1361
+    "start_line": 1591,
+    "end_line": 1631
   },
   {
     "name": "From query bytes to an authoritative answer",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-29f0b4cd6305",
+    "fragment_id": "rgbdns-frag-5d2c2249fe7a",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1362,
-    "end_line": 1390
+    "start_line": 1632,
+    "end_line": 1660
   },
   {
     "name": "CDB compatibility without trusting the file",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-8fac9335b83d",
+    "fragment_id": "rgbdns-frag-827441da6822",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1391,
-    "end_line": 1417
+    "start_line": 1661,
+    "end_line": 1687
   },
   {
     "name": "Recursion by composition",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-5763dc47d15d",
+    "fragment_id": "rgbdns-frag-5d932c6cd4d6",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1418,
-    "end_line": 1443
+    "start_line": 1688,
+    "end_line": 1713
   },
   {
     "name": "Tests as executable protocol commentary",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-1221e3ff915b",
+    "fragment_id": "rgbdns-frag-251d4b52fa84",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1444,
-    "end_line": 1479
+    "start_line": 1714,
+    "end_line": 1749
   },
   {
     "name": "Abstractions and performance ledger",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-513fe5bd319b",
+    "fragment_id": "rgbdns-frag-8fac7ccb8910",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1480,
-    "end_line": 1508
+    "start_line": 1750,
+    "end_line": 1778
   },
   {
     "name": "Where DNS ends",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-cb7dc774f54f",
+    "fragment_id": "rgbdns-frag-dc8850828d5c",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1509,
-    "end_line": 1530
+    "start_line": 1779,
+    "end_line": 1800
   },
   {
     "name": "Appendix A Configuration quick reference",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-29b0066bd3e1",
+    "fragment_id": "rgbdns-frag-20532ab9b198",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1531,
-    "end_line": 1550
+    "start_line": 1801,
+    "end_line": 1820
   },
   {
     "name": "Appendix B Further reading",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-468dd69b399f",
+    "fragment_id": "rgbdns-frag-384670652192",
     "source_path": "docs/book/rgbdns.md",
-    "start_line": 1551,
-    "end_line": 1574
+    "start_line": 1821,
+    "end_line": 1844
   },
   {
     "name": "validate.sh",
@@ -874,10 +1026,10 @@
   {
     "name": "Compatibility and research ledger",
     "kind": "heading",
-    "fragment_id": "rgbdns-frag-e477664e2daf",
+    "fragment_id": "rgbdns-frag-c1bcd98d6c46",
     "source_path": "docs/compatibility.md",
     "start_line": 1,
-    "end_line": 72
+    "end_line": 74
   },
   {
     "name": "DNS conformance and security matrix",
@@ -958,6 +1110,38 @@
     "source_path": "obsidian-plugin/rgbdns-reader/styles.css",
     "start_line": 1,
     "end_line": 48
+  },
+  {
+    "name": "build-deb.sh",
+    "kind": "file",
+    "fragment_id": "rgbdns-frag-0cc16f57b712",
+    "source_path": "packaging/build-deb.sh",
+    "start_line": 1,
+    "end_line": 13
+  },
+  {
+    "name": "cargo-binaries.py",
+    "kind": "file",
+    "fragment_id": "rgbdns-frag-3212e074767a",
+    "source_path": "packaging/cargo-binaries.py",
+    "start_line": 1,
+    "end_line": 17
+  },
+  {
+    "name": "tinydns.env",
+    "kind": "file",
+    "fragment_id": "rgbdns-frag-211708b5ce49",
+    "source_path": "packaging/default/tinydns.env",
+    "start_line": 1,
+    "end_line": 4
+  },
+  {
+    "name": "verify-deb.sh",
+    "kind": "file",
+    "fragment_id": "rgbdns-frag-79b8154f3b7b",
+    "source_path": "packaging/verify-deb.sh",
+    "start_line": 1,
+    "end_line": 43
   },
   {
     "name": "SourceFile",
@@ -1114,98 +1298,98 @@
   {
     "name": "manuscript_chapters",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-0a450270b95a",
+    "fragment_id": "rgbdns-frag-5fe89c86fc54",
     "source_path": "scripts/build-obsidian-vault.py",
     "start_line": 342,
-    "end_line": 354
+    "end_line": 370
   },
   {
     "name": "choose_chapter_fragments",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-63e34ad48617",
+    "fragment_id": "rgbdns-frag-6616eeda0eb5",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 355,
-    "end_line": 387
+    "start_line": 371,
+    "end_line": 403
   },
   {
     "name": "render_fragment_block",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-a66cb0fd078a",
+    "fragment_id": "rgbdns-frag-5cc71bf08187",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 388,
-    "end_line": 399
+    "start_line": 404,
+    "end_line": 415
   },
   {
     "name": "render_chapter",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-569ebe0793f1",
+    "fragment_id": "rgbdns-frag-8c6f87b3e8be",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 400,
-    "end_line": 413
+    "start_line": 416,
+    "end_line": 429
   },
   {
     "name": "render_source_file",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-1425ddcffad2",
+    "fragment_id": "rgbdns-frag-21b62d47f194",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 414,
-    "end_line": 437
+    "start_line": 430,
+    "end_line": 453
   },
   {
     "name": "render_fragment_note",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-4302b6369fa0",
+    "fragment_id": "rgbdns-frag-30f951300b24",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 438,
-    "end_line": 465
+    "start_line": 454,
+    "end_line": 481
   },
   {
     "name": "render_index",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-52188f6fab55",
+    "fragment_id": "rgbdns-frag-3f8c0be55fcf",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 466,
-    "end_line": 472
+    "start_line": 482,
+    "end_line": 488
   },
   {
     "name": "render_vault_readme",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-e91f6f32bf5b",
+    "fragment_id": "rgbdns-frag-0a3e9642ceaa",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 473,
-    "end_line": 517
+    "start_line": 489,
+    "end_line": 533
   },
   {
     "name": "copy_plugin",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-eaeef8aad13a",
+    "fragment_id": "rgbdns-frag-51da6540a1a5",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 518,
-    "end_line": 526
+    "start_line": 534,
+    "end_line": 542
   },
   {
     "name": "copy_book_assets",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-887fe5344145",
+    "fragment_id": "rgbdns-frag-99bc96942e75",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 527,
-    "end_line": 533
+    "start_line": 543,
+    "end_line": 549
   },
   {
     "name": "build_vault",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-745e0bd50d8f",
+    "fragment_id": "rgbdns-frag-1eac6942e335",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 534,
-    "end_line": 614
+    "start_line": 550,
+    "end_line": 630
   },
   {
     "name": "main",
     "kind": "def",
-    "fragment_id": "rgbdns-frag-68082ce5cc47",
+    "fragment_id": "rgbdns-frag-c1baa20d0152",
     "source_path": "scripts/build-obsidian-vault.py",
-    "start_line": 767,
-    "end_line": 778
+    "start_line": 783,
+    "end_line": 794
   },
   {
     "name": "strip_fenced_code",
@@ -1264,6 +1448,126 @@
     "end_line": 208
   },
   {
+    "name": "MAX_CHAIN",
+    "kind": "const",
+    "fragment_id": "rgbdns-frag-0eb12106aceb",
+    "source_path": "src/aname.rs",
+    "start_line": 11,
+    "end_line": 11
+  },
+  {
+    "name": "NEGATIVE_TTL",
+    "kind": "const",
+    "fragment_id": "rgbdns-frag-82b35b6804ab",
+    "source_path": "src/aname.rs",
+    "start_line": 12,
+    "end_line": 12
+  },
+  {
+    "name": "MAX_ADDRESSES",
+    "kind": "const",
+    "fragment_id": "rgbdns-frag-3d0508ce22a6",
+    "source_path": "src/aname.rs",
+    "start_line": 13,
+    "end_line": 15
+  },
+  {
+    "name": "CacheKey",
+    "kind": "struct",
+    "fragment_id": "rgbdns-frag-163088533e30",
+    "source_path": "src/aname.rs",
+    "start_line": 16,
+    "end_line": 21
+  },
+  {
+    "name": "CacheEntry",
+    "kind": "struct",
+    "fragment_id": "rgbdns-frag-57473282a4ff",
+    "source_path": "src/aname.rs",
+    "start_line": 22,
+    "end_line": 26
+  },
+  {
+    "name": "Resolver",
+    "kind": "struct",
+    "fragment_id": "rgbdns-frag-3570b5155e9d",
+    "source_path": "src/aname.rs",
+    "start_line": 27,
+    "end_line": 31
+  },
+  {
+    "name": "Resolver",
+    "kind": "impl",
+    "fragment_id": "rgbdns-frag-a5b88df041d6",
+    "source_path": "src/aname.rs",
+    "start_line": 32,
+    "end_line": 32
+  },
+  {
+    "name": "from_system",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-583cdf24733b",
+    "source_path": "src/aname.rs",
+    "start_line": 33,
+    "end_line": 36
+  },
+  {
+    "name": "new",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-ab345aca2e36",
+    "source_path": "src/aname.rs",
+    "start_line": 37,
+    "end_line": 43
+  },
+  {
+    "name": "resolve",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-c4b0676dbea8",
+    "source_path": "src/aname.rs",
+    "start_line": 44,
+    "end_line": 95
+  },
+  {
+    "name": "addresses",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-b8118dfc2f5e",
+    "source_path": "src/aname.rs",
+    "start_line": 96,
+    "end_line": 148
+  },
+  {
+    "name": "records",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-07fa4d90c701",
+    "source_path": "src/aname.rs",
+    "start_line": 149,
+    "end_line": 167
+  },
+  {
+    "name": "tests",
+    "kind": "mod",
+    "fragment_id": "rgbdns-frag-bca7f405b15b",
+    "source_path": "src/aname.rs",
+    "start_line": 168,
+    "end_line": 172
+  },
+  {
+    "name": "follows_a_bounded_cname_chain_and_preserves_addresses",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-9f56afdfcc8f",
+    "source_path": "src/aname.rs",
+    "start_line": 173,
+    "end_line": 193
+  },
+  {
+    "name": "separates_address_families_and_rejects_loops",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-d418530011a5",
+    "source_path": "src/aname.rs",
+    "start_line": 194,
+    "end_line": 212
+  },
+  {
     "name": "MAX_TCP_MESSAGE",
     "kind": "const",
     "fragment_id": "rgbdns-frag-ad1ed1e4cb84",
@@ -1314,122 +1618,122 @@
   {
     "name": "serve_connection",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-2554d1b3665a",
+    "fragment_id": "rgbdns-frag-4d44b9b57c53",
     "source_path": "src/axfr.rs",
     "start_line": 62,
-    "end_line": 122
+    "end_line": 70
   },
   {
-    "name": "write_response",
+    "name": "response_wires",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-8c366d542d3c",
+    "fragment_id": "rgbdns-frag-c4eddbb40457",
     "source_path": "src/axfr.rs",
-    "start_line": 123,
-    "end_line": 138
+    "start_line": 71,
+    "end_line": 151
   },
   {
     "name": "response_wire",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-4268f778fa47",
+    "fragment_id": "rgbdns-frag-ca8414b505a4",
     "source_path": "src/axfr.rs",
-    "start_line": 139,
-    "end_line": 154
+    "start_line": 156,
+    "end_line": 171
   },
   {
     "name": "read_message",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-454fe9e80b77",
+    "fragment_id": "rgbdns-frag-678d90c8e377",
     "source_path": "src/axfr.rs",
-    "start_line": 155,
-    "end_line": 162
+    "start_line": 172,
+    "end_line": 179
   },
   {
     "name": "fetch",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-3985e9023e0b",
+    "fragment_id": "rgbdns-frag-83eeb011f0b6",
     "source_path": "src/axfr.rs",
-    "start_line": 163,
-    "end_line": 229
+    "start_line": 180,
+    "end_line": 246
   },
   {
     "name": "validate_axfr_message",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-a31c068b7119",
+    "fragment_id": "rgbdns-frag-35c24cd23185",
     "source_path": "src/axfr.rs",
-    "start_line": 230,
-    "end_line": 255
+    "start_line": 247,
+    "end_line": 272
   },
   {
     "name": "random_id",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-83d521fef5d6",
+    "fragment_id": "rgbdns-frag-3875bb7b1985",
     "source_path": "src/axfr.rs",
-    "start_line": 256,
-    "end_line": 262
+    "start_line": 273,
+    "end_line": 279
   },
   {
     "name": "write_tinydns",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-0b1febdb552a",
+    "fragment_id": "rgbdns-frag-2ff6549bf9ff",
     "source_path": "src/axfr.rs",
-    "start_line": 263,
-    "end_line": 287
+    "start_line": 280,
+    "end_line": 304
   },
   {
     "name": "tinydns_line",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-cce2751e8a7e",
+    "fragment_id": "rgbdns-frag-d0d89aa0192c",
     "source_path": "src/axfr.rs",
-    "start_line": 288,
-    "end_line": 339
+    "start_line": 305,
+    "end_line": 356
   },
   {
     "name": "escape",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-bcdced1d52db",
+    "fragment_id": "rgbdns-frag-a716ad34eead",
     "source_path": "src/axfr.rs",
-    "start_line": 340,
-    "end_line": 352
+    "start_line": 357,
+    "end_line": 369
   },
   {
     "name": "tests",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-7d0ccc73f8dd",
+    "fragment_id": "rgbdns-frag-7486a2a93364",
     "source_path": "src/axfr.rs",
-    "start_line": 353,
-    "end_line": 357
+    "start_line": 370,
+    "end_line": 374
   },
   {
     "name": "temp_path",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-e67d14654aa5",
+    "fragment_id": "rgbdns-frag-ba79974c4829",
     "source_path": "src/axfr.rs",
-    "start_line": 358,
-    "end_line": 369
+    "start_line": 375,
+    "end_line": 386
   },
   {
     "name": "live_transfer_has_matching_soa_bookends",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-e933ea2326bd",
+    "fragment_id": "rgbdns-frag-5d9c78436686",
     "source_path": "src/axfr.rs",
-    "start_line": 370,
-    "end_line": 397
+    "start_line": 387,
+    "end_line": 414
   },
   {
     "name": "exported_tinydns_text_roundtrips",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-f6fb2ad2e665",
+    "fragment_id": "rgbdns-frag-747c9f2e6a62",
     "source_path": "src/axfr.rs",
-    "start_line": 398,
-    "end_line": 422
+    "start_line": 415,
+    "end_line": 439
   },
   {
     "name": "axfr_client_rejects_spoofable_or_structurally_invalid_messages",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-9990017fae6d",
+    "fragment_id": "rgbdns-frag-481ffa0043ef",
     "source_path": "src/axfr.rs",
-    "start_line": 423,
-    "end_line": 457
+    "start_line": 440,
+    "end_line": 474
   },
   {
     "name": "main",
@@ -1962,82 +2266,82 @@
   {
     "name": "compile",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-4a9794b88127",
+    "fragment_id": "rgbdns-frag-f318af8bdeaa",
     "source_path": "src/cdb.rs",
     "start_line": 12,
-    "end_line": 52
+    "end_line": 61
   },
   {
     "name": "load",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-83b463908a3c",
+    "fragment_id": "rgbdns-frag-f67eebb3c015",
     "source_path": "src/cdb.rs",
-    "start_line": 53,
-    "end_line": 69
+    "start_line": 62,
+    "end_line": 101
   },
   {
     "name": "read_entries",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-9e8e0d51389c",
+    "fragment_id": "rgbdns-frag-916ec1cbc28e",
     "source_path": "src/cdb.rs",
-    "start_line": 70,
-    "end_line": 124
+    "start_line": 102,
+    "end_line": 156
   },
   {
     "name": "decode_record",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-4a71bdeba2ec",
+    "fragment_id": "rgbdns-frag-f9047bc1a1a2",
     "source_path": "src/cdb.rs",
-    "start_line": 125,
-    "end_line": 178
+    "start_line": 157,
+    "end_line": 210
   },
   {
     "name": "encode_rdata",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-a98232a8cdb0",
+    "fragment_id": "rgbdns-frag-bf06479bb119",
     "source_path": "src/cdb.rs",
-    "start_line": 179,
-    "end_line": 237
+    "start_line": 211,
+    "end_line": 269
   },
   {
     "name": "decode_name",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-1cfb12457767",
+    "fragment_id": "rgbdns-frag-f2d13363a376",
     "source_path": "src/cdb.rs",
-    "start_line": 238,
-    "end_line": 264
+    "start_line": 270,
+    "end_line": 296
   },
   {
     "name": "le_u32",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-908320134aee",
+    "fragment_id": "rgbdns-frag-ca380a5004ce",
     "source_path": "src/cdb.rs",
-    "start_line": 265,
-    "end_line": 269
+    "start_line": 297,
+    "end_line": 301
   },
   {
     "name": "tests",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-489b39a43ae6",
+    "fragment_id": "rgbdns-frag-9cc58af3bb02",
     "source_path": "src/cdb.rs",
-    "start_line": 270,
-    "end_line": 275
+    "start_line": 302,
+    "end_line": 307
   },
   {
     "name": "exact_cdb_roundtrip_preserves_lookup_semantics",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-563d0d5def13",
+    "fragment_id": "rgbdns-frag-d600fc524f2b",
     "source_path": "src/cdb.rs",
-    "start_line": 276,
-    "end_line": 324
+    "start_line": 308,
+    "end_line": 364
   },
   {
     "name": "rejects_truncated_database",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-af1b07391a27",
+    "fragment_id": "rgbdns-frag-428b1ce3e4be",
     "source_path": "src/cdb.rs",
-    "start_line": 325,
-    "end_line": 331
+    "start_line": 365,
+    "end_line": 371
   },
   {
     "name": "TIMEOUT",
@@ -2408,228 +2712,236 @@
     "end_line": 266
   },
   {
-    "name": "axfr",
+    "name": "aname",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-d26839b00cc0",
+    "fragment_id": "rgbdns-frag-f52ccf723277",
     "source_path": "src/lib.rs",
     "start_line": 3,
     "end_line": 3
   },
   {
-    "name": "cdb",
+    "name": "axfr",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-c0387f24e3b2",
+    "fragment_id": "rgbdns-frag-4a817a7124e1",
     "source_path": "src/lib.rs",
     "start_line": 4,
     "end_line": 4
   },
   {
-    "name": "client",
+    "name": "cdb",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-ea9a942c2c24",
+    "fragment_id": "rgbdns-frag-ef82c203a6e1",
     "source_path": "src/lib.rs",
     "start_line": 5,
     "end_line": 5
   },
   {
-    "name": "conf",
+    "name": "client",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-4ca6b4a66ffe",
+    "fragment_id": "rgbdns-frag-ac93886065b4",
     "source_path": "src/lib.rs",
     "start_line": 6,
     "end_line": 6
   },
   {
-    "name": "dnscache_config",
+    "name": "conf",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-47cdd9e7aa73",
+    "fragment_id": "rgbdns-frag-558fa31b05c5",
     "source_path": "src/lib.rs",
     "start_line": 7,
     "end_line": 7
   },
   {
-    "name": "multilog",
+    "name": "dnscache_config",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-64be14e515dc",
+    "fragment_id": "rgbdns-frag-fa79f1453710",
     "source_path": "src/lib.rs",
     "start_line": 8,
     "end_line": 8
   },
   {
-    "name": "name",
+    "name": "multilog",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-1198b492e8d3",
+    "fragment_id": "rgbdns-frag-060fb35dda55",
     "source_path": "src/lib.rs",
     "start_line": 9,
     "end_line": 9
   },
   {
-    "name": "packet",
+    "name": "name",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-9a69adb381ac",
+    "fragment_id": "rgbdns-frag-9b91c16392f6",
     "source_path": "src/lib.rs",
     "start_line": 10,
     "end_line": 10
   },
   {
-    "name": "pick",
+    "name": "packet",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-cc4b83e1818c",
+    "fragment_id": "rgbdns-frag-fb88c09e6337",
     "source_path": "src/lib.rs",
     "start_line": 11,
     "end_line": 11
   },
   {
-    "name": "rbl",
+    "name": "pick",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-b32ba925e7c1",
+    "fragment_id": "rgbdns-frag-09f6fa5decbe",
     "source_path": "src/lib.rs",
     "start_line": 12,
     "end_line": 12
   },
   {
-    "name": "server",
+    "name": "rbl",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-fc0223cab124",
+    "fragment_id": "rgbdns-frag-6e6427a50d71",
     "source_path": "src/lib.rs",
     "start_line": 13,
-    "end_line": 14
+    "end_line": 13
+  },
+  {
+    "name": "server",
+    "kind": "mod",
+    "fragment_id": "rgbdns-frag-e5dfdf77ddb4",
+    "source_path": "src/lib.rs",
+    "start_line": 14,
+    "end_line": 15
   },
   {
     "name": "setuidgid",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-17439937a795",
-    "source_path": "src/lib.rs",
-    "start_line": 15,
-    "end_line": 15
-  },
-  {
-    "name": "special",
-    "kind": "mod",
-    "fragment_id": "rgbdns-frag-53eaa3274eb7",
+    "fragment_id": "rgbdns-frag-4399bf8d7bca",
     "source_path": "src/lib.rs",
     "start_line": 16,
     "end_line": 16
   },
   {
-    "name": "tai64",
+    "name": "special",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-bd03ec8b2f1a",
+    "fragment_id": "rgbdns-frag-a9b71133a8a7",
     "source_path": "src/lib.rs",
     "start_line": 17,
     "end_line": 17
   },
   {
-    "name": "tinydns_edit",
+    "name": "tai64",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-3a23dfdf3153",
+    "fragment_id": "rgbdns-frag-c381c3286bae",
     "source_path": "src/lib.rs",
     "start_line": 18,
     "end_line": 18
   },
   {
-    "name": "transport",
+    "name": "tinydns_edit",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-65d3faf4b4df",
+    "fragment_id": "rgbdns-frag-3cb5aab2f951",
     "source_path": "src/lib.rs",
     "start_line": 19,
     "end_line": 19
   },
   {
-    "name": "wall",
+    "name": "transport",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-45a926c96a17",
+    "fragment_id": "rgbdns-frag-65d27f5c3043",
     "source_path": "src/lib.rs",
     "start_line": 20,
     "end_line": 20
   },
   {
-    "name": "zone",
+    "name": "wall",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-460d033a70bc",
+    "fragment_id": "rgbdns-frag-6f2db39a6784",
     "source_path": "src/lib.rs",
     "start_line": 21,
-    "end_line": 26
+    "end_line": 21
+  },
+  {
+    "name": "zone",
+    "kind": "mod",
+    "fragment_id": "rgbdns-frag-3591e119df49",
+    "source_path": "src/lib.rs",
+    "start_line": 22,
+    "end_line": 27
   },
   {
     "name": "Error",
     "kind": "enum",
-    "fragment_id": "rgbdns-frag-a504095bfade",
+    "fragment_id": "rgbdns-frag-cf6623db375a",
     "source_path": "src/lib.rs",
-    "start_line": 27,
-    "end_line": 33
+    "start_line": 28,
+    "end_line": 34
   },
   {
     "name": "std",
     "kind": "impl",
-    "fragment_id": "rgbdns-frag-1f2f52292c17",
+    "fragment_id": "rgbdns-frag-81662b0f8334",
     "source_path": "src/lib.rs",
-    "start_line": 34,
-    "end_line": 34
+    "start_line": 35,
+    "end_line": 35
   },
   {
     "name": "fmt",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-762fbc6aec4b",
+    "fragment_id": "rgbdns-frag-b7a10a8752c6",
     "source_path": "src/lib.rs",
-    "start_line": 35,
-    "end_line": 43
+    "start_line": 36,
+    "end_line": 44
   },
   {
     "name": "std",
     "kind": "impl",
-    "fragment_id": "rgbdns-frag-aafca40edd3c",
-    "source_path": "src/lib.rs",
-    "start_line": 44,
-    "end_line": 44
-  },
-  {
-    "name": "From",
-    "kind": "impl",
-    "fragment_id": "rgbdns-frag-096bc6ecb319",
+    "fragment_id": "rgbdns-frag-767195231108",
     "source_path": "src/lib.rs",
     "start_line": 45,
     "end_line": 45
   },
   {
-    "name": "from",
-    "kind": "fn",
-    "fragment_id": "rgbdns-frag-c25798b08316",
+    "name": "From",
+    "kind": "impl",
+    "fragment_id": "rgbdns-frag-02f6775511ec",
     "source_path": "src/lib.rs",
     "start_line": 46,
-    "end_line": 49
+    "end_line": 46
+  },
+  {
+    "name": "from",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-3fe85af2221d",
+    "source_path": "src/lib.rs",
+    "start_line": 47,
+    "end_line": 50
   },
   {
     "name": "Result",
     "kind": "type",
-    "fragment_id": "rgbdns-frag-961bde153386",
+    "fragment_id": "rgbdns-frag-4373cfd6a122",
     "source_path": "src/lib.rs",
-    "start_line": 50,
-    "end_line": 52
+    "start_line": 51,
+    "end_line": 53
   },
   {
     "name": "socket_address",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-54ed88397082",
+    "fragment_id": "rgbdns-frag-2c97a1c68bb4",
     "source_path": "src/lib.rs",
-    "start_line": 53,
-    "end_line": 63
+    "start_line": 54,
+    "end_line": 64
   },
   {
     "name": "address_tests",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-d546da74e4e8",
+    "fragment_id": "rgbdns-frag-dd954b8525ae",
     "source_path": "src/lib.rs",
-    "start_line": 64,
-    "end_line": 67
+    "start_line": 65,
+    "end_line": 68
   },
   {
     "name": "constructs_ipv4_and_ipv6_socket_addresses",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-9f5243a9e8af",
+    "fragment_id": "rgbdns-frag-61289dbc0218",
     "source_path": "src/lib.rs",
-    "start_line": 68,
-    "end_line": 80
+    "start_line": 69,
+    "end_line": 81
   },
   {
     "name": "DEFAULT_MAX_SIZE",
@@ -3698,186 +4010,210 @@
   {
     "name": "respond",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-9111a59a3049",
+    "fragment_id": "rgbdns-frag-d3da65fbc724",
     "source_path": "src/server.rs",
     "start_line": 12,
-    "end_line": 15
+    "end_line": 19
   },
   {
     "name": "respond_from",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-722e4576ccbc",
+    "fragment_id": "rgbdns-frag-e0990e79e0f5",
     "source_path": "src/server.rs",
-    "start_line": 16,
-    "end_line": 24
+    "start_line": 20,
+    "end_line": 39
   },
   {
     "name": "respond_over_transport",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-2f2af75ed065",
+    "fragment_id": "rgbdns-frag-85698b1ce866",
     "source_path": "src/server.rs",
-    "start_line": 25,
-    "end_line": 105
+    "start_line": 40,
+    "end_line": 120
   },
   {
     "name": "normalize_rrsets",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-ae38d008c815",
+    "fragment_id": "rgbdns-frag-413307db626e",
     "source_path": "src/server.rs",
-    "start_line": 155,
-    "end_line": 178
+    "start_line": 196,
+    "end_line": 219
   },
   {
     "name": "negative_soa",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-7320f5c3210a",
+    "fragment_id": "rgbdns-frag-ff4f3e36f844",
     "source_path": "src/server.rs",
-    "start_line": 179,
-    "end_line": 185
+    "start_line": 220,
+    "end_line": 226
   },
   {
     "name": "error_response",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-220d6f0cbcdb",
+    "fragment_id": "rgbdns-frag-aba7f2385996",
     "source_path": "src/server.rs",
-    "start_line": 186,
-    "end_line": 197
+    "start_line": 227,
+    "end_line": 238
   },
   {
     "name": "zone_lookup",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-096ea17b82aa",
+    "fragment_id": "rgbdns-frag-8a745a4a8208",
     "source_path": "src/server.rs",
-    "start_line": 198,
-    "end_line": 209
+    "start_line": 239,
+    "end_line": 250
   },
   {
     "name": "expand_cname_chain",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-c9eb8bdf42ba",
+    "fragment_id": "rgbdns-frag-4625cc9215e0",
     "source_path": "src/server.rs",
-    "start_line": 210,
-    "end_line": 250
+    "start_line": 251,
+    "end_line": 291
   },
   {
     "name": "add_target_addresses",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-4dd75158d5d2",
+    "fragment_id": "rgbdns-frag-cb35766a16c9",
     "source_path": "src/server.rs",
-    "start_line": 251,
-    "end_line": 277
+    "start_line": 292,
+    "end_line": 318
   },
   {
     "name": "truncate",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-f8e1052e7132",
+    "fragment_id": "rgbdns-frag-b79b1695d38f",
     "source_path": "src/server.rs",
-    "start_line": 278,
-    "end_line": 319
+    "start_line": 319,
+    "end_line": 360
   },
   {
     "name": "with_tail_records_removed",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-bb3db60b9e88",
+    "fragment_id": "rgbdns-frag-0f2b54775d5e",
     "source_path": "src/server.rs",
-    "start_line": 320,
-    "end_line": 345
+    "start_line": 361,
+    "end_line": 386
   },
   {
     "name": "serve",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-1e7091c46f9a",
+    "fragment_id": "rgbdns-frag-31d10be4bc98",
     "source_path": "src/server.rs",
-    "start_line": 346,
-    "end_line": 356
+    "start_line": 387,
+    "end_line": 423
+  },
+  {
+    "name": "axfr_stream_handler",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-76bf4ddcc8ad",
+    "source_path": "src/server.rs",
+    "start_line": 424,
+    "end_line": 444
   },
   {
     "name": "serve_sockets",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-8a23f9d6fa9e",
+    "fragment_id": "rgbdns-frag-053b53ae57e0",
     "source_path": "src/server.rs",
-    "start_line": 357,
-    "end_line": 368
+    "start_line": 445,
+    "end_line": 476
   },
   {
     "name": "tests",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-4350cacf3568",
+    "fragment_id": "rgbdns-frag-20be16ba4c51",
     "source_path": "src/server.rs",
-    "start_line": 369,
-    "end_line": 378
+    "start_line": 477,
+    "end_line": 486
   },
   {
     "name": "query",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-0cf5f1aebbd7",
+    "fragment_id": "rgbdns-frag-6ee0c357f63d",
     "source_path": "src/server.rs",
-    "start_line": 379,
-    "end_line": 406
+    "start_line": 487,
+    "end_line": 514
   },
   {
     "name": "referral_has_no_aa_and_contains_bailiwick_glue",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-24eb49b3e883",
+    "fragment_id": "rgbdns-frag-138ac655395d",
     "source_path": "src/server.rs",
-    "start_line": 407,
-    "end_line": 429
+    "start_line": 515,
+    "end_line": 537
   },
   {
     "name": "client_address_selects_tinydns_location",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-86e49ea9f22b",
+    "fragment_id": "rgbdns-frag-78a254dd8c92",
     "source_path": "src/server.rs",
-    "start_line": 430,
-    "end_line": 463
+    "start_line": 538,
+    "end_line": 572
   },
   {
     "name": "expands_bounded_cname_chains_and_target_additionals",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-564c75db45be",
+    "fragment_id": "rgbdns-frag-8f699a31cc8b",
     "source_path": "src/server.rs",
-    "start_line": 464,
-    "end_line": 490
+    "start_line": 573,
+    "end_line": 599
   },
   {
     "name": "cname_loops_return_servfail_with_bounded_work",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-af48654cc6f2",
+    "fragment_id": "rgbdns-frag-80e9e786f228",
     "source_path": "src/server.rs",
-    "start_line": 491,
-    "end_line": 506
+    "start_line": 600,
+    "end_line": 615
+  },
+  {
+    "name": "aname_synthesizes_authoritative_addresses_without_emitting_cname",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-a64686cbedbb",
+    "source_path": "src/server.rs",
+    "start_line": 616,
+    "end_line": 677
   },
   {
     "name": "malformed_queries_get_bounded_formerr_and_unknown_opcode_gets_notimp",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-b5ef588ef89f",
+    "fragment_id": "rgbdns-frag-5c417caa83ca",
     "source_path": "src/server.rs",
-    "start_line": 507,
-    "end_line": 532
+    "start_line": 678,
+    "end_line": 703
   },
   {
     "name": "edns_negotiation_and_bad_version",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-4ad9f36d2277",
+    "fragment_id": "rgbdns-frag-4020f1673346",
     "source_path": "src/server.rs",
-    "start_line": 533,
-    "end_line": 572
+    "start_line": 704,
+    "end_line": 743
   },
   {
     "name": "legacy_udp_is_limited_to_512_and_keeps_whole_records",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-2c1337a1892b",
+    "fragment_id": "rgbdns-frag-afd2662300da",
     "source_path": "src/server.rs",
-    "start_line": 573,
-    "end_line": 587
+    "start_line": 744,
+    "end_line": 758
   },
   {
     "name": "live_udp_and_tcp_service",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-83ee748c0fa8",
+    "fragment_id": "rgbdns-frag-6c49d3a84895",
     "source_path": "src/server.rs",
-    "start_line": 588,
-    "end_line": 639
+    "start_line": 759,
+    "end_line": 811
+  },
+  {
+    "name": "integrated_tcp_listener_serves_axfr",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-95f0d422d9b2",
+    "source_path": "src/server.rs",
+    "start_line": 812,
+    "end_line": 833
   },
   {
     "name": "Identity",
@@ -4226,58 +4562,66 @@
   {
     "name": "Handler",
     "kind": "type",
-    "fragment_id": "rgbdns-frag-c52452849aa8",
+    "fragment_id": "rgbdns-frag-6acd0c6e28f0",
     "source_path": "src/transport.rs",
     "start_line": 12,
-    "end_line": 13
+    "end_line": 12
+  },
+  {
+    "name": "StreamHandler",
+    "kind": "type",
+    "fragment_id": "rgbdns-frag-7a901ddd4a4d",
+    "source_path": "src/transport.rs",
+    "start_line": 13,
+    "end_line": 14
   },
   {
     "name": "TCP_WORKERS",
     "kind": "const",
-    "fragment_id": "rgbdns-frag-6a51bd4e6d23",
+    "fragment_id": "rgbdns-frag-30b85bbe7549",
     "source_path": "src/transport.rs",
-    "start_line": 14,
-    "end_line": 14
+    "start_line": 15,
+    "end_line": 15
   },
   {
     "name": "TCP_TIMEOUT",
     "kind": "const",
-    "fragment_id": "rgbdns-frag-95473ddcb34a",
+    "fragment_id": "rgbdns-frag-b702cb6d3dcf",
     "source_path": "src/transport.rs",
-    "start_line": 15,
-    "end_line": 16
+    "start_line": 16,
+    "end_line": 17
   },
   {
     "name": "serve",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-02bc3279cfc3",
+    "fragment_id": "rgbdns-frag-b6fb71c6843c",
     "source_path": "src/transport.rs",
-    "start_line": 17,
-    "end_line": 24
+    "start_line": 18,
+    "end_line": 30
   },
   {
     "name": "serve_sockets",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-047fdcb9b19e",
+    "fragment_id": "rgbdns-frag-0e863fd80bd5",
     "source_path": "src/transport.rs",
-    "start_line": 25,
-    "end_line": 53
+    "start_line": 31,
+    "end_line": 65
   },
   {
     "name": "serve_udp",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-601011fcc16d",
+    "fragment_id": "rgbdns-frag-a0394db83dec",
     "source_path": "src/transport.rs",
-    "start_line": 54,
-    "end_line": 64
+    "start_line": 66,
+    "end_line": 76
   },
   {
     "name": "serve_tcp_connection",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-a0dfeb34bf30",
+    "fragment_id": "rgbdns-frag-fac10ff0d148",
     "source_path": "src/transport.rs",
-    "start_line": 65,
-    "end_line": 88
+    "start_line": 77,
+    "end_line": 114
   },
   {
     "name": "respond",
@@ -4322,354 +4666,394 @@
   {
     "name": "Zone",
     "kind": "struct",
-    "fragment_id": "rgbdns-frag-5daeaba252f4",
+    "fragment_id": "rgbdns-frag-ebf4f59215f2",
     "source_path": "src/zone.rs",
     "start_line": 11,
-    "end_line": 23
+    "end_line": 24
+  },
+  {
+    "name": "Aname",
+    "kind": "struct",
+    "fragment_id": "rgbdns-frag-e1d80abe1755",
+    "source_path": "src/zone.rs",
+    "start_line": 25,
+    "end_line": 30
   },
   {
     "name": "RecordMetadata",
     "kind": "struct",
-    "fragment_id": "rgbdns-frag-a0b9f93ab964",
+    "fragment_id": "rgbdns-frag-5c488af2e254",
     "source_path": "src/zone.rs",
-    "start_line": 24,
-    "end_line": 27
+    "start_line": 31,
+    "end_line": 34
   },
   {
     "name": "Zone",
     "kind": "impl",
-    "fragment_id": "rgbdns-frag-4249e6c1545c",
+    "fragment_id": "rgbdns-frag-6e8fb6392f7c",
     "source_path": "src/zone.rs",
-    "start_line": 28,
-    "end_line": 28
+    "start_line": 35,
+    "end_line": 35
   },
   {
     "name": "from_file",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-360cf843ad86",
+    "fragment_id": "rgbdns-frag-4c56545e9677",
     "source_path": "src/zone.rs",
-    "start_line": 29,
-    "end_line": 41
+    "start_line": 36,
+    "end_line": 48
   },
   {
     "name": "parse",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-9cc348c66b0c",
+    "fragment_id": "rgbdns-frag-a7aa463839ef",
     "source_path": "src/zone.rs",
-    "start_line": 42,
-    "end_line": 44
+    "start_line": 49,
+    "end_line": 51
   },
   {
     "name": "parse_with_serial",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-335bf172fd62",
+    "fragment_id": "rgbdns-frag-647126fbe1a0",
     "source_path": "src/zone.rs",
-    "start_line": 45,
-    "end_line": 60
+    "start_line": 52,
+    "end_line": 67
   },
   {
     "name": "validate_aliases",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-c86fa04276bf",
+    "fragment_id": "rgbdns-frag-f4af87c101c0",
     "source_path": "src/zone.rs",
-    "start_line": 61,
-    "end_line": 84
+    "start_line": 68,
+    "end_line": 115
   },
   {
     "name": "add",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-ac11c87f4704",
+    "fragment_id": "rgbdns-frag-1711d6afe285",
     "source_path": "src/zone.rs",
-    "start_line": 85,
-    "end_line": 99
+    "start_line": 116,
+    "end_line": 130
   },
   {
     "name": "record_entries",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-b71e2be5914b",
+    "fragment_id": "rgbdns-frag-3696486a4c17",
     "source_path": "src/zone.rs",
-    "start_line": 100,
-    "end_line": 110
+    "start_line": 131,
+    "end_line": 141
   },
   {
     "name": "location_entries",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-ad2f12a33827",
+    "fragment_id": "rgbdns-frag-6d6177059c97",
     "source_path": "src/zone.rs",
-    "start_line": 111,
-    "end_line": 115
+    "start_line": 142,
+    "end_line": 146
+  },
+  {
+    "name": "aname_entries",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-0a5708d8a33e",
+    "source_path": "src/zone.rs",
+    "start_line": 147,
+    "end_line": 149
+  },
+  {
+    "name": "aname",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-03c0b885e743",
+    "source_path": "src/zone.rs",
+    "start_line": 150,
+    "end_line": 152
+  },
+  {
+    "name": "has_anames",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-eeabfb747faa",
+    "source_path": "src/zone.rs",
+    "start_line": 153,
+    "end_line": 155
   },
   {
     "name": "transfer",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-cd7a32739724",
+    "fragment_id": "rgbdns-frag-5071faf9bdcf",
     "source_path": "src/zone.rs",
-    "start_line": 116,
-    "end_line": 139
+    "start_line": 156,
+    "end_line": 179
   },
   {
     "name": "from_compiled_records",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-5c5554d5e7d7",
+    "fragment_id": "rgbdns-frag-18ca4be2b107",
     "source_path": "src/zone.rs",
-    "start_line": 140,
-    "end_line": 168
+    "start_line": 180,
+    "end_line": 218
   },
   {
     "name": "add_line",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-feffd7465076",
+    "fragment_id": "rgbdns-frag-2080b97a017a",
     "source_path": "src/zone.rs",
-    "start_line": 169,
-    "end_line": 249
+    "start_line": 219,
+    "end_line": 299
   },
   {
     "name": "lookup",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-df128c63224a",
+    "fragment_id": "rgbdns-frag-d8c4e0aee989",
     "source_path": "src/zone.rs",
-    "start_line": 459,
-    "end_line": 461
+    "start_line": 529,
+    "end_line": 531
   },
   {
     "name": "lookup_from",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-38090045fa8a",
+    "fragment_id": "rgbdns-frag-948bf6e5feb7",
     "source_path": "src/zone.rs",
-    "start_line": 462,
-    "end_line": 464
+    "start_line": 532,
+    "end_line": 534
   },
   {
     "name": "lookup_for",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-397c4f5dc7bc",
+    "fragment_id": "rgbdns-frag-1c0a72894bbe",
     "source_path": "src/zone.rs",
-    "start_line": 465,
-    "end_line": 545
+    "start_line": 535,
+    "end_line": 615
   },
   {
     "name": "soa",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-82a55e8d4986",
+    "fragment_id": "rgbdns-frag-5e582526ed53",
     "source_path": "src/zone.rs",
-    "start_line": 552,
-    "end_line": 556
+    "start_line": 622,
+    "end_line": 626
   },
   {
     "name": "visible_records",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-acbff3f901b2",
+    "fragment_id": "rgbdns-frag-f88b0dcce53a",
     "source_path": "src/zone.rs",
-    "start_line": 557,
-    "end_line": 582
+    "start_line": 627,
+    "end_line": 652
   },
   {
     "name": "client_location",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-0dd21c16e7b9",
+    "fragment_id": "rgbdns-frag-6df7a8cc5d4f",
     "source_path": "src/zone.rs",
-    "start_line": 583,
-    "end_line": 600
+    "start_line": 653,
+    "end_line": 670
   },
   {
     "name": "name_exists",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-d7e0cd8b2e4f",
+    "fragment_id": "rgbdns-frag-ed0bf3adfed0",
     "source_path": "src/zone.rs",
-    "start_line": 601,
-    "end_line": 613
+    "start_line": 671,
+    "end_line": 683
   },
   {
     "name": "unix_now",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-0155711b7b03",
+    "fragment_id": "rgbdns-frag-7f213f06d1f1",
     "source_path": "src/zone.rs",
-    "start_line": 614,
-    "end_line": 619
+    "start_line": 684,
+    "end_line": 689
   },
   {
     "name": "Lookup",
     "kind": "enum",
-    "fragment_id": "rgbdns-frag-d6b7f8d36179",
+    "fragment_id": "rgbdns-frag-ce4d21a9257e",
     "source_path": "src/zone.rs",
-    "start_line": 620,
-    "end_line": 629
+    "start_line": 690,
+    "end_line": 699
   },
   {
     "name": "split_fields",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-e1ca3db94035",
+    "fragment_id": "rgbdns-frag-66afd2f4765a",
     "source_path": "src/zone.rs",
-    "start_line": 630,
-    "end_line": 642
+    "start_line": 700,
+    "end_line": 712
   },
   {
     "name": "field",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-db46c882156d",
+    "fragment_id": "rgbdns-frag-1dcae386e987",
     "source_path": "src/zone.rs",
-    "start_line": 643,
-    "end_line": 647
+    "start_line": 713,
+    "end_line": 717
   },
   {
     "name": "field_opt",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-d6016dd9041c",
+    "fragment_id": "rgbdns-frag-bbbc1b59c145",
     "source_path": "src/zone.rs",
-    "start_line": 648,
-    "end_line": 650
+    "start_line": 718,
+    "end_line": 720
   },
   {
     "name": "number_or",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-f52648c5b1ec",
+    "fragment_id": "rgbdns-frag-e7d0187f26d5",
     "source_path": "src/zone.rs",
-    "start_line": 651,
-    "end_line": 656
+    "start_line": 721,
+    "end_line": 726
   },
   {
     "name": "expanded_target",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-136174e58903",
+    "fragment_id": "rgbdns-frag-fce321309f41",
     "source_path": "src/zone.rs",
-    "start_line": 657,
-    "end_line": 664
+    "start_line": 727,
+    "end_line": 734
   },
   {
     "name": "record_metadata",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-a34fb5a033af",
+    "fragment_id": "rgbdns-frag-b85693859c2a",
     "source_path": "src/zone.rs",
-    "start_line": 665,
-    "end_line": 682
+    "start_line": 735,
+    "end_line": 752
   },
   {
     "name": "location_code",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-ace5d7b6b93d",
+    "fragment_id": "rgbdns-frag-72f85a565c18",
     "source_path": "src/zone.rs",
-    "start_line": 683,
-    "end_line": 689
+    "start_line": 753,
+    "end_line": 759
   },
   {
     "name": "unescape",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-40e285b5fae4",
+    "fragment_id": "rgbdns-frag-8019a4049ec2",
     "source_path": "src/zone.rs",
-    "start_line": 690,
-    "end_line": 724
+    "start_line": 760,
+    "end_line": 794
   },
   {
     "name": "tests",
     "kind": "mod",
-    "fragment_id": "rgbdns-frag-e32683aea517",
+    "fragment_id": "rgbdns-frag-fefef3c64e8e",
     "source_path": "src/zone.rs",
-    "start_line": 725,
-    "end_line": 727
+    "start_line": 795,
+    "end_line": 797
   },
   {
     "name": "common_markers",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-1b0b9ad83c14",
+    "fragment_id": "rgbdns-frag-d484f0dd4859",
     "source_path": "src/zone.rs",
-    "start_line": 728,
-    "end_line": 742
+    "start_line": 798,
+    "end_line": 812
   },
   {
     "name": "wildcard",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-721d1cbba723",
+    "fragment_id": "rgbdns-frag-9e00c4c01f81",
     "source_path": "src/zone.rs",
-    "start_line": 743,
-    "end_line": 750
+    "start_line": 813,
+    "end_line": 820
   },
   {
     "name": "escaped_colon",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-0eb5901d07d1",
+    "fragment_id": "rgbdns-frag-c624c9699d4f",
     "source_path": "src/zone.rs",
-    "start_line": 751,
-    "end_line": 754
+    "start_line": 821,
+    "end_line": 824
   },
   {
     "name": "patched_srv_marker_and_glue",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-db64e53049f9",
+    "fragment_id": "rgbdns-frag-a0256b2e6482",
     "source_path": "src/zone.rs",
-    "start_line": 755,
-    "end_line": 774
+    "start_line": 825,
+    "end_line": 844
   },
   {
     "name": "original_ns_and_mx_field_positions_and_expansion",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-89ba6b3ea320",
+    "fragment_id": "rgbdns-frag-b62c04c16359",
     "source_path": "src/zone.rs",
-    "start_line": 775,
-    "end_line": 807
+    "start_line": 845,
+    "end_line": 877
   },
   {
     "name": "explicit_soa_uses_ttl_field_nine",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-c292ee23c8bf",
+    "fragment_id": "rgbdns-frag-30f3da1f3cc7",
     "source_path": "src/zone.rs",
-    "start_line": 808,
-    "end_line": 825
+    "start_line": 878,
+    "end_line": 895
   },
   {
     "name": "text_escapes_use_one_to_three_octal_digits",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-e49f18aa0a17",
+    "fragment_id": "rgbdns-frag-61b0c4c70016",
     "source_path": "src/zone.rs",
-    "start_line": 826,
-    "end_line": 830
+    "start_line": 896,
+    "end_line": 900
   },
   {
     "name": "tai64_activation_and_expiration_are_evaluated_at_lookup",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-6ec46b786254",
+    "fragment_id": "rgbdns-frag-67422069cdc9",
     "source_path": "src/zone.rs",
-    "start_line": 831,
-    "end_line": 831
+    "start_line": 901,
+    "end_line": 901
   },
   {
     "name": "TAI_EPOCH",
     "kind": "const",
-    "fragment_id": "rgbdns-frag-91fad3d9554d",
+    "fragment_id": "rgbdns-frag-474931ff0bc3",
     "source_path": "src/zone.rs",
-    "start_line": 832,
-    "end_line": 860
+    "start_line": 902,
+    "end_line": 930
   },
   {
     "name": "longest_client_prefix_selects_location_records",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-df64dce34289",
+    "fragment_id": "rgbdns-frag-e6cf835581fe",
     "source_path": "src/zone.rs",
-    "start_line": 861,
-    "end_line": 894
+    "start_line": 931,
+    "end_line": 964
   },
   {
     "name": "implicit_soa_uses_source_serial_and_generic_types_are_restricted",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-7b4ba45cc378",
+    "fragment_id": "rgbdns-frag-f9ed7fd4df7e",
     "source_path": "src/zone.rs",
-    "start_line": 895,
-    "end_line": 907
+    "start_line": 965,
+    "end_line": 977
   },
   {
     "name": "empty_nonterminals_and_closest_encloser_block_higher_wildcards",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-0e6a66d6e1b2",
+    "fragment_id": "rgbdns-frag-857a1ab82fb7",
     "source_path": "src/zone.rs",
-    "start_line": 908,
-    "end_line": 930
+    "start_line": 978,
+    "end_line": 1000
+  },
+  {
+    "name": "aname_coexists_with_apex_authority_but_not_address_or_cname_data",
+    "kind": "fn",
+    "fragment_id": "rgbdns-frag-970bdea3e765",
+    "source_path": "src/zone.rs",
+    "start_line": 1001,
+    "end_line": 1028
   },
   {
     "name": "patched_ipv6_flat_format_has_unambiguous_ttl_and_reverse_trees",
     "kind": "fn",
-    "fragment_id": "rgbdns-frag-78d680edcc10",
+    "fragment_id": "rgbdns-frag-863520344cf9",
     "source_path": "src/zone.rs",
-    "start_line": 931,
-    "end_line": 954
+    "start_line": 1029,
+    "end_line": 1052
   },
   {
     "name": "path",

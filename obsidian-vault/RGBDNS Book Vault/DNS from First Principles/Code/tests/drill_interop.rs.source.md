@@ -5,7 +5,7 @@ language: "rust"
 subsystem: "Tests and performance"
 line_count: 106
 fragment_count: 7
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # tests/drill_interop.rs

@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "walldns"
 line_count: 20
 fragment_count: 2
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/bin/walldns.rs

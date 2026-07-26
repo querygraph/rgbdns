@@ -4,9 +4,9 @@ source_path: "src/zone.rs"
 language: "rust"
 subsystem: "Authoritative service"
 crate: "rgbdns"
-line_count: 954
-fragment_count: 44
-rgbdns_commit: "472c2087"
+line_count: 1052
+fragment_count: 49
+rgbdns_commit: "79502939"
 ---
 
 # src/zone.rs
@@ -14,55 +14,60 @@ rgbdns_commit: "472c2087"
 - Subsystem: [[DNS from First Principles/Subsystems/Authoritative service|Authoritative service]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/zone.rs`
-- Lines: 954
+- Lines: 1052
 - Summary: Source file in the Authoritative service subsystem.
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-5daeaba252f4|Zone]]: lines 11-23
-- [[DNS from First Principles/Fragments/rgbdns-frag-a0b9f93ab964|RecordMetadata]]: lines 24-27
-- [[DNS from First Principles/Fragments/rgbdns-frag-4249e6c1545c|Zone]]: lines 28-28
-- [[DNS from First Principles/Fragments/rgbdns-frag-360cf843ad86|from_file]]: lines 29-41
-- [[DNS from First Principles/Fragments/rgbdns-frag-9cc348c66b0c|parse]]: lines 42-44
-- [[DNS from First Principles/Fragments/rgbdns-frag-335bf172fd62|parse_with_serial]]: lines 45-60
-- [[DNS from First Principles/Fragments/rgbdns-frag-c86fa04276bf|validate_aliases]]: lines 61-84
-- [[DNS from First Principles/Fragments/rgbdns-frag-ac11c87f4704|add]]: lines 85-99
-- [[DNS from First Principles/Fragments/rgbdns-frag-b71e2be5914b|record_entries]]: lines 100-110
-- [[DNS from First Principles/Fragments/rgbdns-frag-ad2f12a33827|location_entries]]: lines 111-115
-- [[DNS from First Principles/Fragments/rgbdns-frag-cd7a32739724|transfer]]: lines 116-139
-- [[DNS from First Principles/Fragments/rgbdns-frag-5c5554d5e7d7|from_compiled_records]]: lines 140-168
-- [[DNS from First Principles/Fragments/rgbdns-frag-feffd7465076|add_line]]: lines 169-249
-- [[DNS from First Principles/Fragments/rgbdns-frag-df128c63224a|lookup]]: lines 459-461
-- [[DNS from First Principles/Fragments/rgbdns-frag-38090045fa8a|lookup_from]]: lines 462-464
-- [[DNS from First Principles/Fragments/rgbdns-frag-397c4f5dc7bc|lookup_for]]: lines 465-545
-- [[DNS from First Principles/Fragments/rgbdns-frag-82a55e8d4986|soa]]: lines 552-556
-- [[DNS from First Principles/Fragments/rgbdns-frag-acbff3f901b2|visible_records]]: lines 557-582
-- [[DNS from First Principles/Fragments/rgbdns-frag-0dd21c16e7b9|client_location]]: lines 583-600
-- [[DNS from First Principles/Fragments/rgbdns-frag-d7e0cd8b2e4f|name_exists]]: lines 601-613
-- [[DNS from First Principles/Fragments/rgbdns-frag-0155711b7b03|unix_now]]: lines 614-619
-- [[DNS from First Principles/Fragments/rgbdns-frag-d6b7f8d36179|Lookup]]: lines 620-629
-- [[DNS from First Principles/Fragments/rgbdns-frag-e1ca3db94035|split_fields]]: lines 630-642
-- [[DNS from First Principles/Fragments/rgbdns-frag-db46c882156d|field]]: lines 643-647
-- [[DNS from First Principles/Fragments/rgbdns-frag-d6016dd9041c|field_opt]]: lines 648-650
-- [[DNS from First Principles/Fragments/rgbdns-frag-f52648c5b1ec|number_or]]: lines 651-656
-- [[DNS from First Principles/Fragments/rgbdns-frag-136174e58903|expanded_target]]: lines 657-664
-- [[DNS from First Principles/Fragments/rgbdns-frag-a34fb5a033af|record_metadata]]: lines 665-682
-- [[DNS from First Principles/Fragments/rgbdns-frag-ace5d7b6b93d|location_code]]: lines 683-689
-- [[DNS from First Principles/Fragments/rgbdns-frag-40e285b5fae4|unescape]]: lines 690-724
-- [[DNS from First Principles/Fragments/rgbdns-frag-e32683aea517|tests]]: lines 725-727
-- [[DNS from First Principles/Fragments/rgbdns-frag-1b0b9ad83c14|common_markers]]: lines 728-742
-- [[DNS from First Principles/Fragments/rgbdns-frag-721d1cbba723|wildcard]]: lines 743-750
-- [[DNS from First Principles/Fragments/rgbdns-frag-0eb5901d07d1|escaped_colon]]: lines 751-754
-- [[DNS from First Principles/Fragments/rgbdns-frag-db64e53049f9|patched_srv_marker_and_glue]]: lines 755-774
-- [[DNS from First Principles/Fragments/rgbdns-frag-89ba6b3ea320|original_ns_and_mx_field_positions_and_expansion]]: lines 775-807
-- [[DNS from First Principles/Fragments/rgbdns-frag-c292ee23c8bf|explicit_soa_uses_ttl_field_nine]]: lines 808-825
-- [[DNS from First Principles/Fragments/rgbdns-frag-e49f18aa0a17|text_escapes_use_one_to_three_octal_digits]]: lines 826-830
-- [[DNS from First Principles/Fragments/rgbdns-frag-6ec46b786254|tai64_activation_and_expiration_are_evaluated_at_lookup]]: lines 831-831
-- [[DNS from First Principles/Fragments/rgbdns-frag-91fad3d9554d|TAI_EPOCH]]: lines 832-860
-- [[DNS from First Principles/Fragments/rgbdns-frag-df64dce34289|longest_client_prefix_selects_location_records]]: lines 861-894
-- [[DNS from First Principles/Fragments/rgbdns-frag-7b4ba45cc378|implicit_soa_uses_source_serial_and_generic_types_are_restricted]]: lines 895-907
-- [[DNS from First Principles/Fragments/rgbdns-frag-0e6a66d6e1b2|empty_nonterminals_and_closest_encloser_block_higher_wildcards]]: lines 908-930
-- [[DNS from First Principles/Fragments/rgbdns-frag-78d680edcc10|patched_ipv6_flat_format_has_unambiguous_ttl_and_reverse_trees]]: lines 931-954
+- [[DNS from First Principles/Fragments/rgbdns-frag-ebf4f59215f2|Zone]]: lines 11-24
+- [[DNS from First Principles/Fragments/rgbdns-frag-e1d80abe1755|Aname]]: lines 25-30
+- [[DNS from First Principles/Fragments/rgbdns-frag-5c488af2e254|RecordMetadata]]: lines 31-34
+- [[DNS from First Principles/Fragments/rgbdns-frag-6e8fb6392f7c|Zone]]: lines 35-35
+- [[DNS from First Principles/Fragments/rgbdns-frag-4c56545e9677|from_file]]: lines 36-48
+- [[DNS from First Principles/Fragments/rgbdns-frag-a7aa463839ef|parse]]: lines 49-51
+- [[DNS from First Principles/Fragments/rgbdns-frag-647126fbe1a0|parse_with_serial]]: lines 52-67
+- [[DNS from First Principles/Fragments/rgbdns-frag-f4af87c101c0|validate_aliases]]: lines 68-115
+- [[DNS from First Principles/Fragments/rgbdns-frag-1711d6afe285|add]]: lines 116-130
+- [[DNS from First Principles/Fragments/rgbdns-frag-3696486a4c17|record_entries]]: lines 131-141
+- [[DNS from First Principles/Fragments/rgbdns-frag-6d6177059c97|location_entries]]: lines 142-146
+- [[DNS from First Principles/Fragments/rgbdns-frag-0a5708d8a33e|aname_entries]]: lines 147-149
+- [[DNS from First Principles/Fragments/rgbdns-frag-03c0b885e743|aname]]: lines 150-152
+- [[DNS from First Principles/Fragments/rgbdns-frag-eeabfb747faa|has_anames]]: lines 153-155
+- [[DNS from First Principles/Fragments/rgbdns-frag-5071faf9bdcf|transfer]]: lines 156-179
+- [[DNS from First Principles/Fragments/rgbdns-frag-18ca4be2b107|from_compiled_records]]: lines 180-218
+- [[DNS from First Principles/Fragments/rgbdns-frag-2080b97a017a|add_line]]: lines 219-299
+- [[DNS from First Principles/Fragments/rgbdns-frag-d8c4e0aee989|lookup]]: lines 529-531
+- [[DNS from First Principles/Fragments/rgbdns-frag-948bf6e5feb7|lookup_from]]: lines 532-534
+- [[DNS from First Principles/Fragments/rgbdns-frag-1c0a72894bbe|lookup_for]]: lines 535-615
+- [[DNS from First Principles/Fragments/rgbdns-frag-5e582526ed53|soa]]: lines 622-626
+- [[DNS from First Principles/Fragments/rgbdns-frag-f88b0dcce53a|visible_records]]: lines 627-652
+- [[DNS from First Principles/Fragments/rgbdns-frag-6df7a8cc5d4f|client_location]]: lines 653-670
+- [[DNS from First Principles/Fragments/rgbdns-frag-ed0bf3adfed0|name_exists]]: lines 671-683
+- [[DNS from First Principles/Fragments/rgbdns-frag-7f213f06d1f1|unix_now]]: lines 684-689
+- [[DNS from First Principles/Fragments/rgbdns-frag-ce4d21a9257e|Lookup]]: lines 690-699
+- [[DNS from First Principles/Fragments/rgbdns-frag-66afd2f4765a|split_fields]]: lines 700-712
+- [[DNS from First Principles/Fragments/rgbdns-frag-1dcae386e987|field]]: lines 713-717
+- [[DNS from First Principles/Fragments/rgbdns-frag-bbbc1b59c145|field_opt]]: lines 718-720
+- [[DNS from First Principles/Fragments/rgbdns-frag-e7d0187f26d5|number_or]]: lines 721-726
+- [[DNS from First Principles/Fragments/rgbdns-frag-fce321309f41|expanded_target]]: lines 727-734
+- [[DNS from First Principles/Fragments/rgbdns-frag-b85693859c2a|record_metadata]]: lines 735-752
+- [[DNS from First Principles/Fragments/rgbdns-frag-72f85a565c18|location_code]]: lines 753-759
+- [[DNS from First Principles/Fragments/rgbdns-frag-8019a4049ec2|unescape]]: lines 760-794
+- [[DNS from First Principles/Fragments/rgbdns-frag-fefef3c64e8e|tests]]: lines 795-797
+- [[DNS from First Principles/Fragments/rgbdns-frag-d484f0dd4859|common_markers]]: lines 798-812
+- [[DNS from First Principles/Fragments/rgbdns-frag-9e00c4c01f81|wildcard]]: lines 813-820
+- [[DNS from First Principles/Fragments/rgbdns-frag-c624c9699d4f|escaped_colon]]: lines 821-824
+- [[DNS from First Principles/Fragments/rgbdns-frag-a0256b2e6482|patched_srv_marker_and_glue]]: lines 825-844
+- [[DNS from First Principles/Fragments/rgbdns-frag-b62c04c16359|original_ns_and_mx_field_positions_and_expansion]]: lines 845-877
+- [[DNS from First Principles/Fragments/rgbdns-frag-30f3da1f3cc7|explicit_soa_uses_ttl_field_nine]]: lines 878-895
+- [[DNS from First Principles/Fragments/rgbdns-frag-61b0c4c70016|text_escapes_use_one_to_three_octal_digits]]: lines 896-900
+- [[DNS from First Principles/Fragments/rgbdns-frag-67422069cdc9|tai64_activation_and_expiration_are_evaluated_at_lookup]]: lines 901-901
+- [[DNS from First Principles/Fragments/rgbdns-frag-474931ff0bc3|TAI_EPOCH]]: lines 902-930
+- [[DNS from First Principles/Fragments/rgbdns-frag-e6cf835581fe|longest_client_prefix_selects_location_records]]: lines 931-964
+- [[DNS from First Principles/Fragments/rgbdns-frag-f9ed7fd4df7e|implicit_soa_uses_source_serial_and_generic_types_are_restricted]]: lines 965-977
+- [[DNS from First Principles/Fragments/rgbdns-frag-857a1ab82fb7|empty_nonterminals_and_closest_encloser_block_higher_wildcards]]: lines 978-1000
+- [[DNS from First Principles/Fragments/rgbdns-frag-970bdea3e765|aname_coexists_with_apex_authority_but_not_address_or_cname_data]]: lines 1001-1028
+- [[DNS from First Principles/Fragments/rgbdns-frag-863520344cf9|patched_ipv6_flat_format_has_unambiguous_ttl_and_reverse_trees]]: lines 1029-1052
 
 ## Full Source
 
@@ -80,6 +85,7 @@ use std::{
 pub struct Zone {
     records: BTreeMap<Name, Vec<Record>>,
     metadata: BTreeMap<Name, Vec<RecordMetadata>>,
+    anames: BTreeMap<Name, Aname>,
     authoritative: BTreeSet<Name>,
     delegations: BTreeSet<Name>,
     locations: Vec<(Vec<u8>, [u8; 2])>,
@@ -87,6 +93,12 @@ pub struct Zone {
     default_serial: u32,
     nodes: BTreeSet<Name>,
     unqualified_nodes: BTreeSet<Name>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct Aname {
+    pub target: Name,
+    pub ttl: u32,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -149,6 +161,30 @@ impl Zone {
                 )));
             }
         }
+        for (owner, aname) in &self.anames {
+            if owner.without_wildcard().is_some() {
+                return Err(Error::InvalidRecord(format!(
+                    "ANAME owner cannot be a wildcard: {owner}"
+                )));
+            }
+            if owner == &aname.target {
+                return Err(Error::InvalidRecord(format!(
+                    "ANAME at {owner} points to itself"
+                )));
+            }
+            if self.records.get(owner).is_some_and(|records| {
+                records.iter().any(|record| {
+                    matches!(
+                        record.rr_type(),
+                        RecordType::A | RecordType::Aaaa | RecordType::Cname
+                    )
+                })
+            }) {
+                return Err(Error::InvalidRecord(format!(
+                    "ANAME at {owner} conflicts with A, AAAA, or CNAME data"
+                )));
+            }
+        }
         Ok(())
     }
     fn add(&mut self, r: Record) {
@@ -182,6 +218,15 @@ impl Zone {
             .iter()
             .map(|(prefix, location)| (prefix.as_slice(), *location))
     }
+    pub(crate) fn aname_entries(&self) -> impl Iterator<Item = (&Name, &Aname)> {
+        self.anames.iter()
+    }
+    pub(crate) fn aname(&self, owner: &Name) -> Option<&Aname> {
+        self.anames.get(owner)
+    }
+    pub(crate) fn has_anames(&self) -> bool {
+        !self.anames.is_empty()
+    }
     pub fn transfer(&self, name: &Name) -> Option<Vec<Record>> {
         if !self.authoritative.contains(name) {
             return None;
@@ -209,9 +254,11 @@ impl Zone {
     pub(crate) fn from_compiled_records(
         records: Vec<(Record, RecordMetadata)>,
         locations: Vec<(Vec<u8>, [u8; 2])>,
+        anames: Vec<(Name, Aname)>,
     ) -> Self {
         let mut zone = Self {
             locations,
+            anames: anames.into_iter().collect(),
             ..Self::default()
         };
         for (record, metadata) in records {
@@ -231,6 +278,14 @@ impl Zone {
         for owner in ns_owners {
             if !zone.authoritative.contains(&owner) {
                 zone.delegations.insert(owner);
+            }
+        }
+        for owner in zone.anames.keys() {
+            let mut node = Some(owner.clone());
+            while let Some(name) = node {
+                zone.nodes.insert(name.clone());
+                zone.unqualified_nodes.insert(name.clone());
+                node = name.parent();
             }
         }
         zone
@@ -269,6 +324,26 @@ impl Zone {
             _ => RecordMetadata::default(),
         };
         match kind {
+            b'A' => {
+                let target = field(&f, 1)?.parse::<Name>()?;
+                let ttl = number_or(&f, 2, 300);
+                if ttl == 0 {
+                    return Err(Error::InvalidRecord("ANAME TTL must be positive".into()));
+                }
+                if let Some(existing) = self.anames.insert(name.clone(), Aname { target, ttl })
+                    && self.anames[&name] != existing
+                {
+                    return Err(Error::InvalidRecord(format!(
+                        "multiple ANAME targets at {name}"
+                    )));
+                }
+                let mut node = Some(name);
+                while let Some(value) = node {
+                    self.nodes.insert(value.clone());
+                    self.unqualified_nodes.insert(value.clone());
+                    node = value.parent();
+                }
+            }
             b'=' | b'+' => {
                 let ttl = number_or(&f, 2, 86400);
                 let ip = field(&f, 1)?
@@ -994,6 +1069,34 @@ mod tests {
             Lookup::Answer(records)
                 if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
         ));
+    }
+
+    #[test]
+    fn aname_coexists_with_apex_authority_but_not_address_or_cname_data() {
+        let zone = Zone::parse(
+            ".example:192.0.2.53:ns.example\n\
+             Aexample:hosting.example.net:120\n",
+        )
+        .unwrap();
+        let aname = zone.aname(&"example".parse().unwrap()).unwrap();
+        assert_eq!(aname.target, "hosting.example.net".parse().unwrap());
+        assert_eq!(aname.ttl, 120);
+        assert!(
+            Zone::parse(
+                ".example:192.0.2.53:ns.example\n\
+                 Aexample:hosting.example.net\n\
+                 +example:192.0.2.1\n",
+            )
+            .is_err()
+        );
+        assert!(
+            Zone::parse(
+                ".example:192.0.2.53:ns.example\n\
+                 Aexample:hosting.example.net\n\
+                 Cexample:other.example.net\n",
+            )
+            .is_err()
+        );
     }
 
     #[test]

@@ -5,7 +5,7 @@ language: "rust"
 subsystem: "Tests and performance"
 line_count: 72
 fragment_count: 5
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # tests/dnscache_network.rs

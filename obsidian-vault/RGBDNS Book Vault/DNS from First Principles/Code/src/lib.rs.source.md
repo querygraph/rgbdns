@@ -4,9 +4,9 @@ source_path: "src/lib.rs"
 language: "rust"
 subsystem: "Rust library"
 crate: "rgbdns"
-line_count: 80
-fragment_count: 28
-rgbdns_commit: "472c2087"
+line_count: 81
+fragment_count: 29
+rgbdns_commit: "79502939"
 ---
 
 # src/lib.rs
@@ -14,45 +14,47 @@ rgbdns_commit: "472c2087"
 - Subsystem: [[DNS from First Principles/Subsystems/Rust library|Rust library]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/lib.rs`
-- Lines: 80
+- Lines: 81
 - Summary: Constructs a listen address without ambiguous IPv6 string concatenation.
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-d26839b00cc0|axfr]]: lines 3-3
-- [[DNS from First Principles/Fragments/rgbdns-frag-c0387f24e3b2|cdb]]: lines 4-4
-- [[DNS from First Principles/Fragments/rgbdns-frag-ea9a942c2c24|client]]: lines 5-5
-- [[DNS from First Principles/Fragments/rgbdns-frag-4ca6b4a66ffe|conf]]: lines 6-6
-- [[DNS from First Principles/Fragments/rgbdns-frag-47cdd9e7aa73|dnscache_config]]: lines 7-7
-- [[DNS from First Principles/Fragments/rgbdns-frag-64be14e515dc|multilog]]: lines 8-8
-- [[DNS from First Principles/Fragments/rgbdns-frag-1198b492e8d3|name]]: lines 9-9
-- [[DNS from First Principles/Fragments/rgbdns-frag-9a69adb381ac|packet]]: lines 10-10
-- [[DNS from First Principles/Fragments/rgbdns-frag-cc4b83e1818c|pick]]: lines 11-11
-- [[DNS from First Principles/Fragments/rgbdns-frag-b32ba925e7c1|rbl]]: lines 12-12
-- [[DNS from First Principles/Fragments/rgbdns-frag-fc0223cab124|server]]: lines 13-14
-- [[DNS from First Principles/Fragments/rgbdns-frag-17439937a795|setuidgid]]: lines 15-15
-- [[DNS from First Principles/Fragments/rgbdns-frag-53eaa3274eb7|special]]: lines 16-16
-- [[DNS from First Principles/Fragments/rgbdns-frag-bd03ec8b2f1a|tai64]]: lines 17-17
-- [[DNS from First Principles/Fragments/rgbdns-frag-3a23dfdf3153|tinydns_edit]]: lines 18-18
-- [[DNS from First Principles/Fragments/rgbdns-frag-65d3faf4b4df|transport]]: lines 19-19
-- [[DNS from First Principles/Fragments/rgbdns-frag-45a926c96a17|wall]]: lines 20-20
-- [[DNS from First Principles/Fragments/rgbdns-frag-460d033a70bc|zone]]: lines 21-26
-- [[DNS from First Principles/Fragments/rgbdns-frag-a504095bfade|Error]]: lines 27-33
-- [[DNS from First Principles/Fragments/rgbdns-frag-1f2f52292c17|std]]: lines 34-34
-- [[DNS from First Principles/Fragments/rgbdns-frag-762fbc6aec4b|fmt]]: lines 35-43
-- [[DNS from First Principles/Fragments/rgbdns-frag-aafca40edd3c|std]]: lines 44-44
-- [[DNS from First Principles/Fragments/rgbdns-frag-096bc6ecb319|From]]: lines 45-45
-- [[DNS from First Principles/Fragments/rgbdns-frag-c25798b08316|from]]: lines 46-49
-- [[DNS from First Principles/Fragments/rgbdns-frag-961bde153386|Result]]: lines 50-52
-- [[DNS from First Principles/Fragments/rgbdns-frag-54ed88397082|socket_address]]: lines 53-63
-- [[DNS from First Principles/Fragments/rgbdns-frag-d546da74e4e8|address_tests]]: lines 64-67
-- [[DNS from First Principles/Fragments/rgbdns-frag-9f5243a9e8af|constructs_ipv4_and_ipv6_socket_addresses]]: lines 68-80
+- [[DNS from First Principles/Fragments/rgbdns-frag-f52ccf723277|aname]]: lines 3-3
+- [[DNS from First Principles/Fragments/rgbdns-frag-4a817a7124e1|axfr]]: lines 4-4
+- [[DNS from First Principles/Fragments/rgbdns-frag-ef82c203a6e1|cdb]]: lines 5-5
+- [[DNS from First Principles/Fragments/rgbdns-frag-ac93886065b4|client]]: lines 6-6
+- [[DNS from First Principles/Fragments/rgbdns-frag-558fa31b05c5|conf]]: lines 7-7
+- [[DNS from First Principles/Fragments/rgbdns-frag-fa79f1453710|dnscache_config]]: lines 8-8
+- [[DNS from First Principles/Fragments/rgbdns-frag-060fb35dda55|multilog]]: lines 9-9
+- [[DNS from First Principles/Fragments/rgbdns-frag-9b91c16392f6|name]]: lines 10-10
+- [[DNS from First Principles/Fragments/rgbdns-frag-fb88c09e6337|packet]]: lines 11-11
+- [[DNS from First Principles/Fragments/rgbdns-frag-09f6fa5decbe|pick]]: lines 12-12
+- [[DNS from First Principles/Fragments/rgbdns-frag-6e6427a50d71|rbl]]: lines 13-13
+- [[DNS from First Principles/Fragments/rgbdns-frag-e5dfdf77ddb4|server]]: lines 14-15
+- [[DNS from First Principles/Fragments/rgbdns-frag-4399bf8d7bca|setuidgid]]: lines 16-16
+- [[DNS from First Principles/Fragments/rgbdns-frag-a9b71133a8a7|special]]: lines 17-17
+- [[DNS from First Principles/Fragments/rgbdns-frag-c381c3286bae|tai64]]: lines 18-18
+- [[DNS from First Principles/Fragments/rgbdns-frag-3cb5aab2f951|tinydns_edit]]: lines 19-19
+- [[DNS from First Principles/Fragments/rgbdns-frag-65d27f5c3043|transport]]: lines 20-20
+- [[DNS from First Principles/Fragments/rgbdns-frag-6f2db39a6784|wall]]: lines 21-21
+- [[DNS from First Principles/Fragments/rgbdns-frag-3591e119df49|zone]]: lines 22-27
+- [[DNS from First Principles/Fragments/rgbdns-frag-cf6623db375a|Error]]: lines 28-34
+- [[DNS from First Principles/Fragments/rgbdns-frag-81662b0f8334|std]]: lines 35-35
+- [[DNS from First Principles/Fragments/rgbdns-frag-b7a10a8752c6|fmt]]: lines 36-44
+- [[DNS from First Principles/Fragments/rgbdns-frag-767195231108|std]]: lines 45-45
+- [[DNS from First Principles/Fragments/rgbdns-frag-02f6775511ec|From]]: lines 46-46
+- [[DNS from First Principles/Fragments/rgbdns-frag-3fe85af2221d|from]]: lines 47-50
+- [[DNS from First Principles/Fragments/rgbdns-frag-4373cfd6a122|Result]]: lines 51-53
+- [[DNS from First Principles/Fragments/rgbdns-frag-2c97a1c68bb4|socket_address]]: lines 54-64
+- [[DNS from First Principles/Fragments/rgbdns-frag-dd954b8525ae|address_tests]]: lines 65-68
+- [[DNS from First Principles/Fragments/rgbdns-frag-61289dbc0218|constructs_ipv4_and_ipv6_socket_addresses]]: lines 69-81
 
 ## Full Source
 
 ```rust
 #![forbid(unsafe_code)]
 
+mod aname;
 pub mod axfr;
 pub mod cdb;
 pub mod client;

@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "setuidgid"
 line_count: 25
 fragment_count: 3
-rgbdns_commit: "472c2087"
+rgbdns_commit: "79502939"
 ---
 
 # src/bin/setuidgid.rs
