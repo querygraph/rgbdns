@@ -27,14 +27,12 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Build package
-        run: packaging/debian/build-deb.sh
+        run: sh packaging/debian/build-deb.sh
 
       - name: Inspect package
         run: |
           dpkg-deb --info dist/rgbdns_*_amd64.deb
           dpkg-deb --contents dist/rgbdns_*_amd64.deb
-          lintian --no-tag-display-limit dist/rgbdns_*_amd64.deb
-        continue-on-error: true
 
       - uses: actions/upload-artifact@v4
         with:
