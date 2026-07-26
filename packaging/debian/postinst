@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+if ! getent group rgbdns >/dev/null; then
+    addgroup --system rgbdns
+fi
+if ! getent passwd rgbdns >/dev/null; then
+    adduser --system --ingroup rgbdns --home /var/lib/rgbdns \
+        --no-create-home --disabled-login --disabled-password rgbdns
+fi
+
+install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns
+install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
+
+if [ ! -e /var/lib/rgbdns/tinydns/data ]; then
+    install -o rgbdns -g rgbdns -m 0640 \
+        /usr/share/doc/rgbdns/examples/data \
+        /var/lib/rgbdns/tinydns/data
+fi
+
+systemctl daemon-reload >/dev/null 2>&1 || true
+exit 0
