@@ -1,0 +1,28 @@
+# Authoritative zones served by the rgbdns primary at 52.10.53.234.
+# Increment the affected zone's SOA serial before every published change.
+
+# Nameserver infrastructure zone.
+Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026072901:16384:2048:1048576:2560:3600
+&cron.sh:52.10.53.234:a.ns.cron.sh:3600
+&cron.sh::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
+&cron.sh::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
+&cron.sh::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600
+
+# Publish the future secondary's address without advertising it as an
+# authoritative cron.sh nameserver until it is configured and tested.
++b.ns.cron.sh:52.38.177.160:3600
+
+# Application zone.
+Zfieldnotes.es:a.ns.cron.sh:hostmaster.fieldnotes.es:2026072901:16384:2048:1048576:2560:3600
+
+# Preserve the current BuddyNS delegation during migration. After b.ns is
+# configured and tested, uncomment it and increment the fieldnotes.es serial.
+&fieldnotes.es::a.ns.cron.sh:3600
+&fieldnotes.es::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
+&fieldnotes.es::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
+&fieldnotes.es::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600
+# &fieldnotes.es::b.ns.cron.sh:3600
+
+# Website and wildcard aliases observed in the currently published zone.
++fieldnotes.es:52.10.53.234:3600
+C*.fieldnotes.es:fieldnotes.es:3600

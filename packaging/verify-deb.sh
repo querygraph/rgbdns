@@ -22,6 +22,25 @@ dpkg-deb --fsys-tarfile "$package" |
 dpkg-deb --control "$package" /tmp/rgbdns-control
 test -s /tmp/rgbdns-control/control
 
+for field in Conflicts Replaces; do
+    relations=$(dpkg-deb --field "$package" "$field")
+    for superseded in \
+        axfrdns \
+        daemontools \
+        djbdns-conf \
+        djbdns-utils \
+        dnscache \
+        rbldns \
+        tinydns \
+        walldns
+    do
+        printf '%s\n' "$relations" |
+            tr ',' '\n' |
+            sed 's/^[[:space:]]*//; s/[[:space:]]*$//' |
+            grep -qx "$superseded"
+    done
+done
+
 while IFS= read -r binary; do
     test -x "/usr/bin/$binary"
 done <"$installed_bins"

@@ -6,6 +6,12 @@ package=$1
 
 rpm --query --package --list "$package" |
     grep -Eq '^/usr/share/man/man7/rgbdns\.7(\.gz)?$'
+for superseded in daemontools djbdns; do
+    rpm --query --package --conflicts "$package" |
+        grep -qx "$superseded"
+    rpm --query --package --obsoletes "$package" |
+        grep -qx "$superseded"
+done
 zypper --non-interactive --no-gpg-checks install "$package"
 rpm --verify rgbdns
 rpm --query --info rgbdns

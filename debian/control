@@ -20,6 +20,24 @@ Depends:
  systemd-sysv,
  ${misc:Depends},
  ${shlibs:Depends}
+Conflicts:
+ axfrdns,
+ daemontools,
+ djbdns-conf,
+ djbdns-utils,
+ dnscache,
+ rbldns,
+ tinydns,
+ walldns
+Replaces:
+ axfrdns,
+ daemontools,
+ djbdns-conf,
+ djbdns-utils,
+ dnscache,
+ rbldns,
+ tinydns,
+ walldns
 Description: memory-safe DNS server and djbdns-compatible tool suite
  rgbdns provides authoritative DNS, recursive resolution, zone compilation,
  AXFR transfers, diagnostic clients, and service tools implemented in Rust.

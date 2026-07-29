@@ -1,6 +1,6 @@
 Name:           rgbdns
 Version:        0.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
 URL:            https://github.com/querygraph/rgbdns
@@ -16,6 +16,10 @@ Requires(preun): systemd
 Requires(postun): systemd
 Requires:       systemd
 Requires:       util-linux
+Conflicts:      daemontools
+Conflicts:      djbdns
+Obsoletes:      daemontools
+Obsoletes:      djbdns
 %{?systemd_requires}
 
 %description
@@ -89,5 +93,8 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Wed Jul 29 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.1.1-2
+- Replace conflicting djbdns and daemontools packages cleanly
+
 * Sun Jul 26 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.1.1-1
 - Add native openSUSE Leap package and hardened systemd deployment
