@@ -1,6 +1,6 @@
 Name:           rgbdns
 Version:        0.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
 URL:            https://github.com/querygraph/rgbdns
@@ -93,6 +93,9 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Wed Jul 29 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.1.1-3
+- Create a writable runtime directory for secondary synchronization
+
 * Wed Jul 29 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.1.1-2
 - Replace conflicting djbdns and daemontools packages cleanly
 

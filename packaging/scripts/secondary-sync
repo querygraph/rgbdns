@@ -5,7 +5,7 @@ set -eu
 : "${PRIMARY:?PRIMARY is required in /etc/rgbdns/secondary.env}"
 
 state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
-lock_file=${RGBDNS_LOCK_FILE:-/run/rgbdns-secondary.lock}
+lock_file=${RGBDNS_LOCK_FILE:-/run/rgbdns/secondary.lock}
 cd "$state_dir"
 umask 027
 

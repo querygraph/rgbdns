@@ -27,6 +27,11 @@ do
     test -e "$path"
 done
 
+grep -qx 'RuntimeDirectory=rgbdns' \
+    /usr/lib/systemd/system/rgbdns-secondary-sync.service
+grep -q '/run/rgbdns/secondary.lock' \
+    /usr/lib/rgbdns/secondary-sync
+
 getent passwd rgbdns
 getent group rgbdns
 test "$(stat -c %U:%G /var/lib/rgbdns/tinydns)" = rgbdns:rgbdns
