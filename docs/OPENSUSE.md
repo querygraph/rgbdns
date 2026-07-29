@@ -344,6 +344,20 @@ minutes, with randomized delay, the sync service validates a complete AXFR,
 atomically replaces the source, compiles it, and restarts authority. A failed
 transfer leaves the last successful zone active.
 
+To permit an additional secondary provider to transfer the validated zone
+from this secondary, pass its exact AXFR source CIDRs:
+
+```sh
+sudo rgbdns-setup secondary \
+  --zone example.net \
+  --primary 192.0.2.54 \
+  --listen-ip 198.51.100.10 \
+  --allow-nets 203.0.113.10/32,203.0.113.11/32
+```
+
+Use the provider's current published transfer-source list. Ordinary UDP and
+TCP answers remain public; `--allow-nets` restricts only AXFR.
+
 Inspect or invoke synchronization:
 
 ```sh

@@ -468,6 +468,20 @@ sudo rgbdns-setup secondary \
   --listen-ip 198.51.100.10
 ```
 
+To permit another secondary provider to AXFR the validated zone from this
+secondary, add its exact transfer-source CIDRs:
+
+```sh
+sudo rgbdns-setup secondary \
+  --zone example.net \
+  --primary 192.0.2.54 \
+  --listen-ip 198.51.100.10 \
+  --allow-nets 203.0.113.10/32,203.0.113.11/32
+```
+
+Ordinary UDP and TCP answers remain public; `--allow-nets` restricts only
+AXFR. Use the provider's current published transfer-source list.
+
 If the primary uses a nonstandard transfer port:
 
 ```sh

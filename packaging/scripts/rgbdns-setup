@@ -91,20 +91,22 @@ getent passwd rgbdns >/dev/null 2>&1 ||
 
 install -d -o root -g rgbdns -m 0750 /etc/rgbdns
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
-write_env /etc/rgbdns/tinydns.env \
-    "IP=$listen_ip" "PORT=$port" "DATA=/var/lib/rgbdns/tinydns/data.cdb"
+if [ -n "$allow_nets" ]; then
+    write_env /etc/rgbdns/tinydns.env \
+        "IP=$listen_ip" "PORT=$port" \
+        "DATA=/var/lib/rgbdns/tinydns/data.cdb" \
+        "ALLOW_NETS=$allow_nets"
+else
+    write_env /etc/rgbdns/tinydns.env \
+        "IP=$listen_ip" "PORT=$port" \
+        "DATA=/var/lib/rgbdns/tinydns/data.cdb"
+fi
 
 case $role in
     primary)
         [ -n "$data_file" ] || die "primary requires --data FILE"
         [ -r "$data_file" ] || die "cannot read data file: $data_file"
         install -o rgbdns -g rgbdns -m 0640 "$data_file" /var/lib/rgbdns/tinydns/data
-        if [ -n "$allow_nets" ]; then
-            write_env /etc/rgbdns/tinydns.env \
-                "IP=$listen_ip" "PORT=$port" \
-                "DATA=/var/lib/rgbdns/tinydns/data.cdb" \
-                "ALLOW_NETS=$allow_nets"
-        fi
         rm -f /etc/rgbdns/secondary.env
         runuser -u rgbdns -- /usr/lib/rgbdns/compile-zone
         ;;
