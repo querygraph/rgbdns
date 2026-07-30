@@ -1077,120 +1077,512 @@ default `ALLOW_NETS` is loopback only because an open resolver can be abused
 for amplification and can consume local capacity. Likewise, expand AXFR
 allowlists only for intended secondaries.
 
-## Case study: cron.sh primary and BuddyNS secondaries
+## Full deployment walkthrough: three authoritative topologies
 
-Consider a Debian EC2 instance behind Elastic IP `52.10.53.234`. It is the
-editable primary for `cron.sh`, published as `a.ns.cron.sh`, while BuddyNS
-copies and serves the zone as a secondary. This arrangement illustrates the
-whole operational chain: package installation, zone authority, glue,
-single-address AXFR, delegation, supervision, and updates.
+This walkthrough installs one editable rgbdns primary and, when selected, one
+rgbdns secondary and/or BuddyNS. It deliberately shares one preparation,
+publication, and verification path among three useful topologies:
 
-At the network boundary, allow public UDP and TCP port 53. UDP carries most
-queries; TCP is required both for ordinary retry behavior and for AXFR. Do not
-restrict all TCP DNS to the secondary provider. The server distinguishes AXFR
-questions on the shared stream and applies a narrow source allow-list only to
-those transfers. On EC2 the guest usually sees a private address rather than
-the Elastic IP, so listening on `0.0.0.0:53` lets AWS translate traffic for the
-public address.
+| Topology | Published authorities | AXFR readers of `a` | AXFR readers of `b` |
+|---|---|---|---|
+| `a + BuddyNS` | `a` and the assigned BuddyNS names | BuddyNS | not applicable |
+| `a + b + BuddyNS` | `a`, `b`, and BuddyNS | `b` and BuddyNS | BuddyNS, if configured as an alternate master |
+| `a + b` | `a` and `b` | `b` | none |
 
-Build the native package on a Debian or Ubuntu machine of the same
-architecture, copy it to the server, and install it:
+The common path is intentionally longer than any topology-specific branch.
+Choose the topology once, construct the corresponding NS and AXFR lists, then
+reuse the same installation and verification commands.
 
-```sh
-sudo apt update
-sudo apt install -y build-essential cargo debhelper rustc git
-git clone https://github.com/querygraph/rgbdns.git
-cd rgbdns
-packaging/build-deb.sh
-scp ../rgbdns_0.1.1_amd64.deb admin@52.10.53.234:/tmp/
-ssh admin@52.10.53.234
-sudo apt install -y /tmp/rgbdns_0.1.1_amd64.deb
-```
+### Names, addresses, and the security boundary
 
-Installation creates the non-login `rgbdns` account, the protected
-configuration and state directories, and the hardened systemd units. It does
-not start a nameserver. That separation prevents package installation from
-publishing placeholder data.
-
-The primary source includes the SOA, the in-bailiwick primary and its glue, and
-the account-assigned BuddyNS names. In schematic form:
+The examples use one service zone with in-bailiwick nameservers:
 
 ```text
-Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026072601:16384:2048:1048576:2560:3600
-&cron.sh:52.10.53.234:a.ns.cron.sh:3600
-&cron.sh::<BuddyNS name 1>:3600
-&cron.sh::<BuddyNS name 2>:3600
-&cron.sh::<BuddyNS name 3>:3600
-+a.ns.cron.sh:52.10.53.234:3600
+ZONE=example.net
+PRIMARY_NS=a.ns.example.net
+SECONDARY_NS=b.ns.example.net
+PRIMARY_PUBLIC_IP=192.0.2.53
+SECONDARY_PUBLIC_IP=198.51.100.53
+PRIMARY_PRIVATE_IP=10.0.1.10
+SECONDARY_PRIVATE_IP=10.0.2.10
 ```
 
-Replace the placeholders with the names shown in BuddyBoard. The complete,
-directly compilable source is in the Debian deployment guide. Store it as
-`/root/cron.sh.data`, add the application records, and increment the SOA serial
-on every publication. The empty address fields on the BuddyNS NS lines are
-intentional: glue for those names belongs to BuddyNS, not `cron.sh`.
+Replace every documentation address and name. On AWS, bind each daemon to
+`0.0.0.0:53`; the guest normally sees its private interface while the Internet
+gateway maps its Elastic IP. Use private addresses for AXFR between instances
+in the same VPC. Give both instances stable public addresses before publishing
+delegation.
 
-BuddyNS publishes the addresses from which its cluster initiates transfers.
-Its current documentation says every published source must be allowed. For an
-IPv4-only primary, express the published IPv4 addresses as exact `/32`
-networks:
+Permit public UDP 53 and public TCP 53 in the cloud security group and host
+firewall. Ordinary DNS needs both transports, so do not limit all TCP 53 to
+secondaries. rgbdns applies `ALLOW_NETS` only to AXFR questions. Separately
+allow TCP 53 from the secondary's private address or, preferably on AWS, its
+security group.
+
+The examples place `a.ns.example.net` and `b.ns.example.net` inside the served
+zone, so the parent needs glue for both. Some deployments use names from a
+separate infrastructure zone. For example, `fieldnotes.es` can use
+`a.ns.cron.sh` and `b.ns.cron.sh`. In that case:
+
+- put empty address fields on the `fieldnotes.es` NS lines;
+- publish the `a.ns.cron.sh` and `b.ns.cron.sh` A records in the `cron.sh`
+  zone, not in `fieldnotes.es`;
+- create glue at the parent of `cron.sh` when those names are in-bailiwick
+  nameservers for `cron.sh`; and
+- remember that one packaged secondary instance synchronizes one zone.
+
+Consequently, a `b` configured to transfer only `fieldnotes.es` must not be
+advertised as authoritative for `cron.sh`. Retain other working authorities
+for that infrastructure zone or create an additional explicitly managed
+secondary instance.
+
+### Obtain and install the packages
+
+The GitHub Actions workflows publish architecture-specific artifacts. They are
+not APT or Zypper repositories. Install GitHub CLI and authenticate on a
+machine allowed to retrieve the artifacts:
 
 ```sh
-BUDDYNS_AXFR_V4='108.61.224.67/32,116.203.6.3/32'
-BUDDYNS_AXFR_V4="$BUDDYNS_AXFR_V4,107.191.99.111/32"
-BUDDYNS_AXFR_V4="$BUDDYNS_AXFR_V4,193.109.120.66/32"
-# Append every remaining /32 from BuddyNS's current list.
+gh auth login
+```
+
+Select the newest successful Debian build without depending on the
+version-specific `--status` option found only in newer GitHub CLI releases:
+
+```sh
+DEB_RUN_ID=$(
+  gh run list -R querygraph/rgbdns \
+    -w build-deb.yml -b master -L 50 \
+    --json databaseId,conclusion \
+    --jq '.[] | select(.conclusion == "success") | .databaseId' |
+  head -n 1
+)
+mkdir -p "$HOME/rgbdns-deb"
+gh run download "$DEB_RUN_ID" \
+  -R querygraph/rgbdns \
+  -n rgbdns-debian-amd64 \
+  -D "$HOME/rgbdns-deb"
+```
+
+On the Debian or Ubuntu primary, install the downloaded package:
+
+```sh
+sudo apt install "$HOME"/rgbdns-deb/rgbdns_*_amd64.deb
+sudo dpkg --audit
+dpkg-query -W -f='${Status} ${Version}\n' rgbdns
+```
+
+The package intentionally replaces Debian's djbdns and daemontools command
+packages because both suites own paths such as `/usr/bin/tinydns-get` and
+`/usr/bin/multilog`. Review APT's removal plan before confirming on a host
+that already runs those services. Never use `dpkg --force-overwrite`.
+
+For a selected topology containing `b`, download the newest successful
+openSUSE RPM artifact on the Leap 16 secondary:
+
+```sh
+RPM_RUN_ID=$(
+  gh run list -R querygraph/rgbdns \
+    -w build-rpm.yml -b master -L 50 \
+    --json databaseId,conclusion \
+    --jq '.[] | select(.conclusion == "success") | .databaseId' |
+  head -n 1
+)
+mkdir -p "$HOME/rgbdns-rpm"
+gh run download "$RPM_RUN_ID" \
+  -R querygraph/rgbdns \
+  -n rgbdns-opensuse-leap16-x86_64 \
+  -D "$HOME/rgbdns-rpm"
+RPM=$(find "$HOME/rgbdns-rpm/RPMS/x86_64" \
+  -maxdepth 1 -name 'rgbdns-[0-9]*.x86_64.rpm' -print -quit)
+rpm -K "$RPM"
+sudo zypper --non-interactive --no-gpg-checks install "$RPM"
+sudo rpm -V rgbdns
+```
+
+The artifact retains its `RPMS/x86_64` and `SRPMS` directories. Install the
+binary package under `RPMS/x86_64`; `SRPMS` contains the source RPM. The
+development package is payload-verified but not repository-signed, hence the
+explicit `--no-gpg-checks`. The RPM obsoletes and conflicts with RPM packages
+named `djbdns` and `daemontools`; inspect Zypper's transaction if either is
+installed.
+
+Both packages create the non-login `rgbdns` user and group, protected
+configuration under `/etc/rgbdns`, state under
+`/var/lib/rgbdns/tinydns`, and hardened systemd units. Installation does not
+publish placeholder DNS data or enable authority.
+
+Verify the installed account and units:
+
+```sh
+getent passwd rgbdns
+getent group rgbdns
+systemctl list-unit-files 'rgbdns-*'
+```
+
+### Build one primary source file
+
+Start with common application records and one SOA serial. A sortable
+`YYYYMMDDNN` serial is convenient; increment it before every publication.
+Construct the authoritative NS portion from exactly one topology block below.
+
+Common records:
+
+```text
+Zexample.net:a.ns.example.net:hostmaster.example.net:2026072901:16384:2048:1048576:2560:3600
++example.net:192.0.2.80:3600
+C*.example.net:example.net:3600
+```
+
+For `a + BuddyNS`:
+
+```text
+&example.net:192.0.2.53:a.ns.example.net:3600
+&example.net::<BuddyNS name 1>:3600
+&example.net::<BuddyNS name 2>:3600
+&example.net::<BuddyNS name 3>:3600
+```
+
+For `a + b + BuddyNS`:
+
+```text
+&example.net:192.0.2.53:a.ns.example.net:3600
+&example.net:198.51.100.53:b.ns.example.net:3600
+&example.net::<BuddyNS name 1>:3600
+&example.net::<BuddyNS name 2>:3600
+&example.net::<BuddyNS name 3>:3600
+```
+
+For `a + b`:
+
+```text
+&example.net:192.0.2.53:a.ns.example.net:3600
+&example.net:198.51.100.53:b.ns.example.net:3600
+```
+
+An `&` line with an address creates the NS record and its address/glue. The
+empty address fields on BuddyNS lines are intentional: those names belong to
+BuddyNS. Replace the account-specific placeholders with the exact names shown
+in BuddyBoard.
+
+Store the assembled source as `/root/rgbdns.data` on the primary. Protect and
+compile a disposable copy before changing the service:
+
+```sh
+sudo install -o root -g root -m 0600 rgbdns.data /root/rgbdns.data
+check_dir=$(mktemp -d)
+sudo install -o "$(id -u)" -g "$(id -g)" -m 0600 \
+  /root/rgbdns.data "$check_dir/data"
+(cd "$check_dir" && tinydns-data)
+ls -lh "$check_dir/data.cdb"
+rm -r "$check_dir"
+```
+
+Compilation proves syntax and semantic consistency, not that the chosen
+addresses, delegation, mail policy, or application records are correct.
+Compare the new source with the old zone before cutover. AXFR from an existing
+authority is the best inventory when allowed; otherwise query all known record
+types and names from configuration management.
+
+### Construct the AXFR allow-list once
+
+For a topology containing BuddyNS, copy BuddyBoard's current published
+transfer-source addresses into a protected, sourceable file. Express
+individual IPv4 sources as `/32` networks:
+
+```sh
+sudo install -o root -g root -m 0600 \
+  buddyns-axfr.env /etc/rgbdns/buddyns-axfr.env
+. /etc/rgbdns/buddyns-axfr.env
+```
+
+The file has this form:
+
+```sh
+BUDDYNS_AXFR_V4='203.0.113.10/32,203.0.113.11/32'
+```
+
+Treat the addresses as provider-maintained data, not constants copied forever
+from a book. Reconcile the file with BuddyBoard before a deployment and after
+provider network changes.
+
+Choose the primary allow-list:
+
+```sh
+# a + BuddyNS
+PRIMARY_ALLOW_NETS=$BUDDYNS_AXFR_V4
+
+# a + b + BuddyNS
+PRIMARY_ALLOW_NETS="$SECONDARY_PRIVATE_IP/32,$BUDDYNS_AXFR_V4"
+
+# a + b
+PRIMARY_ALLOW_NETS="$SECONDARY_PRIVATE_IP/32"
+```
+
+Run only the assignment for the selected topology. Never allow the entire VPC
+when one stable secondary address or security-group path is sufficient.
+
+### Configure and cut over the primary
+
+First stage configuration without claiming port 53:
+
+```sh
 sudo rgbdns-setup primary \
-  --data /root/cron.sh.data \
-  --listen-ip 0.0.0.0 --port 53 \
+  --data /root/rgbdns.data \
+  --listen-ip 0.0.0.0 \
+  --port 53 \
+  --allow-nets "$PRIMARY_ALLOW_NETS" \
+  --no-start
+sudo -u rgbdns /usr/lib/rgbdns/compile-zone
+sudo systemd-analyze verify \
+  /lib/systemd/system/rgbdns-tinydns.service 2>/dev/null ||
+sudo systemd-analyze verify \
+  /usr/lib/systemd/system/rgbdns-tinydns.service
+sudo ls -lah /var/lib/rgbdns/tinydns
+sudo cat /etc/rgbdns/tinydns.env
+```
+
+The two unit paths cover Debian-family and openSUSE layouts. An unrelated
+legacy-unit warning from `systemd-analyze` does not invalidate a successful
+rgbdns unit check.
+
+On a migration host, identify the existing owner of port 53:
+
+```sh
+sudo ss -lntup '( sport = :53 )'
+```
+
+Stop only the old authoritative services. Do not stop an entire `runsvdir`
+tree on a host where it also owns unrelated applications. For a classic
+djbdns layout:
+
+```sh
+sudo sv down /etc/axfrdns /etc/axfrdns/log
+sudo sv down /etc/tinydns /etc/tinydns/log
+sudo ss -lntup '( sport = :53 )'
+```
+
+Then enable rgbdns:
+
+```sh
+sudo systemctl enable --now rgbdns-tinydns.service
+sudo systemctl status rgbdns-tinydns.service --no-pager --full
+sudo ss -lntup '( sport = :53 )'
+```
+
+The authoritative daemon serves normal UDP, normal TCP, and allowed AXFR on
+the same port. Do not start the separately packaged `axfrdns` compatibility
+command on port 53.
+
+Verify the primary locally and publicly before configuring delegation:
+
+```sh
+dig @127.0.0.1 example.net SOA +norecurse
+dig @127.0.0.1 example.net NS +norecurse
+dig @127.0.0.1 example.net A +norecurse
+dig +tcp @127.0.0.1 example.net SOA +norecurse
+
+dig @192.0.2.53 example.net SOA +norecurse
+dig @192.0.2.53 example.net NS +norecurse
+dig +tcp @192.0.2.53 example.net SOA +norecurse
+```
+
+Require `status: NOERROR`, the `aa` flag, the intended serial, the complete NS
+set, and correct address records.
+
+### Configure `b` when the topology includes it
+
+The primary must allow the secondary's source address, and the network path
+must permit TCP 53, before this step. On the openSUSE secondary:
+
+```sh
+sudo ss -lntup '( sport = :53 )'
+sudo rgbdns-setup secondary \
+  --zone example.net \
+  --primary 10.0.1.10 \
+  --listen-ip 0.0.0.0
+```
+
+For `a + b + BuddyNS`, BuddyNS may read from `b` as an alternate master. In
+that case load the same current provider list and pass it to the secondary:
+
+```sh
+. /etc/rgbdns/buddyns-axfr.env
+sudo rgbdns-setup secondary \
+  --zone example.net \
+  --primary 10.0.1.10 \
+  --listen-ip 0.0.0.0 \
   --allow-nets "$BUDDYNS_AXFR_V4"
 ```
 
-Recheck BuddyNS's source list before deployment and after provider network
-changes. The provider's nameserver names are account-assigned as well; use
-BuddyBoard rather than treating the names in this example as global
-constants.
+Choose one of those two setup commands. Setup performs a complete AXFR,
+validates the response and SOA bookends, atomically installs and compiles the
+zone, starts authority only after success, and enables a randomized five-minute
+refresh timer. It does not use NOTIFY or IXFR.
 
-`rgbdns-setup` validates and copies the source, compiles `data.cdb`, writes the
-service environment, enables the service at boot, and starts or restarts
-`rgbdns-tinydns.service`. There is no separate packaged AXFR service in this
-topology. Although the `axfrdns` compatibility command remains installed, a
-second process cannot share `52.10.53.234:53`; the authoritative process
-dispatches allowed AXFR questions to the same bounded AXFR engine.
-
-Before changing delegation, verify ordinary UDP and TCP service:
+Check the one-shot synchronization result:
 
 ```sh
-dig @52.10.53.234 cron.sh SOA +norecurse
-dig @52.10.53.234 cron.sh NS +norecurse
-dig @52.10.53.234 a.ns.cron.sh A +norecurse
-dig @52.10.53.234 cron.sh SOA +tcp +norecurse
-systemctl is-enabled rgbdns-tinydns
-systemctl is-active rgbdns-tinydns
+systemctl show rgbdns-secondary-sync.service \
+  -p Result -p ExecMainStatus -p ActiveState -p SubState
 ```
 
-In BuddyBoard, add `cron.sh`, set `52.10.53.234:53` as its primary, and require
-the transfer test to succeed. Configure the primary zone's NS RRset and the
-registrar delegation with the same BuddyNS names. Because `a.ns.cron.sh` lies
-inside the delegated zone, the `.sh` registrar also needs the child-host glue
-`a.ns.cron.sh = 52.10.53.234`. Transfer success should precede delegation;
-otherwise the new secondaries may be authoritative but empty or stale.
+A successful completed run reads:
 
-After propagation, query every delegated authority and compare SOA serials.
-For subsequent changes, edit `/root/cron.sh.data`, increment the serial, and
-rerun the same `rgbdns-setup primary` command with the complete allow-list.
-Compilation precedes restart, and the new process loads one zone snapshot for
-both normal answers and transfers.
+```text
+Result=success
+ExecMainStatus=0
+ActiveState=inactive
+SubState=dead
+```
 
-Systemd keeps the foreground process alive with `Restart=on-failure` and starts
-the enabled unit after reboot. Operations should monitor unit state, public UDP
-and TCP answers, serial convergence at BuddyNS, transfer failures, and disk
-space. The editable source still needs its own protected backup: secondary DNS
-is availability infrastructure, not configuration backup.
+`inactive/dead` is correct for a finished `Type=oneshot` service. The
+`/run/rgbdns` runtime directory and its lock exist only while synchronization
+runs; systemd removes and recreates them for each invocation.
 
-The full allow-list, command-by-command deployment, AWS rules, BuddyBoard
-sequence, delegation checks, and troubleshooting procedure live in the
-[`docs/DEBIAN.md` deployment guide](https://github.com/querygraph/rgbdns/blob/master/docs/DEBIAN.md).
+Verify service, timer, and answers:
+
+```sh
+sudo systemctl enable --now rgbdns-tinydns.service
+sudo systemctl enable --now rgbdns-secondary-sync.timer
+systemctl list-timers rgbdns-secondary-sync.timer
+sudo ss -lntup '( sport = :53 )'
+dig @127.0.0.1 example.net SOA +norecurse
+dig @198.51.100.53 example.net SOA +norecurse
+dig +tcp @198.51.100.53 example.net SOA +norecurse
+```
+
+The secondary serial must match the primary. To force a refresh after a
+publication:
+
+```sh
+sudo systemctl start rgbdns-secondary-sync.service
+sudo journalctl -u rgbdns-secondary-sync.service -n 50 --no-pager
+```
+
+### Configure BuddyNS when the topology includes it
+
+In BuddyBoard:
+
+1. add the zone;
+2. configure `192.0.2.53:53` as a transfer master;
+3. for `a + b + BuddyNS`, optionally add `198.51.100.53:53` as another master;
+4. require the provider's transfer test to succeed; and
+5. record the exact assigned BuddyNS names and transfer-source addresses.
+
+The source zone's BuddyNS NS records, BuddyBoard's assigned names, and the
+eventual parent delegation must agree exactly. A provider transfer test should
+succeed before any registrar change.
+
+From an allowed transfer source, or with a controlled temporary test address
+added to `ALLOW_NETS`, verify:
+
+```sh
+dig +tcp AXFR example.net @192.0.2.53
+dig +tcp AXFR example.net @198.51.100.53  # when b permits BuddyNS
+```
+
+An unlisted client should receive `REFUSED`. Do not broaden the allow-list
+merely to make an arbitrary workstation AXFR test succeed.
+
+### Publish glue and delegation last
+
+Create or verify registrar host objects before adding in-bailiwick
+nameservers:
+
+```text
+a.ns.example.net = 192.0.2.53
+b.ns.example.net = 198.51.100.53   # topologies containing b
+```
+
+Then publish the parent delegation matching the selected topology:
+
+- `a + BuddyNS`: `a` plus the assigned BuddyNS names;
+- `a + b + BuddyNS`: `a`, `b`, plus the assigned BuddyNS names;
+- `a + b`: `a` and `b`.
+
+Do not advertise `b` before it answers the current serial publicly. During a
+migration, keep old working secondaries in both the child NS RRset and parent
+delegation until new authorities pass UDP, TCP, SOA, and negative-answer
+tests. Remove old secondaries in a later serial change after parent updates
+have propagated.
+
+Trace the parent and query every authority:
+
+```sh
+dig +trace +nodnssec example.net NS
+dig @192.0.2.53 example.net SOA +norecurse
+dig @198.51.100.53 example.net SOA +norecurse
+```
+
+Query each BuddyNS hostname as well when selected. Compare serials, NS RRsets,
+and authoritative flags. Also test a known name, a nonexistent name, UDP, and
+TCP:
+
+```sh
+dig @192.0.2.53 www.example.net A +norecurse
+dig @192.0.2.53 does-not-exist.example.net A +norecurse
+dig +tcp @192.0.2.53 www.example.net A +norecurse
+```
+
+### Publish changes, upgrade, and recover
+
+For each zone change:
+
+1. edit the protected canonical source;
+2. increment the affected SOA serial;
+3. compile a disposable copy;
+4. rerun `rgbdns-setup primary` with the complete allow-list;
+5. query the primary;
+6. force or await secondary refresh; and
+7. compare every authority's serial.
+
+Package upgrades preserve configuration and state. Upgrade a downloaded
+Debian package with `apt install /path/package.deb` and an RPM with:
+
+```sh
+sudo zypper --non-interactive --no-gpg-checks install \
+  /path/to/rgbdns-VERSION-RELEASE.x86_64.rpm
+sudo systemctl daemon-reload
+sudo systemctl start rgbdns-secondary-sync.service
+sudo rpm -V rgbdns
+```
+
+If secondary setup fails, it deliberately leaves authority stopped until the
+first valid transfer completes. Diagnose in this order:
+
+```sh
+sudo systemctl status rgbdns-secondary-sync.service --no-pager --full
+sudo journalctl -u rgbdns-secondary-sync.service -n 100 --no-pager
+dig +tcp @10.0.1.10 example.net SOA +norecurse
+sudo cat /etc/rgbdns/secondary.env
+sudo cat /etc/rgbdns/tinydns.env
+```
+
+A connection timeout points toward routes, security groups, or firewalls.
+`REFUSED` points toward `ALLOW_NETS` or an unexpected NAT source address. A
+validation error points toward the transferred zone. A successful one-shot
+with a refused local query means `rgbdns-tinydns.service` is not yet active.
+
+After every reboot or upgrade, verify:
+
+```sh
+systemctl is-enabled rgbdns-tinydns.service
+systemctl is-active rgbdns-tinydns.service
+systemctl list-timers rgbdns-secondary-sync.timer
+sudo ss -lntup '( sport = :53 )'
+```
+
+Monitor public UDP and TCP answers, unit restarts, timer failures, SOA
+convergence, transfer failures, and disk space. Keep the editable primary
+source in protected configuration management or backup. Secondary DNS
+improves serving availability; it is not a backup of the canonical source.
+
+The distribution-specific deployment guides contain additional AWS,
+firewall, SELinux, and troubleshooting detail:
+[`docs/DEBIAN.md`](https://github.com/querygraph/rgbdns/blob/master/docs/DEBIAN.md)
+and
+[`docs/OPENSUSE.md`](https://github.com/querygraph/rgbdns/blob/master/docs/OPENSUSE.md).
 
 ## Observe the right signals
 
