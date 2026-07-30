@@ -529,7 +529,12 @@ Positive entries expire with the upstream chain’s shortest relevant TTL.
 Negative results use the authority SOA’s negative TTL when available and 60
 seconds otherwise. The configured ANAME ceiling is applied when constructing
 each response, so two owners may safely share a target while using different
-TTL policies.
+TTL policies. Concurrent misses for one target and address family are
+coalesced into one upstream query. A failed lookup is retained for five
+seconds, during which matching requests fail without starting another
+recursive chain. This short circuit limits retry storms and cross-provider
+ANAME loop amplification without turning a transient failure into long-lived
+negative DNS data.
 
 Resolution is bounded in the same spirit as the rest of rgbdns:
 
@@ -539,6 +544,7 @@ Resolution is bounded in the same spirit as the rest of rgbdns:
 - conflicting CNAME targets are rejected;
 - upstream SERVFAIL and other resolver errors become authoritative SERVFAIL,
   not false NODATA;
+- concurrent misses share one lookup and failures suppress immediate retries;
 - A and AAAA are cached independently.
 
 `DNSCACHEIP` selects one or more recursive endpoints, separated by commas.

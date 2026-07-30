@@ -50,6 +50,13 @@ ANAME directives survive AXFR between rgbdns peers through an explicitly
 negotiated private extension. `axfr-get` requests it automatically; ordinary
 AXFR clients receive only standard DNS records and no private metadata.
 
+The standards-track proposal in
+[`ietf/draft-khrabrov-dnsop-aname-axfr-00.xml`](ietf/draft-khrabrov-dnsop-aname-axfr-00.xml)
+defines a portable ANAME RR, native AXFR/IXFR behavior, capability signaling,
+DNSSEC and failure handling, and migration from rgbdns's experimental
+encoding. Render it with `make -C ietf`; see [`ietf/README.md`](ietf/README.md)
+for review and submission guidance.
+
 The `*-conf` commands generate djbdns-style service directories. They reference
 rgbdns's own `setuidgid` and `multilog` binaries by absolute path, so
 daemontools is not a runtime dependency. `multilog t ./main` writes TAI64N

@@ -66,7 +66,9 @@ opcode receives NOTIMP rather than being silently dropped.
 The rgbdns ANAME AXFR extension is explicitly private and negotiated. Tests
 prove that an opted-in rgbdns peer round-trips the target and TTL, a standard
 AXFR request receives no private record, and malformed private payloads are
-rejected before zone activation.
+rejected before zone activation. ANAME resolver tests also prove that
+concurrent misses are coalesced and that a failed target is briefly suppressed
+instead of immediately starting another recursive chain.
 
 ## Running the matrix
 

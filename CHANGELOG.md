@@ -16,6 +16,11 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Private ANAME zone directives with CDB persistence, bounded recursive
   CNAME following, TTL-capped address caching, and authoritative apex-safe
   A/AAAA synthesis.
+- ANAME miss coalescing and short-lived failure suppression, limiting
+  duplicate recursive work and cross-provider loop amplification.
+- An RFCXML v3 standards-track ANAME and zone-transfer proposal, with rendered
+  text/HTML, provider deployment analysis, native AXFR/IXFR semantics, and a
+  reproducible asdf/uv validation toolchain.
 - Manual pages for every command and packaged service helper, installed by the
   Debian package alongside the rgbdns(7) overview.
 - Native Debian packaging with dedicated service accounts, hardened systemd
