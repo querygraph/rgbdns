@@ -60,3 +60,6 @@ for helper in \
 do
     test -x "$helper"
 done
+
+grep -q 'ZONES is required' /usr/lib/rgbdns/secondary-sync
+rgbdns-setup --help | grep -q -- '--zones'

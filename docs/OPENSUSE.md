@@ -329,27 +329,28 @@ improves availability but is not a backup of the editable source.
 
 ## Configure an rgbdns secondary
 
-The package can instead manage one transferred zone on an instance:
+The package can instead manage a list of zones transferred from one primary:
 
 ```sh
 sudo rgbdns-setup secondary \
   --zone example.net \
+  --zone example.org \
   --primary 192.0.2.54 \
   --listen-ip 198.51.100.10
 ```
 
-Setup performs the first AXFR before starting authority, enables
+Setup performs every initial AXFR before starting authority, enables
 `rgbdns-tinydns.service`, and enables `rgbdns-secondary-sync.timer`. Every five
-minutes, with randomized delay, the sync service validates a complete AXFR,
-atomically replaces the source, compiles it, and restarts authority. A failed
-transfer leaves the last successful zone active.
+minutes, with randomized delay, the sync service validates every AXFR and
+compiles a combined source. It activates the new CDB only when all transfers
+succeed; a failed transfer leaves all last successful zones active.
 
 To permit an additional secondary provider to transfer the validated zone
 from this secondary, pass its exact AXFR source CIDRs:
 
 ```sh
 sudo rgbdns-setup secondary \
-  --zone example.net \
+  --zones "example.net example.org" \
   --primary 192.0.2.54 \
   --listen-ip 198.51.100.10 \
   --allow-nets 203.0.113.10/32,203.0.113.11/32

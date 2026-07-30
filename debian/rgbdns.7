@@ -6,7 +6,7 @@ rgbdns \- authoritative DNS, AXFR, recursion, and djbdns-compatible tools
 --data FILE [OPTIONS]
 .br
 .B rgbdns-setup secondary
---zone NAME --primary ADDRESS[:PORT] [OPTIONS]
+--zone NAME [--zone NAME ...] --primary ADDRESS[:PORT] [OPTIONS]
 .SH DESCRIPTION
 The Debian package installs the rgbdns program family and hardened systemd
 units. It does not start a DNS service until an administrator supplies a zone
@@ -24,7 +24,7 @@ Authoritative listen address, port, compiled data path, and optional AXFR
 client CIDR allow-list.
 .TP
 .I /etc/rgbdns/secondary.env
-Secondary zone name and primary server endpoint.
+Secondary zone list and primary server endpoint.
 .TP
 .I /var/lib/rgbdns/tinydns/data
 Tinydns-format zone source.

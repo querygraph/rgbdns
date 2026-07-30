@@ -454,16 +454,18 @@ it is not a backup of the editable primary source.
 
 ## Configure a secondary nameserver
 
-The packaged secondary workflow manages one complete zone per host instance.
-It fetches the primary over DNS TCP, verifies response identity, authority,
-question, record bounds, zone confinement, and matching SOA bookends, then
-atomically installs the new tinydns source and CDB.
+The packaged secondary workflow manages a list of zones from one primary
+endpoint. It fetches each zone separately over DNS TCP, verifies response
+identity, authority, question, record bounds, zone confinement, and matching
+SOA bookends, then compiles and atomically installs one combined CDB only after
+every transfer succeeds.
 
 Configure the secondary:
 
 ```sh
 sudo rgbdns-setup secondary \
   --zone example.net \
+  --zone example.org \
   --primary 192.0.2.54 \
   --listen-ip 198.51.100.10
 ```
@@ -473,7 +475,7 @@ secondary, add its exact transfer-source CIDRs:
 
 ```sh
 sudo rgbdns-setup secondary \
-  --zone example.net \
+  --zones "example.net example.org" \
   --primary 192.0.2.54 \
   --listen-ip 198.51.100.10 \
   --allow-nets 203.0.113.10/32,203.0.113.11/32
@@ -486,17 +488,18 @@ If the primary uses a nonstandard transfer port:
 
 ```sh
 sudo rgbdns-setup secondary \
-  --zone example.net \
+  --zones "example.net,example.org" \
   --primary 192.0.2.53:5354 \
   --listen-ip 127.0.0.1 --port 5353
 ```
 
-Setup writes `/etc/rgbdns/secondary.env`, performs the first transfer, starts
-the authoritative service only after that transfer succeeds, and enables
+Setup writes a `ZONES=` list and `PRIMARY=` endpoint to
+`/etc/rgbdns/secondary.env`, performs every initial transfer, starts the
+authoritative service only after all transfers succeed, and enables
 `rgbdns-secondary-sync.timer`. The timer refreshes every five minutes with a
-small randomized delay. Failed transfers leave the last successfully compiled
-zone active. A successful transfer atomically replaces `data`, compiles
-`data.cdb`, and restarts tinydns.
+small randomized delay. If any transfer fails, all previously compiled zones
+remain active. A successful run compiles the combined source, atomically
+replaces `data.cdb`, and restarts tinydns.
 
 Run or inspect synchronization manually:
 

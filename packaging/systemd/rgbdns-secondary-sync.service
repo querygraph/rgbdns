@@ -1,5 +1,5 @@
 [Unit]
-Description=Fetch and activate an rgbdns secondary zone over AXFR
+Description=Fetch and activate rgbdns secondary zones over AXFR
 Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
 Wants=network-online.target
 After=network-online.target

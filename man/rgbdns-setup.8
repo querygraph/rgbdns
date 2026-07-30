@@ -8,14 +8,13 @@ rgbdns-setup \- configure a packaged rgbdns primary or secondary
 .RI [ options ]
 .br
 .B rgbdns-setup secondary
-.B --zone
-.I name
+.BR --zone " " \fIname\fR " [" --zone " " \fIname\fR " ...]"
 .B --primary
 .I address[:port]
 .RI [ options ]
 .SH DESCRIPTION
 Creates the rgbdns service account and managed directories, writes service
-environment files, and configures a primary or one-zone secondary. It must be
+environment files, and configures a primary or multi-zone secondary. It must be
 run as root. Unless
 .B --no-start
 is used, the applicable systemd services are enabled and started.
@@ -31,7 +30,10 @@ Authoritative port (default: 53).
 Tinydns-format source file for a primary.
 .TP
 .BI --zone " name"
-Zone transferred by a secondary.
+Add a zone transferred by a secondary. May be repeated.
+.TP
+.BI --zones " names"
+Add a whitespace- or comma-separated list of zones transferred by a secondary.
 .TP
 .BI --primary " address[:port]"
 Primary server used by a secondary.

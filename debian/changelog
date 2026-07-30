@@ -3,6 +3,7 @@ rgbdns (0.1.1) unstable; urgency=medium
   * Serve allow-listed AXFR through the authoritative TCP listener.
   * Restart services after setup and clean up stale server roles.
   * Replace conflicting Debian djbdns and daemontools packages cleanly.
+  * Synchronize multiple secondary zones into one atomically activated CDB.
 
  -- Alexy Khrabrov <deliverable@gmail.com>  Sun, 26 Jul 2026 12:00:00 -0700
 

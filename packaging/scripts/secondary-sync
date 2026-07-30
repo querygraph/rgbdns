@@ -1,21 +1,57 @@
 #!/bin/sh
 set -eu
 
-: "${ZONE:?ZONE is required in /etc/rgbdns/secondary.env}"
 : "${PRIMARY:?PRIMARY is required in /etc/rgbdns/secondary.env}"
 
 state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
 lock_file=${RGBDNS_LOCK_FILE:-/run/rgbdns/secondary.lock}
+axfr_get=${RGBDNS_AXFR_GET:-/usr/bin/axfr-get}
+tinydns_data=${RGBDNS_TINYDNS_DATA:-/usr/bin/tinydns-data}
+flock=${RGBDNS_FLOCK:-/usr/bin/flock}
+: "${ZONES:?ZONES is required in /etc/rgbdns/secondary.env}"
+zones=$ZONES
+[ -n "$zones" ] || {
+    echo "rgbdns-secondary-sync: ZONES is required in /etc/rgbdns/secondary.env" >&2
+    exit 2
+}
+
 cd "$state_dir"
 umask 027
 
 exec 9>"$lock_file"
-/usr/bin/flock -n 9 || {
+"$flock" -n 9 || {
     echo "rgbdns-secondary-sync: another transfer is active" >&2
     exit 0
 }
 
-rm -f data.axfr.tmp
-/usr/bin/axfr-get "$ZONE" "$PRIMARY" data.axfr.new data.axfr.tmp
-mv data.axfr.new data
-/usr/bin/tinydns-data
+stage=$(mktemp -d "$state_dir/.secondary-sync.XXXXXX")
+trap 'rm -rf "$stage"' EXIT HUP INT TERM
+
+zone_count=0
+for zone in $zones; do
+    case $zone in
+        *[!A-Za-z0-9._-]*|'')
+            echo "rgbdns-secondary-sync: invalid zone name: $zone" >&2
+            exit 2
+            ;;
+    esac
+    zone_count=$((zone_count + 1))
+    "$axfr_get" "$zone" "$PRIMARY" \
+        "$stage/zone.$zone_count" "$stage/axfr.$zone_count.tmp"
+    cat "$stage/zone.$zone_count" >>"$stage/data"
+done
+
+[ "$zone_count" -gt 0 ] || {
+    echo "rgbdns-secondary-sync: the zone list is empty" >&2
+    exit 2
+}
+
+(
+    cd "$stage"
+    "$tinydns_data"
+)
+
+# data.cdb is the live server input. Replace it only after every transfer and
+# the combined compilation have succeeded; retain the source for diagnostics.
+mv "$stage/data.cdb" "$state_dir/data.cdb"
+mv "$stage/data" "$state_dir/data"

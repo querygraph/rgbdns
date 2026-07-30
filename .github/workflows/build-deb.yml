@@ -37,6 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Test secondary synchronization
+        run: packaging/tests/test-secondary-sync.sh
+
       - uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@v2

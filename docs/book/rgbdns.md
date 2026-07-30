@@ -1098,7 +1098,7 @@ reuse the same installation and verification commands.
 The examples use one service zone with in-bailiwick nameservers:
 
 ```text
-ZONE=example.net
+ZONES="example.net example.org"
 PRIMARY_NS=a.ns.example.net
 SECONDARY_NS=b.ns.example.net
 PRIMARY_PUBLIC_IP=192.0.2.53
@@ -1129,12 +1129,13 @@ separate infrastructure zone. For example, `fieldnotes.es` can use
   zone, not in `fieldnotes.es`;
 - create glue at the parent of `cron.sh` when those names are in-bailiwick
   nameservers for `cron.sh`; and
-- remember that one packaged secondary instance synchronizes one zone.
+- one packaged secondary instance can synchronize many zones from the same
+  primary endpoint.
 
-Consequently, a `b` configured to transfer only `fieldnotes.es` must not be
-advertised as authoritative for `cron.sh`. Retain other working authorities
-for that infrastructure zone or create an additional explicitly managed
-secondary instance.
+Consequently, advertise `b` only for zones included in its `ZONES` list. Add
+both `fieldnotes.es` and `cron.sh` when `b` should be authoritative for both;
+otherwise retain other working authorities for the omitted infrastructure
+zone.
 
 ### Obtain and install the packages
 
@@ -1399,6 +1400,7 @@ must permit TCP 53, before this step. On the openSUSE secondary:
 sudo ss -lntup '( sport = :53 )'
 sudo rgbdns-setup secondary \
   --zone example.net \
+  --zone example.org \
   --primary 10.0.1.10 \
   --listen-ip 0.0.0.0
 ```
@@ -1409,16 +1411,18 @@ that case load the same current provider list and pass it to the secondary:
 ```sh
 . /etc/rgbdns/buddyns-axfr.env
 sudo rgbdns-setup secondary \
-  --zone example.net \
+  --zones "example.net example.org" \
   --primary 10.0.1.10 \
   --listen-ip 0.0.0.0 \
   --allow-nets "$BUDDYNS_AXFR_V4"
 ```
 
-Choose one of those two setup commands. Setup performs a complete AXFR,
-validates the response and SOA bookends, atomically installs and compiles the
-zone, starts authority only after success, and enables a randomized five-minute
-refresh timer. It does not use NOTIFY or IXFR.
+Choose one of those two setup commands. `--zone` is repeatable; `--zones`
+accepts a whitespace- or comma-separated list. Setup performs a complete AXFR
+for each zone, validates every response and its SOA bookends, compiles the
+combined source, atomically installs the CDB only after all transfers succeed,
+starts authority, and enables a randomized five-minute refresh timer. It does
+not use NOTIFY or IXFR.
 
 Check the one-shot synchronization result:
 
@@ -1452,8 +1456,8 @@ dig @198.51.100.53 example.net SOA +norecurse
 dig +tcp @198.51.100.53 example.net SOA +norecurse
 ```
 
-The secondary serial must match the primary. To force a refresh after a
-publication:
+Every secondary serial must match its primary counterpart. To force a refresh
+after a publication:
 
 ```sh
 sudo systemctl start rgbdns-secondary-sync.service

@@ -31,6 +31,8 @@ grep -qx 'RuntimeDirectory=rgbdns' \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service
 grep -q '/run/rgbdns/secondary.lock' \
     /usr/lib/rgbdns/secondary-sync
+grep -q 'ZONES is required' \
+    /usr/lib/rgbdns/secondary-sync
 
 getent passwd rgbdns
 getent group rgbdns
@@ -41,4 +43,4 @@ systemd-analyze --man=no verify \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.timer
 
-rgbdns-setup --help
+rgbdns-setup --help | grep -q -- '--zones'

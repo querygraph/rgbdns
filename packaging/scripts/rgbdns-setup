@@ -5,16 +5,19 @@ usage() {
     cat <<'EOF'
 usage:
   rgbdns-setup primary --data FILE [options]
-  rgbdns-setup secondary --zone NAME --primary ADDRESS[:PORT] [options]
+  rgbdns-setup secondary --zone NAME [--zone NAME ...]
+                         --primary ADDRESS[:PORT] [options]
 
 options:
   --listen-ip ADDRESS       authoritative listen address (default: 0.0.0.0)
   --port PORT               authoritative port (default: 53)
   --allow-nets CIDRS        enable AXFR for these secondary CIDRs
+  --zone NAME               add a zone to transfer (repeatable)
+  --zones "NAME ..."        add a whitespace- or comma-separated zone list
   --no-start                write configuration without enabling services
 
-The primary data file uses tinydns syntax. A secondary fetches exactly one zone
-into its managed data file and refreshes it every five minutes.
+The primary data file uses tinydns syntax. A secondary fetches every configured
+zone into one managed data file and refreshes them every five minutes.
 EOF
 }
 
@@ -51,7 +54,7 @@ listen_ip=0.0.0.0
 port=53
 allow_nets=
 data_file=
-zone=
+zones=
 primary=
 start=yes
 
@@ -59,7 +62,7 @@ while [ $# -gt 0 ]; do
     option=$1
     shift
     case $option in
-        --listen-ip|--port|--allow-nets|--data|--zone|--primary)
+        --listen-ip|--port|--allow-nets|--data|--zone|--zones|--primary)
             [ $# -gt 0 ] || die "$option requires a value"
             value=$1
             shift
@@ -68,7 +71,11 @@ while [ $# -gt 0 ]; do
                 --port) port=$value ;;
                 --allow-nets) allow_nets=$value ;;
                 --data) data_file=$value ;;
-                --zone) zone=$value ;;
+                --zone) zones="${zones}${zones:+ }$value" ;;
+                --zones)
+                    value=$(printf '%s' "$value" | tr ',' ' ')
+                    zones="${zones}${zones:+ }$value"
+                    ;;
                 --primary) primary=$value ;;
             esac
             ;;
@@ -82,6 +89,18 @@ case $port in
     *[!0-9]*|'') die "port must be a decimal integer" ;;
 esac
 [ "$port" -ge 1 ] && [ "$port" -le 65535 ] || die "invalid port: $port"
+
+normalized_zones=
+for zone in $zones; do
+    case $zone in
+        *[!A-Za-z0-9._-]*|'') die "invalid zone name: $zone" ;;
+    esac
+    case " $normalized_zones " in
+        *" $zone "*) ;;
+        *) normalized_zones="${normalized_zones}${normalized_zones:+ }$zone" ;;
+    esac
+done
+zones=$normalized_zones
 
 getent group rgbdns >/dev/null 2>&1 ||
     groupadd --system rgbdns
@@ -111,9 +130,9 @@ case $role in
         runuser -u rgbdns -- /usr/lib/rgbdns/compile-zone
         ;;
     secondary)
-        [ -n "$zone" ] || die "secondary requires --zone NAME"
+        [ -n "$zones" ] || die "secondary requires at least one --zone NAME"
         [ -n "$primary" ] || die "secondary requires --primary ADDRESS[:PORT]"
-        write_env /etc/rgbdns/secondary.env "ZONE=$zone" "PRIMARY=$primary"
+        write_env /etc/rgbdns/secondary.env "ZONES=$zones" "PRIMARY=$primary"
         ;;
     *) die "role must be primary or secondary" ;;
 esac
