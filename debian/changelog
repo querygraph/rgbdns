@@ -1,3 +1,12 @@
+rgbdns (0.1.1+deb1) unstable; urgency=medium
+
+  * Synchronize multiple secondary zones from one primary.
+  * Retain a per-zone last-known-good snapshot when a routine AXFR fails.
+  * Require every newly configured zone to transfer before initial activation.
+  * Compile all current zone snapshots into one atomically activated CDB.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Wed, 29 Jul 2026 21:09:02 -0700
+
 rgbdns (0.1.1) unstable; urgency=medium
 
   * Serve allow-listed AXFR through the authoritative TCP listener.
