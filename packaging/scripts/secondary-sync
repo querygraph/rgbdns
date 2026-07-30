@@ -4,6 +4,7 @@ set -eu
 : "${PRIMARY:?PRIMARY is required in /etc/rgbdns/secondary.env}"
 
 state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
+zones_dir=${RGBDNS_ZONES_DIR:-$state_dir/secondary-zones}
 lock_file=${RGBDNS_LOCK_FILE:-/run/rgbdns/secondary.lock}
 axfr_get=${RGBDNS_AXFR_GET:-/usr/bin/axfr-get}
 tinydns_data=${RGBDNS_TINYDNS_DATA:-/usr/bin/tinydns-data}
@@ -17,6 +18,7 @@ zones=$ZONES
 
 cd "$state_dir"
 umask 027
+mkdir -p "$zones_dir"
 
 exec 9>"$lock_file"
 "$flock" -n 9 || {
@@ -28,17 +30,31 @@ stage=$(mktemp -d "$state_dir/.secondary-sync.XXXXXX")
 trap 'rm -rf "$stage"' EXIT HUP INT TERM
 
 zone_count=0
+transfer_failures=0
+missing_zones=0
 for zone in $zones; do
     case $zone in
-        *[!A-Za-z0-9._-]*|'')
+        *[!A-Za-z0-9._-]*|''|.|..)
             echo "rgbdns-secondary-sync: invalid zone name: $zone" >&2
             exit 2
             ;;
     esac
     zone_count=$((zone_count + 1))
-    "$axfr_get" "$zone" "$PRIMARY" \
-        "$stage/zone.$zone_count" "$stage/axfr.$zone_count.tmp"
-    cat "$stage/zone.$zone_count" >>"$stage/data"
+    cached_zone=$zones_dir/$zone.data
+    transferred_zone=$stage/zone.$zone_count
+    if "$axfr_get" "$zone" "$PRIMARY" \
+        "$transferred_zone" "$stage/axfr.$zone_count.tmp"
+    then
+        mv "$transferred_zone" "$cached_zone"
+    else
+        transfer_failures=$((transfer_failures + 1))
+        if [ -s "$cached_zone" ]; then
+            echo "rgbdns-secondary-sync: AXFR failed for $zone; retaining cached zone" >&2
+        else
+            missing_zones=$((missing_zones + 1))
+            echo "rgbdns-secondary-sync: AXFR failed for $zone and no cached zone exists" >&2
+        fi
+    fi
 done
 
 [ "$zone_count" -gt 0 ] || {
@@ -46,12 +62,25 @@ done
     exit 2
 }
 
+[ "$missing_zones" -eq 0 ] || {
+    echo "rgbdns-secondary-sync: cannot activate; $missing_zones zone(s) have no valid data" >&2
+    exit 1
+}
+
+for zone in $zones; do
+    cat "$zones_dir/$zone.data" >>"$stage/data"
+done
+
 (
     cd "$stage"
     "$tinydns_data"
 )
 
-# data.cdb is the live server input. Replace it only after every transfer and
-# the combined compilation have succeeded; retain the source for diagnostics.
+# data.cdb is the live server input. Compile all current per-zone snapshots,
+# then replace the combined database atomically.
 mv "$stage/data.cdb" "$state_dir/data.cdb"
 mv "$stage/data" "$state_dir/data"
+
+if [ "$transfer_failures" -gt 0 ]; then
+    echo "rgbdns-secondary-sync: activated with $transfer_failures cached zone(s)" >&2
+fi

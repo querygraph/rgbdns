@@ -8,7 +8,8 @@ versioning once its djbdns-compatible public surface stabilizes.
 ### Added
 
 - Multi-zone secondary synchronization from a single primary, with repeatable
-  setup arguments and all-zones atomic CDB activation.
+  setup arguments, per-zone last-known-good snapshots, and atomic combined CDB
+  activation.
 - Private ANAME zone directives with CDB persistence, bounded recursive
   CNAME following, TTL-capped address caching, and authoritative apex-safe
   A/AAAA synthesis.

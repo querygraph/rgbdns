@@ -457,8 +457,9 @@ it is not a backup of the editable primary source.
 The packaged secondary workflow manages a list of zones from one primary
 endpoint. It fetches each zone separately over DNS TCP, verifies response
 identity, authority, question, record bounds, zone confinement, and matching
-SOA bookends, then compiles and atomically installs one combined CDB only after
-every transfer succeeds.
+SOA bookends, retains the last valid snapshot of any zone whose refresh fails,
+then compiles and atomically installs one combined CDB. A newly configured zone
+must transfer successfully before the secondary can activate it.
 
 Configure the secondary:
 
@@ -495,11 +496,12 @@ sudo rgbdns-setup secondary \
 
 Setup writes a `ZONES=` list and `PRIMARY=` endpoint to
 `/etc/rgbdns/secondary.env`, performs every initial transfer, starts the
-authoritative service only after all transfers succeed, and enables
+authoritative service only after every zone has a valid snapshot, and enables
 `rgbdns-secondary-sync.timer`. The timer refreshes every five minutes with a
-small randomized delay. If any transfer fails, all previously compiled zones
-remain active. A successful run compiles the combined source, atomically
-replaces `data.cdb`, and restarts tinydns.
+small randomized delay. During later refreshes, a failed zone retains its
+last-known-good snapshot while successfully transferred zones advance. The
+run compiles those snapshots together, atomically replaces `data.cdb`, and
+restarts tinydns.
 
 Run or inspect synchronization manually:
 

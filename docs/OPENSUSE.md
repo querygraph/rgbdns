@@ -341,9 +341,10 @@ sudo rgbdns-setup secondary \
 
 Setup performs every initial AXFR before starting authority, enables
 `rgbdns-tinydns.service`, and enables `rgbdns-secondary-sync.timer`. Every five
-minutes, with randomized delay, the sync service validates every AXFR and
-compiles a combined source. It activates the new CDB only when all transfers
-succeed; a failed transfer leaves all last successful zones active.
+minutes, with randomized delay, the sync service validates each AXFR and
+compiles a combined source. A failed refresh retains that zone's
+last-known-good snapshot while successful zones advance. A newly configured
+zone must transfer successfully before it can be included.
 
 To permit an additional secondary provider to transfer the validated zone
 from this secondary, pass its exact AXFR source CIDRs:

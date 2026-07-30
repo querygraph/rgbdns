@@ -1,6 +1,6 @@
 Name:           rgbdns
 Version:        0.1.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
 URL:            https://github.com/querygraph/rgbdns
@@ -93,6 +93,9 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Wed Jul 29 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.1.1-5
+- Isolate refresh failures with per-zone last-known-good snapshots
+
 * Wed Jul 29 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.1.1-4
 - Synchronize and atomically activate multiple secondary zones
 

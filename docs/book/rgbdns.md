@@ -1419,10 +1419,12 @@ sudo rgbdns-setup secondary \
 
 Choose one of those two setup commands. `--zone` is repeatable; `--zones`
 accepts a whitespace- or comma-separated list. Setup performs a complete AXFR
-for each zone, validates every response and its SOA bookends, compiles the
-combined source, atomically installs the CDB only after all transfers succeed,
-starts authority, and enables a randomized five-minute refresh timer. It does
-not use NOTIFY or IXFR.
+for each zone, validates every response and its SOA bookends, and requires one
+valid snapshot per zone before initially starting authority. On later runs, a
+failed refresh retains that zone's last-known-good snapshot while successful
+zones advance. The snapshots are compiled together and the combined CDB is
+installed atomically. The randomized five-minute timer does not use NOTIFY or
+IXFR.
 
 Check the one-shot synchronization result:
 
