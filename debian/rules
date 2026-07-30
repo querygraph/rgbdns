@@ -23,6 +23,10 @@ override_dh_auto_install:
 		debian/rgbdns/usr/lib/rgbdns/compile-zone
 	install -D -m 0755 packaging/scripts/secondary-sync \
 		debian/rgbdns/usr/lib/rgbdns/secondary-sync
+	install -D -m 0755 packaging/scripts/import-zones \
+		debian/rgbdns/usr/lib/rgbdns/import-zones
+	install -D -m 0755 packaging/scripts/migrate-zones \
+		debian/rgbdns/usr/lib/rgbdns/migrate-zones
 	install -D -m 0755 packaging/scripts/rgbdns-setup \
 		debian/rgbdns/usr/sbin/rgbdns-setup
 	install -D -m 0644 packaging/default/tinydns.env \

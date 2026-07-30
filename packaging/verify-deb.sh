@@ -48,7 +48,9 @@ done <"$installed_bins"
 for unit in \
     rgbdns-tinydns.service \
     rgbdns-secondary-sync.service \
-    rgbdns-secondary-sync.timer
+    rgbdns-secondary-sync.timer \
+    rgbdns-zones-import.service \
+    rgbdns-zones.path
 do
     test -f "/lib/systemd/system/$unit"
 done
@@ -56,12 +58,15 @@ done
 for helper in \
     /usr/lib/rgbdns/compile-zone \
     /usr/lib/rgbdns/secondary-sync \
+    /usr/lib/rgbdns/import-zones \
+    /usr/lib/rgbdns/migrate-zones \
     /usr/sbin/rgbdns-setup
 do
     test -x "$helper"
 done
 
-grep -q 'ZONES is required' /usr/lib/rgbdns/secondary-sync
+grep -q '/etc/rgbdns/zones' /usr/lib/rgbdns/secondary-sync
 rgbdns-setup --help | grep -q -- '--zones'
+rgbdns-setup --help | grep -q -- '--zones-drop'
 rgbdns-setup --help | grep -q -- '--query-log'
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env

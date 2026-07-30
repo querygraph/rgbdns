@@ -1,3 +1,11 @@
+rgbdns (0.2.1) unstable; urgency=medium
+
+  * Import validated secondary zone lists from an atomic scp drop.
+  * Watch the configured drop file and trigger AXFR synchronization.
+  * Keep the canonical one-zone-per-line list outside package conffiles.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 30 Jul 2026 00:45:00 -0700
+
 rgbdns (0.2.0) unstable; urgency=medium
 
   * Restore original-compatible per-request tinydns logging.

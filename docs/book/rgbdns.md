@@ -17,7 +17,7 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.2.0 as built on 2026-07-29.
+version 0.2.1 as built on 2026-07-30.
 
 # The problem DNS solves
 
@@ -1448,6 +1448,21 @@ zones advance. The snapshots are compiled together and the combined CDB is
 installed atomically. The randomized five-minute timer does not use NOTIFY or
 IXFR.
 
+Setup stores the canonical one-zone-per-line list in `/etc/rgbdns/zones` and
+watches `rgbdns.zones` in the invoking sudo user's home. Manage later changes
+as a file and publish them with an atomic rename:
+
+```sh
+scp rgbdns.zones b.ns.example.net:rgbdns.zones.new
+ssh b.ns.example.net 'mv rgbdns.zones.new rgbdns.zones'
+```
+
+`rgbdns-zones.path` validates ownership and contents before replacing the
+canonical list and starting synchronization. Invalid, empty, symlinked, or
+partially uploaded lists leave the active configuration unchanged. Use
+`--zones-drop FILE` and `--zones-drop-owner USER` during setup when the
+default home-directory destination is not appropriate.
+
 Check the one-shot synchronization result:
 
 ```sh
@@ -1473,7 +1488,9 @@ Verify service, timer, and answers:
 ```sh
 sudo systemctl enable --now rgbdns-tinydns.service
 sudo systemctl enable --now rgbdns-secondary-sync.timer
+sudo systemctl enable --now rgbdns-zones.path
 systemctl list-timers rgbdns-secondary-sync.timer
+systemctl status rgbdns-zones.path
 sudo ss -lntup '( sport = :53 )'
 dig @127.0.0.1 example.net SOA +norecurse
 dig @198.51.100.53 example.net SOA +norecurse
@@ -1584,6 +1601,7 @@ sudo systemctl status rgbdns-secondary-sync.service --no-pager --full
 sudo journalctl -u rgbdns-secondary-sync.service -n 100 --no-pager
 dig +tcp @10.0.1.10 example.net SOA +norecurse
 sudo cat /etc/rgbdns/secondary.env
+sudo cat /etc/rgbdns/zones
 sudo cat /etc/rgbdns/tinydns.env
 ```
 

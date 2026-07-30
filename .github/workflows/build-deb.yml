@@ -38,7 +38,10 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Test secondary synchronization
-        run: packaging/tests/test-secondary-sync.sh
+        run: |
+          packaging/tests/test-secondary-sync.sh
+          packaging/tests/test-import-zones.sh
+          packaging/tests/test-migrate-zones.sh
 
       - uses: dtolnay/rust-toolchain@stable
 

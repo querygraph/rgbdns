@@ -5,14 +5,13 @@ set -eu
 
 state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
 zones_dir=${RGBDNS_ZONES_DIR:-$state_dir/secondary-zones}
+zones_file=${RGBDNS_ZONES_FILE:-/etc/rgbdns/zones}
 lock_file=${RGBDNS_LOCK_FILE:-/run/rgbdns/secondary.lock}
 axfr_get=${RGBDNS_AXFR_GET:-/usr/bin/axfr-get}
 tinydns_data=${RGBDNS_TINYDNS_DATA:-/usr/bin/tinydns-data}
 flock=${RGBDNS_FLOCK:-/usr/bin/flock}
-: "${ZONES:?ZONES is required in /etc/rgbdns/secondary.env}"
-zones=$ZONES
-[ -n "$zones" ] || {
-    echo "rgbdns-secondary-sync: ZONES is required in /etc/rgbdns/secondary.env" >&2
+[ -r "$zones_file" ] || {
+    echo "rgbdns-secondary-sync: cannot read zone list: $zones_file" >&2
     exit 2
 }
 
@@ -32,9 +31,9 @@ trap 'rm -rf "$stage"' EXIT HUP INT TERM
 zone_count=0
 transfer_failures=0
 missing_zones=0
-for zone in $zones; do
+while IFS= read -r zone || [ -n "$zone" ]; do
     case $zone in
-        *[!A-Za-z0-9._-]*|''|.|..)
+        *[!a-z0-9._-]*|''|.|..)
             echo "rgbdns-secondary-sync: invalid zone name: $zone" >&2
             exit 2
             ;;
@@ -55,7 +54,7 @@ for zone in $zones; do
             echo "rgbdns-secondary-sync: AXFR failed for $zone and no cached zone exists" >&2
         fi
     fi
-done
+done <"$zones_file"
 
 [ "$zone_count" -gt 0 ] || {
     echo "rgbdns-secondary-sync: the zone list is empty" >&2
@@ -67,9 +66,9 @@ done
     exit 1
 }
 
-for zone in $zones; do
+while IFS= read -r zone || [ -n "$zone" ]; do
     cat "$zones_dir/$zone.data" >>"$stage/data"
-done
+done <"$zones_file"
 
 (
     cd "$stage"

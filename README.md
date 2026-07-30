@@ -70,6 +70,11 @@ secondary refresh, verification, upgrades, and troubleshooting. It includes a
 complete `cron.sh` deployment with `52.10.53.234` as the primary address and
 BuddyNS as the secondary network.
 
+Secondaries keep a canonical one-zone-per-line list and can watch
+`rgbdns.zones` in the deployment user's home directory. Publish changes
+atomically with `scp rgbdns.zones host:rgbdns.zones.new` followed by a remote
+rename; rgbdns validates and installs the list before starting AXFR refresh.
+
 For the current openSUSE Leap 16.0 x86_64 AWS Marketplace AMI, see
 [`docs/OPENSUSE.md`](docs/OPENSUSE.md). It covers launch, RPM build and install,
 firewalld, the complete `cron.sh` primary, integrated AXFR, BuddyNS delegation,
@@ -80,7 +85,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.2.0_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.2.1_$(dpkg --print-architecture).deb
 ```
 
 On openSUSE Leap 16.0, build the RPM with:
@@ -90,7 +95,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.0-1.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.1-1.x86_64.rpm
 ```
 
 ## Book

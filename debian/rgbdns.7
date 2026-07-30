@@ -1,4 +1,4 @@
-.TH RGBDNS 7 "2026-07-26" "rgbdns 0.2.0" "System Administration"
+.TH RGBDNS 7 "2026-07-30" "rgbdns 0.2.1" "System Administration"
 .SH NAME
 rgbdns \- authoritative DNS, AXFR, recursion, and djbdns-compatible tools
 .SH SYNOPSIS
@@ -24,15 +24,23 @@ Authoritative listen address, port, compiled data path, and optional AXFR
 client CIDR allow-list.
 .TP
 .I /etc/rgbdns/secondary.env
-Secondary zone list and primary server endpoint.
+Secondary primary-server endpoint.
+.TP
+.I /etc/rgbdns/zones
+Canonical one-zone-per-line secondary zone list.
+.TP
+.I /etc/rgbdns/zones-drop.env
+Configured scp drop path and required upload owner.
 .TP
 .I /var/lib/rgbdns/tinydns/data
 Tinydns-format zone source.
 .SH SERVICES
 .BR rgbdns-tinydns.service ,
 .BR rgbdns-secondary-sync.service ,
+.BR rgbdns-secondary-sync.timer ,
+.BR rgbdns-zones-import.service ,
 and
-.BR rgbdns-secondary-sync.timer .
+.BR rgbdns-zones.path .
 .SH DOCUMENTATION
 See
 .I /usr/share/doc/rgbdns/debian.md.gz

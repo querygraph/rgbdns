@@ -1,0 +1,42 @@
+#!/bin/sh
+set -eu
+
+env_file=${RGBDNS_SECONDARY_ENV:-/etc/rgbdns/secondary.env}
+zones_file=${RGBDNS_ZONES_FILE:-/etc/rgbdns/zones}
+import_zones=${RGBDNS_IMPORT_ZONES:-/usr/lib/rgbdns/import-zones}
+install_owner=${RGBDNS_INSTALL_OWNER-root:rgbdns}
+
+[ ! -e "$zones_file" ] || exit 0
+[ -r "$env_file" ] || exit 0
+
+legacy_zones=$(sed -n 's/^ZONES=//p' "$env_file" | sed -n '1p')
+[ -n "$legacy_zones" ] || exit 0
+
+zones_dir=${zones_file%/*}
+drop=$(mktemp "$zones_dir/.zones-migrate.XXXXXX")
+env_stage=$(mktemp "${env_file%/*}/.secondary-env.XXXXXX")
+trap 'rm -f "$drop" "$env_stage"' EXIT HUP INT TERM
+set -f
+for zone in $legacy_zones; do
+    printf '%s\n' "$zone" >>"$drop"
+done
+chmod 0600 "$drop"
+drop_owner=$(
+    stat -c %U "$drop" 2>/dev/null ||
+        stat -f %Su "$drop"
+)
+
+ZONES_DROP=$drop \
+ZONES_DROP_OWNER=$drop_owner \
+RGBDNS_ZONES_FILE=$zones_file \
+    "$import_zones"
+
+sed '/^ZONES=/d' "$env_file" >"$env_stage"
+if [ -n "$install_owner" ]; then
+    chown "$install_owner" "$env_stage"
+fi
+chmod 0640 "$env_stage"
+mv -f "$env_stage" "$env_file"
+rm -f "$drop"
+trap - EXIT HUP INT TERM
+echo "rgbdns-migrate-zones: moved the legacy ZONES list to $zones_file"

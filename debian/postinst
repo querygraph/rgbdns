@@ -12,6 +12,7 @@ install -d -o root -g rgbdns -m 0750 /etc/rgbdns
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chown root:rgbdns /etc/rgbdns/tinydns.env
 chmod 0640 /etc/rgbdns/tinydns.env
+/usr/lib/rgbdns/migrate-zones
 
 #DEBHELPER#
 

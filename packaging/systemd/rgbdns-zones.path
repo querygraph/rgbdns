@@ -1,0 +1,11 @@
+[Unit]
+Description=Watch for an uploaded rgbdns secondary zone list
+Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
+ConditionPathExists=/etc/rgbdns/zones-drop.env
+
+[Path]
+PathChanged=/var/lib/rgbdns/incoming/rgbdns.zones
+Unit=rgbdns-zones-import.service
+
+[Install]
+WantedBy=paths.target

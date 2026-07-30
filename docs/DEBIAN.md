@@ -16,7 +16,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.2.0_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.2.1_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -240,16 +240,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.2.0_amd64.deb
+dpkg-deb --info ../rgbdns_0.2.1_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.2.0_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.2.1_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.2.0_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.2.1_amd64.deb
 dpkg-query -W rgbdns
 ```
 
@@ -523,13 +523,36 @@ sudo rgbdns-setup secondary \
   --listen-ip 127.0.0.1 --port 5353
 ```
 
-Setup writes a `ZONES=` list and `PRIMARY=` endpoint to
-`/etc/rgbdns/secondary.env`, performs every initial transfer, starts the
-authoritative service only after every zone has a valid snapshot, and enables
-`rgbdns-secondary-sync.timer`. The timer refreshes every five minutes with a
-small randomized delay. During later refreshes, a failed zone retains its
-last-known-good snapshot while successfully transferred zones advance. The
-run compiles those snapshots together, atomically replaces `data.cdb`, and
+Setup writes the one-zone-per-line canonical list to `/etc/rgbdns/zones` and
+the `PRIMARY=` endpoint to `/etc/rgbdns/secondary.env`. It also watches
+`rgbdns.zones` in the invoking sudo user's home directory. Override that
+location or owner with `--zones-drop FILE` and `--zones-drop-owner USER`.
+Setup performs every initial transfer, starts the authoritative service only
+after every zone has a valid snapshot, and enables both the five-minute sync
+timer and `rgbdns-zones.path`.
+
+Manage later additions as a file and publish it atomically:
+
+```text
+fieldnotes.es
+example.net
+example.org
+```
+
+```sh
+scp rgbdns.zones secondary.example:rgbdns.zones.new
+ssh secondary.example 'mv rgbdns.zones.new rgbdns.zones'
+```
+
+The path unit validates ownership and syntax, lowercases names, removes
+duplicates, atomically installs `/etc/rgbdns/zones`, and starts synchronization.
+An invalid or partial list cannot replace the canonical list. Upload through a
+temporary name as shown so the watcher only observes the final rename.
+
+During refreshes, a failed zone retains its last-known-good snapshot while
+successfully transferred zones advance. A newly listed zone must obtain its
+first valid snapshot before the combined database can include the new list.
+The run compiles the snapshots together, atomically replaces `data.cdb`, and
 restarts tinydns.
 
 Run or inspect synchronization manually:
@@ -537,7 +560,9 @@ Run or inspect synchronization manually:
 ```sh
 sudo systemctl start rgbdns-secondary-sync.service
 systemctl list-timers rgbdns-secondary-sync.timer
-journalctl -u rgbdns-secondary-sync.service
+systemctl status rgbdns-zones.path
+journalctl -u rgbdns-zones-import.service \
+  -u rgbdns-secondary-sync.service
 ```
 
 Change the interval with a systemd drop-in:

@@ -26,9 +26,10 @@ chmod +x "$test_dir/bin/axfr-get" "$test_dir/bin/tinydns-data" \
     "$test_dir/bin/flock"
 
 run_sync() {
-    ZONES=$1 \
+    printf '%s\n' "$1" | tr ' ' '\n' >"$test_dir/zones"
     PRIMARY=192.0.2.1 \
     RGBDNS_STATE_DIR="$test_dir/state" \
+    RGBDNS_ZONES_FILE="$test_dir/zones" \
     RGBDNS_LOCK_FILE="$test_dir/secondary.lock" \
     RGBDNS_AXFR_GET="$test_dir/bin/axfr-get" \
     RGBDNS_TINYDNS_DATA="$test_dir/bin/tinydns-data" \

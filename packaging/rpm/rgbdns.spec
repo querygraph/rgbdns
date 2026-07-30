@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.2.0
+Version:        0.2.1
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -46,6 +46,10 @@ install -D -m 0755 packaging/scripts/compile-zone \
     %{buildroot}%{_prefix}/lib/rgbdns/compile-zone
 install -D -m 0755 packaging/scripts/secondary-sync \
     %{buildroot}%{_prefix}/lib/rgbdns/secondary-sync
+install -D -m 0755 packaging/scripts/import-zones \
+    %{buildroot}%{_prefix}/lib/rgbdns/import-zones
+install -D -m 0755 packaging/scripts/migrate-zones \
+    %{buildroot}%{_prefix}/lib/rgbdns/migrate-zones
 install -D -m 0755 packaging/scripts/rgbdns-setup \
     %{buildroot}%{_sbindir}/rgbdns-setup
 install -D -m 0640 packaging/default/tinydns.env \
@@ -69,13 +73,14 @@ exit 0
 %post
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
-%service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer
+%{_prefix}/lib/rgbdns/migrate-zones
+%service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path
 
 %preun
-%service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer
+%service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path
 
 %postun
-%service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer
+%service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path
 
 %files
 %doc README.md docs/OPENSUSE.md
@@ -84,15 +89,23 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %dir %{_prefix}/lib/rgbdns
 %{_prefix}/lib/rgbdns/compile-zone
 %{_prefix}/lib/rgbdns/secondary-sync
+%{_prefix}/lib/rgbdns/import-zones
+%{_prefix}/lib/rgbdns/migrate-zones
 %attr(0750,root,root) %dir %{_sysconfdir}/rgbdns
 %attr(0640,root,root) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
 %{_unitdir}/rgbdns-tinydns.service
 %{_unitdir}/rgbdns-secondary-sync.service
 %{_unitdir}/rgbdns-secondary-sync.timer
+%{_unitdir}/rgbdns-zones-import.service
+%{_unitdir}/rgbdns-zones.path
 %{_docdir}/%{name}/examples/data
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.2.1-1
+- Import validated secondary zone lists from an atomic scp drop
+- Watch the configured drop file and trigger isolated AXFR synchronization
+
 * Wed Jul 29 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.2.0-1
 - Restore original-compatible per-request tinydns logging
 - Add QUERY_LOG opt-out for journald and multilog deployments
