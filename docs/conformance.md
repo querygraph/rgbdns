@@ -50,7 +50,7 @@ normative RFC that supplies each oracle.
 
 ## Deliberate scope boundaries
 
-The following are not claimed as implemented by rgbdns 0.2.0:
+The following are not claimed as implemented by rgbdns 0.2.3:
 
 - dynamic UPDATE, NOTIFY, IXFR, DSO, DNS Cookies, or TSIG/SIG(0);
 - authoritative DNSSEC signing and denial-of-existence generation;
@@ -62,6 +62,11 @@ The following are not claimed as implemented by rgbdns 0.2.0:
 Unknown EDNS options are parsed structurally and ignored as RFC 6891 requires.
 Unknown ordinary RR types use opaque RDATA as RFC 3597 requires. An unsupported
 opcode receives NOTIMP rather than being silently dropped.
+
+The rgbdns ANAME AXFR extension is explicitly private and negotiated. Tests
+prove that an opted-in rgbdns peer round-trips the target and TTL, a standard
+AXFR request receives no private record, and malformed private payloads are
+rejected before zone activation.
 
 ## Running the matrix
 

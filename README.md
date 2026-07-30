@@ -46,6 +46,10 @@ answers owned by `example.com`; 300 seconds is the TTL cap. It may coexist
 with the apex SOA, NS, MX, and TXT records, but not with A, AAAA, or CNAME at
 the same owner. ANAME resolution uses `DNSCACHEIP` or `/etc/resolv.conf`.
 
+ANAME directives survive AXFR between rgbdns peers through an explicitly
+negotiated private extension. `axfr-get` requests it automatically; ordinary
+AXFR clients receive only standard DNS records and no private metadata.
+
 The `*-conf` commands generate djbdns-style service directories. They reference
 rgbdns's own `setuidgid` and `multilog` binaries by absolute path, so
 daemontools is not a runtime dependency. `multilog t ./main` writes TAI64N
@@ -91,7 +95,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.2.2_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.2.3_$(dpkg --print-architecture).deb
 ```
 
 On openSUSE Leap 16.0, build the RPM with:
@@ -101,7 +105,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.2-1.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.3-1.x86_64.rpm
 ```
 
 ## Book

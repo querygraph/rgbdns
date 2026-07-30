@@ -1,6 +1,6 @@
 # End-to-end rgbdns setup: `fieldnotes.es`
 
-This walkthrough deploys rgbdns 0.2.2 on two AWS EC2 instances and retains
+This walkthrough deploys rgbdns 0.2.3 on two AWS EC2 instances and retains
 BuddyNS as an additional secondary network. It covers installation, initial
 role configuration, authoritative data, AXFR, atomic primary and secondary
 updates, verification, upgrades, and recovery.
@@ -118,12 +118,12 @@ gh run download "$RPM_RUN" \
   -D "$HOME/rgbdns-rpm"
 ```
 
-The 0.2.2 artifacts are:
+The 0.2.3 artifacts are:
 
 ```text
-rgbdns_0.2.2_amd64.deb
-RPMS/x86_64/rgbdns-0.2.2-1.x86_64.rpm
-SRPMS/rgbdns-0.2.2-1.src.rpm
+rgbdns_0.2.3_amd64.deb
+RPMS/x86_64/rgbdns-0.2.3-1.x86_64.rpm
+SRPMS/rgbdns-0.2.3-1.src.rpm
 ```
 
 ## 4. Install the Debian package on the primary
@@ -131,14 +131,14 @@ SRPMS/rgbdns-0.2.2-1.src.rpm
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-deb/rgbdns_0.2.2_amd64.deb" \
+scp "$HOME/rgbdns-deb/rgbdns_0.2.3_amd64.deb" \
   bitnami@52.10.53.234:/tmp/
 ```
 
 On the primary:
 
 ```sh
-sudo apt install /tmp/rgbdns_0.2.2_amd64.deb
+sudo apt install /tmp/rgbdns_0.2.3_amd64.deb
 sudo systemctl daemon-reload
 dpkg-query -W -f='${Package} ${Version}\n' rgbdns
 getent passwd rgbdns
@@ -160,7 +160,7 @@ SUSE_USER=ec2-user
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.2.2-1.x86_64.rpm" \
+scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.2.3-1.x86_64.rpm" \
   "$SUSE_USER"@52.38.177.160:/tmp/
 ```
 
@@ -168,7 +168,7 @@ On the secondary:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.2.2-1.x86_64.rpm
+  /tmp/rgbdns-0.2.3-1.x86_64.rpm
 sudo systemctl daemon-reload
 rpm -q rgbdns
 sudo rpm -V rgbdns
@@ -378,7 +378,36 @@ SubState=dead
 
 `inactive/dead` is correct for a completed `Type=oneshot` service.
 
-## 10. Configure BuddyNS
+## 10. Use ANAME only between upgraded rgbdns peers
+
+rgbdns 0.2.3 preserves private ANAME directives when both AXFR peers run
+rgbdns. For an apex hosted by Ghost, the primary source can contain:
+
+```text
+Znew-domain.example:a.ns.cron.sh:hostmaster.cron.sh:2026073001:16384:2048:1048576:2560:3600
+&new-domain.example::a.ns.cron.sh:3600
+&new-domain.example::b.ns.cron.sh:3600
+Anew-domain.example:publication.ghost.io:300
+```
+
+`axfr-get` negotiates the extension automatically. The primary sends the
+private target and TTL only after that capability request; the secondary
+validates it, restores the ANAME directive, and performs its own address
+flattening. Verify both address families:
+
+```sh
+for server in 52.10.53.234 52.38.177.160; do
+  dig @"$server" new-domain.example A +norecurse
+  dig @"$server" new-domain.example AAAA +norecurse
+done
+```
+
+Standard AXFR clients receive no private ANAME metadata and cannot reproduce
+this behavior. Therefore delegate an ANAME-backed domain only to upgraded
+rgbdns authorities such as `a` and `b`. Do not add that domain to BuddyNS
+unless it uses standard A/AAAA records instead.
+
+## 11. Configure BuddyNS
 
 In BuddyBoard:
 
@@ -392,7 +421,7 @@ In BuddyBoard:
 The application allow-list permits BuddyNS to AXFR from either rgbdns server.
 Do not use the VPC address for BuddyNS; it is outside the VPC.
 
-## 11. Publish later primary changes
+## 12. Publish later primary changes
 
 Edit the complete `rgbdns.data` on the workstation and increment the affected
 SOA serial. Upload through a temporary name, then atomically rename it:
@@ -423,7 +452,7 @@ A malformed or partially uploaded file does not replace the active database.
 The `.new` plus rename sequence prevents the watcher from observing an upload
 while `scp` is still writing it.
 
-## 12. Publish later secondary-list changes
+## 13. Publish later secondary-list changes
 
 Edit `rgbdns.zones`, one zone per line. Blank lines and leading `#` comment
 lines are accepted. Publish atomically:
@@ -455,7 +484,7 @@ dig @172.31.60.189 new-zone.example AXFR
 
 Run those commands from the secondary or another authorized VPC source.
 
-## 13. Verify the public deployment
+## 14. Verify the public deployment
 
 Compare all rgbdns authorities:
 
@@ -498,7 +527,7 @@ Require:
 - matching NS RRsets; and
 - UDP and TCP agreement.
 
-## 14. Observe request and transfer logs
+## 15. Observe request and transfer logs
 
 Request logging is enabled by default. Follow primary activity:
 
@@ -523,7 +552,7 @@ QUERY_LOG=0
 
 Restart tinydns after manually changing that environment file.
 
-## 15. Upgrade safely
+## 16. Upgrade safely
 
 On Debian:
 
@@ -556,7 +585,7 @@ sudo systemctl status rgbdns-data.path rgbdns-zones.path --no-pager
 Only the path unit belonging to the host's configured role is expected to be
 enabled.
 
-## 16. Troubleshoot by boundary
+## 17. Troubleshoot by boundary
 
 ### AXFR ends with `end of file`
 

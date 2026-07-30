@@ -16,6 +16,9 @@ const MAX_TCP_MESSAGE: usize = u16::MAX as usize;
 const MAX_TRANSFER_RECORDS: usize = 1_000_000;
 const MAX_TRANSFER_MESSAGES: usize = 1_000_000;
 const MAX_TRANSFER_BYTES: usize = 1 << 30;
+const RGBDNS_ANAME_OPTION: u16 = 65001;
+const RGBDNS_ANAME_RECORD: u16 = 65401;
+const RGBDNS_ANAME_MAGIC: &[u8] = b"RGA1";
 
 pub fn serve(zone: Zone, address: &str, allowed: Vec<IpNet>) -> Result<()> {
     serve_listener(
@@ -108,7 +111,7 @@ pub(crate) fn response_wires(zone: &Zone, query: Message) -> Result<Vec<Vec<u8>>
             Vec::new(),
         )?]);
     }
-    let Some(records) = zone.transfer(&question.name) else {
+    let Some(mut records) = zone.transfer(&question.name) else {
         return Ok(vec![response_wire(
             query.id,
             Some(question),
@@ -116,6 +119,24 @@ pub(crate) fn response_wires(zone: &Zone, query: Message) -> Result<Vec<Vec<u8>>
             Vec::new(),
         )?]);
     };
+    if requests_aname_extension(&query) {
+        let closing_soa = records
+            .pop()
+            .ok_or(Error::Format("AXFR transfer has no closing SOA"))?;
+        for (owner, aname) in zone
+            .transfer_anames(&question.name)
+            .ok_or(Error::Format("AXFR zone has no ANAME scope"))?
+        {
+            let mut payload = RGBDNS_ANAME_MAGIC.to_vec();
+            payload.extend(aname.target.to_wire());
+            records.push(Record {
+                name: owner,
+                ttl: aname.ttl,
+                data: RData::Opaque(RecordType::Unknown(RGBDNS_ANAME_RECORD), payload),
+            });
+        }
+        records.push(closing_soa);
+    }
     let mut responses = Vec::new();
     let mut first = true;
     let mut batch = Vec::new();
@@ -151,6 +172,28 @@ pub(crate) fn response_wires(zone: &Zone, query: Message) -> Result<Vec<Vec<u8>>
         )?);
     }
     Ok(responses)
+}
+
+fn requests_aname_extension(query: &Message) -> bool {
+    query.additionals.iter().any(|record| {
+        let RData::Opt { options, .. } = &record.data else {
+            return false;
+        };
+        let mut remaining = options.as_slice();
+        while remaining.len() >= 4 {
+            let code = u16::from_be_bytes([remaining[0], remaining[1]]);
+            let length = u16::from_be_bytes([remaining[2], remaining[3]]) as usize;
+            remaining = &remaining[4..];
+            if remaining.len() < length {
+                return false;
+            }
+            if code == RGBDNS_ANAME_OPTION && remaining[..length] == *RGBDNS_ANAME_MAGIC {
+                return true;
+            }
+            remaining = &remaining[length..];
+        }
+        false
+    })
 }
 
 fn response_wire(
@@ -190,6 +233,22 @@ pub fn fetch(server: SocketAddr, zone: Name) -> Result<Vec<Record>> {
     let wire = Message {
         id,
         questions: vec![question.clone()],
+        additionals: vec![Record {
+            name: Name::root(),
+            ttl: 0,
+            data: RData::Opt {
+                udp_payload: 1232,
+                extended_rcode: 0,
+                version: 0,
+                flags: 0,
+                options: [
+                    RGBDNS_ANAME_OPTION.to_be_bytes().as_slice(),
+                    (RGBDNS_ANAME_MAGIC.len() as u16).to_be_bytes().as_slice(),
+                    RGBDNS_ANAME_MAGIC,
+                ]
+                .concat(),
+            },
+        }],
         ..Default::default()
     }
     .encode()?;
@@ -346,12 +405,57 @@ fn tinydns_line(record: &Record) -> Result<String> {
             data.extend(value);
             format!(":{owner}:257:{}:{ttl}", escape(&data))
         }
-        RData::Opaque(typ, bytes) => {
-            format!(":{owner}:{}:{}:{ttl}", typ.code(), escape(bytes))
+        RData::Opaque(RecordType::Unknown(RGBDNS_ANAME_RECORD), bytes)
+            if bytes.starts_with(RGBDNS_ANAME_MAGIC) =>
+        {
+            let target = decode_aname_target(&bytes[RGBDNS_ANAME_MAGIC.len()..])?;
+            format!("A{owner}:{}:{ttl}", tinydns_name(&target))
         }
+        RData::Opaque(typ, bytes) => format!(":{owner}:{}:{}:{ttl}", typ.code(), escape(bytes)),
         RData::Opt { .. } => return Err(Error::Format("OPT is invalid in AXFR zone data")),
         RData::Name(_, _) => return Err(Error::Format("invalid name-bearing RDATA type")),
     })
+}
+
+fn decode_aname_target(mut wire: &[u8]) -> Result<Name> {
+    let mut labels = Vec::new();
+    loop {
+        let Some((&length, rest)) = wire.split_first() else {
+            return Err(Error::Format("truncated rgbdns ANAME target"));
+        };
+        wire = rest;
+        if length == 0 {
+            if !wire.is_empty() {
+                return Err(Error::Format("trailing rgbdns ANAME target data"));
+            }
+            return Name::from_labels(labels);
+        }
+        if length > 63 || wire.len() < length as usize {
+            return Err(Error::Format("invalid rgbdns ANAME target"));
+        }
+        labels.push(wire[..length as usize].to_vec());
+        wire = &wire[length as usize..];
+    }
+}
+
+fn tinydns_name(name: &Name) -> String {
+    if name.is_root() {
+        return ".".into();
+    }
+    let mut output = String::new();
+    for (index, label) in name.labels().enumerate() {
+        if index != 0 {
+            output.push('.');
+        }
+        for byte in label {
+            if (b'!'..=b'~').contains(byte) && !matches!(byte, b'.' | b':' | b'\\') {
+                output.push(char::from(*byte));
+            } else {
+                output.push_str(&format!("\\{byte:03o}"));
+            }
+        }
+    }
+    output
 }
 
 fn escape(bytes: &[u8]) -> String {
@@ -388,6 +492,7 @@ mod tests {
         let zone = Zone::parse(
             "Zexample:ns.example:hostmaster.example:7:8:9:10:11:12\n\
              &example:192.0.2.53:ns.example:300\n\
+             Aexample:publication.ghost.io:120\n\
              +www.example:192.0.2.1:60\n",
         )
         .unwrap();
@@ -408,6 +513,56 @@ mod tests {
         assert!(records.iter().any(|record| {
             record.name == "www.example".parse().unwrap()
                 && record.data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
+        }));
+        assert!(records.iter().any(|record| {
+            record.name == "example".parse().unwrap()
+                && matches!(
+                    &record.data,
+                    RData::Opaque(RecordType::Unknown(RGBDNS_ANAME_RECORD), payload)
+                        if payload.starts_with(RGBDNS_ANAME_MAGIC)
+                )
+        }));
+
+        let output = temp_path("axfr-aname-data");
+        let temporary = temp_path("axfr-aname-data-tmp");
+        write_tinydns(&records, &output, &temporary).unwrap();
+        let imported = Zone::from_file(&output).unwrap();
+        fs::remove_file(output).unwrap();
+        let aname = imported.aname(&"example".parse().unwrap()).unwrap();
+        assert_eq!(aname.target, "publication.ghost.io".parse().unwrap());
+        assert_eq!(aname.ttl, 120);
+    }
+
+    #[test]
+    fn standard_axfr_does_not_expose_private_aname_metadata() {
+        let zone = Zone::parse(
+            "Zexample:ns.example:hostmaster.example:7:8:9:10:11:12\n\
+             &example:192.0.2.53:ns.example:300\n\
+             Aexample:publication.ghost.io:120\n",
+        )
+        .unwrap();
+        let query = Message {
+            id: 9,
+            questions: vec![Question {
+                name: "example".parse().unwrap(),
+                qtype: RecordType::Axfr,
+                qclass: 1,
+            }],
+            ..Default::default()
+        };
+        let responses = response_wires(&zone, query).unwrap();
+        let records = responses
+            .iter()
+            .flat_map(|wire| Message::decode(wire).unwrap().answers)
+            .collect::<Vec<_>>();
+        assert!(
+            !records
+                .iter()
+                .any(|record| { record.rr_type() == RecordType::Unknown(RGBDNS_ANAME_RECORD) })
+        );
+        assert!(!records.iter().any(|record| {
+            record.name == "example".parse().unwrap()
+                && matches!(record.rr_type(), RecordType::A | RecordType::Aaaa)
         }));
     }
 
@@ -434,6 +589,22 @@ mod tests {
             imported.lookup(&"example".parse().unwrap(), RecordType::Txt),
             Lookup::Answer(_)
         ));
+    }
+
+    #[test]
+    fn malformed_negotiated_aname_is_not_installed() {
+        let output = temp_path("bad-aname-data");
+        let temporary = temp_path("bad-aname-data-tmp");
+        let mut payload = RGBDNS_ANAME_MAGIC.to_vec();
+        payload.extend([10, b'x']);
+        let records = vec![Record {
+            name: "example".parse().unwrap(),
+            ttl: 300,
+            data: RData::Opaque(RecordType::Unknown(RGBDNS_ANAME_RECORD), payload),
+        }];
+        assert!(write_tinydns(&records, &output, &temporary).is_err());
+        assert!(!temporary.exists());
+        assert!(!output.exists());
     }
 
     #[test]

@@ -17,7 +17,7 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.2.2 as built on 2026-07-30.
+version 0.2.3 as built on 2026-07-30.
 
 # The problem DNS solves
 
@@ -477,6 +477,19 @@ SOA, NS, MX, TXT, CAA, and other non-address data. Zone validation rejects:
 - an owner that targets itself;
 - different ANAME targets at one owner;
 - a zero TTL.
+
+ANAME is private configuration rather than a standard DNS RR type, so a plain
+AXFR cannot represent it. rgbdns peers negotiate preservation explicitly:
+`axfr-get` places private EDNS option 65001 with the `RGA1` version token in
+the AXFR request. An rgbdns primary then inserts private-use TYPE65401 records
+whose TTL is the ANAME cap and whose payload is the token followed by the
+target's uncompressed wire name. The receiving rgbdns validates that payload
+and reconstructs the `Aowner:target:ttl` directive before compilation.
+
+An ordinary AXFR request does not receive TYPE65401. This keeps standard
+secondaries free of private metadata, but it also means they do not reproduce
+ANAME behavior. Delegate an ANAME-backed zone only to upgraded rgbdns peers,
+or use standard address records when non-rgbdns secondaries must serve it.
 
 The server only applies ANAME to A and AAAA questions. SOA, NS, MX, TXT, CAA,
 and all other questions continue through normal authoritative lookup. ANAME

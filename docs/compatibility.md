@@ -9,6 +9,8 @@ Implemented:
   selection and query-time TAI64 activation/expiration
 - private `A` ANAME marker for apex-safe, cached A/AAAA flattening without
   emitting a wire CNAME
+- negotiated rgbdns-to-rgbdns AXFR preservation of private ANAME targets and
+  TTL caps without exposing private metadata to standard AXFR clients
 - atomic djbdns-compatible `data.cdb` compilation and bounded, validating CDB
   loading; a 19-entry fixture including location, timestamp, SRV, and patched
   IPv6 qualifiers was differentially verified as identical

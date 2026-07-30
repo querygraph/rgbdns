@@ -147,6 +147,25 @@ impl Zone {
     pub(crate) fn aname_entries(&self) -> impl Iterator<Item = (&Name, &Aname)> {
         self.anames.iter()
     }
+    pub(crate) fn transfer_anames(&self, name: &Name) -> Option<Vec<(Name, Aname)>> {
+        if !self.authoritative.contains(name) {
+            return None;
+        }
+        Some(
+            self.anames
+                .iter()
+                .filter(|(owner, _)| {
+                    owner.is_subdomain_of(name)
+                        && !self.authoritative.iter().any(|child| {
+                            child != name
+                                && child.is_subdomain_of(name)
+                                && owner.is_subdomain_of(child)
+                        })
+                })
+                .map(|(owner, aname)| (owner.clone(), aname.clone()))
+                .collect(),
+        )
+    }
     pub(crate) fn aname(&self, owner: &Name) -> Option<&Aname> {
         self.anames.get(owner)
     }
