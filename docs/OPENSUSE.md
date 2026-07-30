@@ -1,12 +1,16 @@
 # Installing rgbdns on openSUSE Leap 16.0 on AWS EC2
 
+For the complete two-host `fieldnotes.es` example, including the Debian
+primary and atomic `rgbdns.data`/`rgbdns.zones` pickup, see
+[`RGBDNS_SETUP.md`](RGBDNS_SETUP.md).
+
 This guide targets the current openSUSE AWS Marketplace offering:
 **openSUSE Leap 16.0 (x86_64), Marketplace version v20260213**. AWS Marketplace
 AMI IDs are regional and may change when the publisher updates the product, so
 select the current version from the Marketplace product rather than copying an
 AMI ID from another region.
 
-The RPM installs the complete command suite, three hardened systemd units, a
+The RPM installs the complete command suite, hardened systemd units, a
 dedicated unprivileged account, and `rgbdns-setup`. Installing the package does
 not enable or start DNS. Configuration is an explicit administrator action.
 

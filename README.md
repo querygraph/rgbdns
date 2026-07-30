@@ -76,6 +76,11 @@ Publish either file through a `.new` name followed by a remote rename. rgbdns
 validates and compiles primary data before activation, and validates secondary
 lists before starting AXFR refresh.
 
+For the complete production-shaped `fieldnotes.es` example using
+`a.ns.cron.sh`, `b.ns.cron.sh`, BuddyNS, primary data pickup, and secondary
+zone-list pickup, follow
+[`docs/RGBDNS_SETUP.md`](docs/RGBDNS_SETUP.md).
+
 For the current openSUSE Leap 16.0 x86_64 AWS Marketplace AMI, see
 [`docs/OPENSUSE.md`](docs/OPENSUSE.md). It covers launch, RPM build and install,
 firewalld, the complete `cron.sh` primary, integrated AXFR, BuddyNS delegation,

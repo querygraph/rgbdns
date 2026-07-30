@@ -1,6 +1,10 @@
 # Installing rgbdns on Debian with systemd
 
-The Debian package installs the complete rgbdns command suite, three systemd
+For the complete two-host `fieldnotes.es` example, including the openSUSE
+secondary and atomic `rgbdns.data`/`rgbdns.zones` pickup, see
+[`RGBDNS_SETUP.md`](RGBDNS_SETUP.md).
+
+The Debian package installs the complete rgbdns command suite, hardened systemd
 units, a dedicated unprivileged account, and `rgbdns-setup`. Installation alone
 does not publish a DNS service. The administrator must choose a primary or
 secondary role and provide the corresponding data.
