@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-26" />
+  <meta name="dcterms.date" content="2026-07-30" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>DNS from First Principles</title>
   <style>
@@ -16,12 +16,8 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -57,7 +53,7 @@
 <p class="subtitle">Names, Packets, Authority, Recursion, and the Design
 of rgbdns</p>
 <p class="author">Alexy Khrabrov</p>
-<p class="date">2026-07-26</p>
+<p class="date">2026-07-30</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
@@ -280,10 +276,10 @@ id="toc-build-stage-verify-replace"><span
 class="toc-section-number">16.1</span> Build, stage, verify,
 replace</a></li>
 <li><a
-href="chapter-017.html#case-study-cron.sh-primary-and-buddyns-secondaries"
-id="toc-case-study-cron.sh-primary-and-buddyns-secondaries"><span
-class="toc-section-number">16.2</span> Case study: cron.sh primary and
-BuddyNS secondaries</a></li>
+href="chapter-017.html#full-deployment-walkthrough-three-authoritative-topologies"
+id="toc-full-deployment-walkthrough-three-authoritative-topologies"><span
+class="toc-section-number">16.2</span> Full deployment walkthrough:
+three authoritative topologies</a></li>
 <li><a href="chapter-017.html#observe-the-right-signals"
 id="toc-observe-the-right-signals"><span
 class="toc-section-number">16.3</span> Observe the right
