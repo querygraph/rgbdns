@@ -21,12 +21,15 @@ for path in \
     /usr/lib/rgbdns/compile-zone \
     /usr/lib/rgbdns/secondary-sync \
     /usr/lib/rgbdns/import-zones \
+    /usr/lib/rgbdns/import-data \
     /usr/lib/rgbdns/migrate-zones \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.timer \
     /usr/lib/systemd/system/rgbdns-zones-import.service \
-    /usr/lib/systemd/system/rgbdns-zones.path
+    /usr/lib/systemd/system/rgbdns-zones.path \
+    /usr/lib/systemd/system/rgbdns-data-import.service \
+    /usr/lib/systemd/system/rgbdns-data.path
 do
     test -e "$path"
 done
@@ -48,8 +51,11 @@ systemd-analyze --man=no verify \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.timer \
     /usr/lib/systemd/system/rgbdns-zones-import.service \
-    /usr/lib/systemd/system/rgbdns-zones.path
+    /usr/lib/systemd/system/rgbdns-zones.path \
+    /usr/lib/systemd/system/rgbdns-data-import.service \
+    /usr/lib/systemd/system/rgbdns-data.path
 
 rgbdns-setup --help | grep -q -- '--zones'
 rgbdns-setup --help | grep -q -- '--zones-drop'
+rgbdns-setup --help | grep -q -- '--data-drop'
 rgbdns-setup --help | grep -q -- '--query-log'

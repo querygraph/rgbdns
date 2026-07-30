@@ -1,0 +1,11 @@
+[Unit]
+Description=Watch for an uploaded rgbdns primary data file
+Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
+ConditionPathExists=/etc/rgbdns/data-drop.env
+
+[Path]
+PathChanged=/var/lib/rgbdns/incoming/rgbdns.data
+Unit=rgbdns-data-import.service
+
+[Install]
+WantedBy=paths.target

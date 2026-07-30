@@ -1,4 +1,4 @@
-.TH RGBDNS 7 "2026-07-30" "rgbdns 0.2.1" "System Administration"
+.TH RGBDNS 7 "2026-07-30" "rgbdns 0.2.2" "System Administration"
 .SH NAME
 rgbdns \- authoritative DNS, AXFR, recursion, and djbdns-compatible tools
 .SH SYNOPSIS
@@ -32,6 +32,9 @@ Canonical one-zone-per-line secondary zone list.
 .I /etc/rgbdns/zones-drop.env
 Configured scp drop path and required upload owner.
 .TP
+.I /etc/rgbdns/data-drop.env
+Configured primary-data scp drop path and required upload owner.
+.TP
 .I /var/lib/rgbdns/tinydns/data
 Tinydns-format zone source.
 .SH SERVICES
@@ -39,6 +42,8 @@ Tinydns-format zone source.
 .BR rgbdns-secondary-sync.service ,
 .BR rgbdns-secondary-sync.timer ,
 .BR rgbdns-zones-import.service ,
+.BR rgbdns-data-import.service ,
+.BR rgbdns-data.path ,
 and
 .BR rgbdns-zones.path .
 .SH DOCUMENTATION

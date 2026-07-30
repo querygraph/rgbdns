@@ -17,7 +17,7 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.2.1 as built on 2026-07-30.
+version 0.2.2 as built on 2026-07-30.
 
 # The problem DNS solves
 
@@ -1364,6 +1364,20 @@ sudo systemd-analyze verify \
 sudo ls -lah /var/lib/rgbdns/tinydns
 sudo cat /etc/rgbdns/tinydns.env
 ```
+
+Setup watches `rgbdns.data` in the invoking sudo user's home directory. After
+editing the complete source locally, publish it atomically:
+
+```sh
+scp rgbdns.data a.ns.example.net:rgbdns.data.new
+ssh a.ns.example.net 'mv rgbdns.data.new rgbdns.data'
+```
+
+`rgbdns-data.path` verifies ownership, compiles a private staged copy, and
+replaces the live source and CDB only after successful compilation. Invalid,
+partial, or symlinked uploads leave the currently served database unchanged.
+Use `--data-drop FILE` and `--data-drop-owner USER` when another destination is
+required.
 
 The two unit paths cover Debian-family and openSUSE layouts. An unrelated
 legacy-unit warning from `systemd-analyze` does not invalidate a successful

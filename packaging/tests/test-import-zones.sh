@@ -35,7 +35,7 @@ then
     echo "test-import-zones: malformed list unexpectedly succeeded" >&2
     exit 1
 fi
-cmp "$test_dir/expected" "$canonical"
+test "$(cat "$test_dir/expected")" = "$(cat "$canonical")"
 
 rm -f "$drop"
 ln -s "$test_dir/expected" "$drop"
@@ -48,6 +48,6 @@ then
     echo "test-import-zones: symlink unexpectedly succeeded" >&2
     exit 1
 fi
-cmp "$test_dir/expected" "$canonical"
+test "$(cat "$test_dir/expected")" = "$(cat "$canonical")"
 
 echo "test-import-zones: passed"

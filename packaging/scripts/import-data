@@ -1,0 +1,47 @@
+#!/bin/sh
+set -eu
+
+: "${DATA_DROP:?DATA_DROP is required in /etc/rgbdns/data-drop.env}"
+: "${DATA_DROP_OWNER:?DATA_DROP_OWNER is required in /etc/rgbdns/data-drop.env}"
+
+state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
+compile_zone=${RGBDNS_COMPILE_ZONE:-/usr/lib/rgbdns/compile-zone}
+service_user=${RGBDNS_SERVICE_USER-rgbdns}
+
+case $DATA_DROP in
+    /*) ;;
+    *) echo "rgbdns-import-data: drop path must be absolute: $DATA_DROP" >&2; exit 2 ;;
+esac
+[ -f "$DATA_DROP" ] && [ ! -L "$DATA_DROP" ] || {
+    echo "rgbdns-import-data: drop file is not a regular file: $DATA_DROP" >&2
+    exit 2
+}
+drop_owner=$(
+    stat -c %U "$DATA_DROP" 2>/dev/null ||
+        stat -f %Su "$DATA_DROP"
+)
+[ "$drop_owner" = "$DATA_DROP_OWNER" ] || {
+    echo "rgbdns-import-data: $DATA_DROP is owned by $drop_owner, expected $DATA_DROP_OWNER" >&2
+    exit 2
+}
+
+stage=$(mktemp -d "$state_dir/.primary-import.XXXXXX")
+trap 'rm -rf "$stage"' EXIT HUP INT TERM
+umask 027
+install -m 0640 "$DATA_DROP" "$stage/data"
+if [ -n "$service_user" ]; then
+    chown "$service_user:$service_user" "$stage" "$stage/data"
+    runuser -u "$service_user" -- env RGBDNS_STATE_DIR="$stage" "$compile_zone"
+else
+    RGBDNS_STATE_DIR=$stage "$compile_zone"
+fi
+[ -s "$stage/data.cdb" ] || {
+    echo "rgbdns-import-data: compilation produced no data.cdb" >&2
+    exit 1
+}
+
+mv -f "$stage/data" "$state_dir/data"
+mv -f "$stage/data.cdb" "$state_dir/data.cdb"
+trap - EXIT HUP INT TERM
+rmdir "$stage"
+echo "rgbdns-import-data: validated and activated $DATA_DROP"

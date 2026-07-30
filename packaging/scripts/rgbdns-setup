@@ -13,15 +13,17 @@ options:
   --port PORT               authoritative port (default: 53)
   --allow-nets CIDRS        enable AXFR for these secondary CIDRs
   --query-log BOOL          log each request (default: 1; use 0 to disable)
+  --data-drop FILE          watch an scp destination for primary rgbdns.data
+  --data-drop-owner USER    require data uploads to be owned by USER
   --zone NAME               add a zone to transfer (repeatable)
   --zones "NAME ..."        add a whitespace- or comma-separated zone list
   --zones-drop FILE         watch an scp destination for a one-zone-per-line list
   --zones-drop-owner USER   require uploads to be owned by USER
   --no-start                write configuration without enabling services
 
-The primary data file uses tinydns syntax. A secondary fetches every configured
-zone into one managed data file and refreshes them every five minutes. By
-default, sudo setup watches rgbdns.zones in the invoking user's home directory.
+The primary data file uses tinydns syntax. By default, sudo setup watches
+rgbdns.data for a primary or rgbdns.zones for a secondary in the invoking
+user's home directory.
 EOF
 }
 
@@ -59,6 +61,8 @@ port=53
 allow_nets=
 query_log=1
 data_file=
+data_drop=
+data_drop_owner=${SUDO_USER:-root}
 zones=
 primary=
 zones_drop=
@@ -69,7 +73,7 @@ while [ $# -gt 0 ]; do
     option=$1
     shift
     case $option in
-        --listen-ip|--port|--allow-nets|--query-log|--data|--zone|--zones|--primary|--zones-drop|--zones-drop-owner)
+        --listen-ip|--port|--allow-nets|--query-log|--data|--data-drop|--data-drop-owner|--zone|--zones|--primary|--zones-drop|--zones-drop-owner)
             [ $# -gt 0 ] || die "$option requires a value"
             value=$1
             shift
@@ -79,6 +83,8 @@ while [ $# -gt 0 ]; do
                 --allow-nets) allow_nets=$value ;;
                 --query-log) query_log=$value ;;
                 --data) data_file=$value ;;
+                --data-drop) data_drop=$value ;;
+                --data-drop-owner) data_drop_owner=$value ;;
                 --zone) zones="${zones}${zones:+ }$value" ;;
                 --zones)
                     value=$(printf '%s' "$value" | tr ',' ' ')
@@ -119,6 +125,22 @@ for supplied_zone in $zones; do
     esac
 done
 zones=$normalized_zones
+
+if [ -z "$data_drop" ]; then
+    data_home=$(getent passwd "$data_drop_owner" | cut -d: -f6)
+    [ -n "$data_home" ] ||
+        die "cannot determine home directory for data drop owner: $data_drop_owner"
+    data_drop=$data_home/rgbdns.data
+fi
+case $data_drop in
+    /*) ;;
+    *) die "data drop path must be absolute: $data_drop" ;;
+esac
+case $data_drop in
+    *[!A-Za-z0-9_./-]*) die "data drop path contains unsupported characters: $data_drop" ;;
+esac
+getent passwd "$data_drop_owner" >/dev/null 2>&1 ||
+    die "data drop owner does not exist: $data_drop_owner"
 
 if [ -z "$zones_drop" ]; then
     zones_home=$(getent passwd "$zones_drop_owner" | cut -d: -f6)
@@ -165,11 +187,21 @@ case $role in
         rm -f /etc/rgbdns/secondary.env /etc/rgbdns/zones \
             /etc/rgbdns/zones-drop.env
         rm -rf /etc/systemd/system/rgbdns-zones.path.d
+        write_env /etc/rgbdns/data-drop.env \
+            "DATA_DROP=$data_drop" "DATA_DROP_OWNER=$data_drop_owner"
+        install -d -m 0755 /etc/systemd/system/rgbdns-data.path.d
+        {
+            printf '%s\n' '[Path]' 'PathChanged='
+            printf 'PathChanged=%s\n' "$data_drop"
+        } >/etc/systemd/system/rgbdns-data.path.d/path.conf
+        chmod 0644 /etc/systemd/system/rgbdns-data.path.d/path.conf
         runuser -u rgbdns -- /usr/lib/rgbdns/compile-zone
         ;;
     secondary)
         [ -n "$zones" ] || die "secondary requires at least one --zone NAME"
         [ -n "$primary" ] || die "secondary requires --primary ADDRESS[:PORT]"
+        rm -f /etc/rgbdns/data-drop.env
+        rm -rf /etc/systemd/system/rgbdns-data.path.d
         write_env /etc/rgbdns/secondary.env "PRIMARY=$primary"
         zones_stage=$(mktemp /etc/rgbdns/.zones.XXXXXX)
         trap 'rm -f "$zones_stage"' EXIT HUP INT TERM
@@ -198,16 +230,21 @@ systemctl daemon-reload
 if [ "$role" = secondary ]; then
     systemctl disable --now rgbdns-secondary-sync.timer >/dev/null 2>&1 || true
     systemctl disable --now rgbdns-zones.path >/dev/null 2>&1 || true
+    systemctl disable --now rgbdns-data.path >/dev/null 2>&1 || true
     systemctl start rgbdns-secondary-sync.service
     systemctl enable rgbdns-secondary-sync.timer
     systemctl enable rgbdns-zones.path
 else
     systemctl disable --now rgbdns-secondary-sync.timer >/dev/null 2>&1 || true
     systemctl disable --now rgbdns-zones.path >/dev/null 2>&1 || true
+    systemctl disable --now rgbdns-data.path >/dev/null 2>&1 || true
+    systemctl enable rgbdns-data.path
 fi
 systemctl enable rgbdns-tinydns.service
 systemctl restart rgbdns-tinydns.service
 if [ "$role" = secondary ]; then
     systemctl start rgbdns-secondary-sync.timer
     systemctl start rgbdns-zones.path
+else
+    systemctl start rgbdns-data.path
 fi

@@ -16,7 +16,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.2.1_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.2.2_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -113,6 +113,20 @@ The setup command creates the account if necessary, installs the source as
 `data.cdb` as the service user, reloads systemd, and enables
 `rgbdns-tinydns.service`. Re-running the command safely replaces the managed
 configuration.
+
+Setup also watches `rgbdns.data` in the invoking sudo user's home directory.
+Override the destination with `--data-drop FILE` and
+`--data-drop-owner USER`. Publish edits atomically:
+
+```sh
+scp rgbdns.data primary.example:rgbdns.data.new
+ssh primary.example 'mv rgbdns.data.new rgbdns.data'
+```
+
+`rgbdns-data.path` verifies the file owner, compiles a private staged copy, and
+replaces the live `data` and `data.cdb` only after compilation succeeds. It
+then restarts tinydns. A malformed, partial, or symlinked upload leaves the
+currently served database unchanged.
 
 To validate before starting anything, add `--no-start`, then inspect:
 
@@ -240,16 +254,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.2.1_amd64.deb
+dpkg-deb --info ../rgbdns_0.2.2_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.2.1_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.2.2_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.2.1_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.2.2_amd64.deb
 dpkg-query -W rgbdns
 ```
 

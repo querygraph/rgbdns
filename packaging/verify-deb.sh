@@ -50,7 +50,9 @@ for unit in \
     rgbdns-secondary-sync.service \
     rgbdns-secondary-sync.timer \
     rgbdns-zones-import.service \
-    rgbdns-zones.path
+    rgbdns-zones.path \
+    rgbdns-data-import.service \
+    rgbdns-data.path
 do
     test -f "/lib/systemd/system/$unit"
 done
@@ -59,6 +61,7 @@ for helper in \
     /usr/lib/rgbdns/compile-zone \
     /usr/lib/rgbdns/secondary-sync \
     /usr/lib/rgbdns/import-zones \
+    /usr/lib/rgbdns/import-data \
     /usr/lib/rgbdns/migrate-zones \
     /usr/sbin/rgbdns-setup
 do
@@ -68,5 +71,6 @@ done
 grep -q '/etc/rgbdns/zones' /usr/lib/rgbdns/secondary-sync
 rgbdns-setup --help | grep -q -- '--zones'
 rgbdns-setup --help | grep -q -- '--zones-drop'
+rgbdns-setup --help | grep -q -- '--data-drop'
 rgbdns-setup --help | grep -q -- '--query-log'
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env

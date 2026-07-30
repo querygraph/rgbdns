@@ -44,6 +44,7 @@ jobs:
           packaging/tests/test-secondary-sync.sh
           packaging/tests/test-import-zones.sh
           packaging/tests/test-migrate-zones.sh
+          packaging/tests/test-import-data.sh
 
       - name: Install RPM build dependencies
         run: |

@@ -1,3 +1,10 @@
+rgbdns (0.2.2) unstable; urgency=medium
+
+  * Validate, compile, and atomically activate primary rgbdns.data drops.
+  * Watch the configured primary drop file and restart authority on success.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 30 Jul 2026 11:55:00 -0700
+
 rgbdns (0.2.1) unstable; urgency=medium
 
   * Import validated secondary zone lists from an atomic scp drop.
