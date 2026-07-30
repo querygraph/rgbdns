@@ -5,7 +5,7 @@ rgbdns (0.2.0) unstable; urgency=medium
   * Log UDP, TCP, malformed, refused, class, opcode, and AXFR requests.
   * Enable request logging by default with an explicit QUERY_LOG opt-out.
 
- -- Alexy Khrabrov <deliverable@gmail.com>  Wed, 29 Jul 2026 21:09:02 -0700
+ -- Alexy Khrabrov <deliverable@gmail.com>  Wed, 29 Jul 2026 22:58:16 -0700
 
 rgbdns (0.1.1+deb1) unstable; urgency=medium
 
