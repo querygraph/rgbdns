@@ -51,8 +51,8 @@ sudo zypper --non-interactive install \
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-rpm.sh
-rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-0.1.1-3.x86_64.rpm
-rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-0.1.1-3.x86_64.rpm
+rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.0-1.x86_64.rpm
+rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.0-1.x86_64.rpm
 ```
 
 `build-rpm.sh` creates a clean rpmbuild tree under `dist/rpmbuild`, archives
@@ -77,9 +77,9 @@ gh run download RUN_ID \
 Inspect an artifact before installation:
 
 ```sh
-rpm -K dist/cloud-rpm/rgbdns-0.1.1-3.x86_64.rpm
-rpm -qip dist/cloud-rpm/rgbdns-0.1.1-3.x86_64.rpm
-rpm -qlp dist/cloud-rpm/rgbdns-0.1.1-3.x86_64.rpm
+rpm -K dist/cloud-rpm/rgbdns-0.2.0-1.x86_64.rpm
+rpm -qip dist/cloud-rpm/rgbdns-0.2.0-1.x86_64.rpm
+rpm -qlp dist/cloud-rpm/rgbdns-0.2.0-1.x86_64.rpm
 ```
 
 The development RPM is not repository-signed. `rpm -K` still verifies the
@@ -92,11 +92,11 @@ Copy a locally built package to the EC2 instance:
 
 ```sh
 scp -i ~/.ssh/KEY.pem \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.1.1-3.x86_64.rpm \
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.0-1.x86_64.rpm \
   ec2-user@PUBLIC_ADDRESS:/tmp/
 ssh -i ~/.ssh/KEY.pem ec2-user@PUBLIC_ADDRESS
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.1.1-3.x86_64.rpm
+  /tmp/rgbdns-0.2.0-1.x86_64.rpm
 rpm -q rgbdns
 rpm -V rgbdns
 ```
@@ -246,6 +246,29 @@ sudo systemctl --no-pager --full status rgbdns-tinydns.service
 sudo journalctl -u rgbdns-tinydns.service -b --no-pager
 sudo ss -lntup '( sport = :53 )'
 ```
+
+### Request logs
+
+The authoritative server emits one original-compatible request record to
+stderr for every UDP, TCP, malformed, refused, and AXFR query:
+
+```text
+7f000001:e214:0018 + 0001 fieldnotes.es
+```
+
+The packaged systemd unit sends these untimestamped records to journald:
+
+```sh
+sudo journalctl -fu rgbdns-tinydns.service
+```
+
+The same raw stream can instead feed a daemontools `multilog t` logger, which
+adds TAI64N timestamps and rotation. Names are escaped and each request is
+written as one complete line. Use only one logging sink per service. To
+disable request logs intentionally, pass `--query-log 0` to `rgbdns-setup` or
+set `QUERY_LOG=0` in `/etc/rgbdns/tinydns.env` and restart the service. Query
+logs contain client addresses and requested names, so protect and size their
+retention appropriately.
 
 Do not launch a separate `axfrdns` process. The standalone compatibility
 command is installed, but it cannot own the same TCP address and port.

@@ -12,6 +12,7 @@ options:
   --listen-ip ADDRESS       authoritative listen address (default: 0.0.0.0)
   --port PORT               authoritative port (default: 53)
   --allow-nets CIDRS        enable AXFR for these secondary CIDRs
+  --query-log BOOL          log each request (default: 1; use 0 to disable)
   --zone NAME               add a zone to transfer (repeatable)
   --zones "NAME ..."        add a whitespace- or comma-separated zone list
   --no-start                write configuration without enabling services
@@ -53,6 +54,7 @@ shift
 listen_ip=0.0.0.0
 port=53
 allow_nets=
+query_log=1
 data_file=
 zones=
 primary=
@@ -62,7 +64,7 @@ while [ $# -gt 0 ]; do
     option=$1
     shift
     case $option in
-        --listen-ip|--port|--allow-nets|--data|--zone|--zones|--primary)
+        --listen-ip|--port|--allow-nets|--query-log|--data|--zone|--zones|--primary)
             [ $# -gt 0 ] || die "$option requires a value"
             value=$1
             shift
@@ -70,6 +72,7 @@ while [ $# -gt 0 ]; do
                 --listen-ip) listen_ip=$value ;;
                 --port) port=$value ;;
                 --allow-nets) allow_nets=$value ;;
+                --query-log) query_log=$value ;;
                 --data) data_file=$value ;;
                 --zone) zones="${zones}${zones:+ }$value" ;;
                 --zones)
@@ -89,6 +92,11 @@ case $port in
     *[!0-9]*|'') die "port must be a decimal integer" ;;
 esac
 [ "$port" -ge 1 ] && [ "$port" -le 65535 ] || die "invalid port: $port"
+case $(printf '%s' "$query_log" | tr '[:upper:]' '[:lower:]') in
+    1|true|yes|on) query_log=1 ;;
+    0|false|no|off) query_log=0 ;;
+    *) die "query log must be 1 or 0" ;;
+esac
 
 normalized_zones=
 for zone in $zones; do
@@ -114,11 +122,13 @@ if [ -n "$allow_nets" ]; then
     write_env /etc/rgbdns/tinydns.env \
         "IP=$listen_ip" "PORT=$port" \
         "DATA=/var/lib/rgbdns/tinydns/data.cdb" \
+        "QUERY_LOG=$query_log" \
         "ALLOW_NETS=$allow_nets"
 else
     write_env /etc/rgbdns/tinydns.env \
         "IP=$listen_ip" "PORT=$port" \
-        "DATA=/var/lib/rgbdns/tinydns/data.cdb"
+        "DATA=/var/lib/rgbdns/tinydns/data.cdb" \
+        "QUERY_LOG=$query_log"
 fi
 
 case $role in

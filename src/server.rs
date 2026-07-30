@@ -5,9 +5,133 @@ use crate::{
 };
 use std::{
     collections::{HashMap, HashSet},
-    net::IpAddr,
+    io::Write,
+    net::{IpAddr, SocketAddr},
     sync::Arc,
 };
+
+#[derive(Clone, Copy)]
+struct QueryLogger {
+    enabled: bool,
+}
+
+impl QueryLogger {
+    fn from_env() -> Result<Self> {
+        let enabled = match std::env::var("QUERY_LOG") {
+            Ok(value) => parse_query_log(Some(&value))?,
+            Err(std::env::VarError::NotPresent) => true,
+            Err(std::env::VarError::NotUnicode(_)) => {
+                return Err(Error::Format("invalid QUERY_LOG"));
+            }
+        };
+        Ok(Self { enabled })
+    }
+
+    fn starting(self) {
+        if self.enabled {
+            write_log_line("starting tinydns");
+        }
+    }
+
+    fn request(self, peer: SocketAddr, wire: &[u8], response: Option<&[u8]>) {
+        if self.enabled {
+            write_log_line(&query_log_line(peer, wire, response));
+        }
+    }
+
+    fn axfr(self, peer: SocketAddr, wire: &[u8], accepted: bool) {
+        if self.enabled {
+            write_log_line(&query_log_line_with_code(
+                peer,
+                wire,
+                if accepted { '+' } else { '-' },
+            ));
+        }
+    }
+}
+
+fn parse_query_log(value: Option<&str>) -> Result<bool> {
+    match value.map(str::trim).map(str::to_ascii_lowercase).as_deref() {
+        None | Some("1" | "true" | "yes" | "on") => Ok(true),
+        Some("0" | "false" | "no" | "off") => Ok(false),
+        Some(_) => Err(Error::Format("invalid QUERY_LOG")),
+    }
+}
+
+fn write_log_line(line: &str) {
+    let stderr = std::io::stderr();
+    let mut stderr = stderr.lock();
+    let _ = writeln!(stderr, "{line}");
+}
+
+fn query_log_line(peer: SocketAddr, wire: &[u8], response: Option<&[u8]>) -> String {
+    let Ok(query) = Message::decode(wire) else {
+        return malformed_log_line(peer);
+    };
+    if query.questions.len() != 1 {
+        return malformed_log_line(peer);
+    }
+    let code = if query.flags & 0x8000 != 0 || query.flags & 0x7800 != 0 {
+        'I'
+    } else if query.questions[0].qclass != 1 && query.questions[0].qclass != 255 {
+        'C'
+    } else if response.is_some_and(|wire| wire.get(3).is_some_and(|flags| flags & 0x0f == 5)) {
+        '-'
+    } else {
+        '+'
+    };
+    query_log_line_for_query(peer, &query, code)
+}
+
+fn query_log_line_with_code(peer: SocketAddr, wire: &[u8], code: char) -> String {
+    Message::decode(wire).map_or_else(
+        |_| malformed_log_line(peer),
+        |query| {
+            if query.questions.len() == 1 {
+                query_log_line_for_query(peer, &query, code)
+            } else {
+                malformed_log_line(peer)
+            }
+        },
+    )
+}
+
+fn query_log_line_for_query(peer: SocketAddr, query: &Message, code: char) -> String {
+    let question = &query.questions[0];
+    let display_name = question.name.to_string();
+    let display_name = if display_name == "." {
+        display_name.as_str()
+    } else {
+        display_name.strip_suffix('.').unwrap_or(&display_name)
+    };
+    format!(
+        "{}:{:04x}:{:04x} {code} {:04x} {}",
+        log_ip(peer.ip()),
+        peer.port(),
+        query.id,
+        question.qtype.code(),
+        display_name
+    )
+}
+
+fn malformed_log_line(peer: SocketAddr) -> String {
+    format!("{}:{:04x}:0000 / 0000 .", log_ip(peer.ip()), peer.port())
+}
+
+fn log_ip(address: IpAddr) -> String {
+    match address {
+        IpAddr::V4(address) => address
+            .octets()
+            .iter()
+            .map(|octet| format!("{octet:02x}"))
+            .collect(),
+        IpAddr::V6(address) => address
+            .octets()
+            .iter()
+            .map(|octet| format!("{octet:02x}"))
+            .collect(),
+    }
+}
 
 pub fn respond(zone: &Zone, wire: &[u8], transport_limit: usize) -> Result<Vec<u8>> {
     let resolver = zone
@@ -124,7 +248,7 @@ fn respond_over_transport(
             return r.encode();
         }
     }
-    if question.qclass != 1 {
+    if question.qclass != 1 && question.qclass != 255 {
         r.flags |= 4
     } else {
         let ordinary_lookup = zone_lookup(zone, &question.name, question.qtype, client);
@@ -385,6 +509,7 @@ fn with_tail_records_removed(response: &Message, mut count: usize) -> Message {
 }
 
 pub fn serve(zone: Zone, addr: &str) -> Result<()> {
+    let query_logger = QueryLogger::from_env()?;
     let resolver = zone
         .has_anames()
         .then(crate::aname::Resolver::from_system)
@@ -404,18 +529,22 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
         })
         .transpose()?
         .map(Arc::new);
-    let stream_handler = allowed.map(|allowed| axfr_stream_handler(zone.clone(), allowed));
+    let stream_handler =
+        allowed.map(|allowed| axfr_stream_handler(zone.clone(), allowed, query_logger));
+    query_logger.starting();
     crate::transport::serve(
         addr,
         Arc::new(move |wire, limit, client| {
-            respond_over_transport(
+            let response = respond_over_transport(
                 &zone,
                 resolver.as_deref(),
                 wire,
                 limit,
                 limit <= 4096,
-                Some(client),
-            )
+                Some(client.ip()),
+            );
+            query_logger.request(client, wire, response.as_deref().ok());
+            response
         }),
         stream_handler,
     )
@@ -424,8 +553,9 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
 fn axfr_stream_handler(
     zone: Arc<Zone>,
     allowed: Arc<Vec<ipnet::IpNet>>,
+    query_logger: QueryLogger,
 ) -> Arc<crate::transport::StreamHandler> {
-    Arc::new(move |wire: &[u8], client: IpAddr| {
+    Arc::new(move |wire: &[u8], client: SocketAddr| {
         let Ok(query) = Message::decode(wire) else {
             return Ok(None);
         };
@@ -434,10 +564,13 @@ fn axfr_stream_handler(
         if !is_axfr {
             return Ok(None);
         }
-        if !allowed.iter().any(|network| network.contains(&client)) {
+        if !allowed.iter().any(|network| network.contains(&client.ip())) {
+            query_logger.axfr(client, wire, false);
             return Err(Error::Format("AXFR client is not allowed"));
         }
-        crate::axfr::response_wires(&zone, query).map(Some)
+        let response = crate::axfr::response_wires(&zone, query).map(Some);
+        query_logger.axfr(client, wire, response.is_ok());
+        response
     })
 }
 
@@ -454,8 +587,9 @@ fn serve_sockets(
         .transpose()?
         .map(Arc::new);
     let zone = Arc::new(zone);
+    let query_logger = QueryLogger { enabled: false };
     let stream_handler =
-        allowed.map(|allowed| axfr_stream_handler(zone.clone(), Arc::new(allowed)));
+        allowed.map(|allowed| axfr_stream_handler(zone.clone(), Arc::new(allowed), query_logger));
     crate::transport::serve_sockets(
         udp,
         tcp,
@@ -466,7 +600,7 @@ fn serve_sockets(
                 wire,
                 limit,
                 limit <= 4096,
-                Some(client),
+                Some(client.ip()),
             )
         }),
         stream_handler,
@@ -509,6 +643,98 @@ mod tests {
             });
         }
         message.encode().unwrap()
+    }
+
+    #[test]
+    fn query_logs_match_the_original_tinydns_ipv4_format() {
+        let peer = "127.0.0.1:57876".parse().unwrap();
+        let request = query("fieldnotes.es", RecordType::A, None);
+        let response = respond(
+            &Zone::parse(".fieldnotes.es::a.ns.cron.sh\n").unwrap(),
+            &request,
+            4096,
+        )
+        .unwrap();
+        assert_eq!(
+            query_log_line(peer, &request, Some(&response)),
+            "7f000001:e214:1234 + 0001 fieldnotes.es"
+        );
+
+        let refused = respond(
+            &Zone::parse(".example::ns.example\n").unwrap(),
+            &request,
+            4096,
+        )
+        .unwrap();
+        assert_eq!(
+            query_log_line(peer, &request, Some(&refused)),
+            "7f000001:e214:1234 - 0001 fieldnotes.es"
+        );
+    }
+
+    #[test]
+    fn query_logs_cover_malformed_unimplemented_class_ipv6_and_axfr() {
+        let ipv4 = "192.0.2.1:53".parse().unwrap();
+        assert_eq!(
+            query_log_line(ipv4, &[0, 1, 2], None),
+            "c0000201:0035:0000 / 0000 ."
+        );
+
+        let mut unimplemented = Message::decode(&query("example", RecordType::Aaaa, None)).unwrap();
+        unimplemented.flags |= 0x0800;
+        let unimplemented = unimplemented.encode().unwrap();
+        assert_eq!(
+            query_log_line(ipv4, &unimplemented, None),
+            "c0000201:0035:1234 I 001c example"
+        );
+
+        let mut other_class = Message::decode(&query("example", RecordType::A, None)).unwrap();
+        other_class.questions[0].qclass = 3;
+        let other_class = other_class.encode().unwrap();
+        assert_eq!(
+            query_log_line(ipv4, &other_class, None),
+            "c0000201:0035:1234 C 0001 example"
+        );
+
+        let ipv6 = "[2001:db8::1]:4660".parse().unwrap();
+        let axfr = query("example", RecordType::Axfr, None);
+        assert_eq!(
+            query_log_line_with_code(ipv6, &axfr, '+'),
+            "20010db8000000000000000000000001:1234:1234 + 00fc example"
+        );
+    }
+
+    #[test]
+    fn query_log_names_cannot_inject_lines() {
+        let peer = "127.0.0.1:53".parse().unwrap();
+        let request = query("line\\010break.example", RecordType::Txt, None);
+        let line = query_log_line(peer, &request, None);
+        assert_eq!(line, "7f000001:0035:1234 + 0010 line\\010break.example");
+        assert!(!line.contains('\n'));
+        assert!(!line.contains('\r'));
+    }
+
+    #[test]
+    fn query_logging_defaults_on_and_has_an_explicit_opt_out() {
+        assert!(parse_query_log(None).unwrap());
+        for value in ["1", "true", "YES", "on"] {
+            assert!(parse_query_log(Some(value)).unwrap());
+        }
+        for value in ["0", "false", "NO", "off"] {
+            assert!(!parse_query_log(Some(value)).unwrap());
+        }
+        assert!(parse_query_log(Some("sometimes")).is_err());
+    }
+
+    #[test]
+    fn any_class_retains_original_tinydns_behavior() {
+        let zone = Zone::parse(".example::ns.example\n+www.example:192.0.2.1\n").unwrap();
+        let mut request = Message::decode(&query("www.example", RecordType::A, None)).unwrap();
+        request.questions[0].qclass = 255;
+        let response =
+            Message::decode(&respond(&zone, &request.encode().unwrap(), 4096).unwrap()).unwrap();
+        assert_eq!(response.flags & 0x000f, 0);
+        assert_eq!(response.answers.len(), 1);
     }
 
     #[test]

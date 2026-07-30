@@ -17,7 +17,7 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.1.0 as built on 2026-07-23.
+version 0.2.0 as built on 2026-07-29.
 
 # The problem DNS solves
 
@@ -713,6 +713,28 @@ shape, collects records until the closing SOA, renders them in tinydns source
 form, writes a temporary output, and atomically installs the completed file.
 The temporary/final path pair prevents a failed transfer from replacing usable
 data with a partial zone.
+
+## One request, one portable log record
+
+The original tinydns wrote one compact record for every request. rgbdns keeps
+that operational contract. An IPv4 record has this shape:
+
+```text
+7f000001:e214:0018 + 0001 fieldnotes.es
+```
+
+The client address, source port, DNS ID, and query type are hexadecimal. The
+result marker distinguishes an attempted answer (`+`), refused authority or
+AXFR (`-`), an unimplemented request (`I`), an unsupported class (`C`), and a
+malformed request (`/`). IPv6 uses the same format with a 32-hex-digit address.
+Query names are escaped so packet data cannot inject additional log lines.
+
+The record goes to stderr without a timestamp. The packaged systemd service
+therefore sends it to journald, while a daemontools service can send the exact
+same stream through `multilog t` for TAI64N timestamps and file rotation.
+`QUERY_LOG=1` is the default. `QUERY_LOG=0` is an explicit opt-out for an
+installation whose traffic, retention, or privacy policy forbids full query
+logging.
 
 # The rgbdns program family
 

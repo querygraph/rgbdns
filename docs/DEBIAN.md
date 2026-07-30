@@ -16,7 +16,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.1.1_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.2.0_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -240,16 +240,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.1.1_amd64.deb
+dpkg-deb --info ../rgbdns_0.2.0_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.1.1_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.2.0_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.1.1_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.2.0_amd64.deb
 dpkg-query -W rgbdns
 ```
 
@@ -342,6 +342,35 @@ sudo systemctl --no-pager --full status rgbdns-tinydns.service
 sudo journalctl -u rgbdns-tinydns.service -b --no-pager
 sudo ss -lntup '( sport = :53 )'
 ```
+
+### Request logs
+
+`tinydns` logs every UDP, TCP, malformed, refused, and AXFR request by default.
+The raw stderr format is compatible with the original tinydns stream:
+
+```text
+7f000001:e214:0018 + 0001 fieldnotes.es
+```
+
+The address, source port, DNS ID, and query type are hexadecimal. Result
+markers are `+` for an attempted answer, `-` for refused authority or AXFR,
+`I` for an unimplemented request, `C` for an unsupported class, and `/` for a
+malformed request. Names are escaped and each request is one line. rgbdns does
+not add a timestamp.
+
+Under the packaged service, systemd captures stderr:
+
+```sh
+sudo journalctl -fu rgbdns-tinydns.service
+```
+
+The same stream can be directed to `multilog t` in a daemontools service,
+which adds TAI64N timestamps and rotates files. Use only one logging sink for
+a service. To disable request logs deliberately, pass `--query-log 0` to
+`rgbdns-setup`, or set `QUERY_LOG=0` in `/etc/rgbdns/tinydns.env` and restart
+the service. Full query logs contain client addresses and requested names;
+size retention for traffic volume and protect them as sensitive operational
+data.
 
 There is deliberately no `rgbdns-axfrdns.service` in this package. The
 standalone `axfrdns` command remains part of the djbdns-compatible tool suite,

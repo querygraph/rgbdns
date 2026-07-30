@@ -1,6 +1,6 @@
 Name:           rgbdns
-Version:        0.1.1
-Release:        5%{?dist}
+Version:        0.2.0
+Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
 URL:            https://github.com/querygraph/rgbdns
@@ -93,6 +93,10 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Wed Jul 29 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.2.0-1
+- Restore original-compatible per-request tinydns logging
+- Add QUERY_LOG opt-out for journald and multilog deployments
+
 * Wed Jul 29 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.1.1-5
 - Isolate refresh failures with per-zone last-known-good snapshots
 

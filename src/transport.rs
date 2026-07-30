@@ -3,14 +3,15 @@
 use crate::Result;
 use std::{
     io::{Read, Write},
-    net::{IpAddr, TcpListener, TcpStream, UdpSocket},
+    net::{SocketAddr, TcpListener, TcpStream, UdpSocket},
     sync::Arc,
     thread,
     time::Duration,
 };
 
-pub(crate) type Handler = dyn Fn(&[u8], usize, IpAddr) -> Result<Vec<u8>> + Send + Sync;
-pub(crate) type StreamHandler = dyn Fn(&[u8], IpAddr) -> Result<Option<Vec<Vec<u8>>>> + Send + Sync;
+pub(crate) type Handler = dyn Fn(&[u8], usize, SocketAddr) -> Result<Vec<u8>> + Send + Sync;
+pub(crate) type StreamHandler =
+    dyn Fn(&[u8], SocketAddr) -> Result<Option<Vec<Vec<u8>>>> + Send + Sync;
 
 const TCP_WORKERS: usize = 32;
 const TCP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -48,7 +49,7 @@ pub(crate) fn serve_sockets(
                     continue;
                 };
                 let client = match stream.peer_addr() {
-                    Ok(peer) => peer.ip(),
+                    Ok(peer) => peer,
                     Err(_) => continue,
                 };
                 let _ = stream.set_read_timeout(Some(TCP_TIMEOUT));
@@ -67,7 +68,7 @@ fn serve_udp(socket: UdpSocket, handler: &Arc<Handler>) {
     let mut packet = [0; u16::MAX as usize];
     loop {
         if let Ok((length, peer)) = socket.recv_from(&mut packet)
-            && let Ok(response) = handler(&packet[..length], 4096, peer.ip())
+            && let Ok(response) = handler(&packet[..length], 4096, peer)
         {
             let _ = socket.send_to(&response, peer);
         }
@@ -76,7 +77,7 @@ fn serve_udp(socket: UdpSocket, handler: &Arc<Handler>) {
 
 fn serve_tcp_connection(
     stream: &mut TcpStream,
-    client: IpAddr,
+    client: SocketAddr,
     handler: &Arc<Handler>,
     stream_handler: Option<&Arc<StreamHandler>>,
 ) {

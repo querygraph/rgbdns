@@ -63,3 +63,5 @@ done
 
 grep -q 'ZONES is required' /usr/lib/rgbdns/secondary-sync
 rgbdns-setup --help | grep -q -- '--zones'
+rgbdns-setup --help | grep -q -- '--query-log'
+grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env

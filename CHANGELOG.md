@@ -7,6 +7,9 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ### Added
 
+- Original tinydns-compatible per-request logging for UDP, TCP, malformed,
+  refused, class, opcode, and AXFR requests, emitted as untimestamped stderr
+  lines for journald or `multilog`, with a default-on `QUERY_LOG` control.
 - Multi-zone secondary synchronization from a single primary, with repeatable
   setup arguments, per-zone last-known-good snapshots, and atomic combined CDB
   activation.

@@ -10,5 +10,5 @@ subject: Domain Name System architecture and the rgbdns implementation
 description: >-
   A ground-up explanation of DNS followed by a guided tour of rgbdns, a
   memory-safe Rust reimplementation of the djbdns suite.
-identifier: urn:rgbdns:book:0.1.1
+identifier: urn:rgbdns:book:0.2.0
 ...

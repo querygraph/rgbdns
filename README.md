@@ -54,6 +54,12 @@ the rotation threshold and retained-file count. Daemons continue to write
 diagnostics to stderr, allowing the same binaries to work under daemontools,
 systemd, containers, or another supervisor.
 
+`tinydns` also writes one original-compatible request record to stderr by
+default. The raw record deliberately has no timestamp, so systemd-journald or
+`multilog t` can timestamp and rotate the same stream. Set `QUERY_LOG=0`, or
+pass `rgbdns-setup --query-log 0`, only when per-request logging is
+intentionally disabled.
+
 ## Linux packages and systemd
 
 The repository includes native Debian and openSUSE RPM packaging, hardened systemd services, and
@@ -74,7 +80,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.1.1_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.2.0_$(dpkg --print-architecture).deb
 ```
 
 On openSUSE Leap 16.0, build the RPM with:
@@ -84,7 +90,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.1.1-3.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.0-1.x86_64.rpm
 ```
 
 ## Book

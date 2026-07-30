@@ -1,11 +1,14 @@
-.TH TINYDNS 1 "2026-07-23" "rgbdns 0.1.1" "User Commands"
+.TH TINYDNS 1 "2026-07-23" "rgbdns 0.2.0" "User Commands"
 .SH NAME
 tinydns \- authoritative DNS server
 .SH SYNOPSIS
 .B tinydns
 .SH DESCRIPTION
 Loads a compiled tinydns zone database and serves authoritative DNS over UDP
-and TCP.
+and TCP. By default it writes one original-compatible, untimestamped request
+record to standard error for each UDP, TCP, and AXFR query. A supervisor may
+send this stream to the system journal or to
+.BR multilog (1).
 .SH ENVIRONMENT
 .TP
 .B DATA
@@ -14,6 +17,16 @@ Database path (default: data.cdb).
 .B IP, PORT
 Listen address and port (defaults: 0.0.0.0 and 53).
 .TP
+.B QUERY_LOG
+Enable per-request logging (default: 1). Values 0, false, no, and off disable
+it. Log records use hexadecimal client address, port, request ID, and query
+type fields followed by the escaped query name. The result markers are + for
+an attempted answer, - for refused authority or AXFR, I for an unimplemented
+request, C for an unsupported class, and / for a malformed request. Timestamps
+are deliberately omitted so journald or
+.B multilog t
+can add them.
+.TP
 .B DNSCACHEIP
 Comma-separated recursive resolver addresses used to refresh ANAME targets.
 If unset, nameservers are read from
@@ -21,4 +34,5 @@ If unset, nameservers are read from
 .SH SEE ALSO
 .BR tinydns-data (1),
 .BR tinydns-get (1),
-.BR tinydns-conf (1)
+.BR tinydns-conf (1),
+.BR multilog (1)

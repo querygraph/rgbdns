@@ -1,4 +1,4 @@
-.TH RGBDNS-SETUP 8 "2026-07-26" "rgbdns 0.1.1" "System Administration"
+.TH RGBDNS-SETUP 8 "2026-07-26" "rgbdns 0.2.0" "System Administration"
 .SH NAME
 rgbdns-setup \- configure a packaged rgbdns primary or secondary
 .SH SYNOPSIS
@@ -41,6 +41,10 @@ Primary server used by a secondary.
 .BI --allow-nets " cidrs"
 Enable integrated AXFR for these comma-separated client networks. Transfers
 use the authoritative TCP address and port.
+.TP
+.BI --query-log " bool"
+Enable original-compatible per-request logging (default: 1). Use 0 to disable
+it on a deliberately unlogged deployment.
 .TP
 .B --no-start
 Write configuration without enabling or starting services.

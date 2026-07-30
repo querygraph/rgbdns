@@ -11,8 +11,11 @@ fn main() {
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let data = std::env::var("DATA").unwrap_or_else(|_| "data.cdb".into());
     let database = Arc::new(Database::from_file(data)?);
-    let handler =
-        Arc::new(move |wire: &[u8], limit: usize, client| database.respond(wire, limit, client));
+    let handler = Arc::new(
+        move |wire: &[u8], limit: usize, client: std::net::SocketAddr| {
+            database.respond(wire, limit, client.ip())
+        },
+    );
     let ip = std::env::var("IP").unwrap_or_else(|_| "0.0.0.0".into());
     let port = std::env::var("PORT").unwrap_or_else(|_| "53".into());
     let address = rgbdns::socket_address(&ip, &port)?;
