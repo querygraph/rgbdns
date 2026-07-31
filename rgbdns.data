@@ -26,3 +26,9 @@ Zfieldnotes.es:a.ns.cron.sh:hostmaster.fieldnotes.es:2026072902:16384:2048:10485
 # Website and wildcard aliases observed in the currently published zone.
 +fieldnotes.es:52.10.53.234:3600
 C*.fieldnotes.es:fieldnotes.es:3600
+
+# Private ANAME-over-AXFR test zone; queried directly, not delegated publicly.
+Zaname-axfr.test:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&aname-axfr.test::a.ns.cron.sh:3600
+&aname-axfr.test::b.ns.cron.sh:3600
+Aaname-axfr.test:publication.ghost.io:300

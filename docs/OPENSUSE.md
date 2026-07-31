@@ -438,12 +438,23 @@ Upgrade a locally supplied RPM with:
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
   /tmp/rgbdns-NEW_VERSION.x86_64.rpm
-sudo systemctl restart rgbdns-tinydns
 rpm -V rgbdns
 ```
 
 The `%config(noreplace)` environment file is preserved across upgrades. Zone
-state and `/root/cron.sh.data` are not package payloads.
+state and `/root/cron.sh.data` are not package payloads. Beginning with 0.3.3,
+an upgrade detects an existing configured role, restarts `rgbdns-tinydns`,
+and restores that role's path and timer units. A fresh unconfigured install
+remains inactive until `rgbdns-setup` records a role.
+
+Verify the packaged lifecycle after an upgrade:
+
+```sh
+systemctl is-active rgbdns-tinydns.service
+systemctl status rgbdns-data.path rgbdns-zones.path \
+  rgbdns-secondary-sync.timer --no-pager
+sudo ss -lntup '( sport = :53 )'
+```
 
 Stop and remove the software without deleting configuration or zone state:
 

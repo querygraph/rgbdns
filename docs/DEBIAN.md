@@ -630,11 +630,23 @@ zone SOA, and that TCP and UDP agree.
 
 ## Upgrades, removal, and troubleshooting
 
-Package upgrades preserve `/etc/rgbdns/tinydns.env` as a conffile and do not
-automatically enable a service. Managed zone data and optional role files live
-outside the package payload. Removing the package stops its units but preserves
-configuration and zone state; purge or remove those files explicitly only
-after taking a backup.
+Package upgrades preserve `/etc/rgbdns/tinydns.env` as a conffile. Beginning
+with 0.3.3, an upgrade detects an existing configured role, restarts
+`rgbdns-tinydns`, and restores that role's path and timer units. A fresh
+unconfigured installation still starts nothing until `rgbdns-setup` records a
+role. Managed zone data and optional role files live outside the package
+payload. Removing the package stops its units but preserves configuration and
+zone state; purge or remove those files explicitly only after taking a backup.
+
+After upgrading a configured host, verify rather than manually reconstructing
+unit state:
+
+```sh
+systemctl is-active rgbdns-tinydns.service
+systemctl status rgbdns-data.path rgbdns-zones.path \
+  rgbdns-secondary-sync.timer --no-pager
+sudo ss -lntup '( sport = :53 )'
+```
 
 Common failures:
 

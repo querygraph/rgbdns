@@ -563,11 +563,14 @@ semantics across text and CDB operation without teaching ordinary DNS clients
 about a private wire format.
 
 Standard AXFR has no interoperable way to describe this private policy.
-rgbdns therefore does not emit ANAME metadata in AXFR. An independently
-configured secondary needs the same ANAME source directive, while a
-conventional secondary can only serve address snapshots supplied through an
-external materialization workflow. Operators should account for that
-difference before treating ANAME zones as ordinary transferable zones.
+rgbdns therefore emits no ANAME metadata to an ordinary AXFR client. Upgraded
+rgbdns peers can explicitly negotiate the experimental `RGA1` extension: the
+requester sends EDNS option 65001 and the primary returns validated
+private-use TYPE65401 records only for that transfer. The receiver restores
+the source directive and resolves the target independently. A conventional
+secondary still receives only standard DNS records and cannot reproduce
+ANAME behavior. Operators must delegate an ANAME-backed zone only to upgraded
+rgbdns peers unless they materialize standard A and AAAA records instead.
 
 ## CDB: compile once, read predictably
 
@@ -1280,6 +1283,38 @@ walkthrough contains package download and installation, AWS rules, BuddyNS,
 delegation, upgrades, complete verification, and troubleshooting commands for
 this exact deployment.
 
+For a deployment-level ANAME transfer proof, add an undelegated reserved test
+zone to the primary source:
+
+```text
+Zaname-axfr.test:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&aname-axfr.test::a.ns.cron.sh:3600
+&aname-axfr.test::b.ns.cron.sh:3600
+Aaname-axfr.test:publication.ghost.io:300
+```
+
+Publish the complete primary data atomically, add `aname-axfr.test` to the
+complete secondary drop list, and publish that list atomically. On the
+secondary, this line proves negotiated metadata survived AXFR:
+
+```sh
+sudo grep '^Aaname-axfr\.test' \
+  /var/lib/rgbdns/tinydns/secondary-zones/aname-axfr.test.data
+```
+
+Normal queries to each public authority must return standard authoritative A
+or AAAA answers with no CNAME and a TTL no greater than 300. Run the standard
+AXFR privacy check from the secondary or another authorized VPC host:
+
+```sh
+dig @172.31.60.189 aname-axfr.test AXFR |
+  grep -E 'TYPE65401|RGA1|publication\.ghost\.io'
+```
+
+No output is expected. The private `172.31.60.189` address is not reachable
+from an ordinary workstation outside AWS, and the public AXFR endpoint should
+remain limited to explicitly authorized source addresses.
+
 ### Obtain and install the packages
 
 The GitHub Actions workflows publish architecture-specific artifacts. They are
@@ -1723,8 +1758,6 @@ Debian package with `apt install /path/package.deb` and an RPM with:
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
   /path/to/rgbdns-VERSION-RELEASE.x86_64.rpm
-sudo systemctl daemon-reload
-sudo systemctl start rgbdns-secondary-sync.service
 sudo rpm -V rgbdns
 ```
 
