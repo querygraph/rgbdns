@@ -45,12 +45,16 @@ grep -q '/etc/rgbdns/zones' \
 getent passwd rgbdns
 getent group rgbdns
 test "$(stat -c %U:%G /var/lib/rgbdns/tinydns)" = rgbdns:rgbdns
+test "$(stat -c %U:%G /etc/rgbdns)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns)" = 750
+test "$(stat -c %U:%G /etc/rgbdns/tinydns.env)" = root:rgbdns
 test "$(stat -c %a /etc/rgbdns/tinydns.env)" = 640
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
 grep -q 'enable --now rgbdns-data.path' \
     /usr/lib/rgbdns/restore-role-units
 grep -q 'enable --now rgbdns-secondary-sync.timer' \
     /usr/lib/rgbdns/restore-role-units
+! grep -Fq ': >"$stage"' /usr/lib/rgbdns/import-zones
 systemd-analyze --man=no verify \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \

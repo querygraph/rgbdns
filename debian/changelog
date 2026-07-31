@@ -1,3 +1,10 @@
+rgbdns (0.3.2) unstable; urgency=medium
+
+  * Preserve rgbdns group access to packaged configuration on upgrade.
+  * Avoid reopening an already-created zone-list staging file.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 30 Jul 2026 23:40:00 -0700
+
 rgbdns (0.3.1) unstable; urgency=medium
 
   * Restore the configured primary or secondary picker units on package

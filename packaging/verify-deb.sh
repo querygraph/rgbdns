@@ -75,7 +75,11 @@ rgbdns-setup --help | grep -q -- '--zones-drop'
 rgbdns-setup --help | grep -q -- '--data-drop'
 rgbdns-setup --help | grep -q -- '--query-log'
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
+test "$(stat -c %U:%G /etc/rgbdns)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns)" = 750
+test "$(stat -c %U:%G /etc/rgbdns/tinydns.env)" = root:rgbdns
 grep -q 'enable --now rgbdns-data.path' \
     /usr/lib/rgbdns/restore-role-units
 grep -q 'enable --now rgbdns-secondary-sync.timer' \
     /usr/lib/rgbdns/restore-role-units
+! grep -Fq ': >"$stage"' /usr/lib/rgbdns/import-zones

@@ -32,7 +32,6 @@ mkdir -p "$zones_dir"
 stage=$(mktemp "$zones_dir/.zones.XXXXXX")
 trap 'rm -f "$stage"' EXIT HUP INT TERM
 umask 027
-: >"$stage"
 
 line_number=0
 while IFS= read -r line || [ -n "$line" ]; do

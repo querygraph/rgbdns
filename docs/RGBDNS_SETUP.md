@@ -1,6 +1,6 @@
 # End-to-end rgbdns setup: `fieldnotes.es`
 
-This walkthrough deploys rgbdns 0.3.1 on two AWS EC2 instances and retains
+This walkthrough deploys rgbdns 0.3.2 on two AWS EC2 instances and retains
 BuddyNS as an additional secondary network. It covers installation, initial
 role configuration, authoritative data, AXFR, atomic primary and secondary
 updates, verification, upgrades, and recovery.
@@ -118,12 +118,12 @@ gh run download "$RPM_RUN" \
   -D "$HOME/rgbdns-rpm"
 ```
 
-The 0.3.1 artifacts are:
+The 0.3.2 artifacts are:
 
 ```text
-rgbdns_0.3.1_amd64.deb
-RPMS/x86_64/rgbdns-0.3.1-1.x86_64.rpm
-SRPMS/rgbdns-0.3.1-1.src.rpm
+rgbdns_0.3.2_amd64.deb
+RPMS/x86_64/rgbdns-0.3.2-1.x86_64.rpm
+SRPMS/rgbdns-0.3.2-1.src.rpm
 ```
 
 ## 4. Install the Debian package on the primary
@@ -131,14 +131,14 @@ SRPMS/rgbdns-0.3.1-1.src.rpm
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-deb/rgbdns_0.3.1_amd64.deb" \
+scp "$HOME/rgbdns-deb/rgbdns_0.3.2_amd64.deb" \
   bitnami@52.10.53.234:/tmp/
 ```
 
 On the primary:
 
 ```sh
-sudo apt install /tmp/rgbdns_0.3.1_amd64.deb
+sudo apt install /tmp/rgbdns_0.3.2_amd64.deb
 sudo systemctl daemon-reload
 dpkg-query -W -f='${Package} ${Version}\n' rgbdns
 getent passwd rgbdns
@@ -160,7 +160,7 @@ SUSE_USER=ec2-user
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.1-1.x86_64.rpm" \
+scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.2-1.x86_64.rpm" \
   "$SUSE_USER"@52.38.177.160:/tmp/
 ```
 
@@ -168,7 +168,7 @@ On the secondary:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.3.1-1.x86_64.rpm
+  /tmp/rgbdns-0.3.2-1.x86_64.rpm
 sudo systemctl daemon-reload
 rpm -q rgbdns
 sudo rpm -V rgbdns
@@ -380,7 +380,7 @@ SubState=dead
 
 ## 10. Use ANAME only between upgraded rgbdns peers
 
-rgbdns 0.3.1 preserves private ANAME directives when both AXFR peers run
+rgbdns 0.3.2 preserves private ANAME directives when both AXFR peers run
 rgbdns. For an apex hosted by Ghost, the primary source can contain:
 
 ```text

@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.3.1
+Version:        0.3.2
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -75,7 +75,9 @@ getent passwd rgbdns >/dev/null 2>&1 || \
 exit 0
 
 %post
+install -d -o root -g rgbdns -m 0750 %{_sysconfdir}/rgbdns
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
+chown root:rgbdns %{_sysconfdir}/rgbdns/tinydns.env
 chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_prefix}/lib/rgbdns/migrate-zones
 %service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path
@@ -100,8 +102,8 @@ fi
 %{_prefix}/lib/rgbdns/import-data
 %{_prefix}/lib/rgbdns/migrate-zones
 %{_prefix}/lib/rgbdns/restore-role-units
-%attr(0750,root,root) %dir %{_sysconfdir}/rgbdns
-%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
+%attr(0750,root,rgbdns) %dir %{_sysconfdir}/rgbdns
+%attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
 %{_unitdir}/rgbdns-tinydns.service
 %{_unitdir}/rgbdns-secondary-sync.service
 %{_unitdir}/rgbdns-secondary-sync.timer
@@ -113,6 +115,10 @@ fi
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.2-1
+- Preserve rgbdns group access to configuration during RPM upgrades
+- Avoid reopening the already-created zone-list staging file
+
 * Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.1-1
 - Restore configured primary or secondary picker units on package upgrade
 
