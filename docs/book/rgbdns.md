@@ -2470,3 +2470,928 @@ Implementation and operational references:
 - runit benefits: <https://smarden.org/runit/benefits.html>
 - systemd project documentation: <https://systemd.io/>
 - Hickory DNS: <https://hickory-dns.org/>
+
+# Appendix C: Submitted Internet-Draft: ANAME and Zone Transfer
+
+The following is the complete publication text of
+`draft-khrabrov-dnsop-aname-axfr-00`, submitted on 30 July 2026. The live
+Datatracker record is
+<https://datatracker.ietf.org/doc/draft-khrabrov-dnsop-aname-axfr/>. It is an
+active individual Internet-Draft—a work in progress—not an approved RFC or an
+IETF endorsement. Pagination form-feed characters from the submitted text
+artifact have been rendered as blank lines; the words and page furniture are
+otherwise reproduced in full.
+
+~~~~ text
+
+
+
+
+Domain Name System Operations                                A. Khrabrov
+Internet-Draft                                                QueryGraph
+Intended status: Standards Track                            30 July 2026
+Expires: 31 January 2027
+
+
+         Address-specific DNS Aliases (ANAME) and Zone Transfer
+                   draft-khrabrov-dnsop-aname-axfr-00
+
+Abstract
+
+   This document defines the ANAME DNS resource record.  ANAME provides
+   name-to-name indirection for address queries while allowing other
+   resource record types to exist at the same owner name.  It is
+   therefore usable at a zone apex.
+
+   This document also defines authoritative processing, TTL and failure
+   behavior, DNSSEC considerations, and interoperable transport of ANAME
+   records in full and incremental zone transfers.  In particular, each
+   ANAME-capable authoritative server resolves the transferred target
+   independently.  This avoids treating transient, synthesized address
+   records as the portable source of zone data.
+
+Discussion Venue
+
+   This note is to be removed before publishing as an RFC.
+
+   Source for this draft and an issue tracker are available at
+   https://github.com/querygraph/rgbdns/tree/master/ietf.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 31 January 2027.
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 1]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Requirements Language . . . . . . . . . . . . . . . . . . . .   3
+   3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   4
+   4.  The ANAME Resource Record . . . . . . . . . . . . . . . . . .   4
+     4.1.  Presentation and Wire Format  . . . . . . . . . . . . . .   4
+     4.2.  Cardinality and Coexistence . . . . . . . . . . . . . . .   5
+   5.  Target Resolution and Address Synthesis . . . . . . . . . . .   5
+     5.1.  Resolution Timing and Caching . . . . . . . . . . . . . .   6
+     5.2.  Negative Answers and Failure  . . . . . . . . . . . . . .   6
+   6.  Query Processing  . . . . . . . . . . . . . . . . . . . . . .   6
+     6.1.  A and AAAA Queries  . . . . . . . . . . . . . . . . . . .   6
+     6.2.  ANAME Queries . . . . . . . . . . . . . . . . . . . . . .   7
+     6.3.  Other Query Types and Delegations . . . . . . . . . . . .   7
+   7.  Zone Transfer . . . . . . . . . . . . . . . . . . . . . . . .   7
+     7.1.  Native AXFR . . . . . . . . . . . . . . . . . . . . . . .   7
+     7.2.  Native IXFR . . . . . . . . . . . . . . . . . . . . . . .   8
+     7.3.  Capability Signaling  . . . . . . . . . . . . . . . . . .   8
+     7.4.  Transition with ANAME-oblivious Secondaries . . . . . . .   8
+     7.5.  Transfer Authentication . . . . . . . . . . . . . . . . .   9
+   8.  Examples  . . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     8.1.  Native Primary and Secondary  . . . . . . . . . . . . . .   9
+     8.2.  Changing the Target . . . . . . . . . . . . . . . . . . .  10
+     8.3.  Legacy Materialization  . . . . . . . . . . . . . . . . .  10
+   9.  DNSSEC  . . . . . . . . . . . . . . . . . . . . . . . . . . .  10
+   10. Operational Considerations  . . . . . . . . . . . . . . . . .  11
+     10.1.  Multi-provider Consistency . . . . . . . . . . . . . . .  11
+     10.2.  Monitoring . . . . . . . . . . . . . . . . . . . . . . .  11
+   11. Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+   13. Implementation and Deployment Experience  . . . . . . . . . .  13
+   14. Changes from draft-ietf-dnsop-aname-04  . . . . . . . . . . .  13
+   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  14
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 2]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   16. Normative References  . . . . . . . . . . . . . . . . . . . .  14
+   17. Informative References  . . . . . . . . . . . . . . . . . . .  15
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  16
+
+1.  Introduction
+
+   A CNAME record redirects all queries at its owner name and, with
+   limited DNSSEC exceptions, cannot coexist with other data.  A zone
+   apex necessarily has SOA and NS records, so a CNAME cannot provide
+   portable apex indirection.  Static A and AAAA records do not solve
+   the operational problem when a hosting or content-delivery provider
+   controls a dynamic set of addresses.
+
+   DNS hosting systems have independently deployed solutions called
+   ALIAS, ANAME, apex alias, Route 53 alias, and CNAME flattening.
+   Their common behavior is to resolve a configured target and answer
+   the owner's A and AAAA queries using the target's addresses.  Their
+   control data, transfer behavior, failure behavior, and TTL policies
+   differ.
+
+   Cloudflare describes CNAME flattening as following a CNAME chain and
+   returning the final addresses rather than the CNAME
+   [CLOUDFLARE-FLATTENING].  DNSimple describes its ALIAS as a dynamic
+   A/AAAA lookup performed by its authoritative service
+   [DNSIMPLE-ALIAS].  Amazon Route 53 alias records can be placed at an
+   apex but are restricted to selected AWS resources and records
+   [ROUTE53-ALIAS].  IBM NS1 documents an authoritative ALIAS pseudo-
+   record that is not included in outgoing zone transfers [NS1-ALIAS].
+   PowerDNS can either transfer its private ALIAS representation or
+   expand it to addresses, with explicit warnings about refresh and
+   serial-number behavior [POWERDNS-ALIAS].
+
+   This specification replaces those non-portable control-plane
+   differences with one RR type and defines its zone-transfer behavior.
+   It builds on the expired DNSOP ANAME proposal [I-D.ietf-dnsop-aname].
+   The principal change is that the ANAME RR itself is the portable zone
+   data: it is carried by AXFR and IXFR, and every capable authoritative
+   server resolves it.  Synthesized address RRsets are derived state,
+   not a substitute for transferring the ANAME.
+
+2.  Requirements Language
+
+   The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD,
+   SHOULD NOT, RECOMMENDED, NOT RECOMMENDED, MAY, and OPTIONAL in this
+   document are to be interpreted as described in BCP 14 [RFC2119]
+   [RFC8174] when, and only when, they appear in all capitals, as shown
+   here.
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 3]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+3.  Terminology
+
+   This document uses DNS terminology from [RFC9499].
+
+   Address RRset:  An RRset of type A or AAAA.
+
+   ANAME owner:  The owner name of an ANAME RR.
+
+   ANAME target:  The domain name carried in ANAME RDATA.
+
+   Sibling address RRset:  An A or AAAA RRset at the ANAME owner.
+
+   Target address RRset:  The terminal A or AAAA RRset obtained after
+      resolving the ANAME target and following permitted CNAME or ANAME
+      links.
+
+   Flattening:  Producing an address RRset at the ANAME owner from a
+      target address RRset.
+
+   Native secondary:  An authoritative secondary that understands ANAME,
+      receives it in zone transfer, and performs flattening
+      independently.
+
+   Materializing secondary:  An ANAME-oblivious secondary that serves
+      address RRsets generated by the primary.  This is a transition
+      arrangement and has additional consistency requirements.
+
+4.  The ANAME Resource Record
+
+   ANAME has RR TYPE value TBD1.  Its mnemonic is ANAME.
+
+4.1.  Presentation and Wire Format
+
+   The presentation format is:
+
+   owner.example.  300  IN  ANAME  target.example.net.
+
+   The RDATA consists of exactly one domain name, the ANAME target.  Its
+   wire encoding is the DNS name wire format from [RFC1035].  Name
+   compression MUST NOT be used within ANAME RDATA, consistent with
+   [RFC3597].  Relative names in a master file are resolved by the
+   master-file parser in the same manner as CNAME targets.
+
+
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 4]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+4.2.  Cardinality and Coexistence
+
+   An ANAME RRset MUST contain exactly one record.  An ANAME MUST NOT
+   coexist at the same owner with CNAME or another RR type whose own
+   rules prohibit coexistence.  ANAME MAY coexist with SOA, NS, MX, TXT,
+   CAA, and other ordinary types.
+
+   Authoritative zone configuration MUST NOT contain administrator-
+   managed sibling A or AAAA RRsets at an ANAME owner.  Address RRsets
+   generated by the procedures in this document are derived state and
+   are not independent zone content.
+
+   Wildcard ANAME records are permitted only if an implementation
+   applies the wildcard rules of [RFC4592] before flattening.
+   Implementations that cannot preserve those rules MUST reject wildcard
+   ANAME configuration.
+
+5.  Target Resolution and Address Synthesis
+
+   An ANAME-capable authoritative server performs the following
+   procedure independently for A and AAAA:
+
+   1.  Resolve the ANAME target using a recursive resolver that is not
+       dependent on the authoritative server for the ANAME owner.  The
+       implementation MUST prevent recursion back into the same
+       unresolved ANAME dependency.
+
+   2.  Follow CNAME and ANAME links to a terminal address RRset.  The
+       implementation MUST detect loops and MUST impose configurable
+       bounds on chain depth, response size, and resolution time.
+
+   3.  Validate the response according to local DNSSEC policy.  The
+       security status of the target is discussed in Section 11.
+
+   4.  Replace the terminal RRset's owner with the ANAME owner and
+       remove signatures belonging to the target zone.
+
+   5.  Set each synthesized TTL to no more than the minimum of the ANAME
+       TTL, every followed alias TTL, and the remaining terminal address
+       TTL.
+
+   The resulting owner and RDATA form the synthesized address RRset.  An
+   implementation MUST NOT combine addresses obtained from different
+   generations of a target RRset.
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 5]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+5.1.  Resolution Timing and Caching
+
+   A server MAY flatten when a query arrives, refresh in advance, or use
+   a shared cache.  It SHOULD refresh before the cached target expires
+   and SHOULD coalesce concurrent lookups for the same target and
+   address type.
+
+   A server MUST NOT serve a synthesized positive TTL greater than the
+   remaining lifetime of the data from which it was derived.  This
+   prevents TTL extension at the authoritative boundary.  A configured
+   ANAME TTL acts as an upper bound, not permission to extend the target
+   TTL.
+
+5.2.  Negative Answers and Failure
+
+   Authenticated NXDOMAIN or NODATA for the target produces NODATA for
+   the corresponding address type at the ANAME owner.  A timeout,
+   SERVFAIL, validation failure, or malformed target response is a
+   resolution failure, not NODATA.
+
+   On resolution failure, a server SHOULD return SERVFAIL unless it has
+   previously validated target data eligible for bounded stale serving
+   under [RFC8767].  Stale use MUST be bounded by local policy and MUST
+   NOT change the target's DNSSEC security status.  A server MUST NOT
+   convert a transient failure into an indefinite empty answer.
+
+6.  Query Processing
+
+6.1.  A and AAAA Queries
+
+   For an A or AAAA query at an ANAME owner, an authoritative server
+   MUST answer from the synthesized address RRset produced by Section 5.
+   The response is authoritative for the ANAME owner.  It MUST NOT
+   contain a CNAME synthesized from the ANAME.
+
+   An ANAME-capable authoritative server SHOULD also place the ANAME
+   RRset in the Answer section.  ANAME-oblivious resolvers ignore the
+   unknown RR type while using the A or AAAA RRset as usual.  An
+   implementation MAY omit ANAME from an address response when response-
+   size or compatibility policy requires it; this does not alter the
+   address answer.
+
+
+
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 6]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+6.2.  ANAME Queries
+
+   A query for type ANAME is processed as an ordinary authoritative
+   query.  If the ANAME exists, the Answer section MUST contain it.  The
+   server SHOULD add currently available synthesized A and AAAA RRsets
+   to the Additional section.  Their absence does not mean the target
+   lacks addresses.
+
+6.3.  Other Query Types and Delegations
+
+   ANAME has no effect on query types other than A, AAAA, ANAME, and
+   ANY.  It does not redirect MX, TXT, HTTPS, SVCB, CAA, or any other
+   data.  It MUST NOT override a zone cut.  The authoritative server
+   applies normal delegation and wildcard processing before applying
+   ANAME synthesis.
+
+7.  Zone Transfer
+
+   The lack of common transfer semantics is a material interoperability
+   problem in deployed flattening systems.  Omitting proprietary control
+   data prevents a secondary from reproducing behavior.  Expanding only
+   to A and AAAA records captures a transient observation and does not
+   cause a transfer when the external target changes.
+
+7.1.  Native AXFR
+
+   In an AXFR response conforming to [RFC5936], the primary MUST include
+   each ANAME RR in zone scope exactly as it includes any other
+   authoritative RR.  The primary MUST NOT suppress ANAME merely because
+   the requester did not advertise support for it.  Unknown-RR handling
+   in [RFC3597] permits transfer and storage by software that does not
+   yet understand its semantics.
+
+   A native secondary MUST store the received ANAME RR and perform
+   Section 5 using its own resolver and cache.  It MUST NOT assume that
+   an address RRset materialized at the primary remains current.
+   Consequently, changes to external target addresses do not require the
+   zone serial to change and do not require another transfer when all
+   authoritative servers are native.
+
+   A primary SHOULD NOT include derived sibling A or AAAA RRsets in
+   native AXFR.  If it does include them for transition, a native
+   secondary MUST treat them as replaceable cache seeds, bounded by
+   their TTL, rather than administrator-managed zone data.
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 7]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+7.2.  Native IXFR
+
+   IXFR [RFC1995] adds, deletes, or replaces the ANAME RR like any other
+   RR.  An ANAME target change is a zone-content change and MUST be
+   accompanied by an SOA serial change.  Refresh of addresses beneath an
+   unchanged external target is derived state and MUST NOT by itself
+   require an IXFR delta.
+
+7.3.  Capability Signaling
+
+   Operators need to know whether every authoritative server will
+   synthesize addresses.  This document defines the ANAME-CAPABLE EDNS
+   option, using the option format defined by [RFC6891], with code TBD2
+   for AXFR and IXFR requests.
+
+   The option is encoded as follows:
+
+           +----------------------+----------------------+
+           | OPTION-CODE = TBD2   | OPTION-LENGTH = 0    |
+           +----------------------+----------------------+
+                16 bits                 16 bits
+
+   OPTION-CODE is the two-octet network-order value TBD2 and OPTION-
+   LENGTH is the two-octet value zero.  The option contains no OPTION-
+   DATA in this version.  A receiver MUST ignore an ANAME-CAPABLE option
+   whose length is not zero.
+
+   A native secondary SHOULD include ANAME-CAPABLE in its transfer
+   request.  A primary that recognizes it SHOULD include the same empty
+   option in the first transfer response.  The option is an assertion of
+   processing capability, not authorization, and does not alter which
+   authoritative RRs are transferred.
+
+   Absence of ANAME-CAPABLE does not permit omission of ANAME from a
+   standards-conforming transfer.  It tells the operator that the
+   secondary might only store the unknown RR and might not answer
+   address queries correctly.  A primary SHOULD expose this condition
+   through logging or management telemetry.
+
+7.4.  Transition with ANAME-oblivious Secondaries
+
+   A zone using ANAME SHOULD NOT be delegated to an authoritative server
+   that cannot synthesize it.  During transition, an operator may
+   configure the primary to materialize A and AAAA RRsets for such a
+   secondary.  This is an operational compatibility mode, not native
+   ANAME transfer.
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 8]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   In compatibility mode, the primary MUST refresh the target, commit
+   changed sibling addresses as zone changes, increment the SOA serial,
+   and use DNS NOTIFY [RFC1996] or an equivalently prompt transfer
+   mechanism.  Merely expanding addresses during occasional AXFR while
+   leaving the serial unchanged is NOT RECOMMENDED, because the
+   secondary has no signal that the external target changed.
+
+   DNSSEC signing of materialized data occurs after flattening and
+   before transfer.  The operator is responsible for ensuring that all
+   authoritative servers present a coherent signed zone.
+
+7.5.  Transfer Authentication
+
+   ANAME does not change AXFR authorization requirements.  Zone
+   transfers commonly disclose the complete namespace and SHOULD be
+   restricted and authenticated using TSIG [RFC8945], SIG(0), mutually
+   authenticated transport, or an equivalent mechanism.  ANAME-CAPABLE
+   is not an authentication mechanism.
+
+8.  Examples
+
+8.1.  Native Primary and Secondary
+
+   The operator configures the following authoritative data:
+
+   example.  3600  IN  SOA    ns1.example. hostmaster.example. (
+                                2026073001 3600 900 1209600 300 )
+   example.  3600  IN  NS     ns1.example.
+   example.  3600  IN  NS     ns2.example.
+   example.   300  IN  ANAME  service.example.net.
+   example.  3600  IN  MX 10  mail.example.
+
+   The AXFR contains the SOA bookends, NS, MX, and ANAME records.  It
+   does not need to contain synthesized A or AAAA records.  The native
+   secondary advertises ANAME-CAPABLE and stores the ANAME.  Each
+   authoritative server independently resolves service.example.net..
+
+   If the target's A RRset has TTL 120 and contains 192.0.2.10, an A
+   query can receive:
+
+   example.  120  IN  A      192.0.2.10
+   example.  300  IN  ANAME  service.example.net.
+
+   The synthesized A TTL is 120, the smaller of the remaining target TTL
+   and the configured ANAME ceiling.  The ANAME retains its own TTL.
+   The MX record and all other owner data remain unaffected.
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 9]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   If the target later changes to 192.0.2.20 without any change to the
+   example. zone, both native servers refresh independently.  The SOA
+   serial need not change and no transfer is required.
+
+8.2.  Changing the Target
+
+   If the administrator changes the target itself to new-
+   service.example.net., the ANAME is authoritative zone content.  The
+   primary increments the SOA serial and transfers this deletion and
+   addition through IXFR, or sends the complete new ANAME through AXFR.
+   This differs from an address change beneath an unchanged target.
+
+8.3.  Legacy Materialization
+
+   Suppose ns2.example. does not synthesize ANAME.  If the operator
+   temporarily uses compatibility mode, the primary commits the current
+   192.0.2.10 A record as derived zone data for that transfer.  When the
+   target changes to 192.0.2.20, the primary must refresh, replace the
+   committed A RRset, increment the serial, notify the secondary, and
+   transfer the change.  Expanding only when an unrelated AXFR happens
+   can leave ns2.example. stale indefinitely.
+
+9.  DNSSEC
+
+   This section uses the DNSSEC protocol and terminology defined by
+   [RFC4033], [RFC4034], and [RFC4035].
+
+   The ANAME RRset is authoritative zone data and MUST be signed when
+   the zone is signed.  Synthesized address RRsets are authoritative
+   statements by the ANAME owner's zone; signatures from the target zone
+   cannot be copied because the owner name differs.
+
+   A server using online synthesis needs online signing if it returns
+   signed synthesized address RRsets.  A server using offline signing
+   MUST materialize, sign, and publish address changes before their
+   previous signatures or operational validity expire.  A signed ANAME
+   with no validly signed synthesized address response can cause
+   validating clients to treat an answer as bogus.
+
+   Signing synthesized addresses asserts that the ANAME owner's
+   authority chose those addresses; it does not preserve the target
+   zone's chain of trust.  Implementations SHOULD validate the target
+   before synthesizing signed data and MUST provide a policy for
+   insecure, bogus, and indeterminate targets.
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 10]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+10.  Operational Considerations
+
+10.1.  Multi-provider Consistency
+
+   Native authoritative servers resolve from different network locations
+   and caches.  A target using geographic, latency, load, or EDNS Client
+   Subnet policy can therefore yield different, individually valid
+   address RRsets.  Exact address equality among authorities is not
+   required.  Operators SHOULD test that every result is valid for
+   clients and that TTL and failure policies are compatible.
+
+   Authoritative flatteners SHOULD NOT forward a client's EDNS Client
+   Subnet value by default.  If they do, they MUST follow [RFC7871] and
+   account for the resulting cache variance and privacy exposure.
+
+10.2.  Monitoring
+
+   Implementations SHOULD expose target resolution latency, cache age,
+   refresh failure, DNSSEC status, stale-answer use, chain depth,
+   synthesized TTL, and transfer capability.  Operators SHOULD query A
+   and AAAA independently at every authoritative server.
+
+11.  Security Considerations
+
+   ANAME makes authoritative serving depend on recursive resolution.
+   Implementations MUST isolate that resolver from authoritative query
+   processing sufficiently to prevent deadlock and unbounded resource
+   consumption.  They MUST bound target chain length, response size,
+   address count, lookup concurrency, retry rate, and total lookup time.
+
+   A target controlled by another party can redirect an ANAME owner to
+   arbitrary addresses.  This is the intended delegation of address
+   control, but it has security consequences similar to granting that
+   party permission to edit A and AAAA records.  Zone administrators
+   SHOULD verify target ownership and lifecycle, and remove ANAME
+   records before relinquishing a target name.
+
+   Resolvers used for flattening MUST defend against cache poisoning and
+   bailiwick violations.  DNSSEC validation SHOULD be enabled.  An
+   implementation MUST NOT silently promote a bogus target into signed
+   synthesized data.
+
+
+
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 11]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   Self-reference and multi-name loops can cross zone boundaries.
+   Implementations MUST detect loops within one resolution operation.
+   They SHOULD coalesce concurrent lookups for the same target and
+   retain short-lived failure state to suppress repeated cyclic work.
+   On loop detection they MUST terminate the active chain and return
+   SERVFAIL; they MUST NOT start a fresh recursive lookup that discards
+   the known chain context.  These requirements limit geometric query
+   amplification when a loop crosses multiple authoritative providers.
+
+   ANAME targets may resolve to private, loopback, link-local, or other
+   special-use addresses.  DNS itself permits such answers, so filtering
+   is a deployment policy.  Implementations SHOULD offer policy controls
+   and clear diagnostics, especially where resolver traffic crosses
+   trust boundaries.
+
+   The transfer capability option is unauthenticated and can be removed
+   or forged by an on-path attacker.  It MUST NOT be used to authorize
+   transfer or as the sole basis for a security decision.  Authenticated
+   transfer protects both the ANAME target and other zone contents.
+
+12.  IANA Considerations
+
+   IANA is requested to assign a value from the "Resource Record (RR)
+   TYPEs" subregistry of the "Domain Name System (DNS) Parameters"
+   registry as follows:
+
+      +=======+=======+============================+===============+
+      | Type  | Value | Meaning                    | Reference     |
+      +=======+=======+============================+===============+
+      | ANAME | TBD1  | Address-specific DNS alias | This document |
+      +-------+-------+----------------------------+---------------+
+
+                                 Table 1
+
+   IANA is requested to assign a value from the "DNS EDNS0 Option Codes
+   (OPT)" registry as follows:
+
+           +===============+=======+==========+===============+
+           | Name          | Value | Status   | Reference     |
+           +===============+=======+==========+===============+
+           | ANAME-CAPABLE | TBD2  | Standard | This document |
+           +---------------+-------+----------+---------------+
+
+                                 Table 2
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 12]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+13.  Implementation and Deployment Experience
+
+   This section is to be removed before publication as an RFC.
+
+   rgbdns 0.2.3 implements on-demand authoritative flattening, bounded
+   caching, concurrent-miss coalescing, short-lived failure suppression,
+   TTL capping, CNAME-chain and loop handling, per-zone native transfer,
+   and independent target resolution by its secondary.  Before IANA
+   assignment, it uses an explicitly negotiated experimental protocol:
+   EDNS option 65001 containing the four octets RGA1, and private-use
+   TYPE65401 whose RDATA is RGA1 followed by the uncompressed target DNS
+   name.  The private RR TTL carries the configured ANAME TTL ceiling.
+
+   A standard AXFR client does not receive rgbdns's experimental record.
+   This behavior prevents private metadata from being mistaken for an
+   assigned RR, but it is not the final behavior specified in
+   Section 7.1.  An implementation of this document will use TBD1
+   directly and transfer it to all AXFR clients.  During migration,
+   rgbdns can accept both its versioned private encoding and the
+   assigned ANAME RR, but MUST NOT emit TYPE65401 as if it were the
+   assigned standard.
+
+   PowerDNS also uses private-use TYPE65401 for ALIAS, but its RDATA is
+   an unprefixed DNS name [POWERDNS-ALIAS].  The two encodings are not
+   interoperable despite sharing a private-use value.  This collision
+   demonstrates why a private-use RR value cannot establish a cross-
+   vendor standard and why receivers must not infer semantics from
+   TYPE65401 without out-of-band agreement.
+
+14.  Changes from draft-ietf-dnsop-aname-04
+
+   This section is to be removed before publishing as an RFC.
+
+   *  Makes the ANAME RR, rather than synthesized sibling addresses, the
+      portable source data for native AXFR and IXFR.
+
+   *  Requires each native authoritative server to resolve the target,
+      eliminating transfer-driven refresh for external address changes.
+
+   *  Adds ANAME-CAPABLE signaling for operational detection without
+      making transfer contents depend on negotiation.
+
+   *  Separates native transfer from a serial-changing materialization
+      mode for legacy secondaries.
+
+   *  Specifies failure, stale-answer, bounds, monitoring, multi-
+      provider, and migration behavior informed by deployed services.
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 13]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   *  Adds end-to-end examples distinguishing a changed ANAME target
+      from changed addresses beneath an unchanged target.
+
+   *  Documents the rgbdns implementation and the TYPE65401 collision
+      with PowerDNS.
+
+15.  Acknowledgments
+
+   This document builds on draft-ietf-dnsop-aname by Tony Finch, Evan
+   Hunt, Peter van Dijk, Anthony Eden, and Willem Mekking.  Their work
+   and the DNSOP discussions established the ANAME model, terminology,
+   and much of the analysis of TTLs, DNSSEC, and alias chains.
+
+   Deployment documentation from Cloudflare, DNSimple, Amazon Web
+   Services, IBM NS1, and PowerDNS supplied concrete evidence about
+   flattening behavior and zone-transfer interoperability.
+
+16.  Normative References
+
+   [RFC1035]  Mockapetris, P., "Domain names - implementation and
+              specification", STD 13, RFC 1035, DOI 10.17487/RFC1035,
+              November 1987, <https://www.rfc-editor.org/info/rfc1035>.
+
+   [RFC1995]  Ohta, M., "Incremental Zone Transfer in DNS", RFC 1995,
+              DOI 10.17487/RFC1995, August 1996,
+              <https://www.rfc-editor.org/info/rfc1995>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC3597]  Gustafsson, A., "Handling of Unknown DNS Resource Record
+              (RR) Types", RFC 3597, DOI 10.17487/RFC3597, September
+              2003, <https://www.rfc-editor.org/info/rfc3597>.
+
+   [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "DNS Security Introduction and Requirements",
+              RFC 4033, DOI 10.17487/RFC4033, March 2005,
+              <https://www.rfc-editor.org/info/rfc4033>.
+
+   [RFC4034]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "Resource Records for the DNS Security Extensions",
+              RFC 4034, DOI 10.17487/RFC4034, March 2005,
+              <https://www.rfc-editor.org/info/rfc4034>.
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 14]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   [RFC4035]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "Protocol Modifications for the DNS Security
+              Extensions", RFC 4035, DOI 10.17487/RFC4035, March 2005,
+              <https://www.rfc-editor.org/info/rfc4035>.
+
+   [RFC4592]  Lewis, E., "The Role of Wildcards in the Domain Name
+              System", RFC 4592, DOI 10.17487/RFC4592, July 2006,
+              <https://www.rfc-editor.org/info/rfc4592>.
+
+   [RFC5936]  Lewis, E. and A. Hoenes, "DNS Zone Transfer Protocol
+              (AXFR)", RFC 5936, DOI 10.17487/RFC5936, June 2010,
+              <https://www.rfc-editor.org/info/rfc5936>.
+
+   [RFC6891]  Damas, J., Graff, M., and P. Vixie, "Extension Mechanisms
+              for DNS (EDNS(0))", STD 75, RFC 6891,
+              DOI 10.17487/RFC6891, April 2013,
+              <https://www.rfc-editor.org/info/rfc6891>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8945]  Dupont, F., Morris, S., Vixie, P., Eastlake, D., and O.
+              Gudmundsson, "Secret Key Transaction Authentication for
+              DNS (TSIG)", RFC 8945, DOI 10.17487/RFC8945, November
+              2020, <https://www.rfc-editor.org/info/rfc8945>.
+
+   [RFC9499]  Hoffman, P. and K. Fujiwara, "DNS Terminology", BCP 219,
+              RFC 9499, DOI 10.17487/RFC9499, March 2024,
+              <https://www.rfc-editor.org/info/rfc9499>.
+
+17.  Informative References
+
+   [CLOUDFLARE-FLATTENING]
+              Cloudflare, "CNAME flattening", Cloudflare DNS
+              documentation, 24 June 2026,
+              <https://developers.cloudflare.com/dns/cname-flattening/>.
+
+   [DNSIMPLE-ALIAS]
+              DNSimple, "What Is an ALIAS Record?", DNSimple Help, 2026,
+              <https://support.dnsimple.com/articles/alias-record/>.
+
+   [I-D.ietf-dnsop-aname]
+              Finch, T., Hunt, E., van Dijk, P., Eden, A., and W.
+              Mekking, "Address-specific DNS aliases (ANAME)", Work in
+              Progress, Internet-Draft, draft-ietf-dnsop-aname-04, 8
+              July 2019, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-dnsop-aname-04>.
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 15]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   [NS1-ALIAS]
+              IBM, "Comparing CNAME, ALIAS, and linked records", IBM NS1
+              Connect documentation, 2026, <https://www.ibm.com/docs/en/
+              ns1-connect?topic=answers-comparing-cname-alias-linked-
+              records>.
+
+   [POWERDNS-ALIAS]
+              PowerDNS.COM BV, "Using ALIAS records", PowerDNS
+              Authoritative Server documentation, 2026,
+              <https://doc.powerdns.com/authoritative/guides/
+              alias.html>.
+
+   [RFC1996]  Vixie, P., "A Mechanism for Prompt Notification of Zone
+              Changes (DNS NOTIFY)", RFC 1996, DOI 10.17487/RFC1996,
+              August 1996, <https://www.rfc-editor.org/info/rfc1996>.
+
+   [RFC7871]  Contavalli, C., van der Gaast, W., Lawrence, D., and W.
+              Kumari, "Client Subnet in DNS Queries", RFC 7871,
+              DOI 10.17487/RFC7871, May 2016,
+              <https://www.rfc-editor.org/info/rfc7871>.
+
+   [RFC8767]  Lawrence, D., Kumari, W., and P. Sood, "Serving Stale Data
+              to Improve DNS Resiliency", RFC 8767,
+              DOI 10.17487/RFC8767, March 2020,
+              <https://www.rfc-editor.org/info/rfc8767>.
+
+   [ROUTE53-ALIAS]
+              Amazon Web Services, "Choosing between alias and non-alias
+              records", Amazon Route 53 Developer Guide, 2026,
+              <https://docs.aws.amazon.com/Route53/latest/
+              DeveloperGuide/resource-record-sets-choosing-alias-non-
+              alias.html>.
+
+Author's Address
+
+   Alexy Khrabrov
+   QueryGraph
+   Email: deliverable@gmail.com
+   URI:   https://github.com/querygraph/rgbdns
+
+
+
+
+
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 16]
+~~~~
