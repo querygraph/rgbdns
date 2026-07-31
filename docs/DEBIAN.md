@@ -20,7 +20,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.3.0_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.3.1_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -258,16 +258,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.3.0_amd64.deb
+dpkg-deb --info ../rgbdns_0.3.1_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.3.0_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.3.1_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.3.0_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.3.1_amd64.deb
 dpkg-query -W rgbdns
 ```
 

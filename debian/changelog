@@ -1,3 +1,10 @@
+rgbdns (0.3.1) unstable; urgency=medium
+
+  * Restore the configured primary or secondary picker units on package
+    upgrade without activating a role on fresh installations.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 30 Jul 2026 22:25:48 -0700
+
 rgbdns (0.3.0) unstable; urgency=medium
 
   * Preserve ANAME targets and TTL ceilings between upgraded rgbdns AXFR peers.

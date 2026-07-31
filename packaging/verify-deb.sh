@@ -63,6 +63,7 @@ for helper in \
     /usr/lib/rgbdns/import-zones \
     /usr/lib/rgbdns/import-data \
     /usr/lib/rgbdns/migrate-zones \
+    /usr/lib/rgbdns/restore-role-units \
     /usr/sbin/rgbdns-setup
 do
     test -x "$helper"
@@ -74,3 +75,7 @@ rgbdns-setup --help | grep -q -- '--zones-drop'
 rgbdns-setup --help | grep -q -- '--data-drop'
 rgbdns-setup --help | grep -q -- '--query-log'
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
+grep -q 'enable --now rgbdns-data.path' \
+    /usr/lib/rgbdns/restore-role-units
+grep -q 'enable --now rgbdns-secondary-sync.timer' \
+    /usr/lib/rgbdns/restore-role-units

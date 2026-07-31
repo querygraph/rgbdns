@@ -16,4 +16,11 @@ chmod 0640 /etc/rgbdns/tinydns.env
 
 #DEBHELPER#
 
+# A fresh install has no configured role and deliberately leaves all role
+# units inactive. On upgrade, restore the picker/timer belonging to the role
+# that rgbdns-setup previously recorded under /etc/rgbdns.
+if [ -n "${2:-}" ]; then
+    /usr/lib/rgbdns/restore-role-units
+fi
+
 exit 0

@@ -43,6 +43,7 @@ jobs:
           packaging/tests/test-import-zones.sh
           packaging/tests/test-migrate-zones.sh
           packaging/tests/test-import-data.sh
+          packaging/tests/test-restore-role-units.sh
 
       - uses: dtolnay/rust-toolchain@stable
 

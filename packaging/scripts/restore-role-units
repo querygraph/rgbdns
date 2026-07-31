@@ -1,0 +1,24 @@
+#!/bin/sh
+set -eu
+
+systemctl=${RGBDNS_SYSTEMCTL:-systemctl}
+config_dir=${RGBDNS_CONFIG_DIR:-/etc/rgbdns}
+systemd_runtime=${RGBDNS_SYSTEMD_RUNTIME:-/run/systemd/system}
+
+# Package installation is also exercised in containers and chroots. Unit
+# state can only be restored when this host is actually booted with systemd.
+[ -d "$systemd_runtime" ] || exit 0
+
+"$systemctl" daemon-reload
+
+if [ -f "$config_dir/data-drop.env" ]; then
+    "$systemctl" disable --now rgbdns-secondary-sync.timer \
+        rgbdns-zones.path >/dev/null 2>&1 || true
+    "$systemctl" enable --now rgbdns-data.path
+elif [ -f "$config_dir/secondary.env" ]; then
+    "$systemctl" disable --now rgbdns-data.path >/dev/null 2>&1 || true
+    "$systemctl" enable --now rgbdns-secondary-sync.timer
+    if [ -f "$config_dir/zones-drop.env" ]; then
+        "$systemctl" enable --now rgbdns-zones.path
+    fi
+fi

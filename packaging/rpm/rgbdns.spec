@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -52,6 +52,8 @@ install -D -m 0755 packaging/scripts/import-data \
     %{buildroot}%{_prefix}/lib/rgbdns/import-data
 install -D -m 0755 packaging/scripts/migrate-zones \
     %{buildroot}%{_prefix}/lib/rgbdns/migrate-zones
+install -D -m 0755 packaging/scripts/restore-role-units \
+    %{buildroot}%{_prefix}/lib/rgbdns/restore-role-units
 install -D -m 0755 packaging/scripts/rgbdns-setup \
     %{buildroot}%{_sbindir}/rgbdns-setup
 install -D -m 0640 packaging/default/tinydns.env \
@@ -77,6 +79,9 @@ install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_prefix}/lib/rgbdns/migrate-zones
 %service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path
+if [ "$1" -gt 1 ]; then
+    %{_prefix}/lib/rgbdns/restore-role-units
+fi
 
 %preun
 %service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path
@@ -94,6 +99,7 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_prefix}/lib/rgbdns/import-zones
 %{_prefix}/lib/rgbdns/import-data
 %{_prefix}/lib/rgbdns/migrate-zones
+%{_prefix}/lib/rgbdns/restore-role-units
 %attr(0750,root,root) %dir %{_sysconfdir}/rgbdns
 %attr(0640,root,root) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
 %{_unitdir}/rgbdns-tinydns.service
@@ -107,6 +113,9 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.1-1
+- Restore configured primary or secondary picker units on package upgrade
+
 * Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.0-1
 - Preserve ANAME directives between upgraded rgbdns AXFR peers
 - Coalesce ANAME lookups and suppress immediate retries after failures

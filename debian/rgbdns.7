@@ -1,4 +1,4 @@
-.TH RGBDNS 7 "2026-07-30" "rgbdns 0.3.0" "System Administration"
+.TH RGBDNS 7 "2026-07-30" "rgbdns 0.3.1" "System Administration"
 .SH NAME
 rgbdns \- authoritative DNS, AXFR, recursion, and djbdns-compatible tools
 .SH SYNOPSIS
@@ -17,6 +17,14 @@ The authoritative server reads
 The human-editable source is
 .IR /var/lib/rgbdns/tinydns/data .
 The setup command compiles the source atomically before starting the service.
+.PP
+A fresh package installation does not infer or activate a role. Run
+.B rgbdns-setup
+once to configure a primary or secondary. Package upgrades restore the picker
+and timer units belonging to the role already recorded under
+.IR /etc/rgbdns .
+Run the opposite setup role to repurpose a host; it removes the prior role
+configuration and disables its automation before enabling the new role.
 .SH FILES
 .TP
 .I /etc/rgbdns/tinydns.env

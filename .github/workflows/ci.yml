@@ -25,4 +25,5 @@ jobs:
       - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test --all-targets
       - run: packaging/tests/test-secondary-sync.sh
+      - run: packaging/tests/test-restore-role-units.sh
       - run: cargo build --release --bins

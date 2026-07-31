@@ -1,6 +1,6 @@
 # End-to-end rgbdns setup: `fieldnotes.es`
 
-This walkthrough deploys rgbdns 0.3.0 on two AWS EC2 instances and retains
+This walkthrough deploys rgbdns 0.3.1 on two AWS EC2 instances and retains
 BuddyNS as an additional secondary network. It covers installation, initial
 role configuration, authoritative data, AXFR, atomic primary and secondary
 updates, verification, upgrades, and recovery.
@@ -118,12 +118,12 @@ gh run download "$RPM_RUN" \
   -D "$HOME/rgbdns-rpm"
 ```
 
-The 0.3.0 artifacts are:
+The 0.3.1 artifacts are:
 
 ```text
-rgbdns_0.3.0_amd64.deb
-RPMS/x86_64/rgbdns-0.3.0-1.x86_64.rpm
-SRPMS/rgbdns-0.3.0-1.src.rpm
+rgbdns_0.3.1_amd64.deb
+RPMS/x86_64/rgbdns-0.3.1-1.x86_64.rpm
+SRPMS/rgbdns-0.3.1-1.src.rpm
 ```
 
 ## 4. Install the Debian package on the primary
@@ -131,14 +131,14 @@ SRPMS/rgbdns-0.3.0-1.src.rpm
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-deb/rgbdns_0.3.0_amd64.deb" \
+scp "$HOME/rgbdns-deb/rgbdns_0.3.1_amd64.deb" \
   bitnami@52.10.53.234:/tmp/
 ```
 
 On the primary:
 
 ```sh
-sudo apt install /tmp/rgbdns_0.3.0_amd64.deb
+sudo apt install /tmp/rgbdns_0.3.1_amd64.deb
 sudo systemctl daemon-reload
 dpkg-query -W -f='${Package} ${Version}\n' rgbdns
 getent passwd rgbdns
@@ -160,7 +160,7 @@ SUSE_USER=ec2-user
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.0-1.x86_64.rpm" \
+scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.1-1.x86_64.rpm" \
   "$SUSE_USER"@52.38.177.160:/tmp/
 ```
 
@@ -168,7 +168,7 @@ On the secondary:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.3.0-1.x86_64.rpm
+  /tmp/rgbdns-0.3.1-1.x86_64.rpm
 sudo systemctl daemon-reload
 rpm -q rgbdns
 sudo rpm -V rgbdns
@@ -380,7 +380,7 @@ SubState=dead
 
 ## 10. Use ANAME only between upgraded rgbdns peers
 
-rgbdns 0.3.0 preserves private ANAME directives when both AXFR peers run
+rgbdns 0.3.1 preserves private ANAME directives when both AXFR peers run
 rgbdns. For an apex hosted by Ghost, the primary source can contain:
 
 ```text
@@ -552,38 +552,196 @@ QUERY_LOG=0
 
 Restart tinydns after manually changing that environment file.
 
-## 16. Upgrade safely
+## 16. Install, upgrade, or change roles
+
+The package and `rgbdns-setup` have separate responsibilities:
+
+- package installation places binaries and units but does not guess a role;
+- `rgbdns-setup primary` records `/etc/rgbdns/data-drop.env`;
+- `rgbdns-setup secondary` records `/etc/rgbdns/secondary.env` and the
+  secondary zone files; and
+- package upgrades from 0.3.1 onward detect that recorded role and restore
+  only its picker and timer units.
+
+### Fresh installation as a primary
+
+Install the package, retain any intentionally preseeded `tinydns.env`, and run
+the primary setup once:
 
 On Debian:
 
 ```sh
-sudo apt install /tmp/rgbdns_NEW_VERSION_amd64.deb
-sudo systemctl daemon-reload
-sudo systemctl restart rgbdns-tinydns
+sudo apt install ./rgbdns_VERSION_amd64.deb
+sudo rgbdns-setup primary \
+  --data "$HOME/rgbdns.data" \
+  --data-drop "$HOME/rgbdns.data" \
+  --data-drop-owner "$(id -un)" \
+  --listen-ip 0.0.0.0 \
+  --port 53 \
+  --allow-nets "$PRIMARY_AXFR_NETS" \
+  --query-log 1
 ```
 
-Keep the existing `tinydns.env` at a conffile prompt. The package default must
-not replace deployment-specific `ALLOW_NETS`.
+Verify the role:
+
+```sh
+test -f /etc/rgbdns/data-drop.env
+systemctl is-enabled rgbdns-data.path
+systemctl is-active rgbdns-data.path
+systemctl is-active rgbdns-tinydns
+```
+
+The two active units are `rgbdns-data.path` and `rgbdns-tinydns.service`.
+Secondary synchronization units remain disabled.
+
+### Fresh installation as a secondary
+
+Install the RPM or Debian package, place the initial one-zone-per-line drop
+file, and run secondary setup once:
 
 On openSUSE:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-NEW_VERSION-1.x86_64.rpm
-sudo systemctl daemon-reload
-sudo systemctl restart rgbdns-tinydns
+  ./rgbdns-VERSION-1.x86_64.rpm
+sudo rgbdns-setup secondary \
+  --zones "cron.sh fieldnotes.es" \
+  --primary 172.31.60.189 \
+  --zones-drop "$HOME/rgbdns.zones" \
+  --zones-drop-owner "$(id -un)" \
+  --listen-ip 0.0.0.0 \
+  --port 53 \
+  --allow-nets "$SECONDARY_AXFR_NETS" \
+  --query-log 1
 ```
 
-Then verify:
+Every initial zone must transfer before setup activates the combined
+secondary database. Verify:
 
 ```sh
 sudo systemctl is-active rgbdns-tinydns
-sudo systemctl list-timers rgbdns-secondary-sync.timer
-sudo systemctl status rgbdns-data.path rgbdns-zones.path --no-pager
+sudo systemctl is-enabled rgbdns-zones.path
+sudo systemctl is-active rgbdns-zones.path
+sudo systemctl is-enabled rgbdns-secondary-sync.timer
+sudo systemctl is-active rgbdns-secondary-sync.timer
+sudo systemctl show rgbdns-secondary-sync.service \
+  -p Result -p ExecMainStatus
 ```
 
-Only the path unit belonging to the host's configured role is expected to be
-enabled.
+The primary data picker remains disabled.
+
+### Upgrade an already configured host
+
+Install the newer package normally. Keep the existing Debian conffile or RPM
+`.rpmnew` behavior so deployment-specific `ALLOW_NETS` survives.
+
+```sh
+# Debian
+sudo apt install ./rgbdns_NEW_VERSION_amd64.deb
+
+# openSUSE
+sudo zypper --non-interactive --no-gpg-checks install \
+  ./rgbdns-NEW_VERSION-1.x86_64.rpm
+```
+
+On upgrades from 0.3.1 onward, the maintainer script reloads systemd and
+restores role automation according to the existing configuration:
+
+| Existing configuration | Restored units |
+|---|---|
+| `/etc/rgbdns/data-drop.env` | `rgbdns-data.path` |
+| `/etc/rgbdns/secondary.env` | `rgbdns-secondary-sync.timer` |
+| secondary plus `/etc/rgbdns/zones-drop.env` | timer and `rgbdns-zones.path` |
+| no recorded role | none |
+
+Restart authority to run the upgraded binary, then verify the role:
+
+```sh
+sudo systemctl restart rgbdns-tinydns
+sudo systemctl is-active rgbdns-tinydns
+sudo systemctl status rgbdns-data.path rgbdns-zones.path \
+  rgbdns-secondary-sync.timer --no-pager
+```
+
+An enabled unit that is `inactive` is not picking up changes. The path unit
+for the configured role must be `active (waiting)`, and a configured
+secondary's timer must be `active (waiting)`.
+
+When upgrading from a release older than 0.3.1, activate the recorded role
+once because the older package did not restore it:
+
+```sh
+# Primary only
+sudo systemctl enable --now rgbdns-data.path
+
+# Secondary only
+sudo systemctl enable --now rgbdns-secondary-sync.timer rgbdns-zones.path
+```
+
+### Repurpose a primary as a secondary
+
+Prepare a valid `rgbdns.zones` first and ensure every listed zone is
+transferable from the new primary. Then run the secondary setup command:
+
+```sh
+sudo rgbdns-setup secondary \
+  --zones "cron.sh fieldnotes.es" \
+  --primary NEW_PRIMARY_ADDRESS \
+  --zones-drop "$HOME/rgbdns.zones" \
+  --zones-drop-owner "$(id -un)" \
+  --listen-ip 0.0.0.0 \
+  --port 53 \
+  --allow-nets "$SECONDARY_AXFR_NETS" \
+  --query-log 1
+```
+
+The command removes the primary drop configuration, disables
+`rgbdns-data.path`, performs the initial AXFR synchronization, and enables the
+secondary timer and zone-list picker. Verify that no primary picker remains:
+
+```sh
+test ! -e /etc/rgbdns/data-drop.env
+! systemctl is-enabled --quiet rgbdns-data.path
+systemctl is-active rgbdns-zones.path
+systemctl is-active rgbdns-secondary-sync.timer
+sudo cat /etc/rgbdns/secondary.env
+sudo cat /etc/rgbdns/zones
+```
+
+Do not change registrar delegation until direct queries to the repurposed host
+return the expected authoritative serials.
+
+### Repurpose a secondary as a primary
+
+Prepare and validate the complete authoritative `rgbdns.data`, including a
+new SOA serial for every zone, then run:
+
+```sh
+sudo rgbdns-setup primary \
+  --data "$HOME/rgbdns.data" \
+  --data-drop "$HOME/rgbdns.data" \
+  --data-drop-owner "$(id -un)" \
+  --listen-ip 0.0.0.0 \
+  --port 53 \
+  --allow-nets "$PRIMARY_AXFR_NETS" \
+  --query-log 1
+```
+
+The command compiles the primary database before activation, removes
+secondary configuration, disables the secondary picker and timer, and enables
+the primary data picker. Verify:
+
+```sh
+test ! -e /etc/rgbdns/secondary.env
+test ! -e /etc/rgbdns/zones
+! systemctl is-enabled --quiet rgbdns-secondary-sync.timer
+! systemctl is-enabled --quiet rgbdns-zones.path
+systemctl is-active rgbdns-data.path
+systemctl is-active rgbdns-tinydns
+```
+
+For either conversion, `rgbdns-setup` is the supported transition mechanism.
+Do not manually leave both role configurations or both picker units enabled.
 
 ## 17. Troubleshoot by boundary
 

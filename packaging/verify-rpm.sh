@@ -23,6 +23,7 @@ for path in \
     /usr/lib/rgbdns/import-zones \
     /usr/lib/rgbdns/import-data \
     /usr/lib/rgbdns/migrate-zones \
+    /usr/lib/rgbdns/restore-role-units \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.timer \
@@ -46,6 +47,10 @@ getent group rgbdns
 test "$(stat -c %U:%G /var/lib/rgbdns/tinydns)" = rgbdns:rgbdns
 test "$(stat -c %a /etc/rgbdns/tinydns.env)" = 640
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
+grep -q 'enable --now rgbdns-data.path' \
+    /usr/lib/rgbdns/restore-role-units
+grep -q 'enable --now rgbdns-secondary-sync.timer' \
+    /usr/lib/rgbdns/restore-role-units
 systemd-analyze --man=no verify \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \

@@ -29,6 +29,8 @@ override_dh_auto_install:
 		debian/rgbdns/usr/lib/rgbdns/import-data
 	install -D -m 0755 packaging/scripts/migrate-zones \
 		debian/rgbdns/usr/lib/rgbdns/migrate-zones
+	install -D -m 0755 packaging/scripts/restore-role-units \
+		debian/rgbdns/usr/lib/rgbdns/restore-role-units
 	install -D -m 0755 packaging/scripts/rgbdns-setup \
 		debian/rgbdns/usr/sbin/rgbdns-setup
 	install -D -m 0644 packaging/default/tinydns.env \
