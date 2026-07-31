@@ -122,8 +122,8 @@ The 0.3.2 artifacts are:
 
 ```text
 rgbdns_0.3.2_amd64.deb
-RPMS/x86_64/rgbdns-0.3.2-1.x86_64.rpm
-SRPMS/rgbdns-0.3.2-1.src.rpm
+RPMS/x86_64/rgbdns-0.3.2-2.x86_64.rpm
+SRPMS/rgbdns-0.3.2-2.src.rpm
 ```
 
 ## 4. Install the Debian package on the primary
@@ -160,7 +160,7 @@ SUSE_USER=ec2-user
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.2-1.x86_64.rpm" \
+scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.2-2.x86_64.rpm" \
   "$SUSE_USER"@52.38.177.160:/tmp/
 ```
 
@@ -168,7 +168,7 @@ On the secondary:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.3.2-1.x86_64.rpm
+  /tmp/rgbdns-0.3.2-2.x86_64.rpm
 sudo systemctl daemon-reload
 rpm -q rgbdns
 sudo rpm -V rgbdns

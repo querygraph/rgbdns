@@ -112,7 +112,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.2-1.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.2-2.x86_64.rpm
 ```
 
 ## Book

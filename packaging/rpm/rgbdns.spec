@@ -1,6 +1,6 @@
 Name:           rgbdns
 Version:        0.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
 URL:            https://github.com/querygraph/rgbdns
@@ -16,6 +16,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 Requires:       systemd
 Requires:       util-linux
+Provides:       group(rgbdns)
 Conflicts:      daemontools
 Conflicts:      djbdns
 Obsoletes:      daemontools
@@ -115,6 +116,9 @@ fi
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.2-2
+- Provide the rgbdns group capability required by packaged file ownership
+
 * Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.2-1
 - Preserve rgbdns group access to configuration during RPM upgrades
 - Avoid reopening the already-created zone-list staging file

@@ -4,6 +4,10 @@ set -eu
 [ $# -eq 1 ] || { echo "usage: verify-rpm.sh PACKAGE.rpm" >&2; exit 2; }
 package=$1
 
+rpm --query --package --provides "$package" |
+    grep -qx 'group(rgbdns)'
+rpm --query --package --requires "$package" |
+    grep -qx 'group(rgbdns)'
 rpm --query --package --list "$package" |
     grep -Eq '^/usr/share/man/man7/rgbdns\.7(\.gz)?$'
 for superseded in daemontools djbdns; do
