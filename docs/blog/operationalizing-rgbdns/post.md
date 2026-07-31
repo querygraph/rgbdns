@@ -2,6 +2,8 @@
 
 *July 2026 — rgbdns 0.3.3*
 
+![An openSUSE chameleon launches an RPM package spacecraft toward the Moon while a red Debian spiral forms a galaxy in deep space.](operationalizing-rgbdns-headboard.png)
+
 The first rgbdns release established the larger idea: rebuild the djbdns
 program family in memory-safe Rust without losing the small-program design,
 the tinydns data format, or the ability to understand the entire authoritative
