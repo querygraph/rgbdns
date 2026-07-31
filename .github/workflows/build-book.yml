@@ -28,9 +28,7 @@ jobs:
         run: |
           mkdir -p "$HOME/src"
           mv firstpair "$HOME/src/firstpair"
-          "$HOME/src/firstpair/publishing/scripts/install-toolchain.sh" || true
-          .github/scripts/install-locked-publishing-tools.sh
-          "$HOME/src/firstpair/publishing/scripts/verify-toolchain.mjs" --quiet
+          "$HOME/src/firstpair/publishing/scripts/install-toolchain.sh"
 
       - name: Build and validate the book
         run: |
