@@ -102,7 +102,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.2.3_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.3.0_$(dpkg --print-architecture).deb
 ```
 
 On openSUSE Leap 16.0, build the RPM with:
@@ -112,7 +112,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.2.3-1.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.0-1.x86_64.rpm
 ```
 
 ## Book

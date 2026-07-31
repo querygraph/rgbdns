@@ -1,3 +1,11 @@
+rgbdns (0.3.0) unstable; urgency=medium
+
+  * Preserve ANAME targets and TTL ceilings between upgraded rgbdns AXFR peers.
+  * Coalesce ANAME lookups and suppress immediate retries after failures.
+  * Publish the ANAME and zone-transfer Internet-Draft and validation sources.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 30 Jul 2026 14:45:00 -0700
+
 rgbdns (0.2.3) unstable; urgency=medium
 
   * Negotiate and preserve private ANAME directives between rgbdns AXFR peers.

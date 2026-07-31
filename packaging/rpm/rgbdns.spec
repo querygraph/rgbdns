@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.2.3
+Version:        0.3.0
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -107,6 +107,11 @@ chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.0-1
+- Preserve ANAME directives between upgraded rgbdns AXFR peers
+- Coalesce ANAME lookups and suppress immediate retries after failures
+- Publish the ANAME and zone-transfer Internet-Draft
+
 * Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.2.3-1
 - Negotiate and preserve private ANAME directives between rgbdns AXFR peers
 - Keep standard AXFR output free of rgbdns private transfer metadata

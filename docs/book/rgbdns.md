@@ -17,7 +17,7 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.2.3 as built on 2026-07-30.
+version 0.3.0 as built on 2026-07-30.
 
 # The problem DNS solves
 
