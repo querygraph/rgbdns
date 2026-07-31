@@ -4,9 +4,9 @@ author: Alexy Khrabrov
 title_stem: rgbdns
 edition: full
 version: 0.3.3
-version_stamp: 0.3.3-fb28839c
-source_commit: fb28839c
-built_at: 2026-07-31T17:30:52Z
+version_stamp: 0.3.3-9db2bee1
+source_commit: 9db2bee1
+built_at: 2026-07-31T17:46:14Z
 toolchain_lock: ../../../src/firstpair/publishing/toolchain.lock.json
 primary_format: typst
 kindle_name: rgbdns (0.3.3)
@@ -16,9 +16,9 @@ epub_file: rgbdns.epub
 html_file: rgbdns.html
 html_chapters_dir: rgbdns-chapters
 html_title: DNS from First Principles
-pdf_link: rgbdns (0.3.3-fb28839c).pdf
-epub_link: rgbdns (0.3.3-fb28839c).epub
-html_link: rgbdns (0.3.3-fb28839c).html
-html_chapters_link: rgbdns (0.3.3-fb28839c)-chapters
+pdf_link: rgbdns (0.3.3-9db2bee1).pdf
+epub_link: rgbdns (0.3.3-9db2bee1).epub
+html_link: rgbdns (0.3.3-9db2bee1).html
+html_chapters_link: rgbdns (0.3.3-9db2bee1)-chapters
 pdf_file_typst: rgbdns.pdf
-pdf_link_typst: rgbdns (0.3.3-fb28839c).pdf
+pdf_link_typst: rgbdns (0.3.3-9db2bee1).pdf
