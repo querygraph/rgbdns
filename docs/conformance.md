@@ -50,7 +50,7 @@ normative RFC that supplies each oracle.
 
 ## Deliberate scope boundaries
 
-The following are not claimed as implemented by rgbdns 0.3.2:
+The following are not claimed as implemented by rgbdns 0.3.3:
 
 - dynamic UPDATE, NOTIFY, IXFR, DSO, DNS Cookies, or TSIG/SIG(0);
 - authoritative DNSSEC signing and denial-of-existence generation;

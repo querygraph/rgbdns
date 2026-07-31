@@ -1,6 +1,6 @@
 Name:           rgbdns
-Version:        0.3.2
-Release:        2%{?dist}
+Version:        0.3.3
+Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
 URL:            https://github.com/querygraph/rgbdns
@@ -116,6 +116,9 @@ fi
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Fri Jul 31 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.3-1
+- Restart authority for an existing configured role during package upgrades
+
 * Thu Jul 30 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.2-2
 - Provide the rgbdns group capability required by packaged file ownership
 

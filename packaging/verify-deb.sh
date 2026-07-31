@@ -82,4 +82,6 @@ grep -q 'enable --now rgbdns-data.path' \
     /usr/lib/rgbdns/restore-role-units
 grep -q 'enable --now rgbdns-secondary-sync.timer' \
     /usr/lib/rgbdns/restore-role-units
+grep -q 'enable --now rgbdns-tinydns.service' \
+    /usr/lib/rgbdns/restore-role-units
 ! grep -Fq ': >"$stage"' /usr/lib/rgbdns/import-zones

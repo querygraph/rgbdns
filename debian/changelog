@@ -1,3 +1,10 @@
+rgbdns (0.3.3) unstable; urgency=medium
+
+  * Restart the authoritative service for an existing configured role during
+    package upgrades.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Fri, 31 Jul 2026 00:05:00 -0700
+
 rgbdns (0.3.2) unstable; urgency=medium
 
   * Preserve rgbdns group access to packaged configuration on upgrade.

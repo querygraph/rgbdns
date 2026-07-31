@@ -1,6 +1,6 @@
 # End-to-end rgbdns setup: `fieldnotes.es`
 
-This walkthrough deploys rgbdns 0.3.2 on two AWS EC2 instances and retains
+This walkthrough deploys rgbdns 0.3.3 on two AWS EC2 instances and retains
 BuddyNS as an additional secondary network. It covers installation, initial
 role configuration, authoritative data, AXFR, atomic primary and secondary
 updates, verification, upgrades, and recovery.
@@ -118,12 +118,12 @@ gh run download "$RPM_RUN" \
   -D "$HOME/rgbdns-rpm"
 ```
 
-The 0.3.2 artifacts are:
+The 0.3.3 artifacts are:
 
 ```text
-rgbdns_0.3.2_amd64.deb
-RPMS/x86_64/rgbdns-0.3.2-2.x86_64.rpm
-SRPMS/rgbdns-0.3.2-2.src.rpm
+rgbdns_0.3.3_amd64.deb
+RPMS/x86_64/rgbdns-0.3.3-1.x86_64.rpm
+SRPMS/rgbdns-0.3.3-1.src.rpm
 ```
 
 ## 4. Install the Debian package on the primary
@@ -131,14 +131,14 @@ SRPMS/rgbdns-0.3.2-2.src.rpm
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-deb/rgbdns_0.3.2_amd64.deb" \
+scp "$HOME/rgbdns-deb/rgbdns_0.3.3_amd64.deb" \
   bitnami@52.10.53.234:/tmp/
 ```
 
 On the primary:
 
 ```sh
-sudo apt install /tmp/rgbdns_0.3.2_amd64.deb
+sudo apt install /tmp/rgbdns_0.3.3_amd64.deb
 sudo systemctl daemon-reload
 dpkg-query -W -f='${Package} ${Version}\n' rgbdns
 getent passwd rgbdns
@@ -160,7 +160,7 @@ SUSE_USER=ec2-user
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.2-2.x86_64.rpm" \
+scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.3-1.x86_64.rpm" \
   "$SUSE_USER"@52.38.177.160:/tmp/
 ```
 
@@ -168,7 +168,7 @@ On the secondary:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.3.2-2.x86_64.rpm
+  /tmp/rgbdns-0.3.3-1.x86_64.rpm
 sudo systemctl daemon-reload
 rpm -q rgbdns
 sudo rpm -V rgbdns
@@ -380,7 +380,7 @@ SubState=dead
 
 ## 10. Use ANAME only between upgraded rgbdns peers
 
-rgbdns 0.3.2 preserves private ANAME directives when both AXFR peers run
+rgbdns 0.3.3 preserves private ANAME directives when both AXFR peers run
 rgbdns. For an apex hosted by Ghost, the primary source can contain:
 
 ```text
@@ -644,20 +644,20 @@ sudo zypper --non-interactive --no-gpg-checks install \
   ./rgbdns-NEW_VERSION-1.x86_64.rpm
 ```
 
-On upgrades from 0.3.1 onward, the maintainer script reloads systemd and
-restores role automation according to the existing configuration:
+On upgrades from 0.3.3 onward, the maintainer script reloads systemd and
+restores authority and role automation according to the existing
+configuration:
 
 | Existing configuration | Restored units |
 |---|---|
-| `/etc/rgbdns/data-drop.env` | `rgbdns-data.path` |
-| `/etc/rgbdns/secondary.env` | `rgbdns-secondary-sync.timer` |
-| secondary plus `/etc/rgbdns/zones-drop.env` | timer and `rgbdns-zones.path` |
+| `/etc/rgbdns/data-drop.env` | `rgbdns-tinydns.service` and `rgbdns-data.path` |
+| `/etc/rgbdns/secondary.env` | `rgbdns-tinydns.service` and `rgbdns-secondary-sync.timer` |
+| secondary plus `/etc/rgbdns/zones-drop.env` | authority, timer, and `rgbdns-zones.path` |
 | no recorded role | none |
 
-Restart authority to run the upgraded binary, then verify the role:
+Verify that the upgrade restarted authority and restored the role:
 
 ```sh
-sudo systemctl restart rgbdns-tinydns
 sudo systemctl is-active rgbdns-tinydns
 sudo systemctl status rgbdns-data.path rgbdns-zones.path \
   rgbdns-secondary-sync.timer --no-pager
@@ -667,16 +667,8 @@ An enabled unit that is `inactive` is not picking up changes. The path unit
 for the configured role must be `active (waiting)`, and a configured
 secondary's timer must be `active (waiting)`.
 
-When upgrading from a release older than 0.3.1, activate the recorded role
-once because the older package did not restore it:
-
-```sh
-# Primary only
-sudo systemctl enable --now rgbdns-data.path
-
-# Secondary only
-sudo systemctl enable --now rgbdns-secondary-sync.timer rgbdns-zones.path
-```
+When upgrading to a release older than 0.3.3, authority and automation require
+manual activation. Upgrade directly to 0.3.3 or newer instead.
 
 ### Repurpose a primary as a secondary
 

@@ -17,7 +17,7 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.3.2 as built on 2026-07-30.
+version 0.3.3 as built on 2026-07-31.
 
 # The problem DNS solves
 
@@ -1730,16 +1730,17 @@ sudo rpm -V rgbdns
 
 A fresh package installation deliberately starts no role-specific automation.
 Run `rgbdns-setup primary` or `rgbdns-setup secondary` once. Beginning with
-0.3.1, upgrades inspect the role already recorded under `/etc/rgbdns`:
+0.3.3, upgrades inspect the role already recorded under `/etc/rgbdns`:
 
-- a primary with `data-drop.env` has `rgbdns-data.path` restored;
-- a secondary has `rgbdns-secondary-sync.timer` restored and, when
-  `zones-drop.env` exists, `rgbdns-zones.path` restored; and
+- a primary with `data-drop.env` has authority and `rgbdns-data.path`
+  restored;
+- a secondary has authority and `rgbdns-secondary-sync.timer` restored and,
+  when `zones-drop.env` exists, `rgbdns-zones.path` restored; and
 - an unconfigured installation remains inactive.
 
-Restart `rgbdns-tinydns` after an upgrade to run the new binary. Verify that a
-primary picker is `active (waiting)`, or that both the secondary timer and
-zone picker are `active (waiting)`.
+Verify after an upgrade that `rgbdns-tinydns` is active and that a primary
+picker is `active (waiting)`, or that both the secondary timer and zone picker
+are `active (waiting)`.
 
 To repurpose a host, prepare the complete input for the destination role and
 run the opposite `rgbdns-setup` command. A primary-to-secondary conversion

@@ -25,6 +25,7 @@ touch "$root/config/data-drop.env"
 run_restore
 grep -qx 'daemon-reload' "$log"
 grep -qx 'disable --now rgbdns-secondary-sync.timer rgbdns-zones.path' "$log"
+grep -qx 'enable --now rgbdns-tinydns.service' "$log"
 grep -qx 'enable --now rgbdns-data.path' "$log"
 ! grep -q 'enable --now rgbdns-secondary-sync.timer' "$log"
 
@@ -33,6 +34,7 @@ touch "$root/config/secondary.env" "$root/config/zones-drop.env"
 run_restore
 grep -qx 'daemon-reload' "$log"
 grep -qx 'disable --now rgbdns-data.path' "$log"
+grep -qx 'enable --now rgbdns-tinydns.service' "$log"
 grep -qx 'enable --now rgbdns-secondary-sync.timer' "$log"
 grep -qx 'enable --now rgbdns-zones.path' "$log"
 ! grep -q 'enable --now rgbdns-data.path' "$log"
@@ -46,6 +48,7 @@ rm "$root/config/secondary.env"
 run_restore
 grep -qx 'daemon-reload' "$log"
 test "$(wc -l <"$log")" -eq 1
+! grep -q 'rgbdns-tinydns.service' "$log"
 
 rm -rf "$root/run/systemd/system"
 : >"$log"

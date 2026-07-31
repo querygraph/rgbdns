@@ -14,9 +14,11 @@ systemd_runtime=${RGBDNS_SYSTEMD_RUNTIME:-/run/systemd/system}
 if [ -f "$config_dir/data-drop.env" ]; then
     "$systemctl" disable --now rgbdns-secondary-sync.timer \
         rgbdns-zones.path >/dev/null 2>&1 || true
+    "$systemctl" enable --now rgbdns-tinydns.service
     "$systemctl" enable --now rgbdns-data.path
 elif [ -f "$config_dir/secondary.env" ]; then
     "$systemctl" disable --now rgbdns-data.path >/dev/null 2>&1 || true
+    "$systemctl" enable --now rgbdns-tinydns.service
     "$systemctl" enable --now rgbdns-secondary-sync.timer
     if [ -f "$config_dir/zones-drop.env" ]; then
         "$systemctl" enable --now rgbdns-zones.path
