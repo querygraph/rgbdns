@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-30" />
+  <meta name="dcterms.date" content="2026-07-31" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Operating an authoritative service</title>
   <style>
@@ -16,8 +16,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -202,7 +206,7 @@ id="names-addresses-and-the-security-boundary"><span
 class="header-section-number">16.2.1</span> Names, addresses, and the
 security boundary</h3>
 <p>The examples use one service zone with in-bailiwick nameservers:</p>
-<pre class="text"><code>ZONE=example.net
+<pre class="text"><code>ZONES=&quot;example.net example.org&quot;
 PRIMARY_NS=a.ns.example.net
 SECONDARY_NS=b.ns.example.net
 PRIMARY_PUBLIC_IP=192.0.2.53
@@ -233,40 +237,175 @@ A records in the <code>cron.sh</code> zone, not in
 <code>fieldnotes.es</code>;</li>
 <li>create glue at the parent of <code>cron.sh</code> when those names
 are in-bailiwick nameservers for <code>cron.sh</code>; and</li>
-<li>remember that one packaged secondary instance synchronizes one
-zone.</li>
+<li>one packaged secondary instance can synchronize many zones from the
+same primary endpoint.</li>
 </ul>
-<p>Consequently, a <code>b</code> configured to transfer only
-<code>fieldnotes.es</code> must not be advertised as authoritative for
-<code>cron.sh</code>. Retain other working authorities for that
-infrastructure zone or create an additional explicitly managed secondary
-instance.</p>
-<h3 data-number="16.2.2" id="obtain-and-install-the-packages"><span
-class="header-section-number">16.2.2</span> Obtain and install the
+<p>Consequently, advertise <code>b</code> only for zones included in
+<code>/etc/rgbdns/zones</code>. Add both <code>fieldnotes.es</code> and
+<code>cron.sh</code> when <code>b</code> should be authoritative for
+both; otherwise retain other working authorities for the omitted
+infrastructure zone.</p>
+<h3 data-number="16.2.2"
+id="worked-deployment-fieldnotes.es-on-a.ns.cron.sh-and-b.ns.cron.sh"><span
+class="header-section-number">16.2.2</span> Worked deployment:
+<code>fieldnotes.es</code> on <code>a.ns.cron.sh</code> and
+<code>b.ns.cron.sh</code></h3>
+<p>The concrete deployment uses:</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 28%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr>
+<th>Role</th>
+<th>Name</th>
+<th style="text-align: right;">Public address</th>
+<th style="text-align: right;">VPC address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debian primary</td>
+<td><code>a.ns.cron.sh</code></td>
+<td style="text-align: right;"><code>52.10.53.234</code></td>
+<td style="text-align: right;"><code>172.31.60.189</code></td>
+</tr>
+<tr>
+<td>openSUSE secondary</td>
+<td><code>b.ns.cron.sh</code></td>
+<td style="text-align: right;"><code>52.38.177.160</code></td>
+<td style="text-align: right;"><code>172.31.0.125</code></td>
+</tr>
+</tbody>
+</table>
+<p>The primary serves two zones from one source. <code>cron.sh</code>
+supplies the nameserver addresses, while <code>fieldnotes.es</code>
+delegates to those names plus the three assigned BuddyNS
+authorities:</p>
+<pre class="text"><code># cron.sh infrastructure zone
+Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026073001:16384:2048:1048576:2560:3600
+&amp;cron.sh:52.10.53.234:a.ns.cron.sh:3600
+&amp;cron.sh:52.38.177.160:b.ns.cron.sh:3600
+&amp;cron.sh::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
+&amp;cron.sh::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
+&amp;cron.sh::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600
+
+# fieldnotes.es application zone
+Zfieldnotes.es:a.ns.cron.sh:hostmaster.cron.sh:2026073001:16384:2048:1048576:2560:3600
+&amp;fieldnotes.es::a.ns.cron.sh:3600
+&amp;fieldnotes.es::b.ns.cron.sh:3600
+&amp;fieldnotes.es::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
+&amp;fieldnotes.es::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
+&amp;fieldnotes.es::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600</code></pre>
+<p>Increment the affected SOA serial whenever the source changes. Obtain
+the current BuddyNS transfer-source CIDRs from BuddyNS and store them in
+the login account’s protected <code>buddyns-axfr.env</code>; provider
+networks are operational input, not constants to copy forever from a
+book.</p>
+<p>From the normal <code>bitnami</code> shell on the primary, configure
+the role and its watched <code>rgbdns.data</code> path:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/buddyns-axfr.env&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="va">PRIMARY_AXFR_NETS</span><span class="op">=</span><span class="st">&quot;172.31.0.125/32,</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup primary <span class="dt">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns.data&quot;</span> <span class="dt">\</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data-drop</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns.data&quot;</span> <span class="dt">\</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data-drop-owner</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">id</span> <span class="at">-un</span><span class="va">)</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="at">--port</span> 53 <span class="dt">\</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> <span class="st">&quot;</span><span class="va">$PRIMARY_AXFR_NETS</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--query-log</span> 1</span></code></pre></div>
+<p>The secondary transfers both zones because it is advertised for
+both:</p>
+<pre class="text"><code>cron.sh
+fieldnotes.es</code></pre>
+<p>From the normal openSUSE login shell:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/buddyns-axfr.env&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup secondary <span class="dt">\</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zones</span> <span class="st">&quot;cron.sh fieldnotes.es&quot;</span> <span class="dt">\</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--primary</span> 172.31.60.189 <span class="dt">\</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zones-drop</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns.zones&quot;</span> <span class="dt">\</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zones-drop-owner</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">id</span> <span class="at">-un</span><span class="va">)</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="at">--port</span> 53 <span class="dt">\</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> <span class="st">&quot;</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--query-log</span> 1</span></code></pre></div>
+<p>Use the private primary address for VPC AXFR while retaining the
+public addresses in delegation. Later, publish complete primary data and
+the desired secondary list through temporary names and atomic
+renames:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> rgbdns.data bitnami@52.10.53.234:rgbdns.data.new</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> bitnami@52.10.53.234 <span class="st">&#39;mv rgbdns.data.new rgbdns.data&#39;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> rgbdns.zones <span class="st">&quot;</span><span class="va">$SUSE_USER</span><span class="st">&quot;</span>@52.38.177.160:rgbdns.zones.new</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="st">&quot;</span><span class="va">$SUSE_USER</span><span class="st">&quot;</span>@52.38.177.160 <span class="st">&#39;mv rgbdns.zones.new rgbdns.zones&#39;</span></span></code></pre></div>
+<p>The primary importer compiles a private staged copy and leaves the
+live CDB unchanged on failure. The secondary importer validates,
+normalizes, and atomically installs the list before starting AXFR.
+Inspect both boundaries:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-u</span> rgbdns-data-import.service <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-u</span> rgbdns-zones-import.service <span class="dt">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-u</span> rgbdns-secondary-sync.service <span class="at">-n</span> 100 <span class="at">--no-pager</span></span></code></pre></div>
+<p>The standalone <a
+href="https://github.com/querygraph/rgbdns/blob/master/docs/RGBDNS_SETUP.md"><code>RGBDNS_SETUP.md</code></a>
+walkthrough contains package download and installation, AWS rules,
+BuddyNS, delegation, upgrades, complete verification, and
+troubleshooting commands for this exact deployment.</p>
+<p>For a deployment-level ANAME transfer proof, add an undelegated
+reserved test zone to the primary source:</p>
+<pre class="text"><code>Zaname-axfr.test:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&amp;aname-axfr.test::a.ns.cron.sh:3600
+&amp;aname-axfr.test::b.ns.cron.sh:3600
+Aaname-axfr.test:publication.ghost.io:300</code></pre>
+<p>Publish the complete primary data atomically, add
+<code>aname-axfr.test</code> to the complete secondary drop list, and
+publish that list atomically. On the secondary, this line proves
+negotiated metadata survived AXFR:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> grep <span class="st">&#39;^Aaname-axfr\.test&#39;</span> <span class="dt">\</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  /var/lib/rgbdns/tinydns/secondary-zones/aname-axfr.test.data</span></code></pre></div>
+<p>Normal queries to each public authority must return standard
+authoritative A or AAAA answers with no CNAME and a TTL no greater than
+300. Run the standard AXFR privacy check from the secondary or another
+authorized VPC host:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @172.31.60.189 aname-axfr.test AXFR <span class="kw">|</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grep</span> <span class="at">-E</span> <span class="st">&#39;TYPE65401|RGA1|publication\.ghost\.io&#39;</span></span></code></pre></div>
+<p>No output is expected. The private <code>172.31.60.189</code> address
+is not reachable from an ordinary workstation outside AWS, and the
+public AXFR endpoint should remain limited to explicitly authorized
+source addresses.</p>
+<h3 data-number="16.2.3" id="obtain-and-install-the-packages"><span
+class="header-section-number">16.2.3</span> Obtain and install the
 packages</h3>
 <p>The GitHub Actions workflows publish architecture-specific artifacts.
 They are not APT or Zypper repositories. Install GitHub CLI and
 authenticate on a machine allowed to retrieve the artifacts:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> auth login</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> auth login</span></code></pre></div>
 <p>Select the newest successful Debian build without depending on the
 version-specific <code>--status</code> option found only in newer GitHub
 CLI releases:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">DEB_RUN_ID</span><span class="op">=</span><span class="va">$(</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">gh</span> run list <span class="at">-R</span> querygraph/rgbdns <span class="dt">\</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-w</span> build-deb.yml <span class="at">-b</span> master <span class="at">-L</span> 50 <span class="dt">\</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--json</span> databaseId,conclusion <span class="dt">\</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--jq</span> <span class="st">&#39;.[] | select(.conclusion == &quot;success&quot;) | .databaseId&#39;</span> <span class="kw">|</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span> <span class="at">-n</span> 1</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-deb&quot;</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> run download <span class="st">&quot;</span><span class="va">$DEB_RUN_ID</span><span class="st">&quot;</span> <span class="dt">\</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> querygraph/rgbdns <span class="dt">\</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-n</span> rgbdns-debian-amd64 <span class="dt">\</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">-D</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-deb&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="va">DEB_RUN_ID</span><span class="op">=</span><span class="va">$(</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">gh</span> run list <span class="at">-R</span> querygraph/rgbdns <span class="dt">\</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-w</span> build-deb.yml <span class="at">-b</span> master <span class="at">-L</span> 50 <span class="dt">\</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--json</span> databaseId,conclusion <span class="dt">\</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--jq</span> <span class="st">&#39;.[] | select(.conclusion == &quot;success&quot;) | .databaseId&#39;</span> <span class="kw">|</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span> <span class="at">-n</span> 1</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-deb&quot;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> run download <span class="st">&quot;</span><span class="va">$DEB_RUN_ID</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> querygraph/rgbdns <span class="dt">\</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-n</span> rgbdns-debian-amd64 <span class="dt">\</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">-D</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-deb&quot;</span></span></code></pre></div>
 <p>On the Debian or Ubuntu primary, install the downloaded package:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">&quot;</span>/rgbdns-deb/rgbdns_<span class="pp">*</span>_amd64.deb</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dpkg <span class="at">--audit</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dpkg-query</span> <span class="at">-W</span> <span class="at">-f</span><span class="op">=</span><span class="st">&#39;${Status} ${Version}\n&#39;</span> rgbdns</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">&quot;</span>/rgbdns-deb/rgbdns_<span class="pp">*</span>_amd64.deb</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dpkg <span class="at">--audit</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dpkg-query</span> <span class="at">-W</span> <span class="at">-f</span><span class="op">=</span><span class="st">&#39;${Status} ${Version}\n&#39;</span> rgbdns</span></code></pre></div>
 <p>The package intentionally replaces Debian’s djbdns and daemontools
 command packages because both suites own paths such as
 <code>/usr/bin/tinydns-get</code> and <code>/usr/bin/multilog</code>.
@@ -274,23 +413,24 @@ Review APT’s removal plan before confirming on a host that already runs
 those services. Never use <code>dpkg --force-overwrite</code>.</p>
 <p>For a selected topology containing <code>b</code>, download the
 newest successful openSUSE RPM artifact on the Leap 16 secondary:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="va">RPM_RUN_ID</span><span class="op">=</span><span class="va">$(</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">gh</span> run list <span class="at">-R</span> querygraph/rgbdns <span class="dt">\</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-w</span> build-rpm.yml <span class="at">-b</span> master <span class="at">-L</span> 50 <span class="dt">\</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--json</span> databaseId,conclusion <span class="dt">\</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--jq</span> <span class="st">&#39;.[] | select(.conclusion == &quot;success&quot;) | .databaseId&#39;</span> <span class="kw">|</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span> <span class="at">-n</span> 1</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-rpm&quot;</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> run download <span class="st">&quot;</span><span class="va">$RPM_RUN_ID</span><span class="st">&quot;</span> <span class="dt">\</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> querygraph/rgbdns <span class="dt">\</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-n</span> rgbdns-opensuse-leap16-x86_64 <span class="dt">\</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">-D</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-rpm&quot;</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="va">RPM</span><span class="op">=</span><span class="va">$(</span><span class="fu">find</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-rpm/RPMS/x86_64&quot;</span> <span class="dt">\</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">-maxdepth</span> 1 <span class="at">-name</span> <span class="st">&#39;rgbdns-[0-9]*.x86_64.rpm&#39;</span> <span class="at">-print</span> <span class="at">-quit</span><span class="va">)</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="ex">rpm</span> <span class="at">-K</span> <span class="st">&quot;</span><span class="va">$RPM</span><span class="st">&quot;</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> zypper <span class="at">--non-interactive</span> <span class="at">--no-gpg-checks</span> install <span class="st">&quot;</span><span class="va">$RPM</span><span class="st">&quot;</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rpm <span class="at">-V</span> rgbdns</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="va">RPM_RUN_ID</span><span class="op">=</span><span class="va">$(</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">gh</span> run list <span class="at">-R</span> querygraph/rgbdns <span class="dt">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-w</span> build-rpm.yml <span class="at">-b</span> master <span class="at">-L</span> 50 <span class="dt">\</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--json</span> databaseId,conclusion <span class="dt">\</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--jq</span> <span class="st">&#39;.[] | select(.conclusion == &quot;success&quot;) | .databaseId&#39;</span> <span class="kw">|</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span> <span class="at">-n</span> 1</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-rpm&quot;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> run download <span class="st">&quot;</span><span class="va">$RPM_RUN_ID</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-R</span> querygraph/rgbdns <span class="dt">\</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-n</span> rgbdns-opensuse-leap16-x86_64 <span class="dt">\</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">-D</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-rpm&quot;</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="va">RPM</span><span class="op">=</span><span class="va">$(</span><span class="fu">find</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/rgbdns-rpm/RPMS/x86_64&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">-maxdepth</span> 1 <span class="at">-name</span> <span class="st">&#39;rgbdns-[0-9]*.x86_64.rpm&#39;</span> <span class="at">-print</span> <span class="at">-quit</span><span class="va">)</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="ex">rpm</span> <span class="at">-K</span> <span class="st">&quot;</span><span class="va">$RPM</span><span class="st">&quot;</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> zypper <span class="at">--non-interactive</span> <span class="at">--no-gpg-checks</span> install <span class="st">&quot;</span><span class="va">$RPM</span><span class="st">&quot;</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rpm <span class="at">-V</span> rgbdns</span></code></pre></div>
 <p>The artifact retains its <code>RPMS/x86_64</code> and
 <code>SRPMS</code> directories. Install the binary package under
 <code>RPMS/x86_64</code>; <code>SRPMS</code> contains the source RPM.
@@ -305,11 +445,12 @@ under <code>/var/lib/rgbdns/tinydns</code>, and hardened systemd units.
 Installation does not publish placeholder DNS data or enable
 authority.</p>
 <p>Verify the installed account and units:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getent</span> passwd rgbdns</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">getent</span> group rgbdns</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> list-unit-files <span class="st">&#39;rgbdns-*&#39;</span></span></code></pre></div>
-<h3 data-number="16.2.3" id="build-one-primary-source-file"><span
-class="header-section-number">16.2.3</span> Build one primary source
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getent</span> passwd rgbdns</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">getent</span> group rgbdns</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> list-unit-files <span class="st">&#39;rgbdns-*&#39;</span></span></code></pre></div>
+<h3 data-number="16.2.4" id="build-one-primary-source-file"><span
+class="header-section-number">16.2.4</span> Build one primary source
 file</h3>
 <p>Start with common application records and one SOA serial. A sortable
 <code>YYYYMMDDNN</code> serial is convenient; increment it before every
@@ -340,133 +481,163 @@ placeholders with the exact names shown in BuddyBoard.</p>
 <p>Store the assembled source as <code>/root/rgbdns.data</code> on the
 primary. Protect and compile a disposable copy before changing the
 service:</p>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-o</span> root <span class="at">-g</span> root <span class="at">-m</span> 0600 rgbdns.data /root/rgbdns.data</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="va">check_dir</span><span class="op">=</span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-d</span><span class="va">)</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-o</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">id</span> <span class="at">-u</span><span class="va">)</span><span class="st">&quot;</span> <span class="at">-g</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">id</span> <span class="at">-g</span><span class="va">)</span><span class="st">&quot;</span> <span class="at">-m</span> 0600 <span class="dt">\</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  /root/rgbdns.data <span class="st">&quot;</span><span class="va">$check_dir</span><span class="st">/data&quot;</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$check_dir</span><span class="st">&quot;</span> <span class="kw">&amp;&amp;</span> <span class="ex">tinydns-data</span><span class="kw">)</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> <span class="st">&quot;</span><span class="va">$check_dir</span><span class="st">/data.cdb&quot;</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$check_dir</span><span class="st">&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-o</span> root <span class="at">-g</span> root <span class="at">-m</span> 0600 rgbdns.data /root/rgbdns.data</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="va">check_dir</span><span class="op">=</span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-d</span><span class="va">)</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-o</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">id</span> <span class="at">-u</span><span class="va">)</span><span class="st">&quot;</span> <span class="at">-g</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">id</span> <span class="at">-g</span><span class="va">)</span><span class="st">&quot;</span> <span class="at">-m</span> 0600 <span class="dt">\</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  /root/rgbdns.data <span class="st">&quot;</span><span class="va">$check_dir</span><span class="st">/data&quot;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$check_dir</span><span class="st">&quot;</span> <span class="kw">&amp;&amp;</span> <span class="ex">tinydns-data</span><span class="kw">)</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> <span class="st">&quot;</span><span class="va">$check_dir</span><span class="st">/data.cdb&quot;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$check_dir</span><span class="st">&quot;</span></span></code></pre></div>
 <p>Compilation proves syntax and semantic consistency, not that the
 chosen addresses, delegation, mail policy, or application records are
 correct. Compare the new source with the old zone before cutover. AXFR
 from an existing authority is the best inventory when allowed; otherwise
 query all known record types and names from configuration
 management.</p>
-<h3 data-number="16.2.4" id="construct-the-axfr-allow-list-once"><span
-class="header-section-number">16.2.4</span> Construct the AXFR
+<h3 data-number="16.2.5" id="construct-the-axfr-allow-list-once"><span
+class="header-section-number">16.2.5</span> Construct the AXFR
 allow-list once</h3>
 <p>For a topology containing BuddyNS, copy BuddyBoard’s current
 published transfer-source addresses into a protected, sourceable file.
 Express individual IPv4 sources as <code>/32</code> networks:</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-o</span> root <span class="at">-g</span> root <span class="at">-m</span> 0600 <span class="dt">\</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  buddyns-axfr.env /etc/rgbdns/buddyns-axfr.env</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /etc/rgbdns/buddyns-axfr.env</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-o</span> root <span class="at">-g</span> root <span class="at">-m</span> 0600 <span class="dt">\</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  buddyns-axfr.env /etc/rgbdns/buddyns-axfr.env</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /etc/rgbdns/buddyns-axfr.env</span></code></pre></div>
 <p>The file has this form:</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="va">BUDDYNS_AXFR_V4</span><span class="op">=</span><span class="st">&#39;203.0.113.10/32,203.0.113.11/32&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="va">BUDDYNS_AXFR_V4</span><span class="op">=</span><span class="st">&#39;203.0.113.10/32,203.0.113.11/32&#39;</span></span></code></pre></div>
 <p>Treat the addresses as provider-maintained data, not constants copied
 forever from a book. Reconcile the file with BuddyBoard before a
 deployment and after provider network changes.</p>
 <p>Choose the primary allow-list:</p>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a + BuddyNS</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="va">PRIMARY_ALLOW_NETS</span><span class="op">=</span><span class="va">$BUDDYNS_AXFR_V4</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># a + b + BuddyNS</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="va">PRIMARY_ALLOW_NETS</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$SECONDARY_PRIVATE_IP</span><span class="st">/32,</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">&quot;</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># a + b</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="va">PRIMARY_ALLOW_NETS</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$SECONDARY_PRIVATE_IP</span><span class="st">/32&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a + BuddyNS</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="va">PRIMARY_ALLOW_NETS</span><span class="op">=</span><span class="va">$BUDDYNS_AXFR_V4</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># a + b + BuddyNS</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="va">PRIMARY_ALLOW_NETS</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$SECONDARY_PRIVATE_IP</span><span class="st">/32,</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">&quot;</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># a + b</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="va">PRIMARY_ALLOW_NETS</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$SECONDARY_PRIVATE_IP</span><span class="st">/32&quot;</span></span></code></pre></div>
 <p>Run only the assignment for the selected topology. Never allow the
 entire VPC when one stable secondary address or security-group path is
 sufficient.</p>
-<h3 data-number="16.2.5" id="configure-and-cut-over-the-primary"><span
-class="header-section-number">16.2.5</span> Configure and cut over the
+<h3 data-number="16.2.6" id="configure-and-cut-over-the-primary"><span
+class="header-section-number">16.2.6</span> Configure and cut over the
 primary</h3>
 <p>First stage configuration without claiming port 53:</p>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup primary <span class="dt">\</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data</span> /root/rgbdns.data <span class="dt">\</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="dt">\</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--port</span> 53 <span class="dt">\</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> <span class="st">&quot;</span><span class="va">$PRIMARY_ALLOW_NETS</span><span class="st">&quot;</span> <span class="dt">\</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--no-start</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> <span class="at">-u</span> rgbdns /usr/lib/rgbdns/compile-zone</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemd-analyze verify <span class="dt">\</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  /lib/systemd/system/rgbdns-tinydns.service <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">||</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemd-analyze verify <span class="dt">\</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  /usr/lib/systemd/system/rgbdns-tinydns.service</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ls <span class="at">-lah</span> /var/lib/rgbdns/tinydns</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/tinydns.env</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup primary <span class="dt">\</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data</span> /root/rgbdns.data <span class="dt">\</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="dt">\</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--port</span> 53 <span class="dt">\</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> <span class="st">&quot;</span><span class="va">$PRIMARY_ALLOW_NETS</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--no-start</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> <span class="at">-u</span> rgbdns /usr/lib/rgbdns/compile-zone</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemd-analyze verify <span class="dt">\</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  /lib/systemd/system/rgbdns-tinydns.service <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">||</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemd-analyze verify <span class="dt">\</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  /usr/lib/systemd/system/rgbdns-tinydns.service</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ls <span class="at">-lah</span> /var/lib/rgbdns/tinydns</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/tinydns.env</span></code></pre></div>
+<p>Setup watches <code>rgbdns.data</code> in the invoking sudo user’s
+home directory. After editing the complete source locally, publish it
+atomically:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> rgbdns.data a.ns.example.net:rgbdns.data.new</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> a.ns.example.net <span class="st">&#39;mv rgbdns.data.new rgbdns.data&#39;</span></span></code></pre></div>
+<p><code>rgbdns-data.path</code> verifies ownership, compiles a private
+staged copy, and replaces the live source and CDB only after successful
+compilation. Invalid, partial, or symlinked uploads leave the currently
+served database unchanged. Use <code>--data-drop FILE</code> and
+<code>--data-drop-owner USER</code> when another destination is
+required.</p>
 <p>The two unit paths cover Debian-family and openSUSE layouts. An
 unrelated legacy-unit warning from <code>systemd-analyze</code> does not
 invalidate a successful rgbdns unit check.</p>
 <p>On a migration host, identify the existing owner of port 53:</p>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span></code></pre></div>
 <p>Stop only the old authoritative services. Do not stop an entire
 <code>runsvdir</code> tree on a host where it also owns unrelated
 applications. For a classic djbdns layout:</p>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sv down /etc/axfrdns /etc/axfrdns/log</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sv down /etc/tinydns /etc/tinydns/log</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sv down /etc/axfrdns /etc/axfrdns/log</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sv down /etc/tinydns /etc/tinydns/log</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span></code></pre></div>
 <p>Then enable rgbdns:</p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> rgbdns-tinydns.service</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl status rgbdns-tinydns.service <span class="at">--no-pager</span> <span class="at">--full</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> rgbdns-tinydns.service</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl status rgbdns-tinydns.service <span class="at">--no-pager</span> <span class="at">--full</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span></code></pre></div>
 <p>The authoritative daemon serves normal UDP, normal TCP, and allowed
 AXFR on the same port. Do not start the separately packaged
 <code>axfrdns</code> compatibility command on port 53.</p>
 <p>Verify the primary locally and publicly before configuring
 delegation:</p>
-<div class="sourceCode" id="cb21"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @127.0.0.1 example.net SOA +norecurse</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @127.0.0.1 example.net NS +norecurse</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @127.0.0.1 example.net A +norecurse</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @127.0.0.1 example.net SOA +norecurse</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 example.net SOA +norecurse</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 example.net NS +norecurse</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @192.0.2.53 example.net SOA +norecurse</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @127.0.0.1 example.net SOA +norecurse</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @127.0.0.1 example.net NS +norecurse</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @127.0.0.1 example.net A +norecurse</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @127.0.0.1 example.net SOA +norecurse</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 example.net SOA +norecurse</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 example.net NS +norecurse</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @192.0.2.53 example.net SOA +norecurse</span></code></pre></div>
 <p>Require <code>status: NOERROR</code>, the <code>aa</code> flag, the
 intended serial, the complete NS set, and correct address records.</p>
-<h3 data-number="16.2.6"
+<h3 data-number="16.2.7"
 id="configure-b-when-the-topology-includes-it"><span
-class="header-section-number">16.2.6</span> Configure <code>b</code>
+class="header-section-number">16.2.7</span> Configure <code>b</code>
 when the topology includes it</h3>
 <p>The primary must allow the secondary’s source address, and the
 network path must permit TCP 53, before this step. On the openSUSE
 secondary:</p>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup secondary <span class="dt">\</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zone</span> example.net <span class="dt">\</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--primary</span> 10.0.1.10 <span class="dt">\</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup secondary <span class="dt">\</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zone</span> example.net <span class="dt">\</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zone</span> example.org <span class="dt">\</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--primary</span> 10.0.1.10 <span class="dt">\</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0</span></code></pre></div>
 <p>For <code>a + b + BuddyNS</code>, BuddyNS may read from
 <code>b</code> as an alternate master. In that case load the same
 current provider list and pass it to the secondary:</p>
-<div class="sourceCode" id="cb23"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /etc/rgbdns/buddyns-axfr.env</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup secondary <span class="dt">\</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zone</span> example.net <span class="dt">\</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--primary</span> 10.0.1.10 <span class="dt">\</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="dt">\</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> <span class="st">&quot;</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">&quot;</span></span></code></pre></div>
-<p>Choose one of those two setup commands. Setup performs a complete
-AXFR, validates the response and SOA bookends, atomically installs and
-compiles the zone, starts authority only after success, and enables a
-randomized five-minute refresh timer. It does not use NOTIFY or
-IXFR.</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /etc/rgbdns/buddyns-axfr.env</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup secondary <span class="dt">\</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zones</span> <span class="st">&quot;example.net example.org&quot;</span> <span class="dt">\</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--primary</span> 10.0.1.10 <span class="dt">\</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="dt">\</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> <span class="st">&quot;</span><span class="va">$BUDDYNS_AXFR_V4</span><span class="st">&quot;</span></span></code></pre></div>
+<p>Choose one of those two setup commands. <code>--zone</code> is
+repeatable; <code>--zones</code> accepts a whitespace- or
+comma-separated list. Setup performs a complete AXFR for each zone,
+validates every response and its SOA bookends, and requires one valid
+snapshot per zone before initially starting authority. On later runs, a
+failed refresh retains that zone’s last-known-good snapshot while
+successful zones advance. The snapshots are compiled together and the
+combined CDB is installed atomically. The randomized five-minute timer
+does not use NOTIFY or IXFR.</p>
+<p>Setup stores the canonical one-zone-per-line list in
+<code>/etc/rgbdns/zones</code> and watches <code>rgbdns.zones</code> in
+the invoking sudo user’s home. Manage later changes as a file and
+publish them with an atomic rename:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> rgbdns.zones b.ns.example.net:rgbdns.zones.new</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> b.ns.example.net <span class="st">&#39;mv rgbdns.zones.new rgbdns.zones&#39;</span></span></code></pre></div>
+<p><code>rgbdns-zones.path</code> validates ownership and contents
+before replacing the canonical list and starting synchronization.
+Invalid, empty, symlinked, or partially uploaded lists leave the active
+configuration unchanged. Use <code>--zones-drop FILE</code> and
+<code>--zones-drop-owner USER</code> during setup when the default
+home-directory destination is not appropriate.</p>
 <p>Check the one-shot synchronization result:</p>
-<div class="sourceCode" id="cb24"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> show rgbdns-secondary-sync.service <span class="dt">\</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> Result <span class="at">-p</span> ExecMainStatus <span class="at">-p</span> ActiveState <span class="at">-p</span> SubState</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> show rgbdns-secondary-sync.service <span class="dt">\</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> Result <span class="at">-p</span> ExecMainStatus <span class="at">-p</span> ActiveState <span class="at">-p</span> SubState</span></code></pre></div>
 <p>A successful completed run reads:</p>
 <pre class="text"><code>Result=success
 ExecMainStatus=0
@@ -477,22 +648,24 @@ SubState=dead</code></pre>
 directory and its lock exist only while synchronization runs; systemd
 removes and recreates them for each invocation.</p>
 <p>Verify service, timer, and answers:</p>
-<div class="sourceCode" id="cb26"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> rgbdns-tinydns.service</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> rgbdns-secondary-sync.timer</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> list-timers rgbdns-secondary-sync.timer</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @127.0.0.1 example.net SOA +norecurse</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @198.51.100.53 example.net SOA +norecurse</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @198.51.100.53 example.net SOA +norecurse</span></code></pre></div>
-<p>The secondary serial must match the primary. To force a refresh after
-a publication:</p>
-<div class="sourceCode" id="cb27"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl start rgbdns-secondary-sync.service</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-u</span> rgbdns-secondary-sync.service <span class="at">-n</span> 50 <span class="at">--no-pager</span></span></code></pre></div>
-<h3 data-number="16.2.7"
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> rgbdns-tinydns.service</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> rgbdns-secondary-sync.timer</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> rgbdns-zones.path</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> list-timers rgbdns-secondary-sync.timer</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> status rgbdns-zones.path</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @127.0.0.1 example.net SOA +norecurse</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @198.51.100.53 example.net SOA +norecurse</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @198.51.100.53 example.net SOA +norecurse</span></code></pre></div>
+<p>Every secondary serial must match its primary counterpart. To force a
+refresh after a publication:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl start rgbdns-secondary-sync.service</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-u</span> rgbdns-secondary-sync.service <span class="at">-n</span> 50 <span class="at">--no-pager</span></span></code></pre></div>
+<h3 data-number="16.2.8"
 id="configure-buddyns-when-the-topology-includes-it"><span
-class="header-section-number">16.2.7</span> Configure BuddyNS when the
+class="header-section-number">16.2.8</span> Configure BuddyNS when the
 topology includes it</h3>
 <p>In BuddyBoard:</p>
 <ol type="1">
@@ -509,14 +682,14 @@ and the eventual parent delegation must agree exactly. A provider
 transfer test should succeed before any registrar change.</p>
 <p>From an allowed transfer source, or with a controlled temporary test
 address added to <code>ALLOW_NETS</code>, verify:</p>
-<div class="sourceCode" id="cb28"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp AXFR example.net @192.0.2.53</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp AXFR example.net @198.51.100.53  <span class="co"># when b permits BuddyNS</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp AXFR example.net @192.0.2.53</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp AXFR example.net @198.51.100.53  <span class="co"># when b permits BuddyNS</span></span></code></pre></div>
 <p>An unlisted client should receive <code>REFUSED</code>. Do not
 broaden the allow-list merely to make an arbitrary workstation AXFR test
 succeed.</p>
-<h3 data-number="16.2.8" id="publish-glue-and-delegation-last"><span
-class="header-section-number">16.2.8</span> Publish glue and delegation
+<h3 data-number="16.2.9" id="publish-glue-and-delegation-last"><span
+class="header-section-number">16.2.9</span> Publish glue and delegation
 last</h3>
 <p>Create or verify registrar host objects before adding in-bailiwick
 nameservers:</p>
@@ -537,19 +710,19 @@ child NS RRset and parent delegation until new authorities pass UDP,
 TCP, SOA, and negative-answer tests. Remove old secondaries in a later
 serial change after parent updates have propagated.</p>
 <p>Trace the parent and query every authority:</p>
-<div class="sourceCode" id="cb30"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +trace +nodnssec example.net NS</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 example.net SOA +norecurse</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @198.51.100.53 example.net SOA +norecurse</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +trace +nodnssec example.net NS</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 example.net SOA +norecurse</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @198.51.100.53 example.net SOA +norecurse</span></code></pre></div>
 <p>Query each BuddyNS hostname as well when selected. Compare serials,
 NS RRsets, and authoritative flags. Also test a known name, a
 nonexistent name, UDP, and TCP:</p>
-<div class="sourceCode" id="cb31"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 www.example.net A +norecurse</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 does-not-exist.example.net A +norecurse</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @192.0.2.53 www.example.net A +norecurse</span></code></pre></div>
-<h3 data-number="16.2.9" id="publish-changes-upgrade-and-recover"><span
-class="header-section-number">16.2.9</span> Publish changes, upgrade,
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 www.example.net A +norecurse</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> @192.0.2.53 does-not-exist.example.net A +norecurse</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @192.0.2.53 www.example.net A +norecurse</span></code></pre></div>
+<h3 data-number="16.2.10" id="publish-changes-upgrade-and-recover"><span
+class="header-section-number">16.2.10</span> Publish changes, upgrade,
 and recover</h3>
 <p>For each zone change:</p>
 <ol type="1">
@@ -565,31 +738,54 @@ allow-list;</li>
 <p>Package upgrades preserve configuration and state. Upgrade a
 downloaded Debian package with
 <code>apt install /path/package.deb</code> and an RPM with:</p>
-<div class="sourceCode" id="cb32"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> zypper <span class="at">--non-interactive</span> <span class="at">--no-gpg-checks</span> install <span class="dt">\</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  /path/to/rgbdns-VERSION-RELEASE.x86_64.rpm</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl daemon-reload</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl start rgbdns-secondary-sync.service</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rpm <span class="at">-V</span> rgbdns</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> zypper <span class="at">--non-interactive</span> <span class="at">--no-gpg-checks</span> install <span class="dt">\</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  /path/to/rgbdns-VERSION-RELEASE.x86_64.rpm</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rpm <span class="at">-V</span> rgbdns</span></code></pre></div>
+<p>A fresh package installation deliberately starts no role-specific
+automation. Run <code>rgbdns-setup primary</code> or
+<code>rgbdns-setup secondary</code> once. Beginning with 0.3.3, upgrades
+inspect the role already recorded under <code>/etc/rgbdns</code>:</p>
+<ul>
+<li>a primary with <code>data-drop.env</code> has authority and
+<code>rgbdns-data.path</code> restored;</li>
+<li>a secondary has authority and
+<code>rgbdns-secondary-sync.timer</code> restored and, when
+<code>zones-drop.env</code> exists, <code>rgbdns-zones.path</code>
+restored; and</li>
+<li>an unconfigured installation remains inactive.</li>
+</ul>
+<p>Verify after an upgrade that <code>rgbdns-tinydns</code> is active
+and that a primary picker is <code>active (waiting)</code>, or that both
+the secondary timer and zone picker are
+<code>active (waiting)</code>.</p>
+<p>To repurpose a host, prepare the complete input for the destination
+role and run the opposite <code>rgbdns-setup</code> command. A
+primary-to-secondary conversion requires a valid zone list and
+successful initial AXFR. A secondary-to-primary conversion requires a
+complete, validated data file. The setup command removes the old role
+configuration, disables its picker and timer, and activates only the new
+role. Do not convert roles by manually enabling both sets of units.</p>
 <p>If secondary setup fails, it deliberately leaves authority stopped
 until the first valid transfer completes. Diagnose in this order:</p>
-<div class="sourceCode" id="cb33"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl status rgbdns-secondary-sync.service <span class="at">--no-pager</span> <span class="at">--full</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-u</span> rgbdns-secondary-sync.service <span class="at">-n</span> 100 <span class="at">--no-pager</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @10.0.1.10 example.net SOA +norecurse</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/secondary.env</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/tinydns.env</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl status rgbdns-secondary-sync.service <span class="at">--no-pager</span> <span class="at">--full</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-u</span> rgbdns-secondary-sync.service <span class="at">-n</span> 100 <span class="at">--no-pager</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @10.0.1.10 example.net SOA +norecurse</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/secondary.env</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/zones</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/tinydns.env</span></code></pre></div>
 <p>A connection timeout points toward routes, security groups, or
 firewalls. <code>REFUSED</code> points toward <code>ALLOW_NETS</code> or
 an unexpected NAT source address. A validation error points toward the
 transferred zone. A successful one-shot with a refused local query means
 <code>rgbdns-tinydns.service</code> is not yet active.</p>
 <p>After every reboot or upgrade, verify:</p>
-<div class="sourceCode" id="cb34"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> is-enabled rgbdns-tinydns.service</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> is-active rgbdns-tinydns.service</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> list-timers rgbdns-secondary-sync.timer</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> is-enabled rgbdns-tinydns.service</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> is-active rgbdns-tinydns.service</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> list-timers rgbdns-secondary-sync.timer</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-lntup</span> <span class="st">&#39;( sport = :53 )&#39;</span></span></code></pre></div>
 <p>Monitor public UDP and TCP answers, unit restarts, timer failures,
 SOA convergence, transfer failures, and disk space. Keep the editable
 primary source in protected configuration management or backup.
@@ -620,7 +816,7 @@ traffic, and discovery protocols generate it. A change from baseline
 paired with latency or SERVFAIL is more meaningful.</p>
 <p>TAI64N log labels make events stable for storage. Convert them for
 human display at the edge:</p>
-<div class="sourceCode" id="cb35"><pre
-class="sourceCode sh"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-f</span> main/current <span class="kw">|</span> <span class="ex">tai64nlocal</span></span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-f</span> main/current <span class="kw">|</span> <span class="ex">tai64nlocal</span></span></code></pre></div>
 </body>
 </html>

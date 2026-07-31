@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-30" />
+  <meta name="dcterms.date" content="2026-07-31" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Zone transfer and secondary service</title>
   <style>
@@ -16,8 +16,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -86,5 +90,26 @@ renders them in tinydns source form, writes a temporary output, and
 atomically installs the completed file. The temporary/final path pair
 prevents a failed transfer from replacing usable data with a partial
 zone.</p>
+<h2 data-number="10.2" id="one-request-one-portable-log-record"><span
+class="header-section-number">10.2</span> One request, one portable log
+record</h2>
+<p>The original tinydns wrote one compact record for every request.
+rgbdns keeps that operational contract. An IPv4 record has this
+shape:</p>
+<pre class="text"><code>7f000001:e214:0018 + 0001 fieldnotes.es</code></pre>
+<p>The client address, source port, DNS ID, and query type are
+hexadecimal. The result marker distinguishes an attempted answer
+(<code>+</code>), refused authority or AXFR (<code>-</code>), an
+unimplemented request (<code>I</code>), an unsupported class
+(<code>C</code>), and a malformed request (<code>/</code>). IPv6 uses
+the same format with a 32-hex-digit address. Query names are escaped so
+packet data cannot inject additional log lines.</p>
+<p>The record goes to stderr without a timestamp. The packaged systemd
+service therefore sends it to journald, while a daemontools service can
+send the exact same stream through <code>multilog t</code> for TAI64N
+timestamps and file rotation. <code>QUERY_LOG=1</code> is the default.
+<code>QUERY_LOG=0</code> is an explicit opt-out for an installation
+whose traffic, retention, or privacy policy forbids full query
+logging.</p>
 </body>
 </html>

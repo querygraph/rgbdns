@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-30" />
+  <meta name="dcterms.date" content="2026-07-31" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Authority: answering from owned facts</title>
   <style>
@@ -16,8 +16,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -290,6 +294,20 @@ Zone validation rejects:</p>
 <li>different ANAME targets at one owner;</li>
 <li>a zero TTL.</li>
 </ul>
+<p>ANAME is private configuration rather than a standard DNS RR type, so
+a plain AXFR cannot represent it. rgbdns peers negotiate preservation
+explicitly: <code>axfr-get</code> places private EDNS option 65001 with
+the <code>RGA1</code> version token in the AXFR request. An rgbdns
+primary then inserts private-use TYPE65401 records whose TTL is the
+ANAME cap and whose payload is the token followed by the target’s
+uncompressed wire name. The receiving rgbdns validates that payload and
+reconstructs the <code>Aowner:target:ttl</code> directive before
+compilation.</p>
+<p>An ordinary AXFR request does not receive TYPE65401. This keeps
+standard secondaries free of private metadata, but it also means they do
+not reproduce ANAME behavior. Delegate an ANAME-backed zone only to
+upgraded rgbdns peers, or use standard address records when non-rgbdns
+secondaries must serve it.</p>
 <p>The server only applies ANAME to A and AAAA questions. SOA, NS, MX,
 TXT, CAA, and all other questions continue through normal authoritative
 lookup. ANAME also does not override a delegation cut: a name beneath a
@@ -319,7 +337,13 @@ process. Positive entries expire with the upstream chain’s shortest
 relevant TTL. Negative results use the authority SOA’s negative TTL when
 available and 60 seconds otherwise. The configured ANAME ceiling is
 applied when constructing each response, so two owners may safely share
-a target while using different TTL policies.</p>
+a target while using different TTL policies. Concurrent misses for one
+target and address family are coalesced into one upstream query. A
+failed lookup is retained for five seconds, during which matching
+requests fail without starting another recursive chain. This short
+circuit limits retry storms and cross-provider ANAME loop amplification
+without turning a transient failure into long-lived negative DNS
+data.</p>
 <p>Resolution is bounded in the same spirit as the rest of rgbdns:</p>
 <ul>
 <li>CNAME chains stop after 16 links;</li>
@@ -328,6 +352,8 @@ a target while using different TTL policies.</p>
 <li>conflicting CNAME targets are rejected;</li>
 <li>upstream SERVFAIL and other resolver errors become authoritative
 SERVFAIL, not false NODATA;</li>
+<li>concurrent misses share one lookup and failures suppress immediate
+retries;</li>
 <li>A and AAAA are cached independently.</li>
 </ul>
 <p><code>DNSCACHEIP</code> selects one or more recursive endpoints,
@@ -342,12 +368,15 @@ private CDB entries; it is not encoded as a made-up public RR type. This
 retains the source semantics across text and CDB operation without
 teaching ordinary DNS clients about a private wire format.</p>
 <p>Standard AXFR has no interoperable way to describe this private
-policy. rgbdns therefore does not emit ANAME metadata in AXFR. An
-independently configured secondary needs the same ANAME source
-directive, while a conventional secondary can only serve address
-snapshots supplied through an external materialization workflow.
-Operators should account for that difference before treating ANAME zones
-as ordinary transferable zones.</p>
+policy. rgbdns therefore emits no ANAME metadata to an ordinary AXFR
+client. Upgraded rgbdns peers can explicitly negotiate the experimental
+<code>RGA1</code> extension: the requester sends EDNS option 65001 and
+the primary returns validated private-use TYPE65401 records only for
+that transfer. The receiver restores the source directive and resolves
+the target independently. A conventional secondary still receives only
+standard DNS records and cannot reproduce ANAME behavior. Operators must
+delegate an ANAME-backed zone only to upgraded rgbdns peers unless they
+materialize standard A and AAAA records instead.</p>
 <h2 data-number="7.4" id="cdb-compile-once-read-predictably"><span
 class="header-section-number">7.4</span> CDB: compile once, read
 predictably</h2>
