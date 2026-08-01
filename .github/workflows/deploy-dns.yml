@@ -1,0 +1,155 @@
+name: Deploy DNS data
+
+on:
+  pull_request:
+    paths:
+      - rgbdns.data
+      - rgbdns.zones
+      - .github/workflows/deploy-dns.yml
+  push:
+    branches:
+      - master
+    paths:
+      - rgbdns.data
+      - rgbdns.zones
+      - .github/workflows/deploy-dns.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rgbdns-production
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Compile authoritative data
+        run: |
+          cargo build --locked --bin tinydns-data
+          stage=$(mktemp -d)
+          cp rgbdns.data "$stage/data"
+          (cd "$stage" && "$GITHUB_WORKSPACE/target/debug/tinydns-data")
+          test -s "$stage/data.cdb"
+      - name: Validate secondary zone policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          zones=$(mktemp)
+          sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
+            -e '/^$/d' -e '/^#/d' rgbdns.zones > "$zones"
+          test -s "$zones"
+          duplicates=$(sort "$zones" | uniq -d)
+          test -z "$duplicates" || {
+            printf 'duplicate secondary zones:\n%s\n' "$duplicates" >&2
+            exit 1
+          }
+          while IFS= read -r zone; do
+            [[ $zone =~ ^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$ ]] || {
+              echo "invalid secondary zone: $zone" >&2
+              exit 1
+            }
+            grep -Fq "Z${zone}:" rgbdns.data || {
+              echo "secondary zone has no SOA in rgbdns.data: $zone" >&2
+              exit 1
+            }
+            grep -Fxq "&${zone}::a.ns.cron.sh:3600" rgbdns.data || {
+              echo "secondary zone does not advertise a.ns.cron.sh: $zone" >&2
+              exit 1
+            }
+            grep -Fxq "&${zone}::b.ns.cron.sh:3600" rgbdns.data || {
+              echo "secondary zone does not advertise b.ns.cron.sh: $zone" >&2
+              exit 1
+            }
+          done < "$zones"
+      - run: git diff --check
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production-dns
+    env:
+      PRIMARY_HOST: ${{ vars.RGBDNS_PRIMARY_HOST || '52.10.53.234' }}
+      PRIMARY_USER: ${{ vars.RGBDNS_PRIMARY_USER || 'bitnami' }}
+      SECONDARY_HOST: ${{ vars.RGBDNS_SECONDARY_HOST || '52.38.177.160' }}
+      SECONDARY_USER: ${{ vars.RGBDNS_SECONDARY_USER || 'ec2-user' }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.RGBDNS_DEPLOY_KEY }}
+          KNOWN_HOSTS: ${{ secrets.RGBDNS_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 0700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0600 ~/.ssh/known_hosts
+          test -s ~/.ssh/id_ed25519
+          test -s ~/.ssh/known_hosts
+      - name: Deploy primary data atomically
+        run: |
+          set -euo pipefail
+          scp -o BatchMode=yes rgbdns.data \
+            "$PRIMARY_USER@$PRIMARY_HOST:rgbdns.data.new"
+          ssh -o BatchMode=yes "$PRIMARY_USER@$PRIMARY_HOST" \
+            'mv rgbdns.data.new rgbdns.data'
+      - name: Wait for primary publication
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y dnsutils
+          while IFS= read -r zone; do
+            case $zone in ''|'#'*) continue ;; esac
+            expected=$(awk -F: -v name="Z$zone" '$1 == name { print $4; exit }' rgbdns.data)
+            test -n "$expected"
+            published=''
+            attempt=0
+            while ((attempt < 30)); do
+              attempt=$((attempt + 1))
+              published=$(dig +short +time=2 +tries=1 \
+                @"$PRIMARY_HOST" "$zone" SOA | awk '{print $3}')
+              test "$published" = "$expected" && break
+              sleep 2
+            done
+            test "$published" = "$expected" || {
+              echo "$zone: primary serial $published, expected $expected" >&2
+              exit 1
+            }
+          done < rgbdns.zones
+      - name: Deploy secondary zone list atomically
+        run: |
+          set -euo pipefail
+          scp -o BatchMode=yes rgbdns.zones \
+            "$SECONDARY_USER@$SECONDARY_HOST:rgbdns.zones.new"
+          ssh -o BatchMode=yes "$SECONDARY_USER@$SECONDARY_HOST" \
+            'mv rgbdns.zones.new rgbdns.zones'
+      - name: Verify secondary publication
+        run: |
+          set -euo pipefail
+          while IFS= read -r zone; do
+            case $zone in ''|'#'*) continue ;; esac
+            expected=$(awk -F: -v name="Z$zone" '$1 == name { print $4; exit }' rgbdns.data)
+            published=''
+            attempt=0
+            while ((attempt < 60)); do
+              attempt=$((attempt + 1))
+              published=$(dig +short +time=2 +tries=1 \
+                @"$SECONDARY_HOST" "$zone" SOA | awk '{print $3}')
+              test "$published" = "$expected" && break
+              sleep 5
+            done
+            test "$published" = "$expected" || {
+              echo "$zone: secondary serial $published, expected $expected" >&2
+              exit 1
+            }
+          done < rgbdns.zones

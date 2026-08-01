@@ -32,3 +32,60 @@ Zaname-axfr.test:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2
 &aname-axfr.test::a.ns.cron.sh:3600
 &aname-axfr.test::b.ns.cron.sh:3600
 Aaname-axfr.test:publication.ghost.io:300
+
+# foto.gs
+Zfoto.gs:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&foto.gs::a.ns.cron.sh:3600
+&foto.gs::b.ns.cron.sh:3600
++foto.gs:216.150.1.1:300
++www.foto.gs:216.150.1.1:300
+
+# fieldnote.es
+Zfieldnote.es:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&fieldnote.es::a.ns.cron.sh:3600
+&fieldnote.es::b.ns.cron.sh:3600
++fieldnote.es:216.150.1.1:300
++www.fieldnote.es:216.150.1.1:300
+
+# chiefscientist.org -- medium
+Zchiefscientist.org:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&chiefscientist.org::a.ns.cron.sh:3600
+&chiefscientist.org::b.ns.cron.sh:3600
++chiefscientist.org:162.159.152.4:300
++chiefscientist.org:162.159.153.4:300
+
+# kafka.stream -- medium
+Zkafka.stream:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&kafka.stream::a.ns.cron.sh:3600
+&kafka.stream::b.ns.cron.sh:3600
++kafka.stream:162.159.152.4:300
++kafka.stream:162.159.153.4:300
+
+# alman.ac -- medium
+Zalman.ac:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&alman.ac::a.ns.cron.sh:3600
+&alman.ac::b.ns.cron.sh:3600
++alman.ac:162.159.152.4:300
++alman.ac:162.159.153.4:300
+
+# bitcoin.science -- medium
+Zbitcoin.science:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&bitcoin.science::a.ns.cron.sh:3600
+&bitcoin.science::b.ns.cron.sh:3600
++bitcoin.science:162.159.152.4:300
++bitcoin.science:162.159.153.4:300
+
+# cicero.institute -- medium
+Zcicero.institute:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&cicero.institute::a.ns.cron.sh:3600
+&cicero.institute::b.ns.cron.sh:3600
++cicero.institute:162.159.152.4:300
++cicero.institute:162.159.153.4:300
+
+# devreal.ai -- digitalpress
+Zdevreal.ai:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&devreal.ai::a.ns.cron.sh:3600
+&devreal.ai::b.ns.cron.sh:3600
+Adevreal.ai:devreal.digitalpress.blog:300
+
+
