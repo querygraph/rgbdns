@@ -1,3 +1,9 @@
+rgbdns (0.3.5) unstable; urgency=medium
+
+  * Keep the zone-list staging descriptor open under SELinux enforcement.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Sat, 01 Aug 2026 00:00:00 +0000
+
 rgbdns (0.3.4) unstable; urgency=medium
 
   * Move secondary zone-list pickup to SELinux-compatible managed state.

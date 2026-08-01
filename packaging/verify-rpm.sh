@@ -62,6 +62,7 @@ grep -q 'enable --now rgbdns-secondary-sync.timer' \
 grep -q 'enable --now rgbdns-tinydns.service' \
     /usr/lib/rgbdns/restore-role-units
 ! grep -Fq ': >"$stage"' /usr/lib/rgbdns/import-zones
+! grep -Fq '>>"$stage"' /usr/lib/rgbdns/import-zones
 systemd-analyze --man=no verify \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \

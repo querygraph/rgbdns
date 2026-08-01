@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.3.4
+Version:        0.3.5
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -120,6 +120,9 @@ fi
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Sat Aug 01 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.5-1
+- Keep the zone-list staging descriptor open under SELinux enforcement
+
 * Sat Aug 01 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.4-1
 - Move secondary zone-list pickup out of SELinux-protected home directories
 - Migrate existing home-directory drop configuration during package upgrades

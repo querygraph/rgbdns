@@ -32,6 +32,7 @@ mkdir -p "$zones_dir"
 stage=$(mktemp "$zones_dir/.zones.XXXXXX")
 trap 'rm -f "$stage"' EXIT HUP INT TERM
 umask 027
+exec 8>"$stage"
 
 line_number=0
 while IFS= read -r line || [ -n "$line" ]; do
@@ -67,8 +68,9 @@ while IFS= read -r line || [ -n "$line" ]; do
         exit 2
     }
 
-    grep -Fqx "$zone" "$stage" 2>/dev/null || printf '%s\n' "$zone" >>"$stage"
+    grep -Fqx "$zone" "$stage" 2>/dev/null || printf '%s\n' "$zone" >&8
 done <"$ZONES_DROP"
+exec 8>&-
 
 [ -s "$stage" ] || {
     echo "rgbdns-import-zones: drop file contains no zones" >&2

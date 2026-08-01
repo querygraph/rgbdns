@@ -24,6 +24,8 @@ RGBDNS_INSTALL_OWNER='' \
 
 test "$(cat "$canonical")" = "$(printf 'fieldnotes.es\nexample.net')"
 ! grep -Fq ': >"$stage"' packaging/scripts/import-zones
+! grep -Fq '>>"$stage"' packaging/scripts/import-zones
+grep -Fq 'printf '\''%s\n'\'' "$zone" >&8' packaging/scripts/import-zones
 
 cp "$canonical" "$test_dir/expected"
 printf 'example.net another.example\n' >"$drop"
