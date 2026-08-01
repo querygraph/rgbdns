@@ -83,10 +83,11 @@ Zcicero.institute:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:
 +cicero.institute:162.159.153.4:300
 
 # devreal.ai -- digitalpress
-Zdevreal.ai:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+Zdevreal.ai:a.ns.cron.sh:hostmaster.cron.sh:2026080101:16384:2048:1048576:2560:3600
 &devreal.ai::a.ns.cron.sh:3600
 &devreal.ai::b.ns.cron.sh:3600
 Adevreal.ai:devreal.digitalpress.blog:300
+Cwww.devreal.ai:devreal.ai:300
 
 
 # anthropolo.gy
