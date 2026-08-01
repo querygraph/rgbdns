@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.3.5
+Version:        0.3.6
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -55,6 +55,8 @@ install -D -m 0755 packaging/scripts/migrate-zones \
     %{buildroot}%{_prefix}/lib/rgbdns/migrate-zones
 install -D -m 0755 packaging/scripts/migrate-zone-drop \
     %{buildroot}%{_prefix}/lib/rgbdns/migrate-zone-drop
+install -D -m 0755 packaging/scripts/migrate-zone-state \
+    %{buildroot}%{_prefix}/lib/rgbdns/migrate-zone-state
 install -D -m 0755 packaging/scripts/restore-role-units \
     %{buildroot}%{_prefix}/lib/rgbdns/restore-role-units
 install -D -m 0755 packaging/scripts/rgbdns-setup \
@@ -83,6 +85,7 @@ install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chown root:rgbdns %{_sysconfdir}/rgbdns/tinydns.env
 chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 %{_prefix}/lib/rgbdns/migrate-zones
+%{_prefix}/lib/rgbdns/migrate-zone-state
 %{_prefix}/lib/rgbdns/migrate-zone-drop
 %service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path
 if [ "$1" -gt 1 ]; then
@@ -106,6 +109,7 @@ fi
 %{_prefix}/lib/rgbdns/import-data
 %{_prefix}/lib/rgbdns/migrate-zones
 %{_prefix}/lib/rgbdns/migrate-zone-drop
+%{_prefix}/lib/rgbdns/migrate-zone-state
 %{_prefix}/lib/rgbdns/restore-role-units
 %attr(0750,root,rgbdns) %dir %{_sysconfdir}/rgbdns
 %attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
@@ -120,6 +124,9 @@ fi
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 
 %changelog
+* Sat Aug 01 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.6-1
+- Move the activated secondary zone list from /etc into writable managed state
+
 * Sat Aug 01 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.3.5-1
 - Keep the zone-list staging descriptor open under SELinux enforcement
 

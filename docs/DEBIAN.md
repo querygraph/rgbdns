@@ -20,7 +20,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.3.5_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.3.6_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -258,16 +258,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.3.5_amd64.deb
+dpkg-deb --info ../rgbdns_0.3.6_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.3.5_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.3.6_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.3.5_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.3.6_amd64.deb
 dpkg-query -W rgbdns
 ```
 
@@ -541,7 +541,7 @@ sudo rgbdns-setup secondary \
   --listen-ip 127.0.0.1 --port 5353
 ```
 
-Setup writes the one-zone-per-line canonical list to `/etc/rgbdns/zones` and
+Setup writes the one-zone-per-line canonical list to `/var/lib/rgbdns/tinydns/zones` and
 the `PRIMARY=` endpoint to `/etc/rgbdns/secondary.env`. It also watches
 `/var/lib/rgbdns/incoming/rgbdns.zones`. Override that location or owner with
 `--zones-drop FILE` and `--zones-drop-owner USER`.
@@ -564,7 +564,7 @@ ssh secondary.example \
 ```
 
 The path unit validates ownership and syntax, lowercases names, removes
-duplicates, atomically installs `/etc/rgbdns/zones`, and starts synchronization.
+duplicates, atomically installs `/var/lib/rgbdns/tinydns/zones`, and starts synchronization.
 An invalid or partial list cannot replace the canonical list. Upload through a
 temporary name as shown so the watcher only observes the final rename.
 

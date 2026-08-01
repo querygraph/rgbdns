@@ -17,7 +17,7 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.3.5 as built on 2026-08-01.
+version 0.3.6 as built on 2026-08-01.
 
 # The problem DNS solves
 
@@ -1176,7 +1176,7 @@ separate infrastructure zone. For example, `fieldnotes.es` can use
 - one packaged secondary instance can synchronize many zones from the same
   primary endpoint.
 
-Consequently, advertise `b` only for zones included in `/etc/rgbdns/zones`. Add
+Consequently, advertise `b` only for zones included in `/var/lib/rgbdns/tinydns/zones`. Add
 both `fieldnotes.es` and `cron.sh` when `b` should be authoritative for both;
 otherwise retain other working authorities for the omitted infrastructure
 zone.
@@ -1618,7 +1618,7 @@ zones advance. The snapshots are compiled together and the combined CDB is
 installed atomically. The randomized five-minute timer does not use NOTIFY or
 IXFR.
 
-Setup stores the canonical one-zone-per-line list in `/etc/rgbdns/zones` and
+Setup stores the canonical one-zone-per-line list in `/var/lib/rgbdns/tinydns/zones` and
 watches `rgbdns.zones` in the invoking sudo user's home. Manage later changes
 as a file and publish them with an atomic rename:
 
@@ -1791,7 +1791,7 @@ sudo systemctl status rgbdns-secondary-sync.service --no-pager --full
 sudo journalctl -u rgbdns-secondary-sync.service -n 100 --no-pager
 dig +tcp @10.0.1.10 example.net SOA +norecurse
 sudo cat /etc/rgbdns/secondary.env
-sudo cat /etc/rgbdns/zones
+sudo cat /var/lib/rgbdns/tinydns/zones
 sudo cat /etc/rgbdns/tinydns.env
 ```
 

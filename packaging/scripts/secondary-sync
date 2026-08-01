@@ -5,7 +5,7 @@ set -eu
 
 state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
 zones_dir=${RGBDNS_ZONES_DIR:-$state_dir/secondary-zones}
-zones_file=${RGBDNS_ZONES_FILE:-/etc/rgbdns/zones}
+zones_file=${RGBDNS_ZONES_FILE:-$state_dir/zones}
 lock_file=${RGBDNS_LOCK_FILE:-/run/rgbdns/secondary.lock}
 axfr_get=${RGBDNS_AXFR_GET:-/usr/bin/axfr-get}
 tinydns_data=${RGBDNS_TINYDNS_DATA:-/usr/bin/tinydns-data}

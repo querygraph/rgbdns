@@ -55,8 +55,8 @@ sudo zypper --non-interactive install \
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-rpm.sh
-rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.5-1.x86_64.rpm
-rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.5-1.x86_64.rpm
+rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.6-1.x86_64.rpm
+rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.6-1.x86_64.rpm
 ```
 
 `build-rpm.sh` creates a clean rpmbuild tree under `dist/rpmbuild`, archives
@@ -81,9 +81,9 @@ gh run download RUN_ID \
 Inspect an artifact before installation:
 
 ```sh
-rpm -K dist/cloud-rpm/rgbdns-0.3.5-1.x86_64.rpm
-rpm -qip dist/cloud-rpm/rgbdns-0.3.5-1.x86_64.rpm
-rpm -qlp dist/cloud-rpm/rgbdns-0.3.5-1.x86_64.rpm
+rpm -K dist/cloud-rpm/rgbdns-0.3.6-1.x86_64.rpm
+rpm -qip dist/cloud-rpm/rgbdns-0.3.6-1.x86_64.rpm
+rpm -qlp dist/cloud-rpm/rgbdns-0.3.6-1.x86_64.rpm
 ```
 
 The development RPM is not repository-signed. `rpm -K` still verifies the
@@ -96,11 +96,11 @@ Copy a locally built package to the EC2 instance:
 
 ```sh
 scp -i ~/.ssh/KEY.pem \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.5-1.x86_64.rpm \
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.6-1.x86_64.rpm \
   ec2-user@PUBLIC_ADDRESS:/tmp/
 ssh -i ~/.ssh/KEY.pem ec2-user@PUBLIC_ADDRESS
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.3.5-1.x86_64.rpm
+  /tmp/rgbdns-0.3.6-1.x86_64.rpm
 rpm -q rgbdns
 rpm -V rgbdns
 ```
@@ -380,7 +380,7 @@ sudo rgbdns-setup secondary \
 
 Setup performs every initial AXFR before starting authority, enables
 `rgbdns-tinydns.service` and `rgbdns-secondary-sync.timer`, writes the canonical
-one-zone-per-line list to `/etc/rgbdns/zones`, and watches
+one-zone-per-line list to `/var/lib/rgbdns/tinydns/zones`, and watches
 `/var/lib/rgbdns/incoming/rgbdns.zones`. Use `--zones-drop FILE` and
 `--zones-drop-owner USER` to override that destination.
 
@@ -415,7 +415,7 @@ ssh secondary.example \
 `rgbdns-zones.path` starts a protected importer after the final rename. The
 importer rejects symlinks, unexpected ownership, malformed names, and empty
 lists; normalizes and deduplicates valid names; atomically replaces
-`/etc/rgbdns/zones`; and starts AXFR synchronization. A failed refresh retains
+`/var/lib/rgbdns/tinydns/zones`; and starts AXFR synchronization. A failed refresh retains
 that zone's last-known-good snapshot while successful zones advance. A newly
 listed zone must transfer successfully before the new combined list can be
 activated.

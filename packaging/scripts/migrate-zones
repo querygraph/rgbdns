@@ -2,7 +2,7 @@
 set -eu
 
 env_file=${RGBDNS_SECONDARY_ENV:-/etc/rgbdns/secondary.env}
-zones_file=${RGBDNS_ZONES_FILE:-/etc/rgbdns/zones}
+zones_file=${RGBDNS_ZONES_FILE:-/var/lib/rgbdns/tinydns/zones}
 import_zones=${RGBDNS_IMPORT_ZONES:-/usr/lib/rgbdns/import-zones}
 install_owner=${RGBDNS_INSTALL_OWNER-root:rgbdns}
 

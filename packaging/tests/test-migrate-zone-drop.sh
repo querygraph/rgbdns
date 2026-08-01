@@ -29,7 +29,7 @@ RGBDNS_IMPORT_ZONES=$repo/packaging/scripts/import-zones \
 
 managed=$state/incoming/rgbdns.zones
 test "$(cat "$managed")" = "$(printf 'fieldnotes.es\nfoto.gs')"
-test "$(cat "$config/zones")" = "$(printf 'fieldnotes.es\nfoto.gs')"
+test "$(cat "$state/tinydns/zones")" = "$(printf 'fieldnotes.es\nfoto.gs')"
 grep -qx "ZONES_DROP=$managed" "$config/zones-drop.env"
 grep -qx "ZONES_DROP_OWNER=$owner" "$config/zones-drop.env"
 grep -qx "PathChanged=$managed" \

@@ -64,13 +64,14 @@ for helper in \
     /usr/lib/rgbdns/import-data \
     /usr/lib/rgbdns/migrate-zones \
     /usr/lib/rgbdns/migrate-zone-drop \
+    /usr/lib/rgbdns/migrate-zone-state \
     /usr/lib/rgbdns/restore-role-units \
     /usr/sbin/rgbdns-setup
 do
     test -x "$helper"
 done
 
-grep -q '/etc/rgbdns/zones' /usr/lib/rgbdns/secondary-sync
+grep -q 'state_dir/zones' /usr/lib/rgbdns/secondary-sync
 rgbdns-setup --help | grep -q -- '--zones'
 rgbdns-setup --help | grep -q -- '--zones-drop'
 rgbdns-setup --help | grep -q -- '--data-drop'

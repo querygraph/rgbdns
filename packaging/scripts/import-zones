@@ -4,7 +4,7 @@ set -eu
 : "${ZONES_DROP:?ZONES_DROP is required in /etc/rgbdns/zones-drop.env}"
 : "${ZONES_DROP_OWNER:?ZONES_DROP_OWNER is required in /etc/rgbdns/zones-drop.env}"
 
-zones_file=${RGBDNS_ZONES_FILE:-/etc/rgbdns/zones}
+zones_file=${RGBDNS_ZONES_FILE:-/var/lib/rgbdns/tinydns/zones}
 install_owner=${RGBDNS_INSTALL_OWNER-root:rgbdns}
 
 case $ZONES_DROP in

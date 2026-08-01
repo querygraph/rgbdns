@@ -28,6 +28,7 @@ for path in \
     /usr/lib/rgbdns/import-data \
     /usr/lib/rgbdns/migrate-zones \
     /usr/lib/rgbdns/migrate-zone-drop \
+    /usr/lib/rgbdns/migrate-zone-state \
     /usr/lib/rgbdns/restore-role-units \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \
@@ -44,7 +45,7 @@ grep -qx 'RuntimeDirectory=rgbdns' \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service
 grep -q '/run/rgbdns/secondary.lock' \
     /usr/lib/rgbdns/secondary-sync
-grep -q '/etc/rgbdns/zones' \
+grep -q 'state_dir/zones' \
     /usr/lib/rgbdns/secondary-sync
 
 getent passwd rgbdns

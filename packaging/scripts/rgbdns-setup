@@ -181,7 +181,7 @@ case $role in
         [ -n "$data_file" ] || die "primary requires --data FILE"
         [ -r "$data_file" ] || die "cannot read data file: $data_file"
         install -o rgbdns -g rgbdns -m 0640 "$data_file" /var/lib/rgbdns/tinydns/data
-        rm -f /etc/rgbdns/secondary.env /etc/rgbdns/zones \
+        rm -f /etc/rgbdns/secondary.env /var/lib/rgbdns/tinydns/zones \
             /etc/rgbdns/zones-drop.env
         rm -rf /etc/systemd/system/rgbdns-zones.path.d
         write_env /etc/rgbdns/data-drop.env \
@@ -206,14 +206,14 @@ case $role in
                     /var/lib/rgbdns/incoming
                 ;;
         esac
-        zones_stage=$(mktemp /etc/rgbdns/.zones.XXXXXX)
+        zones_stage=$(mktemp /var/lib/rgbdns/tinydns/.zones.XXXXXX)
         trap 'rm -f "$zones_stage"' EXIT HUP INT TERM
         for zone in $zones; do
             printf '%s\n' "$zone" >>"$zones_stage"
         done
         chown root:rgbdns "$zones_stage"
         chmod 0640 "$zones_stage"
-        mv -f "$zones_stage" /etc/rgbdns/zones
+        mv -f "$zones_stage" /var/lib/rgbdns/tinydns/zones
         trap - EXIT HUP INT TERM
         write_env /etc/rgbdns/zones-drop.env \
             "ZONES_DROP=$zones_drop" "ZONES_DROP_OWNER=$zones_drop_owner"
