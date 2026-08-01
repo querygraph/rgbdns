@@ -81,6 +81,7 @@ jobs:
       PRIMARY_USER: ${{ vars.RGBDNS_PRIMARY_USER || 'bitnami' }}
       SECONDARY_HOST: ${{ vars.RGBDNS_SECONDARY_HOST || '52.38.177.160' }}
       SECONDARY_USER: ${{ vars.RGBDNS_SECONDARY_USER || 'ec2-user' }}
+      SECONDARY_DROP: ${{ vars.RGBDNS_SECONDARY_DROP || '/var/lib/rgbdns/incoming/rgbdns.zones' }}
     steps:
       - uses: actions/checkout@v5
       - name: Configure SSH
@@ -108,7 +109,7 @@ jobs:
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y dnsutils
-          while IFS= read -r zone; do
+          while IFS= read -r zone || [[ -n $zone ]]; do
             case $zone in ''|'#'*) continue ;; esac
             expected=$(awk -F: -v name="Z$zone" '$1 == name { print $4; exit }' rgbdns.data)
             test -n "$expected"
@@ -130,13 +131,13 @@ jobs:
         run: |
           set -euo pipefail
           scp -o BatchMode=yes rgbdns.zones \
-            "$SECONDARY_USER@$SECONDARY_HOST:rgbdns.zones.new"
+            "$SECONDARY_USER@$SECONDARY_HOST:$SECONDARY_DROP.new"
           ssh -o BatchMode=yes "$SECONDARY_USER@$SECONDARY_HOST" \
-            'mv rgbdns.zones.new rgbdns.zones'
+            "mv '$SECONDARY_DROP.new' '$SECONDARY_DROP'"
       - name: Verify secondary publication
         run: |
           set -euo pipefail
-          while IFS= read -r zone; do
+          while IFS= read -r zone || [[ -n $zone ]]; do
             case $zone in ''|'#'*) continue ;; esac
             expected=$(awk -F: -v name="Z$zone" '$1 == name { print $4; exit }' rgbdns.data)
             published=''
