@@ -118,7 +118,7 @@ jobs:
             while ((attempt < 30)); do
               attempt=$((attempt + 1))
               published=$(dig +short +time=2 +tries=1 \
-                @"$PRIMARY_HOST" "$zone" SOA | awk '{print $3}')
+                @"$PRIMARY_HOST" "$zone" SOA 2>/dev/null | awk '{print $3}' || true)
               test "$published" = "$expected" && break
               sleep 2
             done
@@ -145,7 +145,7 @@ jobs:
             while ((attempt < 60)); do
               attempt=$((attempt + 1))
               published=$(dig +short +time=2 +tries=1 \
-                @"$SECONDARY_HOST" "$zone" SOA | awk '{print $3}')
+                @"$SECONDARY_HOST" "$zone" SOA 2>/dev/null | awk '{print $3}' || true)
               test "$published" = "$expected" && break
               sleep 5
             done
