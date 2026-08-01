@@ -88,6 +88,37 @@
   artifacts, and run Datatracker-compatible validation before submitting the
   new revision.
 
+## Blog textpack delivery
+
+- Follow the FirstPair blog textpack guide at
+  `~/src/firstpair/publishing/skills/blog-textpack-delivery.md`. A Markdown
+  draft or copy pack is not the requested textpack deliverable.
+- Keep the canonical post at `docs/blog/<slug>/post.md` and all referenced
+  local images inside that post directory. The post must reference the images
+  with relative Markdown paths so the builder can bundle them.
+- Build the Obsidian/Omnighost-importable zipped TextBundle with:
+
+  ```sh
+  REPO_ROOT=/path/to/rgbdns \
+  BLOG_DOMAIN=firstpair.press \
+  ~/src/firstpair/publishing/scripts/publish-versioned-blog.sh \
+    docs/blog/<slug>
+  ```
+
+- The repository handoff is
+  `docs/blog/<slug>/dist/<slug>.textpack`. Keep only the zipped `.textpack`,
+  not an unpacked `.textbundle/`, and record its stable and versioned names in
+  `docs/blog/<slug>/dist/VERSION.md`.
+- Keep the versioned symlink in the repository alongside the stable pack. Copy
+  the versioned pack to `~/icloud/blogs` and verify that it is byte-identical
+  to the stable repository artifact with `cmp`.
+- Validate that the archive contains `text.markdown`, `info.json`, and every
+  referenced image under `assets/`. Confirm that `info.json` contains the
+  intended blog domain, slug, tags, payload SHA-256, and Git provenance.
+- The FirstPair builder may commit the canonical post and referenced assets to
+  establish provenance. Preserve unrelated staged and working-tree changes,
+  and report the resulting commits and delivery paths.
+
 ## Required validation
 
 For code, protocol, packaging, or release changes, run as applicable:
