@@ -82,7 +82,7 @@ complete `cron.sh` deployment with `52.10.53.234` as the primary address and
 BuddyNS as the secondary network.
 
 Primaries watch `rgbdns.data`, and secondaries watch a canonical
-one-zone-per-line `rgbdns.zones`, in the deployment user's home directory.
+one-zone-per-line `/var/lib/rgbdns/incoming/rgbdns.zones` in managed state.
 Publish either file through a `.new` name followed by a remote rename. rgbdns
 validates and compiles primary data before activation, and validates secondary
 lists before starting AXFR refresh.
@@ -102,7 +102,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.3.3_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.3.4_$(dpkg --print-architecture).deb
 ```
 
 On openSUSE Leap 16.0, build the RPM with:
@@ -112,7 +112,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.3-1.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.4-1.x86_64.rpm
 ```
 
 ## Book

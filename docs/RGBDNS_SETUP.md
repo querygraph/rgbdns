@@ -1,6 +1,6 @@
 # End-to-end rgbdns setup: `fieldnotes.es`
 
-This walkthrough deploys rgbdns 0.3.3 on two AWS EC2 instances and retains
+This walkthrough deploys rgbdns 0.3.4 on two AWS EC2 instances and retains
 BuddyNS as an additional secondary network. It covers installation, initial
 role configuration, authoritative data, AXFR, atomic primary and secondary
 updates, verification, upgrades, and recovery.
@@ -118,12 +118,12 @@ gh run download "$RPM_RUN" \
   -D "$HOME/rgbdns-rpm"
 ```
 
-The 0.3.3 artifacts are:
+The 0.3.4 artifacts are:
 
 ```text
-rgbdns_0.3.3_amd64.deb
-RPMS/x86_64/rgbdns-0.3.3-1.x86_64.rpm
-SRPMS/rgbdns-0.3.3-1.src.rpm
+rgbdns_0.3.4_amd64.deb
+RPMS/x86_64/rgbdns-0.3.4-1.x86_64.rpm
+SRPMS/rgbdns-0.3.4-1.src.rpm
 ```
 
 ## 4. Install the Debian package on the primary
@@ -131,14 +131,14 @@ SRPMS/rgbdns-0.3.3-1.src.rpm
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-deb/rgbdns_0.3.3_amd64.deb" \
+scp "$HOME/rgbdns-deb/rgbdns_0.3.4_amd64.deb" \
   bitnami@52.10.53.234:/tmp/
 ```
 
 On the primary:
 
 ```sh
-sudo apt install /tmp/rgbdns_0.3.3_amd64.deb
+sudo apt install /tmp/rgbdns_0.3.4_amd64.deb
 sudo systemctl daemon-reload
 dpkg-query -W -f='${Package} ${Version}\n' rgbdns
 getent passwd rgbdns
@@ -160,7 +160,7 @@ SUSE_USER=ec2-user
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.3-1.x86_64.rpm" \
+scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.4-1.x86_64.rpm" \
   "$SUSE_USER"@52.38.177.160:/tmp/
 ```
 
@@ -168,7 +168,7 @@ On the secondary:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.3.3-1.x86_64.rpm
+  /tmp/rgbdns-0.3.4-1.x86_64.rpm
 sudo systemctl daemon-reload
 rpm -q rgbdns
 sudo rpm -V rgbdns
@@ -304,12 +304,6 @@ cron.sh
 fieldnotes.es
 ```
 
-Copy the initial list:
-
-```sh
-scp rgbdns.zones "$SUSE_USER"@52.38.177.160:rgbdns.zones
-```
-
 On the secondary, from its normal login shell:
 
 ```sh
@@ -318,12 +312,19 @@ On the secondary, from its normal login shell:
 sudo rgbdns-setup secondary \
   --zones "cron.sh fieldnotes.es" \
   --primary 172.31.60.189 \
-  --zones-drop "$HOME/rgbdns.zones" \
   --zones-drop-owner "$(id -un)" \
   --listen-ip 0.0.0.0 \
   --port 53 \
   --allow-nets "$BUDDYNS_AXFR_V4" \
   --query-log 1
+```
+
+Setup creates the managed upload directory. Copy the initial list to its
+SELinux-compatible state path:
+
+```sh
+scp rgbdns.zones \
+  "$SUSE_USER"@52.38.177.160:/var/lib/rgbdns/incoming/rgbdns.zones
 ```
 
 The private primary address is intentional. AWS-to-AWS AXFR stays inside the
@@ -522,9 +523,11 @@ Edit `rgbdns.zones`, one zone per line. Blank lines and leading `#` comment
 lines are accepted. Publish atomically:
 
 ```sh
-scp rgbdns.zones "$SUSE_USER"@52.38.177.160:rgbdns.zones.new &&
+scp rgbdns.zones \
+  "$SUSE_USER"@52.38.177.160:/var/lib/rgbdns/incoming/rgbdns.zones.new &&
 ssh "$SUSE_USER"@52.38.177.160 \
-  'mv rgbdns.zones.new rgbdns.zones'
+  'mv /var/lib/rgbdns/incoming/rgbdns.zones.new \
+      /var/lib/rgbdns/incoming/rgbdns.zones'
 ```
 
 The importer rejects symlinks, unexpected ownership, malformed names, and an
@@ -671,7 +674,6 @@ sudo zypper --non-interactive --no-gpg-checks install \
 sudo rgbdns-setup secondary \
   --zones "cron.sh fieldnotes.es" \
   --primary 172.31.60.189 \
-  --zones-drop "$HOME/rgbdns.zones" \
   --zones-drop-owner "$(id -un)" \
   --listen-ip 0.0.0.0 \
   --port 53 \
@@ -743,7 +745,6 @@ transferable from the new primary. Then run the secondary setup command:
 sudo rgbdns-setup secondary \
   --zones "cron.sh fieldnotes.es" \
   --primary NEW_PRIMARY_ADDRESS \
-  --zones-drop "$HOME/rgbdns.zones" \
   --zones-drop-owner "$(id -un)" \
   --listen-ip 0.0.0.0 \
   --port 53 \

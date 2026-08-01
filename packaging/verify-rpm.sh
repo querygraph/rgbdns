@@ -27,6 +27,7 @@ for path in \
     /usr/lib/rgbdns/import-zones \
     /usr/lib/rgbdns/import-data \
     /usr/lib/rgbdns/migrate-zones \
+    /usr/lib/rgbdns/migrate-zone-drop \
     /usr/lib/rgbdns/restore-role-units \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \

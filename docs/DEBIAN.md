@@ -20,7 +20,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.3.3_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.3.4_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -258,16 +258,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.3.3_amd64.deb
+dpkg-deb --info ../rgbdns_0.3.4_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.3.3_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.3.4_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.3.3_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.3.4_amd64.deb
 dpkg-query -W rgbdns
 ```
 
@@ -543,8 +543,8 @@ sudo rgbdns-setup secondary \
 
 Setup writes the one-zone-per-line canonical list to `/etc/rgbdns/zones` and
 the `PRIMARY=` endpoint to `/etc/rgbdns/secondary.env`. It also watches
-`rgbdns.zones` in the invoking sudo user's home directory. Override that
-location or owner with `--zones-drop FILE` and `--zones-drop-owner USER`.
+`/var/lib/rgbdns/incoming/rgbdns.zones`. Override that location or owner with
+`--zones-drop FILE` and `--zones-drop-owner USER`.
 Setup performs every initial transfer, starts the authoritative service only
 after every zone has a valid snapshot, and enables both the five-minute sync
 timer and `rgbdns-zones.path`.
@@ -558,8 +558,9 @@ example.org
 ```
 
 ```sh
-scp rgbdns.zones secondary.example:rgbdns.zones.new
-ssh secondary.example 'mv rgbdns.zones.new rgbdns.zones'
+scp rgbdns.zones secondary.example:/var/lib/rgbdns/incoming/rgbdns.zones.new
+ssh secondary.example \
+  'mv /var/lib/rgbdns/incoming/rgbdns.zones.new /var/lib/rgbdns/incoming/rgbdns.zones'
 ```
 
 The path unit validates ownership and syntax, lowercases names, removes

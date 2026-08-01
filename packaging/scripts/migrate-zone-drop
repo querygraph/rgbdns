@@ -1,0 +1,77 @@
+#!/bin/sh
+set -eu
+
+config_dir=${RGBDNS_CONFIG_DIR:-/etc/rgbdns}
+state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns}
+systemd_dir=${RGBDNS_SYSTEMD_DIR:-/etc/systemd/system}
+env_file=$config_dir/zones-drop.env
+zones_file=$config_dir/zones
+managed_drop=$state_dir/incoming/rgbdns.zones
+service_group=${RGBDNS_GROUP:-rgbdns}
+config_owner=${RGBDNS_CONFIG_OWNER:-root:$service_group}
+home_root=${RGBDNS_HOME_ROOT:-/home}
+dropin=$systemd_dir/rgbdns-zones.path.d/path.conf
+import_zones=${RGBDNS_IMPORT_ZONES:-/usr/lib/rgbdns/import-zones}
+
+[ -r "$env_file" ] || exit 0
+
+old_drop=$(sed -n 's/^ZONES_DROP=//p' "$env_file" | sed -n '1p')
+drop_owner=$(sed -n 's/^ZONES_DROP_OWNER=//p' "$env_file" | sed -n '1p')
+[ -n "$old_drop" ] && [ -n "$drop_owner" ] || exit 0
+
+# Existing paths outside login home directories may have deliberate labeling
+# and policy. Only migrate the unsafe default historically created in $HOME.
+case $old_drop in
+    "$home_root"/*|/root/*) ;;
+    *) exit 0 ;;
+esac
+
+getent passwd "$drop_owner" >/dev/null 2>&1 || {
+    echo "rgbdns-migrate-zone-drop: owner does not exist: $drop_owner" >&2
+    exit 1
+}
+
+incoming_dir=${managed_drop%/*}
+install -d -o "$drop_owner" -g "$service_group" -m 0750 "$incoming_dir"
+
+stage=$(mktemp "$incoming_dir/.rgbdns.zones.XXXXXX")
+env_stage=$(mktemp "$config_dir/.zones-drop.env.XXXXXX")
+dropin_dir=${dropin%/*}
+install -d -m 0755 "$dropin_dir"
+dropin_stage=$(mktemp "$dropin_dir/.path.conf.XXXXXX")
+trap 'rm -f "$stage" "$env_stage" "$dropin_stage"' EXIT HUP INT TERM
+
+if [ -f "$old_drop" ] && [ ! -L "$old_drop" ]; then
+    cp "$old_drop" "$stage"
+elif [ -r "$zones_file" ]; then
+    cp "$zones_file" "$stage"
+else
+    : >"$stage"
+fi
+chown "$drop_owner:$service_group" "$stage"
+chmod 0640 "$stage"
+mv -f "$stage" "$managed_drop"
+
+{
+    printf 'ZONES_DROP=%s\n' "$managed_drop"
+    printf 'ZONES_DROP_OWNER=%s\n' "$drop_owner"
+} >"$env_stage"
+chown "$config_owner" "$env_stage"
+chmod 0640 "$env_stage"
+mv -f "$env_stage" "$env_file"
+
+{
+    printf '%s\n' '[Path]' 'PathChanged='
+    printf 'PathChanged=%s\n' "$managed_drop"
+} >"$dropin_stage"
+chmod 0644 "$dropin_stage"
+mv -f "$dropin_stage" "$dropin"
+trap - EXIT HUP INT TERM
+
+ZONES_DROP=$managed_drop \
+ZONES_DROP_OWNER=$drop_owner \
+RGBDNS_ZONES_FILE=$zones_file \
+RGBDNS_INSTALL_OWNER=$config_owner \
+    "$import_zones"
+
+echo "rgbdns-migrate-zone-drop: moved managed zone-list pickup to $managed_drop"

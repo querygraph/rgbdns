@@ -63,6 +63,7 @@ for helper in \
     /usr/lib/rgbdns/import-zones \
     /usr/lib/rgbdns/import-data \
     /usr/lib/rgbdns/migrate-zones \
+    /usr/lib/rgbdns/migrate-zone-drop \
     /usr/lib/rgbdns/restore-role-units \
     /usr/sbin/rgbdns-setup
 do

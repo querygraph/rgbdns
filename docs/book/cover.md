@@ -4,7 +4,7 @@
 
 Alexy Khrabrov
 
-Version 0.3.3 · 2026-07-31
+Version 0.3.4 · 2026-08-01
 
 Released into the public domain under the Unlicense.
 

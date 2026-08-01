@@ -69,7 +69,6 @@ zone list:
 
 ```sh
 sudo rgbdns-setup secondary \
-  --zones-drop /home/ec2-user/rgbdns.zones \
   --zones-drop-owner ec2-user \
   --primary 172.31.60.189 \
   --listen-ip 0.0.0.0
@@ -86,8 +85,10 @@ As on the primary, upload to a temporary name and rename only after the copy
 finishes:
 
 ```sh
-scp rgbdns.zones.new secondary.example:rgbdns.zones.new
-ssh secondary.example 'mv rgbdns.zones.new rgbdns.zones'
+scp rgbdns.zones.new \
+  secondary.example:/var/lib/rgbdns/incoming/rgbdns.zones.new
+ssh secondary.example \
+  'mv /var/lib/rgbdns/incoming/rgbdns.zones.new /var/lib/rgbdns/incoming/rgbdns.zones'
 ```
 
 The secondary imports the list, transfers each zone, validates the result,

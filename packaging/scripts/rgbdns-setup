@@ -22,8 +22,8 @@ options:
   --no-start                write configuration without enabling services
 
 The primary data file uses tinydns syntax. By default, sudo setup watches
-rgbdns.data for a primary or rgbdns.zones for a secondary in the invoking
-user's home directory.
+rgbdns.data for a primary in the invoking user's home directory and
+/var/lib/rgbdns/incoming/rgbdns.zones for a secondary.
 EOF
 }
 
@@ -143,10 +143,7 @@ getent passwd "$data_drop_owner" >/dev/null 2>&1 ||
     die "data drop owner does not exist: $data_drop_owner"
 
 if [ -z "$zones_drop" ]; then
-    zones_home=$(getent passwd "$zones_drop_owner" | cut -d: -f6)
-    [ -n "$zones_home" ] ||
-        die "cannot determine home directory for zones drop owner: $zones_drop_owner"
-    zones_drop=$zones_home/rgbdns.zones
+    zones_drop=/var/lib/rgbdns/incoming/rgbdns.zones
 fi
 case $zones_drop in
     /*) ;;
@@ -203,6 +200,12 @@ case $role in
         rm -f /etc/rgbdns/data-drop.env
         rm -rf /etc/systemd/system/rgbdns-data.path.d
         write_env /etc/rgbdns/secondary.env "PRIMARY=$primary"
+        case $zones_drop in
+            /var/lib/rgbdns/incoming/*)
+                install -d -o "$zones_drop_owner" -g rgbdns -m 0750 \
+                    /var/lib/rgbdns/incoming
+                ;;
+        esac
         zones_stage=$(mktemp /etc/rgbdns/.zones.XXXXXX)
         trap 'rm -f "$zones_stage"' EXIT HUP INT TERM
         for zone in $zones; do
