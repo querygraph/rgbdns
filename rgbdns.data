@@ -89,3 +89,32 @@ Zdevreal.ai:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3
 Adevreal.ai:devreal.digitalpress.blog:300
 
 
+# anthropolo.gy
+Zanthropolo.gy:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&anthropolo.gy::a.ns.cron.sh:3600
+&anthropolo.gy::b.ns.cron.sh:3600
++anthropolo.gy:216.150.1.1:300
+
+# meaning.ai
+Zmeaning.ai:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&meaning.ai::a.ns.cron.sh:3600
+&meaning.ai::b.ns.cron.sh:3600
+Ameaning.ai:0e94dfb9b58ea470.vercel-dns-017.com:300
+
+# rust.ai
+Zrust.ai:a.ns.cron.sh:hostmaster.cron.sh:2026080101:16384:2048:1048576:2560:3600
+&rust.ai::a.ns.cron.sh:3600
+&rust.ai::b.ns.cron.sh:3600
+Arust.ai:rust.digitalpress.blog:300
+
+# cr4.ai
+Zcr4.ai:a.ns.cron.sh:hostmaster.cron.sh:2026080101:16384:2048:1048576:2560:3600
+&cr4.ai::a.ns.cron.sh:3600
+&cr4.ai::b.ns.cron.sh:3600
+Acr4.ai:cr4.digitalpress.blog:300
+
+# leica.news
+Zleica.news:a.ns.cron.sh:hostmaster.cron.sh:2026080101:16384:2048:1048576:2560:3600
+&leica.news::a.ns.cron.sh:3600
+&leica.news::b.ns.cron.sh:3600
++leica.news:216.150.1.1:300
