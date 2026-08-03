@@ -5,6 +5,7 @@ export type ManagedDomain = {
   destinationType: "A" | "ANAME";
   destinationValue: string;
   includeWww: boolean;
+  serial: number;
   records?: Array<{ owner: string; type: string; value: string; ttl: number; priority?: number | null }>;
 };
 
@@ -18,12 +19,6 @@ function replaceSection(source: string, body: string) {
   if (start < 0 && finish < 0) return `${source.trimEnd()}\n\n${section}\n`;
   if (start < 0 || finish < start) throw new Error("Malformed Wishfully managed section");
   return `${source.slice(0, start)}${section}${source.slice(finish + END.length)}`.replace(/\n{3,}/g, "\n\n").trimEnd() + "\n";
-}
-
-function serialFor(domain: ManagedDomain) {
-  const day = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "UTC" }).format(new Date()).replaceAll("-", "");
-  const suffix = parseInt(createHash("sha256").update(JSON.stringify(domain)).digest("hex").slice(0, 2), 16) % 98 + 1;
-  return Number(`${day}${String(suffix).padStart(2, "0")}`);
 }
 
 function escapeTxt(value: string) { return value.replaceAll("\\", "\\\\").replaceAll(":", "\\072").replaceAll("\n", "\\012"); }
@@ -45,7 +40,7 @@ export function compileConsolidated(currentData: string, currentZones: string, d
   const blocks = ordered.map((domain) => {
     const lines = [
       `# wishfully account zone: ${domain.name}`,
-      `Z${domain.name}:a.ns.cron.sh:hostmaster.${domain.name}:${serialFor(domain)}:16384:2048:1048576:2560:3600`,
+      `Z${domain.name}:a.ns.cron.sh:hostmaster.${domain.name}:${domain.serial}:16384:2048:1048576:2560:3600`,
       `&${domain.name}::a.ns.cron.sh:3600`,
       `&${domain.name}::b.ns.cron.sh:3600`,
       domain.destinationType === "A" ? `+${domain.name}:${domain.destinationValue}:300` : `A${domain.name}:${domain.destinationValue}:300`,

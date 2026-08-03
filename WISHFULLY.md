@@ -100,10 +100,12 @@ billing database.
 
 - Web users authenticate by passkey or verified email; team roles are owner,
   administrator, editor and viewer.
-- CLI tokens are shown once, stored only as Argon2id hashes, scoped to an
+- CLI tokens are shown once, generated with 256 bits of entropy, stored only
+  as SHA-256 digests, scoped to an
   account and optionally a set of zones, and revocable independently.
 - The Vercel application uses a GitHub App installation token, not a personal
-  access token. The App can create branches and pull requests but cannot
+  access token. Grant the App Contents read/write, Pull requests read/write,
+  and Actions write. The App can create branches and pull requests but cannot
   approve its own protected deployment environment.
 - Domain verification tokens expire. Successful proof remains attached to the
   account, while ownership is rechecked on sensitive actions such as account
@@ -193,8 +195,8 @@ PUT    /api/v1/domains/:name/records
 POST   /api/v1/domains/:name/deployments
 GET    /api/v1/deployments/:id
 POST   /api/v1/domains/:name/acme-credentials
-POST   /api/v1/acme-credentials/:id/rotate
-DELETE /api/v1/acme-credentials/:id
+POST   /api/v1/domains/:name/acme-credentials?rotate=true
+DELETE /api/v1/domains/:name/acme-credentials
 ```
 
 CLI commands mirror those resources:
@@ -207,10 +209,10 @@ wishfully deployments list/watch/rollback
 wishfully certbot credentials/run/rotate/revoke
 ```
 
-The repository currently implements the public planner endpoint and
-`wishfully domains plan`. Mutating endpoints must not be enabled until the
-database, authentication, GitHub App, protected environment and encrypted ACME
-bundle path are configured.
+The repository implements the planner plus token-authenticated domain,
+verification, record, deployment, and ACME credential routes. Mutation routes
+remain unavailable until PostgreSQL, the GitHub App, protected deployment
+environment, and encrypted ACME bundle path are configured.
 
 ## Deployment to Vercel
 
@@ -230,3 +232,17 @@ Before enabling mutations:
   renewal and TSIG rotation;
 - monitor both authoritative endpoints from outside AWS;
 - document zone export and account deletion before accepting payment.
+
+Initialize a new database and create the first one-time API token with:
+
+```sh
+cd wishfully
+npm run db:migrate
+WISHFULLY_BOOTSTRAP_ACCOUNT='Operations' \
+WISHFULLY_BOOTSTRAP_TIER=studio \
+  npm run db:bootstrap
+```
+
+Store the printed token in a password manager and export it as
+`WISHFULLY_TOKEN` only in the CLI environment. The database stores its SHA-256
+digest; the token itself has 256 bits of entropy and cannot be recovered.

@@ -40,7 +40,7 @@ export default function Home() {
       <DomainPlanner />
 
       <section className="pricing shell" id="pricing"><div className="sectionIntro"><span className="overline">Pricing</span><h2>Small enough to understand.</h2></div><div className="plans">
-        <article><h3>Seed</h3><div className="price">$0 <span>/ month</span></div><p>For a personal domain that deserves real secondary DNS.</p><ul><li>1 zone, 25 records</li><li>A, AAAA, CNAME, MX, TXT</li><li>DNSSEC-ready publishing</li><li>Community support</li></ul><a href="#planner">Start with Seed</a></article>
+        <article><h3>Seed</h3><div className="price">$0 <span>/ month</span></div><p>For a personal domain that deserves real secondary DNS.</p><ul><li>1 zone, 25 records</li><li>A, CNAME, MX, TXT</li><li>Auditable zone publishing</li><li>Community support</li></ul><a href="#planner">Start with Seed</a></article>
         <article className="featured"><div className="popular">Most useful</div><h3>Maker</h3><div className="price">$9 <span>/ month</span></div><p>For portfolios, publications, and independent products.</p><ul><li>10 zones, unlimited records</li><li>ANAME apex flattening</li><li>Scoped Certbot credentials</li><li>Change history and rollback</li><li>Email support</li></ul><a href="#planner">Choose Maker</a></article>
         <article><h3>Studio</h3><div className="price">$39 <span>/ month</span></div><p>For teams managing a serious domain portfolio.</p><ul><li>100 zones</li><li>Team roles and audit log</li><li>Bulk import and API</li><li>Delegated ACME validation zones</li><li>Priority support</li></ul><a href="mailto:hello@wishful.ly">Talk to us</a></article></div>
       </section>

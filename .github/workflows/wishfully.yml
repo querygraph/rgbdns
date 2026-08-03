@@ -1,0 +1,35 @@
+name: Wishfully
+
+on:
+  pull_request:
+    paths:
+      - wishfully/**
+      - .github/workflows/wishfully.yml
+  push:
+    branches: [master]
+    paths:
+      - wishfully/**
+      - .github/workflows/wishfully.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: wishfully
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: wishfully/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=low
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build
