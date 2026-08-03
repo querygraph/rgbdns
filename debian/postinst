@@ -12,6 +12,8 @@ install -d -o root -g rgbdns -m 0750 /etc/rgbdns
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chown root:rgbdns /etc/rgbdns/tinydns.env
 chmod 0640 /etc/rgbdns/tinydns.env
+chown root:rgbdns /etc/rgbdns/acme-update.conf
+chmod 0640 /etc/rgbdns/acme-update.conf
 /usr/lib/rgbdns/migrate-zones
 /usr/lib/rgbdns/migrate-zone-state
 /usr/lib/rgbdns/migrate-zone-drop

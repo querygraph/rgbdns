@@ -1,6 +1,6 @@
 # End-to-end rgbdns setup: `fieldnotes.es`
 
-This walkthrough deploys rgbdns 0.3.6 on two AWS EC2 instances and retains
+This walkthrough deploys rgbdns 0.4.0 on two AWS EC2 instances and retains
 BuddyNS as an additional secondary network. It covers installation, initial
 role configuration, authoritative data, AXFR, atomic primary and secondary
 updates, verification, upgrades, and recovery.
@@ -118,12 +118,12 @@ gh run download "$RPM_RUN" \
   -D "$HOME/rgbdns-rpm"
 ```
 
-The 0.3.6 artifacts are:
+The 0.4.0 artifacts are:
 
 ```text
-rgbdns_0.3.6_amd64.deb
-RPMS/x86_64/rgbdns-0.3.6-1.x86_64.rpm
-SRPMS/rgbdns-0.3.6-1.src.rpm
+rgbdns_0.4.0_amd64.deb
+RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm
+SRPMS/rgbdns-0.4.0-1.src.rpm
 ```
 
 ## 4. Install the Debian package on the primary
@@ -131,14 +131,14 @@ SRPMS/rgbdns-0.3.6-1.src.rpm
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-deb/rgbdns_0.3.6_amd64.deb" \
+scp "$HOME/rgbdns-deb/rgbdns_0.4.0_amd64.deb" \
   bitnami@52.10.53.234:/tmp/
 ```
 
 On the primary:
 
 ```sh
-sudo apt install /tmp/rgbdns_0.3.6_amd64.deb
+sudo apt install /tmp/rgbdns_0.4.0_amd64.deb
 sudo systemctl daemon-reload
 dpkg-query -W -f='${Package} ${Version}\n' rgbdns
 getent passwd rgbdns
@@ -160,7 +160,7 @@ SUSE_USER=ec2-user
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.3.6-1.x86_64.rpm" \
+scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm" \
   "$SUSE_USER"@52.38.177.160:/tmp/
 ```
 
@@ -168,7 +168,7 @@ On the secondary:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.3.6-1.x86_64.rpm
+  /tmp/rgbdns-0.4.0-1.x86_64.rpm
 sudo systemctl daemon-reload
 rpm -q rgbdns
 sudo rpm -V rgbdns
@@ -178,7 +178,63 @@ getent passwd rgbdns
 An upgrade from the earlier `ZONES=` layout migrates the list once to
 `/var/lib/rgbdns/tinydns/zones`. New setup writes the canonical file directly.
 
-## 6. Maintain the BuddyNS AXFR source list
+## 6. Enable ACME DNS-01 updates on a primary
+
+This optional feature lets Certbot or another RFC 2136 client create only the
+TXT records required for certificate validation. It does not issue or install
+certificates. Generate a different 32-byte secret for each certificate host:
+
+```sh
+openssl rand -base64 32
+```
+
+Add a root-owned policy to `/etc/rgbdns/acme-update.conf`:
+
+```text
+certbot-fieldnotes. hmac-sha256. BASE64_SECRET fieldnotes.es. _acme-challenge. 60
+```
+
+The file must remain mode 0640 and group `rgbdns`. Re-run primary setup with
+the complete existing options plus:
+
+```text
+--acme-update-config /etc/rgbdns/acme-update.conf
+```
+
+Configure Certbot's RFC 2136 plugin with:
+
+```ini
+dns_rfc2136_server = 52.10.53.234
+dns_rfc2136_port = 53
+dns_rfc2136_name = certbot-fieldnotes.
+dns_rfc2136_secret = BASE64_SECRET
+dns_rfc2136_algorithm = HMAC-SHA256
+```
+
+Keep Certbot's credentials file mode 0600. Use the staging CA for the first
+renewal test and allow enough propagation time for all authoritative
+secondaries. Confirm publication and transfer:
+
+```sh
+dig @52.10.53.234 _acme-challenge.fieldnotes.es TXT +tcp
+dig @172.31.60.189 fieldnotes.es AXFR |
+  grep _acme-challenge.fieldnotes.es
+```
+
+The administrative client exercises the identical authenticated update path:
+
+```sh
+sudo rgbdns-acme present --zone fieldnotes.es \
+  --name _acme-challenge.fieldnotes.es --value staging-token
+sudo rgbdns-acme cleanup --zone fieldnotes.es \
+  --name _acme-challenge.fieldnotes.es --value staging-token
+```
+
+Do not enable ACME UPDATE on a secondary. The primary advances its SOA serial
+and standard AXFR distributes the public TXT state. Canonical data imports are
+validated together with the durable overlay before activation.
+
+## 7. Maintain the BuddyNS AXFR source list
 
 On the workstation, create `buddyns-axfr.env` from BuddyNS's current published
 transfer sources:
@@ -207,7 +263,7 @@ scp buddyns-axfr.env "$SUSE_USER"@52.38.177.160:
 Treat this as provider-maintained security policy. Refresh it whenever
 BuddyNS changes its transfer network.
 
-## 7. Create the complete primary data
+## 8. Create the complete primary data
 
 On the workstation, create `rgbdns.data`. Increment each SOA serial for every
 published change.
@@ -244,7 +300,7 @@ Copy the initial source to the primary login account:
 scp rgbdns.data bitnami@52.10.53.234:rgbdns.data
 ```
 
-## 8. Configure the primary role once
+## 9. Configure the primary role once
 
 Run this from the normal `bitnami` login shell, not a root login shell. Explicit
 drop options make the watched owner and path unambiguous:
@@ -295,7 +351,7 @@ dig @127.0.0.1 a.ns.cron.sh A +norecurse
 dig @127.0.0.1 b.ns.cron.sh A +norecurse
 ```
 
-## 9. Create and configure the secondary zone list
+## 10. Create and configure the secondary zone list
 
 On the workstation, create `rgbdns.zones` with one zone per line:
 
@@ -379,7 +435,7 @@ SubState=dead
 
 `inactive/dead` is correct for a completed `Type=oneshot` service.
 
-## 10. Use ANAME only between upgraded rgbdns peers
+## 11. Use ANAME only between upgraded rgbdns peers
 
 rgbdns 0.3.3 preserves private ANAME directives when both AXFR peers run
 rgbdns. For an apex hosted by Ghost, the primary source can contain:
@@ -472,7 +528,7 @@ No output is expected. From an ordinary workstation outside AWS, use the two
 public addresses only for normal authoritative queries. Do not broaden the
 AXFR allow-list merely to run this privacy check.
 
-## 11. Configure BuddyNS
+## 12. Configure BuddyNS
 
 In BuddyBoard:
 
@@ -486,7 +542,7 @@ In BuddyBoard:
 The application allow-list permits BuddyNS to AXFR from either rgbdns server.
 Do not use the VPC address for BuddyNS; it is outside the VPC.
 
-## 12. Publish later primary changes
+## 13. Publish later primary changes
 
 Edit the complete `rgbdns.data` on the workstation and increment the affected
 SOA serial. Upload through a temporary name, then atomically rename it:
@@ -517,7 +573,7 @@ A malformed or partially uploaded file does not replace the active database.
 The `.new` plus rename sequence prevents the watcher from observing an upload
 while `scp` is still writing it.
 
-## 13. Publish later secondary-list changes
+## 14. Publish later secondary-list changes
 
 Edit `rgbdns.zones`, one zone per line. Blank lines and leading `#` comment
 lines are accepted. Publish atomically:
@@ -551,7 +607,7 @@ dig @172.31.60.189 new-zone.example AXFR
 
 Run those commands from the secondary or another authorized VPC source.
 
-## 14. Verify the public deployment
+## 15. Verify the public deployment
 
 Compare all rgbdns authorities:
 
@@ -594,7 +650,7 @@ Require:
 - matching NS RRsets; and
 - UDP and TCP agreement.
 
-## 15. Observe request and transfer logs
+## 16. Observe request and transfer logs
 
 Request logging is enabled by default. Follow primary activity:
 
@@ -619,7 +675,7 @@ QUERY_LOG=0
 
 Restart tinydns after manually changing that environment file.
 
-## 16. Install, upgrade, or change roles
+## 17. Install, upgrade, or change roles
 
 The package and `rgbdns-setup` have separate responsibilities:
 
@@ -800,7 +856,7 @@ systemctl is-active rgbdns-tinydns
 For either conversion, `rgbdns-setup` is the supported transition mechanism.
 Do not manually leave both role configurations or both picker units enabled.
 
-## 17. Troubleshoot by boundary
+## 18. Troubleshoot by boundary
 
 ### AXFR ends with `end of file`
 

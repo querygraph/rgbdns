@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+pub mod acme;
 mod aname;
 pub mod axfr;
 pub mod cdb;

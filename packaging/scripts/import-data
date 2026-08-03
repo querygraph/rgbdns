@@ -8,6 +8,11 @@ state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
 compile_zone=${RGBDNS_COMPILE_ZONE:-/usr/lib/rgbdns/compile-zone}
 service_user=${RGBDNS_SERVICE_USER-rgbdns}
 
+exec 9>"$state_dir/acme-update.lock"
+if command -v flock >/dev/null 2>&1; then
+    flock 9
+fi
+
 case $DATA_DROP in
     /*) ;;
     *) echo "rgbdns-import-data: drop path must be absolute: $DATA_DROP" >&2; exit 2 ;;

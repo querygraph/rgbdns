@@ -13,6 +13,7 @@ options:
   --port PORT               authoritative port (default: 53)
   --allow-nets CIDRS        enable AXFR for these secondary CIDRs
   --query-log BOOL          log each request (default: 1; use 0 to disable)
+  --acme-update-config FILE enable scoped ACME RFC 2136 updates (primary only)
   --data-drop FILE          watch an scp destination for primary rgbdns.data
   --data-drop-owner USER    require data uploads to be owned by USER
   --zone NAME               add a zone to transfer (repeatable)
@@ -68,12 +69,13 @@ primary=
 zones_drop=
 zones_drop_owner=${SUDO_USER:-root}
 start=yes
+acme_update_config=
 
 while [ $# -gt 0 ]; do
     option=$1
     shift
     case $option in
-        --listen-ip|--port|--allow-nets|--query-log|--data|--data-drop|--data-drop-owner|--zone|--zones|--primary|--zones-drop|--zones-drop-owner)
+        --listen-ip|--port|--allow-nets|--query-log|--acme-update-config|--data|--data-drop|--data-drop-owner|--zone|--zones|--primary|--zones-drop|--zones-drop-owner)
             [ $# -gt 0 ] || die "$option requires a value"
             value=$1
             shift
@@ -82,6 +84,7 @@ while [ $# -gt 0 ]; do
                 --port) port=$value ;;
                 --allow-nets) allow_nets=$value ;;
                 --query-log) query_log=$value ;;
+                --acme-update-config) acme_update_config=$value ;;
                 --data) data_file=$value ;;
                 --data-drop) data_drop=$value ;;
                 --data-drop-owner) data_drop_owner=$value ;;
@@ -155,6 +158,16 @@ esac
 getent passwd "$zones_drop_owner" >/dev/null 2>&1 ||
     die "zones drop owner does not exist: $zones_drop_owner"
 
+if [ -n "$acme_update_config" ]; then
+    case $acme_update_config in
+        /*) ;;
+        *) die "ACME update config path must be absolute: $acme_update_config" ;;
+    esac
+    [ -r "$acme_update_config" ] ||
+        die "cannot read ACME update config: $acme_update_config"
+    [ "$role" = primary ] || die "ACME updates can be enabled only on a primary"
+fi
+
 getent group rgbdns >/dev/null 2>&1 ||
     groupadd --system rgbdns
 getent passwd rgbdns >/dev/null 2>&1 ||
@@ -163,18 +176,14 @@ getent passwd rgbdns >/dev/null 2>&1 ||
 
 install -d -o root -g rgbdns -m 0750 /etc/rgbdns
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
-if [ -n "$allow_nets" ]; then
-    write_env /etc/rgbdns/tinydns.env \
-        "IP=$listen_ip" "PORT=$port" \
-        "DATA=/var/lib/rgbdns/tinydns/data.cdb" \
-        "QUERY_LOG=$query_log" \
-        "ALLOW_NETS=$allow_nets"
-else
-    write_env /etc/rgbdns/tinydns.env \
-        "IP=$listen_ip" "PORT=$port" \
-        "DATA=/var/lib/rgbdns/tinydns/data.cdb" \
-        "QUERY_LOG=$query_log"
+set -- "IP=$listen_ip" "PORT=$port" \
+    "DATA=/var/lib/rgbdns/tinydns/data.cdb" "QUERY_LOG=$query_log"
+[ -z "$allow_nets" ] || set -- "$@" "ALLOW_NETS=$allow_nets"
+if [ -n "$acme_update_config" ]; then
+    set -- "$@" "ACME_UPDATE_CONFIG=$acme_update_config" \
+        "ACME_STATE_DIR=/var/lib/rgbdns/tinydns"
 fi
+write_env /etc/rgbdns/tinydns.env "$@"
 
 case $role in
     primary)

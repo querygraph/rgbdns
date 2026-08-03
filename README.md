@@ -87,6 +87,38 @@ Publish either file through a `.new` name followed by a remote rename. rgbdns
 validates and compiles primary data before activation, and validates secondary
 lists before starting AXFR refresh.
 
+## ACME DNS-01 updates
+
+rgbdns 0.4.0 accepts TCP RFC 2136 UPDATE messages authenticated with
+HMAC-SHA256 TSIG for narrowly scoped ACME DNS-01 TXT records. Updates are
+disabled by default. A key can modify only `_acme-challenge` owners in its
+configured primary zone; accepted values are durable, immediately visible to
+queries, assigned a monotonic SOA serial, and included in standard AXFR.
+
+Create a 32-byte secret and configure a policy:
+
+```sh
+openssl rand -base64 32
+sudoedit /etc/rgbdns/acme-update.conf
+```
+
+```text
+certbot-chiefscientist. hmac-sha256. BASE64_SECRET chiefscientist.org. _acme-challenge. 60
+```
+
+Enable it while configuring the primary:
+
+```sh
+sudo rgbdns-setup primary --data rgbdns.data \
+  --acme-update-config /etc/rgbdns/acme-update.conf
+```
+
+Certbot's RFC 2136 credentials use the same server, key name, secret, and
+HMAC-SHA256 algorithm. `rgbdns-acme present` and `cleanup` provide a local
+manual-hook interface; cleanup removes only its specified value so overlapping
+wildcard and ordinary validations remain safe. See [`RGBDNS_LETS.md`](RGBDNS_LETS.md)
+for the protocol, state, policy, security, and test design.
+
 For the complete production-shaped `fieldnotes.es` example using
 `a.ns.cron.sh`, `b.ns.cron.sh`, BuddyNS, primary data pickup, and secondary
 zone-list pickup, follow
@@ -102,7 +134,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.3.6_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.4.0_$(dpkg --print-architecture).deb
 ```
 
 On openSUSE Leap 16.0, build the RPM with:
@@ -112,7 +144,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.3.6-1.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm
 ```
 
 ## Book

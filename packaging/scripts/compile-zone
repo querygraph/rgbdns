@@ -2,6 +2,11 @@
 set -eu
 
 state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
+if [ -r /etc/rgbdns/tinydns.env ]; then
+    # shellcheck disable=SC1091
+    . /etc/rgbdns/tinydns.env
+    export ACME_UPDATE_CONFIG ACME_STATE_DIR
+fi
 cd "$state_dir"
 test -r data
 umask 027

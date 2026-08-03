@@ -33,6 +33,70 @@ pub(crate) struct RecordMetadata {
     pub location: Option<[u8; 2]>,
 }
 impl Zone {
+    /// Returns a validated snapshot with the supplied ACME TXT overlay and SOA
+    /// serial overrides. The source zone is not modified.
+    pub(crate) fn with_acme_overlay(
+        &self,
+        records: &[(Name, Vec<u8>, u32)],
+        serials: &BTreeMap<Name, u32>,
+    ) -> Result<Self> {
+        let mut zone = self.clone();
+        for (owner, value, ttl) in records {
+            if zone.records.get(owner).is_some_and(|existing| {
+                existing
+                    .iter()
+                    .any(|record| record.rr_type() != RecordType::Txt)
+            }) || zone.anames.contains_key(owner)
+            {
+                return Err(Error::InvalidRecord(format!(
+                    "ACME TXT at {owner} conflicts with alias data"
+                )));
+            }
+            zone.current_metadata = RecordMetadata::default();
+            zone.add(Record {
+                name: owner.clone(),
+                ttl: *ttl,
+                data: RData::Txt(value.chunks(255).map(<[u8]>::to_vec).collect()),
+            });
+        }
+        for (name, serial) in serials {
+            let Some(zone_records) = zone.records.get_mut(name) else {
+                return Err(Error::InvalidRecord(format!(
+                    "ACME policy zone {name} is not authoritative"
+                )));
+            };
+            let Some(soa) = zone_records
+                .iter_mut()
+                .find(|record| record.rr_type() == RecordType::Soa)
+            else {
+                return Err(Error::InvalidRecord(format!(
+                    "ACME policy zone {name} has no SOA"
+                )));
+            };
+            if let RData::Soa {
+                serial: current, ..
+            } = &mut soa.data
+            {
+                *current = *serial;
+            }
+        }
+        zone.validate_aliases()?;
+        Ok(zone)
+    }
+
+    pub(crate) fn soa_serial(&self, zone: &Name) -> Option<u32> {
+        self.records.get(zone)?.iter().find_map(|record| {
+            if let RData::Soa { serial, .. } = record.data {
+                Some(serial)
+            } else {
+                None
+            }
+        })
+    }
+
+    pub(crate) fn is_authoritative(&self, zone: &Name) -> bool {
+        self.authoritative.contains(zone)
+    }
     pub fn from_file(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref();
         if path.extension().is_some_and(|extension| extension == "cdb") {
