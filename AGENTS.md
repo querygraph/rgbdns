@@ -55,6 +55,10 @@
 
 ## Deployment and packaging invariants
 
+- Production zone data and deployment workflows live in the private
+  `alexy/cronsh` repository. Wishfully lives in the private
+  `querygraph/wishfully` repository. Do not reintroduce either into rgbdns.
+
 - Debian configuration under `/etc/rgbdns` is a conffile and must preserve
   operator changes during upgrade.
 - RPM configuration uses `%config(noreplace)` and must preserve operator

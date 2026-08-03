@@ -30,6 +30,21 @@ separated CIDR list to authorize additional clients.
 `axfrdns` is TCP-only and likewise permits loopback clients by default. Its
 `ALLOW_NETS` setting accepts comma-separated IPv4 or IPv6 CIDRs.
 
+## Related private services
+
+Production configuration and application code are intentionally maintained
+outside this public implementation repository:
+
+- [`alexy/cronsh`](https://github.com/alexy/cronsh) owns the private
+  consolidated `rgbdns.data`, `rgbdns.zones`, BuddyNS policy, and deployment
+  workflow for `a.ns.cron.sh` and `b.ns.cron.sh`.
+- [`querygraph/wishfully`](https://github.com/querygraph/wishfully) owns the
+  private Wishfully Vercel control plane and CLI. It submits reviewed DNS-state
+  pull requests to `alexy/cronsh`.
+
+No production zone data, deployment credential, or Wishfully application
+secret belongs in this repository.
+
 The recursive client commands read `DNSCACHEIP` (a comma-separated list of IP
 or `IP:port` endpoints) when set, otherwise they use `/etc/resolv.conf`.
 
@@ -78,8 +93,8 @@ an idempotent `rgbdns-setup` command for primary and secondary authoritative
 servers. See [`docs/DEBIAN.md`](docs/DEBIAN.md) for package builds, account and
 directory layout, tinydns data-file setup, firewalls, AXFR allow-lists, timed
 secondary refresh, verification, upgrades, and troubleshooting. It includes a
-complete `cron.sh` deployment with `52.10.53.234` as the primary address and
-BuddyNS as the secondary network.
+complete example based on the cron.sh deployment topology. Live zone state is
+kept in the private `alexy/cronsh` repository.
 
 Primaries watch `rgbdns.data`, and secondaries watch a canonical
 one-zone-per-line `/var/lib/rgbdns/incoming/rgbdns.zones` in managed state.
