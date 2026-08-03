@@ -10,6 +10,8 @@ rpm --query --package --requires "$package" |
     grep -qx 'group(rgbdns)'
 rpm --query --package --list "$package" |
     grep -Eq '^/usr/share/man/man7/rgbdns\.7(\.gz)?$'
+rpm --query --package --list "$package" |
+    grep -Eq '^/usr/share/man/man1/rgbdns-acme\.1(\.gz)?$'
 for superseded in daemontools djbdns; do
     rpm --query --package --conflicts "$package" |
         grep -qx "$superseded"
@@ -55,6 +57,8 @@ test "$(stat -c %U:%G /etc/rgbdns)" = root:rgbdns
 test "$(stat -c %a /etc/rgbdns)" = 750
 test "$(stat -c %U:%G /etc/rgbdns/tinydns.env)" = root:rgbdns
 test "$(stat -c %a /etc/rgbdns/tinydns.env)" = 640
+test "$(stat -c %U:%G /etc/rgbdns/acme-update.conf)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns/acme-update.conf)" = 640
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
 grep -q 'enable --now rgbdns-data.path' \
     /usr/lib/rgbdns/restore-role-units
@@ -77,3 +81,4 @@ rgbdns-setup --help | grep -q -- '--zones'
 rgbdns-setup --help | grep -q -- '--zones-drop'
 rgbdns-setup --help | grep -q -- '--data-drop'
 rgbdns-setup --help | grep -q -- '--query-log'
+rgbdns-setup --help | grep -q -- '--acme-update-config'

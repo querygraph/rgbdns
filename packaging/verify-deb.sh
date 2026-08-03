@@ -76,10 +76,15 @@ rgbdns-setup --help | grep -q -- '--zones'
 rgbdns-setup --help | grep -q -- '--zones-drop'
 rgbdns-setup --help | grep -q -- '--data-drop'
 rgbdns-setup --help | grep -q -- '--query-log'
+rgbdns-setup --help | grep -q -- '--acme-update-config'
+test -x /usr/bin/rgbdns-acme
+test -f /usr/share/man/man1/rgbdns-acme.1.gz
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
 test "$(stat -c %U:%G /etc/rgbdns)" = root:rgbdns
 test "$(stat -c %a /etc/rgbdns)" = 750
 test "$(stat -c %U:%G /etc/rgbdns/tinydns.env)" = root:rgbdns
+test "$(stat -c %U:%G /etc/rgbdns/acme-update.conf)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns/acme-update.conf)" = 640
 grep -q 'enable --now rgbdns-data.path' \
     /usr/lib/rgbdns/restore-role-units
 grep -q 'enable --now rgbdns-secondary-sync.timer' \

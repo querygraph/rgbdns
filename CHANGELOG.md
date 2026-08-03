@@ -7,6 +7,13 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ### Added
 
+- Scoped TCP RFC 2136 updates authenticated by HMAC-SHA256 TSIG for ACME
+  DNS-01 TXT values, with per-key zone/owner policy, replay and resource
+  bounds, signed responses, durable overlays, monotonic SOA serials, live
+  publication, standard AXFR propagation, canonical-import merge validation,
+  Certbot interoperability guidance, and the `rgbdns-acme` administrative
+  client.
+
 - Original tinydns-compatible per-request logging for UDP, TCP, malformed,
   refused, class, opcode, and AXFR requests, emitted as untimestamped stderr
   lines for journald or `multilog`, with a default-on `QUERY_LOG` control.

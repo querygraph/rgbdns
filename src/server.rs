@@ -515,7 +515,17 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
         .then(crate::aname::Resolver::from_system)
         .transpose()?
         .map(Arc::new);
-    let zone = Arc::new(zone);
+    let live = crate::acme::LiveZone::new(zone.clone());
+    let acme = std::env::var("ACME_UPDATE_CONFIG")
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+        .map(|config| {
+            let state_dir = std::env::var("ACME_STATE_DIR")
+                .unwrap_or_else(|_| "/var/lib/rgbdns/tinydns".into());
+            crate::acme::AcmeUpdates::from_file(config, state_dir, zone.clone(), live.clone())
+                .map(Arc::new)
+        })
+        .transpose()?;
     let allowed = std::env::var("ALLOW_NETS")
         .ok()
         .map(|value| {
@@ -529,12 +539,26 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
         })
         .transpose()?
         .map(Arc::new);
-    let stream_handler =
-        allowed.map(|allowed| axfr_stream_handler(zone.clone(), allowed, query_logger));
+    let stream_handler = if allowed.is_some() || acme.is_some() {
+        Some(authoritative_stream_handler(
+            live.clone(),
+            allowed,
+            acme.clone(),
+            query_logger,
+        ))
+    } else {
+        None
+    };
     query_logger.starting();
     crate::transport::serve(
         addr,
         Arc::new(move |wire, limit, client| {
+            if crate::acme::AcmeUpdates::is_update(wire) {
+                let response = error_response(wire, 5);
+                query_logger.request(client, wire, response.as_deref().ok());
+                return response;
+            }
+            let zone = live.snapshot();
             let response = respond_over_transport(
                 &zone,
                 resolver.as_deref(),
@@ -550,12 +574,22 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
     )
 }
 
-fn axfr_stream_handler(
-    zone: Arc<Zone>,
-    allowed: Arc<Vec<ipnet::IpNet>>,
+fn authoritative_stream_handler(
+    zone: crate::acme::LiveZone,
+    allowed: Option<Arc<Vec<ipnet::IpNet>>>,
+    acme: Option<Arc<crate::acme::AcmeUpdates>>,
     query_logger: QueryLogger,
 ) -> Arc<crate::transport::StreamHandler> {
     Arc::new(move |wire: &[u8], client: SocketAddr| {
+        if crate::acme::AcmeUpdates::is_update(wire) {
+            let response = if let Some(acme) = &acme {
+                acme.handle(wire)
+            } else {
+                error_response(wire, 5)
+            }?;
+            query_logger.request(client, wire, Some(&response));
+            return Ok(Some(vec![response]));
+        }
         let Ok(query) = Message::decode(wire) else {
             return Ok(None);
         };
@@ -564,11 +598,15 @@ fn axfr_stream_handler(
         if !is_axfr {
             return Ok(None);
         }
+        let Some(allowed) = &allowed else {
+            return Ok(None);
+        };
         if !allowed.iter().any(|network| network.contains(&client.ip())) {
             query_logger.axfr(client, wire, false);
             return Err(Error::Format("AXFR client is not allowed"));
         }
-        let response = crate::axfr::response_wires(&zone, query).map(Some);
+        let snapshot = zone.snapshot();
+        let response = crate::axfr::response_wires(&snapshot, query).map(Some);
         query_logger.axfr(client, wire, response.is_ok());
         response
     })
@@ -588,8 +626,10 @@ fn serve_sockets(
         .map(Arc::new);
     let zone = Arc::new(zone);
     let query_logger = QueryLogger { enabled: false };
-    let stream_handler =
-        allowed.map(|allowed| axfr_stream_handler(zone.clone(), Arc::new(allowed), query_logger));
+    let stream_handler = allowed.map(|allowed| {
+        let live = crate::acme::LiveZone::new((*zone).clone());
+        authoritative_stream_handler(live, Some(Arc::new(allowed)), None, query_logger)
+    });
     crate::transport::serve_sockets(
         udp,
         tcp,

@@ -1,0 +1,72 @@
+.TH RGBDNS-ACME 1 "August 2026" "rgbdns 0.4.0"
+.SH NAME
+rgbdns-acme \- manage ACME DNS-01 TXT state through rgbdns
+.SH SYNOPSIS
+.B rgbdns-acme present
+.BI --zone " zone " --name " owner " --value " token"
+.RI [ options ]
+.br
+.B rgbdns-acme cleanup
+.BI --zone " zone " --name " owner " --value " token"
+.RI [ options ]
+.br
+.B rgbdns-acme clear
+.BI --zone " zone " --name " owner"
+.RI [ options ]
+.br
+.B rgbdns-acme list
+.RI [ --zone " zone" ]
+.RI [ options ]
+.SH DESCRIPTION
+.B rgbdns-acme
+is the local administrative and ACME manual-hook interface for rgbdns.  Its
+mutating commands send a TSIG-authenticated RFC 2136 UPDATE to the running
+primary.  They therefore use the same authorization, durability, serial, live
+publication, and AXFR path as Certbot's RFC 2136 plugin.
+.PP
+.B present
+adds one TXT value without removing concurrent values.
+.B cleanup
+removes only the specified value.
+.B clear
+removes the authorized TXT RRset.
+.B list
+reads the durable generated overlay and does not reveal TSIG credentials.
+.SH OPTIONS
+.TP
+.BI --config " file"
+Policy file.  The default is
+.IR /etc/rgbdns/acme-update.conf .
+.TP
+.BI --server " address:port"
+Primary update endpoint.  The default is
+.IR 127.0.0.1:53 .
+.TP
+.BI --state-dir " directory"
+State directory used by
+.BR list .
+The default is
+.IR /var/lib/rgbdns/tinydns .
+.TP
+.B --json
+Emit machine-readable output.
+.SH SECURITY
+The policy file contains TSIG secrets and must be readable only by root and the
+rgbdns service group.  Use a separate key for each certificate host or trust
+boundary.  Network keys are restricted to configured
+.B _acme-challenge
+TXT owners and cannot change ordinary zone data.
+.SH FILES
+.TP
+.I /etc/rgbdns/acme-update.conf
+TSIG keys and per-zone policies.
+.TP
+.I /var/lib/rgbdns/tinydns/acme-overlay.data
+Generated durable TXT overlay; do not edit.
+.TP
+.I /var/lib/rgbdns/tinydns/acme-serials
+Generated per-zone serial state; do not edit.
+.SH SEE ALSO
+.BR tinydns (1),
+.BR rgbdns-setup (8),
+.BR nsupdate (1)

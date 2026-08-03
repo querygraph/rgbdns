@@ -39,6 +39,8 @@ override_dh_auto_install:
 		debian/rgbdns/usr/sbin/rgbdns-setup
 	install -D -m 0644 packaging/default/tinydns.env \
 		debian/rgbdns/etc/rgbdns/tinydns.env
+	install -D -m 0640 packaging/default/acme-update.conf \
+		debian/rgbdns/etc/rgbdns/acme-update.conf
 	install -D -m 0644 packaging/default/data \
 		debian/rgbdns/usr/share/doc/rgbdns/examples/data
 	for unit in packaging/systemd/*; do \

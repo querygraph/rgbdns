@@ -20,6 +20,8 @@ and independent ldns interoperability in `tests/drill_interop.rs`.
 | [RFC 4343](https://www.rfc-editor.org/rfc/rfc4343.html) | ASCII-case-insensitive identity with query-case preservation | `rfc4343_*`, generated case properties |
 | [RFC 4592](https://www.rfc-editor.org/rfc/rfc4592.html) | Closest encloser, empty non-terminals, wildcard blocking and synthesis | `rfc4592_*`, zone wildcard tests |
 | [RFC 5936](https://www.rfc-editor.org/rfc/rfc5936.html) | AXFR framing, question and flag validation, SOA bookends, zone boundaries | AXFR unit and live-transfer tests |
+| [RFC 2136](https://www.rfc-editor.org/rfc/rfc2136.html) | TCP UPDATE, TXT add and value/RRset deletion, prerequisites, atomic application and update response codes | ACME update unit and live interoperability tests |
+| [RFC 2845](https://www.rfc-editor.org/rfc/rfc2845.html) | HMAC-SHA256 TSIG request authentication, time bounds, replay rejection and signed responses | ACME TSIG tests and `nsupdate` interoperability |
 | [RFC 6891](https://www.rfc-editor.org/rfc/rfc6891.html) | One root-owned OPT in additional, payload limit, BADVERS, DO, ignored unknown flags/options, OPT retained on truncation | `rfc6891_*`, `rfc8906_badvers_*` |
 | [RFC 7766](https://www.rfc-editor.org/rfc/rfc7766.html) | TCP support, framing, connection reuse, pipelined queries, no UDP-size limit on TCP | live server TCP tests |
 | [RFC 8482](https://www.rfc-editor.org/rfc/rfc8482.html) | Full ANY answers remain a permitted server policy | zone `RecordType::Any` tests |
@@ -50,9 +52,10 @@ normative RFC that supplies each oracle.
 
 ## Deliberate scope boundaries
 
-The following are not claimed as implemented by rgbdns 0.3.6:
+The following are not claimed as implemented by rgbdns 0.4.0:
 
-- dynamic UPDATE, NOTIFY, IXFR, DSO, DNS Cookies, or TSIG/SIG(0);
+- general-purpose dynamic UPDATE, NOTIFY, IXFR, DSO, DNS Cookies, or SIG(0);
+- TSIG algorithms other than the ACME update profile's HMAC-SHA256;
 - authoritative DNSSEC signing and denial-of-existence generation;
 - DNS over TLS, HTTPS, or QUIC;
 - a general RFC 1035 master-file parser (rgbdns uses tinydns source and CDB);
