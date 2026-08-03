@@ -5,7 +5,7 @@ package=$1
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install --yes "$package" python3
+apt-get install --yes --no-install-recommends "$package" python3
 
 dpkg-query --show --showformat='${Status}\n' rgbdns |
     grep -qx 'install ok installed'
