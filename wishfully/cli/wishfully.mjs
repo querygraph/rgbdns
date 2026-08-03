@@ -79,16 +79,20 @@ async function run() {
     const result = await request(`/api/v1/domains/${encodeURIComponent(domain)}/acme-credentials`, { method: "POST" });
     await writeFile(output, result.ini, { mode: 0o600, flag: "wx" }); await chmod(output, 0o600);
     console.log(`✓ one-time credentials written to ${output}`);
+    if (result.policyDeployment === "pending") console.warn("! DNS policy deployment is pending; keep this file and wait before running Certbot");
   } else if (group === "certbot" && command === "rotate" && domain) {
     const output = option("--output"); if (!output) usage();
     const result = await request(`/api/v1/domains/${encodeURIComponent(domain)}/acme-credentials?rotate=true`, { method: "POST" });
     await writeFile(output, result.ini, { mode: 0o600, flag: "wx" }); await chmod(output, 0o600);
     console.log(`✓ rotated credentials written once to ${output}; replace the old file after DNS policy deployment completes`);
+    if (result.policyDeployment === "pending") console.warn("! DNS policy deployment is pending; the previous credential is revoked in Wishfully but may remain accepted until the next policy deployment");
   } else if (group === "certbot" && command === "revoke" && domain) {
-    await request(`/api/v1/domains/${encodeURIComponent(domain)}/acme-credentials`, { method: "DELETE" });
-    console.log(`✓ ${domain} Certbot credential revoked and DNS policy deployment dispatched`);
+    const result = await request(`/api/v1/domains/${encodeURIComponent(domain)}/acme-credentials`, { method: "DELETE" });
+    console.log(`✓ ${domain} Certbot credential revoked`);
+    if (result.policyDeployment === "pending") console.warn("! DNS policy deployment is pending; the old credential may remain accepted until the next deployment");
   } else if (group === "certbot" && command === "run" && domain) {
     const result = await request(`/api/v1/domains/${encodeURIComponent(domain)}/acme-credentials`, { method: "POST" });
+    if (result.policyDeployment === "pending") console.warn("! DNS policy deployment is pending; this Certbot attempt may fail until the deployment workflow runs");
     const directory = await mkdtemp(join(tmpdir(), "wishfully-certbot-")); const credentials = join(directory, "rfc2136.ini");
     try {
       await writeFile(credentials, result.ini, { mode: 0o600 });

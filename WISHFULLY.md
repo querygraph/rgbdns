@@ -130,10 +130,11 @@ wishfully certbot credentials example.com \
 
 Wishfully creates a distinct HMAC-SHA256 TSIG key authorized only for
 `_acme-challenge` owners within that zone. The secret is returned once. The
-database retains an encrypted copy only long enough to publish a signed ACME
-policy bundle to the primary; thereafter it retains the key name, scope,
-creation time and revocation state. The clear secret is never committed to
-Git, logged, placed in `rgbdns.data`, or sent to the secondary.
+database retains an AES-256-GCM encrypted copy while the credential is active
+so a complete signed ACME policy bundle can be regenerated. Rotation or
+revocation cryptographically erases the stored ciphertext while retaining the
+key name, scope, creation time and revocation state. The clear secret is never
+committed to Git, logged, placed in `rgbdns.data`, or sent to the secondary.
 
 The primary policy corresponds to:
 
