@@ -86,6 +86,13 @@ default. The raw record deliberately has no timestamp, so systemd-journald or
 pass `rgbdns-setup --query-log 0`, only when per-request logging is
 intentionally disabled.
 
+`rgbdns-log-report` aggregates that stream by authoritative zone, including
+subdomain queries, and reports total queries plus distinct client/resolver IP
+addresses in descending-total order. Packages include an opt-in daily systemd
+timer that reads the preceding local day from journald and delivers the report
+through a sendmail-compatible mail transport. DNS query counts are not HTTP
+pageviews or unique people.
+
 ## Linux packages and systemd
 
 The repository includes native Debian and openSUSE RPM packaging, hardened systemd services, and
@@ -149,7 +156,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.4.0_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.5.0_$(dpkg --print-architecture).deb
 ```
 
 On openSUSE Leap 16.0, build the RPM with:
@@ -159,7 +166,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.5.0-1.x86_64.rpm
 ```
 
 ## Book

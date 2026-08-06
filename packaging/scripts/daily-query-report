@@ -1,0 +1,65 @@
+#!/bin/sh
+set -eu
+
+config=${RGBDNS_REPORT_CONFIG:-/etc/rgbdns/query-report.env}
+state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
+analyzer=${RGBDNS_LOG_REPORT:-/usr/bin/rgbdns-log-report}
+journalctl=${RGBDNS_JOURNALCTL:-journalctl}
+
+[ -r "$config" ] || {
+    echo "rgbdns daily query report: cannot read $config" >&2
+    exit 100
+}
+. "$config"
+
+: "${REPORT_TO:?REPORT_TO is required in $config}"
+sendmail=${REPORT_SENDMAIL:-/usr/sbin/sendmail}
+[ -x "$sendmail" ] || {
+    echo "rgbdns daily query report: sendmail is not executable: $sendmail" >&2
+    exit 100
+}
+
+case $REPORT_TO in
+    *[!A-Za-z0-9_@.+,=-]*|'')
+        echo "rgbdns daily query report: invalid REPORT_TO" >&2
+        exit 100
+        ;;
+esac
+
+today=${RGBDNS_TODAY:-$(date +%F)}
+report_date=${RGBDNS_REPORT_DATE:-$(date --date=yesterday +%F)}
+zones=$(mktemp)
+body=$(mktemp)
+trap 'rm -f "$zones" "$body"' EXIT HUP INT TERM
+chmod 0600 "$zones" "$body"
+
+if [ -s "$state_dir/zones" ]; then
+    cp "$state_dir/zones" "$zones"
+elif [ -s "$state_dir/data" ]; then
+    sed -n 's/^Z\([^:]*\):.*/\1/p' "$state_dir/data" >"$zones"
+else
+    echo "rgbdns daily query report: no zone source in $state_dir" >&2
+    exit 100
+fi
+[ -s "$zones" ] || {
+    echo "rgbdns daily query report: zone list is empty" >&2
+    exit 100
+}
+
+"$journalctl" --quiet --unit=rgbdns-tinydns.service --output=cat \
+    --since "$report_date 00:00:00" --until "$today 00:00:00" |
+    "$analyzer" --zones "$zones" --date "$report_date" >"$body"
+
+hostname=$(hostname -f 2>/dev/null || hostname)
+from=${REPORT_FROM:-rgbdns@$hostname}
+subject="rgbdns daily query report for $report_date"
+{
+    printf 'To: %s\n' "$REPORT_TO"
+    printf 'From: %s\n' "$from"
+    printf 'Subject: %s\n' "$subject"
+    printf 'Date: %s\n' "$(date -R)"
+    printf 'Content-Type: text/plain; charset=UTF-8\n'
+    printf 'Auto-Submitted: auto-generated\n'
+    printf '\n'
+    cat "$body"
+} | "$sendmail" -t

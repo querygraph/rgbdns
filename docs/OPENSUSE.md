@@ -55,8 +55,8 @@ sudo zypper --non-interactive install \
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-rpm.sh
-rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm
-rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm
+rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-0.5.0-1.x86_64.rpm
+rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-0.5.0-1.x86_64.rpm
 ```
 
 `build-rpm.sh` creates a clean rpmbuild tree under `dist/rpmbuild`, archives
@@ -81,9 +81,9 @@ gh run download RUN_ID \
 Inspect an artifact before installation:
 
 ```sh
-rpm -K dist/cloud-rpm/rgbdns-0.4.0-1.x86_64.rpm
-rpm -qip dist/cloud-rpm/rgbdns-0.4.0-1.x86_64.rpm
-rpm -qlp dist/cloud-rpm/rgbdns-0.4.0-1.x86_64.rpm
+rpm -K dist/cloud-rpm/rgbdns-0.5.0-1.x86_64.rpm
+rpm -qip dist/cloud-rpm/rgbdns-0.5.0-1.x86_64.rpm
+rpm -qlp dist/cloud-rpm/rgbdns-0.5.0-1.x86_64.rpm
 ```
 
 The development RPM is not repository-signed. `rpm -K` still verifies the
@@ -96,11 +96,11 @@ Copy a locally built package to the EC2 instance:
 
 ```sh
 scp -i ~/.ssh/KEY.pem \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm \
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.5.0-1.x86_64.rpm \
   ec2-user@PUBLIC_ADDRESS:/tmp/
 ssh -i ~/.ssh/KEY.pem ec2-user@PUBLIC_ADDRESS
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.4.0-1.x86_64.rpm
+  /tmp/rgbdns-0.5.0-1.x86_64.rpm
 rpm -q rgbdns
 rpm -V rgbdns
 ```
@@ -285,6 +285,37 @@ disable request logs intentionally, pass `--query-log 0` to `rgbdns-setup` or
 set `QUERY_LOG=0` in `/etc/rgbdns/tinydns.env` and restart the service. Query
 logs contain client addresses and requested names, so protect and size their
 retention appropriately.
+
+### Daily per-domain query email
+
+`rgbdns-log-report` groups accepted request records by their longest matching
+authoritative zone, counts total queries and distinct client/resolver IPs, and
+sorts domains by total descending. The package's timer is opt-in; DNS queries
+are not HTTP pageviews or unique people.
+
+Configure a sendmail-compatible transport such as Postfix or `msmtp`, then set:
+
+```text
+# /etc/rgbdns/query-report.env
+REPORT_TO=deliverable@gmail.com
+REPORT_FROM=rgbdns@a.ns.cron.sh
+REPORT_SENDMAIL=/usr/sbin/sendmail
+```
+
+Enable it on the primary only:
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable --now rgbdns-query-report.timer
+sudo systemctl start rgbdns-query-report.service
+sudo systemctl status rgbdns-query-report.service --no-pager --full
+sudo journalctl -u rgbdns-query-report.service -n 50 --no-pager
+systemctl list-timers rgbdns-query-report.timer
+```
+
+The service reads the preceding local calendar day from journald. Keep
+`QUERY_LOG=1` and sufficient journal retention. Package installation does not
+enable the timer before mail delivery is configured.
 
 Do not launch a separate `axfrdns` process. The standalone compatibility
 command is installed, but it cannot own the same TCP address and port.

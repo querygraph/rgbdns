@@ -7,6 +7,10 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ### Added
 
+- Daily per-zone DNS query reports with total and distinct client/resolver IP
+  counts, longest-zone matching, descending totals, journald collection,
+  sendmail-compatible delivery, and a hardened systemd timer.
+
 - Scoped TCP RFC 2136 updates authenticated by HMAC-SHA256 TSIG for ACME
   DNS-01 TXT values, with per-key zone/owner policy, replay and resource
   bounds, signed responses, durable overlays, monotonic SOA serials, live

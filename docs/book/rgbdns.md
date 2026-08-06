@@ -758,6 +758,17 @@ same stream through `multilog t` for TAI64N timestamps and file rotation.
 installation whose traffic, retention, or privacy policy forbids full query
 logging.
 
+`rgbdns-log-report` turns a bounded daily slice of that stream into an
+operational summary. It maps each accepted query name to the longest matching
+configured authoritative zone, so `www.wishful.ly` contributes to
+`wishful.ly` rather than becoming a separate domain. For each zone it reports
+the total query count and the number of distinct client addresses, then sorts
+by total descending. A packaged opt-in timer reads the preceding local day
+from journald and submits the text through a sendmail-compatible transport.
+Distinct addresses usually identify recursive resolvers, not individual
+people, and DNS queries are not HTTP pageviews. The timer belongs on one
+authority only when duplicate reports are unwanted.
+
 # The rgbdns program family
 
 ## One suite, small purposes
@@ -774,6 +785,7 @@ rgbdns deliberately exposes separate commands:
 | `walldns` | synthetic address/reverse answers |
 | `dnsq`, `dnsqr`, `dnsip*`, `dnsname`, `dnsmx`, `dnstxt` | queries and diagnostics |
 | `dnsfilter`, `dnstrace`, `random-ip` | stream lookup, delegation tracing, testing |
+| `rgbdns-log-report` | daily per-zone query and distinct-client aggregation |
 | `*-conf` | service-directory generation |
 | `setuidgid`, `multilog`, `tai64n`, `tai64nlocal` | process and logging support |
 

@@ -20,7 +20,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.4.0_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.5.0_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -258,16 +258,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.4.0_amd64.deb
+dpkg-deb --info ../rgbdns_0.5.0_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.4.0_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.5.0_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.4.0_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.5.0_amd64.deb
 dpkg-query -W rgbdns
 ```
 
@@ -389,6 +389,43 @@ a service. To disable request logs deliberately, pass `--query-log 0` to
 the service. Full query logs contain client addresses and requested names;
 size retention for traffic volume and protect them as sensitive operational
 data.
+
+### Daily per-domain query email
+
+The package includes `rgbdns-log-report` and an opt-in
+`rgbdns-query-report.timer`. The report maps every accepted query to the
+longest configured authoritative zone, counts total queries and distinct
+client/resolver IP addresses, and sorts domains by total descending. These are
+DNS measurements, not HTTP visits or unique people.
+
+Install and configure a sendmail-compatible transport appropriate for the
+host. For example, `msmtp-mta` can provide `/usr/sbin/sendmail`; configure its
+SMTP relay separately and protect its credentials. Then set:
+
+```text
+# /etc/rgbdns/query-report.env
+REPORT_TO=deliverable@gmail.com
+REPORT_FROM=rgbdns@a.ns.cron.sh
+REPORT_SENDMAIL=/usr/sbin/sendmail
+```
+
+Enable the timer on the primary only, avoiding duplicate reports from the
+secondary:
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable --now rgbdns-query-report.timer
+sudo systemctl start rgbdns-query-report.service
+sudo systemctl status rgbdns-query-report.service --no-pager --full
+sudo journalctl -u rgbdns-query-report.service -n 50 --no-pager
+systemctl list-timers rgbdns-query-report.timer
+```
+
+The manual start sends the preceding local calendar day's report immediately.
+The timer normally runs shortly after 00:15 with a small randomized delay.
+Journald retention must cover the previous day, and `QUERY_LOG=1` must remain
+enabled. The timer is deliberately not enabled by package installation because
+the operator must first configure a recipient and working mail transport.
 
 There is deliberately no `rgbdns-axfrdns.service` in this package. The
 standalone `axfrdns` command remains part of the djbdns-compatible tool suite,

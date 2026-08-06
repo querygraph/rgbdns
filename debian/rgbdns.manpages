@@ -24,6 +24,7 @@ man/rbldns.1
 man/rbldns-conf.1
 man/rbldns-data.1
 man/rgbdns-acme.1
+man/rgbdns-log-report.1
 man/setuidgid.1
 man/tai64n.1
 man/tai64nlocal.1

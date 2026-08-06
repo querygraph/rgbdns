@@ -1,0 +1,12 @@
+[Unit]
+Description=Send the daily rgbdns query report
+Documentation=man:rgbdns-log-report(1) https://github.com/querygraph/rgbdns
+
+[Timer]
+OnCalendar=*-*-* 00:15:00
+Persistent=yes
+RandomizedDelaySec=5min
+Unit=rgbdns-query-report.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,49 @@
+.TH RGBDNS-LOG-REPORT 1 "August 2026" "rgbdns 0.5.0"
+.SH NAME
+rgbdns-log-report \- aggregate rgbdns query logs by authoritative zone
+.SH SYNOPSIS
+.B rgbdns-log-report
+.B --zones
+.I file
+.B --date
+.I YYYY-MM-DD
+.SH DESCRIPTION
+.B rgbdns-log-report
+reads original-compatible tinydns request records from standard input. It
+counts accepted queries for each configured authoritative zone and distinct
+client addresses, including queries below the zone apex. Output is sorted by
+total queries in descending order.
+.PP
+The unique count represents querying client or recursive-resolver IP
+addresses. It does not represent unique people or HTTP pageviews.
+.PP
+The packaged
+.B rgbdns-query-report.timer
+runs shortly after midnight, reads the preceding local calendar day from the
+systemd journal, and submits a plain-text report through a sendmail-compatible
+mail transport. Configure
+.I /etc/rgbdns/query-report.env
+and enable the timer explicitly.
+.SH OPTIONS
+.TP
+.BI --zones " file"
+Read one authoritative zone per line. Blank lines and lines beginning with
+.B #
+are ignored.
+.TP
+.BI --date " YYYY-MM-DD"
+Label the report with this date.
+.SH FILES
+.TP
+.I /etc/rgbdns/query-report.env
+Mail recipient, sender, and sendmail path.
+.TP
+.I /var/lib/rgbdns/tinydns/data
+Primary zone source used by the packaged report helper.
+.TP
+.I /var/lib/rgbdns/tinydns/zones
+Secondary zone list used by the packaged report helper.
+.SH SEE ALSO
+.BR tinydns (1),
+.BR journalctl (1),
+.BR sendmail (1)

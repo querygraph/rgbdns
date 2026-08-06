@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.4.0
+Version:        0.5.0
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -16,6 +16,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 Requires:       systemd
 Requires:       util-linux
+Suggests:       postfix
 Provides:       group(rgbdns)
 Conflicts:      daemontools
 Conflicts:      djbdns
@@ -59,12 +60,16 @@ install -D -m 0755 packaging/scripts/migrate-zone-state \
     %{buildroot}%{_prefix}/lib/rgbdns/migrate-zone-state
 install -D -m 0755 packaging/scripts/restore-role-units \
     %{buildroot}%{_prefix}/lib/rgbdns/restore-role-units
+install -D -m 0755 packaging/scripts/daily-query-report \
+    %{buildroot}%{_prefix}/lib/rgbdns/daily-query-report
 install -D -m 0755 packaging/scripts/rgbdns-setup \
     %{buildroot}%{_sbindir}/rgbdns-setup
 install -D -m 0640 packaging/default/tinydns.env \
     %{buildroot}%{_sysconfdir}/rgbdns/tinydns.env
 install -D -m 0640 packaging/default/acme-update.conf \
     %{buildroot}%{_sysconfdir}/rgbdns/acme-update.conf
+install -D -m 0640 packaging/default/query-report.env \
+    %{buildroot}%{_sysconfdir}/rgbdns/query-report.env
 install -D -m 0644 packaging/default/data \
     %{buildroot}%{_docdir}/%{name}/examples/data
 for unit in packaging/systemd/*; do
@@ -75,6 +80,8 @@ install -D -m 0644 debian/rgbdns.7 \
     %{buildroot}%{_mandir}/man7/rgbdns.7
 install -D -m 0644 man/rgbdns-acme.1 \
     %{buildroot}%{_mandir}/man1/rgbdns-acme.1
+install -D -m 0644 man/rgbdns-log-report.1 \
+    %{buildroot}%{_mandir}/man1/rgbdns-log-report.1
 
 %pre
 getent group rgbdns >/dev/null 2>&1 || groupadd --system rgbdns
@@ -90,19 +97,21 @@ chown root:rgbdns %{_sysconfdir}/rgbdns/tinydns.env
 chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
 chown root:rgbdns %{_sysconfdir}/rgbdns/acme-update.conf
 chmod 0640 %{_sysconfdir}/rgbdns/acme-update.conf
+chown root:rgbdns %{_sysconfdir}/rgbdns/query-report.env
+chmod 0640 %{_sysconfdir}/rgbdns/query-report.env
 %{_prefix}/lib/rgbdns/migrate-zones
 %{_prefix}/lib/rgbdns/migrate-zone-state
 %{_prefix}/lib/rgbdns/migrate-zone-drop
-%service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path
+%service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
 if [ "$1" -gt 1 ]; then
     %{_prefix}/lib/rgbdns/restore-role-units
 fi
 
 %preun
-%service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path
+%service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
 
 %postun
-%service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path
+%service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
 
 %files
 %doc README.md docs/OPENSUSE.md
@@ -117,9 +126,11 @@ fi
 %{_prefix}/lib/rgbdns/migrate-zone-drop
 %{_prefix}/lib/rgbdns/migrate-zone-state
 %{_prefix}/lib/rgbdns/restore-role-units
+%{_prefix}/lib/rgbdns/daily-query-report
 %attr(0750,root,rgbdns) %dir %{_sysconfdir}/rgbdns
 %attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
 %attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/acme-update.conf
+%attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/query-report.env
 %{_unitdir}/rgbdns-tinydns.service
 %{_unitdir}/rgbdns-secondary-sync.service
 %{_unitdir}/rgbdns-secondary-sync.timer
@@ -127,11 +138,18 @@ fi
 %{_unitdir}/rgbdns-zones.path
 %{_unitdir}/rgbdns-data-import.service
 %{_unitdir}/rgbdns-data.path
+%{_unitdir}/rgbdns-query-report.service
+%{_unitdir}/rgbdns-query-report.timer
 %{_docdir}/%{name}/examples/data
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 %{_mandir}/man1/rgbdns-acme.1%{?ext_man}
+%{_mandir}/man1/rgbdns-log-report.1%{?ext_man}
 
 %changelog
+* Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.0-1
+- Add daily per-zone total and unique-client query reports
+- Add configurable sendmail delivery through a hardened systemd timer
+
 * Sun Aug 02 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.4.0-1
 - Add scoped TSIG-authenticated RFC 2136 updates for ACME DNS-01
 - Persist challenge TXT state and transfer it with monotonic SOA serials

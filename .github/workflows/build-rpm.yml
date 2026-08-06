@@ -55,6 +55,9 @@ jobs:
       - name: Build source and binary RPMs
         run: packaging/build-rpm.sh
 
+      - name: Test daily query reporting
+        run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
+
       - name: Inspect package
         run: |
           rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm

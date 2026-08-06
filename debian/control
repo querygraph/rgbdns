@@ -20,6 +20,8 @@ Depends:
  systemd-sysv,
  ${misc:Depends},
  ${shlibs:Depends}
+Suggests:
+ mail-transport-agent
 Conflicts:
  axfrdns,
  daemontools,

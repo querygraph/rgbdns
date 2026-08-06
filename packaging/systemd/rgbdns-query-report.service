@@ -1,0 +1,24 @@
+[Unit]
+Description=Email the daily rgbdns query report
+Documentation=man:rgbdns-log-report(1) https://github.com/querygraph/rgbdns
+Wants=network-online.target
+After=network-online.target rgbdns-tinydns.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/rgbdns/daily-query-report
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=full
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+UMask=0077

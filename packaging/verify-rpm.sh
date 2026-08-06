@@ -12,6 +12,8 @@ rpm --query --package --list "$package" |
     grep -Eq '^/usr/share/man/man7/rgbdns\.7(\.gz)?$'
 rpm --query --package --list "$package" |
     grep -Eq '^/usr/share/man/man1/rgbdns-acme\.1(\.gz)?$'
+rpm --query --package --list "$package" |
+    grep -Eq '^/usr/share/man/man1/rgbdns-log-report\.1(\.gz)?$'
 for superseded in daemontools djbdns; do
     rpm --query --package --conflicts "$package" |
         grep -qx "$superseded"
@@ -32,13 +34,16 @@ for path in \
     /usr/lib/rgbdns/migrate-zone-drop \
     /usr/lib/rgbdns/migrate-zone-state \
     /usr/lib/rgbdns/restore-role-units \
+    /usr/lib/rgbdns/daily-query-report \
     /usr/lib/systemd/system/rgbdns-tinydns.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.service \
     /usr/lib/systemd/system/rgbdns-secondary-sync.timer \
     /usr/lib/systemd/system/rgbdns-zones-import.service \
     /usr/lib/systemd/system/rgbdns-zones.path \
     /usr/lib/systemd/system/rgbdns-data-import.service \
-    /usr/lib/systemd/system/rgbdns-data.path
+    /usr/lib/systemd/system/rgbdns-data.path \
+    /usr/lib/systemd/system/rgbdns-query-report.service \
+    /usr/lib/systemd/system/rgbdns-query-report.timer
 do
     test -e "$path"
 done
@@ -59,6 +64,9 @@ test "$(stat -c %U:%G /etc/rgbdns/tinydns.env)" = root:rgbdns
 test "$(stat -c %a /etc/rgbdns/tinydns.env)" = 640
 test "$(stat -c %U:%G /etc/rgbdns/acme-update.conf)" = root:rgbdns
 test "$(stat -c %a /etc/rgbdns/acme-update.conf)" = 640
+test "$(stat -c %U:%G /etc/rgbdns/query-report.env)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns/query-report.env)" = 640
+test -x /usr/bin/rgbdns-log-report
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
 grep -q 'enable --now rgbdns-data.path' \
     /usr/lib/rgbdns/restore-role-units
@@ -75,7 +83,9 @@ systemd-analyze --man=no verify \
     /usr/lib/systemd/system/rgbdns-zones-import.service \
     /usr/lib/systemd/system/rgbdns-zones.path \
     /usr/lib/systemd/system/rgbdns-data-import.service \
-    /usr/lib/systemd/system/rgbdns-data.path
+    /usr/lib/systemd/system/rgbdns-data.path \
+    /usr/lib/systemd/system/rgbdns-query-report.service \
+    /usr/lib/systemd/system/rgbdns-query-report.timer
 
 rgbdns-setup --help | grep -q -- '--zones'
 rgbdns-setup --help | grep -q -- '--zones-drop'

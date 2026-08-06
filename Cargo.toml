@@ -1,6 +1,6 @@
 [package]
 name = "rgbdns"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2024"
 license = "Unlicense"
 description = "A safe, faithful Rust reimplementation of the djbdns suite"
@@ -44,6 +44,11 @@ bench = false
 [[bin]]
 name = "rgbdns-acme"
 path = "src/bin/rgbdns-acme.rs"
+bench = false
+
+[[bin]]
+name = "rgbdns-log-report"
+path = "src/bin/rgbdns-log-report.rs"
 bench = false
 
 [[bin]]

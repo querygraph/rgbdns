@@ -1,6 +1,6 @@
 # End-to-end rgbdns setup: `fieldnotes.es`
 
-This walkthrough deploys rgbdns 0.4.0 on two AWS EC2 instances and retains
+This walkthrough deploys rgbdns 0.5.0 on two AWS EC2 instances and retains
 BuddyNS as an additional secondary network. It covers installation, initial
 role configuration, authoritative data, AXFR, atomic primary and secondary
 updates, verification, upgrades, and recovery.
@@ -118,12 +118,12 @@ gh run download "$RPM_RUN" \
   -D "$HOME/rgbdns-rpm"
 ```
 
-The 0.4.0 artifacts are:
+The 0.5.0 artifacts are:
 
 ```text
-rgbdns_0.4.0_amd64.deb
-RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm
-SRPMS/rgbdns-0.4.0-1.src.rpm
+rgbdns_0.5.0_amd64.deb
+RPMS/x86_64/rgbdns-0.5.0-1.x86_64.rpm
+SRPMS/rgbdns-0.5.0-1.src.rpm
 ```
 
 ## 4. Install the Debian package on the primary
@@ -131,14 +131,14 @@ SRPMS/rgbdns-0.4.0-1.src.rpm
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-deb/rgbdns_0.4.0_amd64.deb" \
+scp "$HOME/rgbdns-deb/rgbdns_0.5.0_amd64.deb" \
   bitnami@52.10.53.234:/tmp/
 ```
 
 On the primary:
 
 ```sh
-sudo apt install /tmp/rgbdns_0.4.0_amd64.deb
+sudo apt install /tmp/rgbdns_0.5.0_amd64.deb
 sudo systemctl daemon-reload
 dpkg-query -W -f='${Package} ${Version}\n' rgbdns
 getent passwd rgbdns
@@ -160,7 +160,7 @@ SUSE_USER=ec2-user
 Copy the package:
 
 ```sh
-scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.4.0-1.x86_64.rpm" \
+scp "$HOME/rgbdns-rpm/RPMS/x86_64/rgbdns-0.5.0-1.x86_64.rpm" \
   "$SUSE_USER"@52.38.177.160:/tmp/
 ```
 
@@ -168,7 +168,7 @@ On the secondary:
 
 ```sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  /tmp/rgbdns-0.4.0-1.x86_64.rpm
+  /tmp/rgbdns-0.5.0-1.x86_64.rpm
 sudo systemctl daemon-reload
 rpm -q rgbdns
 sudo rpm -V rgbdns
@@ -674,6 +674,33 @@ QUERY_LOG=0
 ```
 
 Restart tinydns after manually changing that environment file.
+
+### Send the daily per-domain report
+
+On the primary, configure a sendmail-compatible SMTP transport and write:
+
+```text
+# /etc/rgbdns/query-report.env
+REPORT_TO=deliverable@gmail.com
+REPORT_FROM=rgbdns@a.ns.cron.sh
+REPORT_SENDMAIL=/usr/sbin/sendmail
+```
+
+Enable the timer only on the primary so the secondary does not send a duplicate
+view of the same traffic:
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable --now rgbdns-query-report.timer
+sudo systemctl start rgbdns-query-report.service
+sudo systemctl status rgbdns-query-report.service --no-pager --full
+systemctl list-timers rgbdns-query-report.timer
+```
+
+The report covers the preceding local calendar day and sorts authoritative
+zones by accepted query total descending. `UNIQUE` is the number of distinct
+querying client or recursive-resolver addresses for that zone, not people or
+HTTP pageviews. Keep `QUERY_LOG=1` and enough journald retention for a full day.
 
 ## 17. Install, upgrade, or change roles
 

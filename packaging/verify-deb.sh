@@ -52,7 +52,9 @@ for unit in \
     rgbdns-zones-import.service \
     rgbdns-zones.path \
     rgbdns-data-import.service \
-    rgbdns-data.path
+    rgbdns-data.path \
+    rgbdns-query-report.service \
+    rgbdns-query-report.timer
 do
     test -f "/lib/systemd/system/$unit"
 done
@@ -66,6 +68,7 @@ for helper in \
     /usr/lib/rgbdns/migrate-zone-drop \
     /usr/lib/rgbdns/migrate-zone-state \
     /usr/lib/rgbdns/restore-role-units \
+    /usr/lib/rgbdns/daily-query-report \
     /usr/sbin/rgbdns-setup
 do
     test -x "$helper"
@@ -78,15 +81,21 @@ rgbdns-setup --help | grep -q -- '--data-drop'
 rgbdns-setup --help | grep -q -- '--query-log'
 rgbdns-setup --help | grep -q -- '--acme-update-config'
 test -x /usr/bin/rgbdns-acme
+test -x /usr/bin/rgbdns-log-report
 dpkg-deb --fsys-tarfile "$package" |
     tar -tf - |
     grep -qx './usr/share/man/man1/rgbdns-acme.1.gz'
+dpkg-deb --fsys-tarfile "$package" |
+    tar -tf - |
+    grep -qx './usr/share/man/man1/rgbdns-log-report.1.gz'
 grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
 test "$(stat -c %U:%G /etc/rgbdns)" = root:rgbdns
 test "$(stat -c %a /etc/rgbdns)" = 750
 test "$(stat -c %U:%G /etc/rgbdns/tinydns.env)" = root:rgbdns
 test "$(stat -c %U:%G /etc/rgbdns/acme-update.conf)" = root:rgbdns
 test "$(stat -c %a /etc/rgbdns/acme-update.conf)" = 640
+test "$(stat -c %U:%G /etc/rgbdns/query-report.env)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns/query-report.env)" = 640
 grep -q 'enable --now rgbdns-data.path' \
     /usr/lib/rgbdns/restore-role-units
 grep -q 'enable --now rgbdns-secondary-sync.timer' \
