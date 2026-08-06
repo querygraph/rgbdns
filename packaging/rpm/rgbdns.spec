@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.5.0
+Version:        0.5.1
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -146,6 +146,9 @@ fi
 %{_mandir}/man1/rgbdns-log-report.1%{?ext_man}
 
 %changelog
+* Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.1-1
+- Avoid requiring the optional hostname utility for report delivery
+
 * Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.0-1
 - Add daily per-zone total and unique-client query reports
 - Add configurable sendmail delivery through a hardened systemd timer

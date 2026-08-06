@@ -5,6 +5,11 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ## [Unreleased]
 
+### Fixed
+
+- Daily email delivery no longer requires the optional `hostname` utility when
+  a sender is configured, and has portable fallbacks when it is not.
+
 ### Added
 
 - Daily per-zone DNS query reports with total and distinct client/resolver IP

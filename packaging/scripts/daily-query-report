@@ -50,8 +50,18 @@ fi
     --since "$report_date 00:00:00" --until "$today 00:00:00" |
     "$analyzer" --zones "$zones" --date "$report_date" >"$body"
 
-hostname=$(hostname -f 2>/dev/null || hostname)
-from=${REPORT_FROM:-rgbdns@$hostname}
+if [ -n "${REPORT_FROM:-}" ]; then
+    from=$REPORT_FROM
+else
+    if command -v hostname >/dev/null 2>&1; then
+        report_host=$(hostname -f 2>/dev/null || hostname)
+    elif [ -r /proc/sys/kernel/hostname ]; then
+        IFS= read -r report_host </proc/sys/kernel/hostname
+    else
+        report_host=$(uname -n)
+    fi
+    from=rgbdns@$report_host
+fi
 subject="rgbdns daily query report for $report_date"
 {
     printf 'To: %s\n' "$REPORT_TO"

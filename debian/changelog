@@ -1,3 +1,9 @@
+rgbdns (0.5.1) unstable; urgency=medium
+
+  * Avoid requiring the optional hostname utility for query-report delivery.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Wed, 05 Aug 2026 18:55:00 -0700
+
 rgbdns (0.5.0) unstable; urgency=medium
 
   * Add daily per-zone total and unique-client DNS query reports.
