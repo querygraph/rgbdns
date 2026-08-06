@@ -56,7 +56,11 @@ jobs:
         run: packaging/build-rpm.sh
 
       - name: Test daily query reporting
-        run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
+        run: |
+          analyzer=$(find dist/rpmbuild/BUILD -type f \
+            -path '*/target/release/rgbdns-log-report' -print -quit)
+          test -n "$analyzer"
+          packaging/tests/test-daily-query-report.sh "$analyzer"
 
       - name: Inspect package
         run: |
