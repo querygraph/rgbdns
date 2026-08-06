@@ -55,13 +55,6 @@ jobs:
       - name: Build source and binary RPMs
         run: packaging/build-rpm.sh
 
-      - name: Test daily query reporting
-        run: |
-          analyzer=$(find dist/rpmbuild/BUILD -type f \
-            -path '*/target/release/rgbdns-log-report' -print -quit)
-          test -n "$analyzer"
-          packaging/tests/test-daily-query-report.sh "$analyzer"
-
       - name: Inspect package
         run: |
           rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
@@ -69,6 +62,9 @@ jobs:
 
       - name: Verify installed package
         run: packaging/verify-rpm.sh dist/rpmbuild/RPMS/x86_64/rgbdns-[0-9]*.x86_64.rpm
+
+      - name: Test daily query reporting
+        run: packaging/tests/test-daily-query-report.sh /usr/bin/rgbdns-log-report
 
       - uses: actions/upload-artifact@v4
         with:
