@@ -7,11 +7,17 @@ export CARGO_TARGET_DIR = $(CURDIR)/target
 %:
 	dh $@
 
+ifeq ($(RGBDNS_SKIP_RUST_BUILD),1)
+override_dh_auto_build:
+	test -x target/release/rgbdns
+override_dh_auto_test:
+	true
+else
 override_dh_auto_build:
 	cargo build --release --locked --bins
-
 override_dh_auto_test:
 	cargo test --release --locked --all-targets
+endif
 
 override_dh_auto_install:
 	install -d debian/rgbdns/usr/bin
