@@ -46,6 +46,7 @@ RGBDNS_REPORT_DATE=2026-08-04 \
 grep -qx 'To: deliverable@gmail.com' "$root/message"
 grep -qx 'From: dns@example.net' "$root/message"
 grep -qx 'Subject: rgbdns daily query report for 2026-08-04' "$root/message"
+grep -qx 'Content-Type: text/plain; charset=UTF-8; format=fixed' "$root/message"
 grep -Eq '^example\.com +4 +3$' "$root/message"
 grep -Eq '^quiet\.test +0 +0$' "$root/message"
 grep -q 'Total accepted DNS queries: 4' "$root/message"

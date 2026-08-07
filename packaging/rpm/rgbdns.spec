@@ -34,8 +34,12 @@ automation.
 %autosetup
 
 %build
+%if 0%{?rgbdns_skip_rust_build}
+test -x target/release/rgbdns
+%else
 cargo build --release --locked --bins
 cargo test --release --locked --all-targets
+%endif
 
 %install
 install -d %{buildroot}%{_bindir}

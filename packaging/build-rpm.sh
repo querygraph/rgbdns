@@ -26,6 +26,9 @@ archive="$topdir/SOURCES/rgbdns-$version.tar.gz"
 file_list="$topdir/SOURCES/rgbdns-$version.files"
 git -c "safe.directory=$repo" \
     ls-files --cached --others --exclude-standard -z >"$file_list"
+if [ "${RGBDNS_SKIP_RUST_BUILD:-0}" = 1 ]; then
+    find target/release -maxdepth 1 -type f -perm -0100 -printf 'target/release/%f\0' >>"$file_list"
+fi
 tar --null --files-from="$file_list" --transform "s,^,rgbdns-$version/," \
     --create --gzip --file "$archive"
 cp packaging/rpm/rgbdns.spec "$topdir/SPECS/rgbdns.spec"

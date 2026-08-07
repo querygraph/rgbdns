@@ -68,7 +68,9 @@ subject="rgbdns daily query report for $report_date"
     printf 'From: %s\n' "$from"
     printf 'Subject: %s\n' "$subject"
     printf 'Date: %s\n' "$(date -R)"
-    printf 'Content-Type: text/plain; charset=UTF-8\n'
+    # The report uses padding to form a table.  Mark it as fixed-format so
+    # clients such as Gmail render the plain-text body in a monospace font.
+    printf 'Content-Type: text/plain; charset=UTF-8; format=fixed\n'
     printf 'Auto-Submitted: auto-generated\n'
     printf '\n'
     cat "$body"
