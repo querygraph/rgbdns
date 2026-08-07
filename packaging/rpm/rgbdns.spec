@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.5.1
+Version:        0.5.2
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -150,6 +150,10 @@ fi
 %{_mandir}/man1/rgbdns-log-report.1%{?ext_man}
 
 %changelog
+* Thu Aug 06 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.2-1
+- Render daily query report email bodies as fixed-format plain text
+- Add fast Debian and RPM repackaging without rebuilding Rust binaries
+
 * Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.1-1
 - Avoid requiring the optional hostname utility for report delivery
 

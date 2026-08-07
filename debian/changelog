@@ -1,3 +1,10 @@
+rgbdns (0.5.2) unstable; urgency=medium
+
+  * Render daily query report email bodies as fixed-format plain text.
+  * Add fast Debian and RPM repackaging without rebuilding Rust binaries.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 06 Aug 2026 23:00:00 -0700
+
 rgbdns (0.5.1) unstable; urgency=medium
 
   * Avoid requiring the optional hostname utility for query-report delivery.
