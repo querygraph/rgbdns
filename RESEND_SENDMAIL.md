@@ -171,6 +171,57 @@ An authentication failure normally means the API key is wrong, revoked, or
 was left as a placeholder. A `550` domain error means the `From:` domain is
 not the verified Resend domain.
 
+### Use Gmail instead of Resend with msmtp
+
+`msmtp` can submit through Gmail directly. Gmail's SMTP submission endpoint is
+`smtp.gmail.com` on port 587 with STARTTLS and authentication. Use a Google App
+Password, not the normal account password. App Passwords require 2-Step
+Verification and may be unavailable for some managed accounts. See Google's
+[SMTP settings](https://support.google.com/mail/answer/7104828) and
+[App Password guidance](https://support.google.com/accounts/answer/185833).
+
+Create an App Password for the Gmail account that will send the report, then
+edit:
+
+```sh
+sudo vi /etc/msmtprc
+```
+
+```text
+defaults
+auth on
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+account gmail
+host smtp.gmail.com
+port 587
+user deliverable@gmail.com
+password YOUR_16_DIGIT_APP_PASSWORD
+from deliverable@gmail.com
+
+account default : gmail
+```
+
+Protect the file and select `msmtp` for the report:
+
+```sh
+sudo chmod 600 /etc/msmtprc
+sudo vi /etc/rgbdns/query-report.env
+```
+
+```text
+REPORT_SENDMAIL=/usr/bin/msmtp
+REPORT_FROM=deliverable@gmail.com
+```
+
+Test through Gmail:
+
+```sh
+printf 'From: deliverable@gmail.com\nTo: deliverable@gmail.com\nSubject: Gmail SMTP test\n\nSMTP test\n' |
+  sudo /usr/bin/msmtp -t -v
+```
+
 ## Option B: native Sendmail
 
 ### Why use Sendmail
@@ -335,6 +386,73 @@ The queue should be empty after successful delivery. If the log instead shows
 `535 Authentication credentials invalid`, check the API key and auth map. If
 it shows `550 ... domain is not verified`, use a verified domain in both
 `REPORT_FROM` and the Sendmail/msmtp sender configuration.
+
+### Use Gmail instead of Resend with native Sendmail
+
+Native Sendmail can use Gmail as its authenticated smarthost. Create a Google
+App Password first; do not put the normal Gmail password in the auth map.
+
+Edit the auth source:
+
+```sh
+sudo vi /etc/mail/authinfo
+```
+
+```text
+AuthInfo:smtp.gmail.com "U:deliverable@gmail.com" "P:YOUR_16_DIGIT_APP_PASSWORD" "M:PLAIN"
+```
+
+Compile it:
+
+```sh
+sudo chmod 600 /etc/mail/authinfo
+sudo sh -c 'makemap hash /etc/mail/authinfo < /etc/mail/authinfo'
+```
+
+Edit the Sendmail macros:
+
+```sh
+sudo vi /etc/mail/sendmail.mc
+```
+
+Use Gmail instead of the Resend definitions:
+
+```m4
+define(`SMART_HOST', `smtp.gmail.com')dnl
+define(`RELAY_MAILER_ARGS', `TCP $h 587')dnl
+define(`ESMTP_MAILER_ARGS', `TCP $h 587')dnl
+FEATURE(`authinfo', `hash -o /etc/mail/authinfo.db')dnl
+define(`confAUTH_MECHANISMS', `PLAIN LOGIN')dnl
+define(`confCACERT', `/etc/ssl/certs/ca-certificates.crt')dnl
+```
+
+Rebuild and restart:
+
+```sh
+sudo make -C /etc/mail
+sudo systemctl restart sendmail
+```
+
+Use the Gmail account as the report sender:
+
+```sh
+sudo vi /etc/rgbdns/query-report.env
+```
+
+```text
+REPORT_SENDMAIL=/usr/sbin/sendmail
+REPORT_FROM=deliverable@gmail.com
+```
+
+Verify and test:
+
+```sh
+sudo grep '^DS' /etc/mail/sendmail.cf
+printf 'From: deliverable@gmail.com\nTo: deliverable@gmail.com\nSubject: Gmail SMTP test\n\nSMTP test\n' |
+  sudo /usr/sbin/sendmail -v -t
+```
+
+The Sendmail log should show `relay=smtp.gmail.com` and a successful `dsn=2.0.0`.
 
 ## Choosing between the two
 
