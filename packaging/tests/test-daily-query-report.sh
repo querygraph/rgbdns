@@ -52,5 +52,5 @@ grep -q '<pre style="font-family: monospace;">' "$root/message"
 grep -Eq '^example\.com +4 +3$' "$root/message"
 grep -Eq '^quiet\.test +0 +0$' "$root/message"
 grep -q 'Total accepted DNS queries: 4' "$root/message"
-test "$(grep -n '^example\.com ' "$root/message" | cut -d: -f1)" \
-    -lt "$(grep -n '^quiet\.test ' "$root/message" | cut -d: -f1)"
+test "$(grep -n '^example\.com ' "$root/message" | head -n 1 | cut -d: -f1)" \
+    -lt "$(grep -n '^quiet\.test ' "$root/message" | head -n 1 | cut -d: -f1)"

@@ -1,3 +1,9 @@
+rgbdns (0.5.3) unstable; urgency=medium
+
+  * Add a monospace HTML view to daily query report email.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 07 Aug 2026 01:00:00 -0700
+
 rgbdns (0.5.2) unstable; urgency=medium
 
   * Render daily query report email bodies with a monospace HTML view and a

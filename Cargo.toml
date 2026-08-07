@@ -1,6 +1,6 @@
 [package]
 name = "rgbdns"
-version = "0.5.2"
+version = "0.5.3"
 edition = "2024"
 license = "Unlicense"
 description = "A safe, faithful Rust reimplementation of the djbdns suite"
