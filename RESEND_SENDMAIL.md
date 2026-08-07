@@ -387,6 +387,68 @@ The queue should be empty after successful delivery. If the log instead shows
 it shows `550 ... domain is not verified`, use a verified domain in both
 `REPORT_FROM` and the Sendmail/msmtp sender configuration.
 
+## Forwarding `dick@hutz.net` with your own server
+
+rgbdns can publish the DNS records needed for inbound mail, but rgbdns is not
+an SMTP receiver or forwarding service. A self-hosted setup would look like:
+
+```text
+dick@hutz.net
+       │ MX
+       ▼
+mail.hutz.net
+       │ inbound SMTP
+       ▼
+Postfix or Sendmail
+       │ forwarding with SRS
+       ▼
+deliverable@gmail.com
+```
+
+### DNS records
+
+The `hutz.net` zone needs an MX record pointing to a mail host and an address
+record for that host. In tinydns-compatible source syntax, the records are
+equivalent to:
+
+```text
+@hutz.net::mail.hutz.net:10:3600
++mail.hutz.net:SERVER_PUBLIC_IP:3600
+```
+
+The mail host must have a stable public address and a matching reverse-DNS
+name. Publish the MX and address records only after the mail service is ready
+to accept connections.
+
+### Mail-server requirements
+
+A self-hosted forwarder must:
+
+- accept inbound TCP port 25 from the Internet;
+- configure `hutz.net` as a local/accepted domain;
+- create an alias from `dick` to `deliverable@gmail.com`;
+- forward through an authenticated relay such as Resend or Gmail;
+- use Sender Rewriting Scheme (SRS) when forwarding, so SPF checks survive;
+- preserve useful `From:`, `To:`, `Message-ID`, and `Received:` headers;
+- provide queueing, retry, TLS, logging, spam controls, and abuse protection;
+- publish appropriate SPF, DKIM, and DMARC records for the sending path.
+
+An alias that blindly pipes incoming mail to Gmail is not sufficient. The
+forwarded message's original SPF identity will usually fail at Gmail, and
+DMARC alignment may fail without SRS or an equivalent forwarding service.
+AWS also commonly restricts or reputation-limits direct SMTP delivery, so the
+server should use the authenticated Resend/Gmail relay for outbound forwarding
+rather than delivering directly to Gmail MX servers.
+
+### Operational tradeoff
+
+Self-hosting is appropriate when you already operate an MTA and want complete
+control over inbound mail. For one forwarding address, Cloudflare Email
+Routing is usually safer and simpler: it receives mail for `hutz.net`, verifies
+`deliverable@gmail.com` as the destination, and manages the forwarding path.
+It requires Cloudflare DNS and changes the domain's MX records, so it must not
+be enabled alongside another inbound mail provider.
+
 ### Use Gmail instead of Resend with native Sendmail
 
 Native Sendmail can use Gmail as its authenticated smarthost. Create a Google
