@@ -102,7 +102,7 @@ jobs:
       - name: Build package without Rust
         run: |
           RGBDNS_SKIP_RUST_BUILD=1 packaging/build-rpm.sh \
-            --define rgbdns_skip_rust_build 1
+            --define 'rgbdns_skip_rust_build 1'
 
       - name: Test daily query reporting
         run: packaging/tests/test-daily-query-report.sh /usr/bin/rgbdns-log-report
