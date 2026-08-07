@@ -56,10 +56,15 @@ jobs:
       - name: Test daily query reporting
         run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
 
+      - name: Collect package
+        run: |
+          mkdir -p dist
+          cp ../rgbdns_*_amd64.deb dist/
+
       - uses: actions/upload-artifact@v4
         with:
           name: rgbdns-debian-amd64-fast
-          path: ../rgbdns_*_amd64.deb
+          path: dist/rgbdns_*_amd64.deb
           if-no-files-found: error
 
   rpm:
@@ -89,17 +94,18 @@ jobs:
       - name: Reuse packaged binaries
         run: |
           mkdir -p target/release extracted
-          rpm2cpio base-package/rgbdns-*.x86_64.rpm | cpio -idm -D extracted
+          rpm2cpio base-package/RPMS/x86_64/rgbdns-[0-9]*.x86_64.rpm |
+            cpio -idm -D extracted
           cp extracted/usr/bin/* target/release/
           chmod 0755 target/release/*
 
       - name: Build package without Rust
         run: |
           RGBDNS_SKIP_RUST_BUILD=1 packaging/build-rpm.sh \
-            --define rgbdns_skip_rust_build 1
+            --define 'rgbdns_skip_rust_build 1'
 
       - name: Test daily query reporting
-        run: packaging/tests/test-daily-query-report.sh /usr/bin/rgbdns-log-report
+        run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
 
       - uses: actions/upload-artifact@v4
         with:

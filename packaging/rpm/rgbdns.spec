@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.5.1
+Version:        0.5.3
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -35,7 +35,7 @@ automation.
 
 %build
 %if 0%{?rgbdns_skip_rust_build}
-test -x target/release/rgbdns
+test -x target/release/rgbdns-log-report
 %else
 cargo build --release --locked --bins
 cargo test --release --locked --all-targets
@@ -150,6 +150,14 @@ fi
 %{_mandir}/man1/rgbdns-log-report.1%{?ext_man}
 
 %changelog
+* Thu Aug 07 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.3-1
+- Add a monospace HTML view to daily query report email
+
+* Thu Aug 06 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.2-1
+- Render daily query report email bodies with a monospace HTML view and a
+  fixed-format plain-text fallback
+- Add fast Debian and RPM repackaging without rebuilding Rust binaries
+
 * Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.1-1
 - Avoid requiring the optional hostname utility for report delivery
 
