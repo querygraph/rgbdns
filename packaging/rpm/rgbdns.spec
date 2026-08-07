@@ -35,7 +35,7 @@ automation.
 
 %build
 %if 0%{?rgbdns_skip_rust_build}
-test -x target/release/rgbdns
+test -x target/release/rgbdns-log-report
 %else
 cargo build --release --locked --bins
 cargo test --release --locked --all-targets
