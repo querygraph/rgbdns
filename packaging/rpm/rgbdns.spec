@@ -151,7 +151,8 @@ fi
 
 %changelog
 * Thu Aug 06 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.2-1
-- Render daily query report email bodies as fixed-format plain text
+- Render daily query report email bodies with a monospace HTML view and a
+  fixed-format plain-text fallback
 - Add fast Debian and RPM repackaging without rebuilding Rust binaries
 
 * Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.1-1

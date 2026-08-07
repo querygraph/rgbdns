@@ -1,6 +1,7 @@
 rgbdns (0.5.2) unstable; urgency=medium
 
-  * Render daily query report email bodies as fixed-format plain text.
+  * Render daily query report email bodies with a monospace HTML view and a
+    fixed-format plain-text fallback.
   * Add fast Debian and RPM repackaging without rebuilding Rust binaries.
 
  -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 06 Aug 2026 23:00:00 -0700
