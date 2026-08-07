@@ -12,6 +12,9 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ### Added
 
+- A committed FirstPair vault contract now builds non-replacing, standardized
+  candidates through the existing RGBDNS builder and strict validator.
+
 - Daily per-zone DNS query reports with total and distinct client/resolver IP
   counts, longest-zone matching, descending totals, journald collection,
   sendmail-compatible delivery, and a hardened systemd timer.

@@ -31,3 +31,8 @@ Before running `scripts/build-obsidian-vault.py`, editing files under
 `obsidian-vault/`, zipping the vault, or otherwise touching it programmatically,
 ask the user to close the vault in Obsidian and wait for confirmation. After
 regeneration, run `scripts/check-obsidian-vault.py` before delivery.
+
+`vault.build.json` drives the same builder and validator through FirstPair's
+transactional candidate, complete-guide, privacy, comparison, and deterministic
+archive gates. The candidate is generated beside the tracked vault and never
+replaces it during migration QA.

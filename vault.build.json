@@ -1,0 +1,25 @@
+{
+  "$schema": "https://firstpair.org/schemas/vault.build.schema.json",
+  "schemaVersion": 1,
+  "slug": "rgbdns",
+  "title": "DNS from First Principles",
+  "profile": "code",
+  "sourceCommit": "HEAD",
+  "plugin": true,
+  "nativeDriver": {
+    "build": ["python3", "scripts/build-obsidian-vault.py", "--output", "{output}"],
+    "validate": ["python3", "scripts/check-obsidian-vault.py", "{output}"]
+  },
+  "guide": { "bookSpecific": "docs/OBSIDIAN-VAULT.md" },
+  "reader": [
+    { "id": "book", "title": "DNS from First Principles", "source": "docs/book/rgbdns.md", "preview": true }
+  ],
+  "products": {
+    "desktop": {
+      "output": "obsidian-vault/RGBDNS Book Candidate",
+      "edition": "full",
+      "maxFiles": 20000,
+      "maxBytes": 500000000
+    }
+  }
+}
