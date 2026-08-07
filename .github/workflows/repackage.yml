@@ -105,7 +105,7 @@ jobs:
             --define 'rgbdns_skip_rust_build 1'
 
       - name: Test daily query reporting
-        run: packaging/tests/test-daily-query-report.sh /usr/bin/rgbdns-log-report
+        run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
 
       - uses: actions/upload-artifact@v4
         with:
