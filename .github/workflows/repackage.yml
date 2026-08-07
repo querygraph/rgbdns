@@ -94,7 +94,8 @@ jobs:
       - name: Reuse packaged binaries
         run: |
           mkdir -p target/release extracted
-          rpm2cpio base-package/rgbdns-*.x86_64.rpm | cpio -idm -D extracted
+          rpm2cpio base-package/RPMS/x86_64/rgbdns-[0-9]*.x86_64.rpm |
+            cpio -idm -D extracted
           cp extracted/usr/bin/* target/release/
           chmod 0755 target/release/*
 
