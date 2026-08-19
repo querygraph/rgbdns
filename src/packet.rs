@@ -4,7 +4,7 @@ use std::{
     net::{Ipv4Addr, Ipv6Addr},
 };
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum RecordType {
     A,
     Ns,

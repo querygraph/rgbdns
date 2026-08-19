@@ -219,6 +219,7 @@ fn respond_over_transport(
         return error_response(wire, 1);
     }
     let opt = options.first().copied();
+    let dnssec_ok = opt.is_some_and(|(_, _, flags)| flags & 0x8000 != 0);
     let response_limit = if is_udp {
         opt.map_or(512, |(size, _, _)| usize::from(size).max(512))
             .min(transport_limit)
@@ -279,6 +280,9 @@ fn respond_over_transport(
         match lookup {
             Lookup::Answer(x) => {
                 r.answers = x;
+                if question.qtype == crate::RecordType::Any && !dnssec_ok {
+                    r.answers.retain(|record| !is_dnssec_type(record.rr_type()));
+                }
                 if !matches!(
                     question.qtype,
                     crate::RecordType::Cname | crate::RecordType::Any
@@ -310,11 +314,83 @@ fn respond_over_transport(
             }
             Lookup::Refused => r.flags |= 5,
         }
+        if dnssec_ok {
+            add_dnssec_records(zone, &question, &mut r, client);
+        }
     }
     normalize_rrsets(&mut r.answers);
     normalize_rrsets(&mut r.authorities);
     normalize_rrsets(&mut r.additionals);
     truncate(r, response_limit)
+}
+
+fn is_dnssec_type(record_type: crate::RecordType) -> bool {
+    matches!(
+        record_type,
+        crate::RecordType::Ds
+            | crate::RecordType::Rrsig
+            | crate::RecordType::Nsec
+            | crate::RecordType::Dnskey
+            | crate::RecordType::Unknown(50)
+            | crate::RecordType::Unknown(51)
+    )
+}
+
+fn add_dnssec_records(
+    zone: &Zone,
+    question: &crate::Question,
+    response: &mut Message,
+    client: Option<IpAddr>,
+) {
+    add_section_signatures(zone, &mut response.answers, client);
+    add_section_signatures(zone, &mut response.authorities, client);
+
+    match response.flags & 0x000f {
+        3 => response
+            .authorities
+            .extend(zone.dnssec_nsec_zone(&question.name, client)),
+        0 if response.answers.is_empty() && response.flags & 0x0400 != 0 => {
+            let mut proof = zone.dnssec_nsec_at(&question.name, client);
+            if proof.is_empty() {
+                proof = zone.dnssec_nsec_zone(&question.name, client);
+            }
+            response.authorities.extend(proof);
+        }
+        _ => {}
+    }
+
+    let wildcard_answer = response.answers.iter().any(|record| {
+        if let crate::RData::Opaque(crate::RecordType::Rrsig, bytes) = &record.data {
+            bytes
+                .get(3)
+                .is_some_and(|labels| usize::from(*labels) < record.name.labels().count())
+        } else {
+            false
+        }
+    });
+    if wildcard_answer {
+        response
+            .authorities
+            .extend(zone.dnssec_nsec_zone(&question.name, client));
+    }
+}
+
+fn add_section_signatures(zone: &Zone, section: &mut Vec<crate::Record>, client: Option<IpAddr>) {
+    let rrsets = section
+        .iter()
+        .filter(|record| record.rr_type() != crate::RecordType::Rrsig)
+        .fold(
+            HashMap::<crate::Name, std::collections::BTreeSet<_>>::new(),
+            |mut sets, record| {
+                sets.entry(record.name.clone())
+                    .or_default()
+                    .insert(record.rr_type());
+                sets
+            },
+        );
+    for (name, covered) in rrsets {
+        section.extend(zone.dnssec_signatures(&name, &covered, client));
+    }
 }
 
 fn normalize_rrsets(records: &mut Vec<crate::Record>) {
@@ -446,66 +522,72 @@ fn truncate(mut response: Message, limit: usize) -> Result<Vec<u8>> {
         return Ok(full);
     }
     response.flags |= 0x0200;
-    let removable = response
-        .additionals
-        .iter()
-        .filter(|record| record.rr_type() != crate::RecordType::Opt)
-        .count()
-        + response.authorities.len()
-        + response.answers.len()
-        + response
-            .additionals
-            .iter()
-            .filter(|record| record.rr_type() == crate::RecordType::Opt)
-            .count()
-        + usize::from(!response.questions.is_empty());
-
-    let mut low = 0;
-    let mut high = removable;
-    while low < high {
-        let middle = low + (high - low) / 2;
-        let candidate = with_tail_records_removed(&response, middle);
-        if candidate.encode()?.len() <= limit {
-            high = middle;
-        } else {
-            low = middle + 1;
-        }
-    }
-    while low <= removable {
-        let candidate = with_tail_records_removed(&response, low);
-        let wire = candidate.encode()?;
+    loop {
+        let wire = response.encode()?;
         if wire.len() <= limit {
             return Ok(wire);
         }
-        low += 1;
+        if remove_tail_rrset(&mut response.additionals, true)
+            || remove_tail_rrset(&mut response.authorities, false)
+            || remove_tail_rrset(&mut response.answers, false)
+        {
+            continue;
+        }
+        if response.additionals.pop().is_some() {
+            continue;
+        }
+        if !response.questions.is_empty() {
+            response.questions.clear();
+            continue;
+        }
+        return Err(Error::Format("DNS response cannot fit transport limit"));
     }
-    Err(Error::Format("DNS response cannot fit transport limit"))
 }
 
-fn with_tail_records_removed(response: &Message, mut count: usize) -> Message {
-    let mut candidate = response.clone();
-    while count != 0
-        && let Some(index) = candidate
-            .additionals
-            .iter()
-            .rposition(|record| record.rr_type() != crate::RecordType::Opt)
-    {
-        candidate.additionals.remove(index);
-        count -= 1;
+fn remove_tail_rrset(records: &mut Vec<crate::Record>, preserve_opt: bool) -> bool {
+    let Some(index) = records
+        .iter()
+        .rposition(|record| !preserve_opt || record.rr_type() != crate::RecordType::Opt)
+    else {
+        return false;
+    };
+    let name = records[index].name.clone();
+    let record_type = match &records[index].data {
+        crate::RData::Opaque(crate::RecordType::Rrsig, bytes) if bytes.len() >= 2 => {
+            crate::RecordType::from_code(u16::from_be_bytes([bytes[0], bytes[1]]))
+        }
+        _ => records[index].rr_type(),
+    };
+    let signed = records.iter().any(|record| {
+        record.name == name
+            && matches!(
+                &record.data,
+                crate::RData::Opaque(crate::RecordType::Rrsig, bytes)
+                    if bytes.len() >= 2
+                        && crate::RecordType::from_code(u16::from_be_bytes([bytes[0], bytes[1]]))
+                            == record_type
+            )
+    });
+    if !signed && records[index].rr_type() != crate::RecordType::Rrsig {
+        records.remove(index);
+        return true;
     }
-    while count != 0 && candidate.authorities.pop().is_some() {
-        count -= 1;
-    }
-    while count != 0 && candidate.answers.pop().is_some() {
-        count -= 1;
-    }
-    while count != 0 && candidate.additionals.pop().is_some() {
-        count -= 1;
-    }
-    if count != 0 {
-        candidate.questions.clear();
-    }
-    candidate
+    records.retain(|record| {
+        if record.name != name {
+            return true;
+        }
+        if record.rr_type() == record_type {
+            return false;
+        }
+        !matches!(
+            &record.data,
+            crate::RData::Opaque(crate::RecordType::Rrsig, bytes)
+                if bytes.len() >= 2
+                    && crate::RecordType::from_code(u16::from_be_bytes([bytes[0], bytes[1]]))
+                        == record_type
+        )
+    });
+    true
 }
 
 pub fn serve(zone: Zone, addr: &str) -> Result<()> {
@@ -650,7 +732,7 @@ fn serve_sockets(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Name, Question, RData, Record, RecordType};
+    use crate::{Name, Question, RData, Record, RecordType, zone::RecordMetadata};
     use std::{
         io::{Read, Write},
         net::{TcpListener, TcpStream, UdpSocket},
@@ -683,6 +765,113 @@ mod tests {
             });
         }
         message.encode().unwrap()
+    }
+
+    fn signed_test_zone() -> Zone {
+        let directory =
+            std::env::temp_dir().join(format!("rgbdns-server-dnssec-{}", std::process::id()));
+        std::fs::create_dir_all(&directory).unwrap();
+        let key = directory.join("example.pk8");
+        let zone_name = "example".parse().unwrap();
+        let policy = crate::dnssec::generate_key(&zone_name, &key).unwrap();
+        let source = Zone::parse(
+            "Zexample:ns.example:hostmaster.example:7:3600:600:86400:300:300\n\
+             &example:192.0.2.53:ns.example:300\n\
+             +www.example:192.0.2.1:300\n\
+             +*.wild.example:192.0.2.2:300\n\
+             &child.example:192.0.2.54:ns.child.example:300\n",
+        )
+        .unwrap();
+        let records = crate::dnssec::sign_zone(&source, &policy).unwrap();
+        std::fs::remove_dir_all(directory).unwrap();
+        Zone::from_compiled_records(
+            records
+                .into_iter()
+                .map(|record| (record, RecordMetadata::default()))
+                .collect(),
+            Vec::new(),
+            Vec::new(),
+        )
+    }
+
+    #[test]
+    fn dnssec_is_do_gated_and_serves_signed_denial_and_ds_denial() {
+        let zone = signed_test_zone();
+        let unsigned = Message::decode(
+            &respond(&zone, &query("www.example", RecordType::A, None), 4096).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(
+            unsigned
+                .answers
+                .iter()
+                .filter(|record| record.rr_type() == RecordType::Rrsig)
+                .count(),
+            0
+        );
+
+        let signed = Message::decode(
+            &respond(
+                &zone,
+                &query("www.example", RecordType::A, Some((4096, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            signed
+                .answers
+                .iter()
+                .any(|record| record.rr_type() == RecordType::A)
+        );
+        assert!(
+            signed
+                .answers
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Rrsig)
+        );
+
+        let nonexistent = Message::decode(
+            &respond(
+                &zone,
+                &query("missing.example", RecordType::A, Some((4096, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(nonexistent.flags & 0x000f, 3);
+        assert!(
+            nonexistent
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Nsec)
+        );
+        assert!(
+            nonexistent
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Rrsig)
+        );
+
+        let no_ds = Message::decode(
+            &respond(
+                &zone,
+                &query("child.example", RecordType::Ds, Some((4096, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_ne!(no_ds.flags & 0x0400, 0);
+        assert!(no_ds.answers.is_empty());
+        assert!(
+            no_ds
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Nsec)
+        );
     }
 
     #[test]

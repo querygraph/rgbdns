@@ -15,6 +15,7 @@ hmac = "0.12"
 hickory-server = { version = "0.26.1", default-features = false, features = ["dnssec-ring", "recursor", "resolver"] }
 ipnet = "2"
 nix = { version = "0.31.3", features = ["process", "user"] }
+rustls-pki-types = "1"
 sha2 = "0.10"
 tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
@@ -54,6 +55,26 @@ bench = false
 [[bin]]
 name = "tinydns-data"
 path = "src/bin/tinydns-data.rs"
+bench = false
+
+[[bin]]
+name = "dnssec-keygen"
+path = "src/bin/dnssec-keygen.rs"
+bench = false
+
+[[bin]]
+name = "dnssec-sign"
+path = "src/bin/dnssec-sign.rs"
+bench = false
+
+[[bin]]
+name = "dnssec-data"
+path = "src/bin/dnssec-data.rs"
+bench = false
+
+[[bin]]
+name = "dnssec-ds"
+path = "src/bin/dnssec-ds.rs"
 bench = false
 
 [[bin]]

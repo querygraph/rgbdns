@@ -7,6 +7,7 @@ pub mod cdb;
 pub mod client;
 pub mod conf;
 pub mod dnscache_config;
+pub mod dnssec;
 pub mod multilog;
 pub mod name;
 pub mod packet;
