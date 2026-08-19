@@ -196,11 +196,6 @@ if [ -n "$acme_update_config" ]; then
     set -- "$@" "ACME_UPDATE_CONFIG=$acme_update_config" \
         "ACME_STATE_DIR=/var/lib/rgbdns/tinydns"
 fi
-if [ -n "$dnssec_policy" ] && [ -n "$acme_update_config" ]; then
-    set -- "$@" \
-        "ACME_PUBLISH_COMMAND=/usr/lib/rgbdns/publish-dnssec" \
-        "ACME_PUBLISHED_DATA=/var/lib/rgbdns/tinydns/data.cdb"
-fi
 write_env /etc/rgbdns/tinydns.env "$@"
 
 case $role in

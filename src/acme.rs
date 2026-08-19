@@ -271,11 +271,18 @@ impl AcmeUpdates {
         let signed = policies
             .values()
             .any(|policy| base.is_dnssec_signed(&policy.zone));
-        if signed && publication.is_none() {
-            return Err(Error::InvalidRecord(
-                "ACME updates to a signed zone require an external publication command".into(),
-            ));
-        }
+        let publication = if signed {
+            Some(publication.ok_or_else(|| {
+                Error::InvalidRecord(
+                    "ACME updates to a signed zone require an external publication command".into(),
+                )
+            })?)
+        } else {
+            // A mixed snapshot may contain signed zones which have no ACME policy.
+            // Applying an unsigned-zone overlay in memory preserves those signatures;
+            // invoking a root-only signer here would be unnecessary and unsafe.
+            None
+        };
         let published = if let Some(publication) = &publication {
             publication.run(&state_dir, &overlay, &serials, &policies)?
         } else {
@@ -1327,6 +1334,82 @@ mod tests {
             Err(Error::InvalidRecord(message))
                 if message.contains("require an external publication command")
         ));
+        fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn unsigned_acme_zone_ignores_signer_hook_in_a_mixed_snapshot() {
+        let directory = std::env::temp_dir().join(format!(
+            "rgbdns-acme-mixed-test-{}-{}",
+            std::process::id(),
+            random_id().unwrap()
+        ));
+        fs::create_dir(&directory).unwrap();
+        let secret = vec![7u8; 32];
+        let config = directory.join("acme.conf");
+        fs::write(
+            &config,
+            format!(
+                "certbot. hmac-sha256. {} legacy.example. _acme-challenge. 60\n",
+                STANDARD.encode(&secret)
+            ),
+        )
+        .unwrap();
+
+        let signed_apex: Name = "signed.example".parse().unwrap();
+        let signed_source = Zone::parse(
+            "Zsigned.example:ns.signed.example:hostmaster.signed.example:7:3600:600:86400:300:300\n\
+             &signed.example:192.0.2.53:ns.signed.example:300\n",
+        )
+        .unwrap();
+        let signing_policy =
+            crate::dnssec::generate_key(&signed_apex, &directory.join("key.pk8")).unwrap();
+        let unsigned_source = Zone::parse(
+            "Zlegacy.example:ns.legacy.example:hostmaster.legacy.example:8:3600:600:86400:300:300\n\
+             &legacy.example:192.0.2.54:ns.legacy.example:300\n",
+        )
+        .unwrap();
+        let mut records = crate::dnssec::sign_zone(&signed_source, &signing_policy)
+            .unwrap()
+            .into_iter()
+            .map(|record| (record, crate::zone::RecordMetadata::default()))
+            .collect::<Vec<_>>();
+        records.extend(
+            unsigned_source
+                .record_entries()
+                .map(|(record, metadata)| (record.clone(), metadata)),
+        );
+        let mixed = Zone::from_compiled_records(records, Vec::new(), Vec::new());
+        assert!(mixed.is_dnssec_signed(&signed_apex));
+        assert!(!mixed.is_dnssec_signed(&"legacy.example".parse().unwrap()));
+
+        let live = LiveZone::new(mixed.clone());
+        let invalid_publication = Publication::new(
+            directory.join("does-not-exist"),
+            directory.join("also-does-not-exist"),
+        )
+        .unwrap();
+        let updates = AcmeUpdates::from_file_with_publication(
+            &config,
+            &directory,
+            mixed,
+            live.clone(),
+            Some(invalid_publication),
+        )
+        .unwrap();
+        assert!(updates.publication.is_none());
+
+        let policy = updates.policies.values().next().unwrap();
+        let zone: Name = "legacy.example".parse().unwrap();
+        let owner: Name = "_acme-challenge.legacy.example".parse().unwrap();
+        let wire = admin_wire(policy, &zone, &owner, AdminAction::Present(b"token")).unwrap();
+        assert_eq!(updates.handle(&wire).unwrap()[3] & 0x0f, 0);
+        assert!(matches!(
+            live.snapshot().lookup(&owner, crate::RecordType::Txt),
+            crate::zone::Lookup::Answer(records) if records.len() == 1
+        ));
+
         fs::remove_dir_all(directory).unwrap();
     }
 

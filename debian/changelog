@@ -1,3 +1,10 @@
+rgbdns (0.6.2) unstable; urgency=medium
+
+  * Do not invoke the root-only DNSSEC publisher for ACME-managed zones that
+    remain unsigned inside a mixed signed and unsigned snapshot.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Wed, 19 Aug 2026 13:47:52 -0700
+
 rgbdns (0.6.1) unstable; urgency=medium
 
   * Rename DNSSEC utilities into the rgbsec namespace so packages coexist
