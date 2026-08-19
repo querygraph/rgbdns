@@ -1,6 +1,6 @@
 [package]
 name = "rgbdns"
-version = "0.6.0"
+version = "0.6.1"
 edition = "2024"
 license = "Unlicense"
 description = "A safe, faithful Rust reimplementation of the djbdns suite"
@@ -59,28 +59,28 @@ path = "src/bin/tinydns-data.rs"
 bench = false
 
 [[bin]]
-name = "dnssec-keygen"
-path = "src/bin/dnssec-keygen.rs"
+name = "rgbsec-keygen"
+path = "src/bin/rgbsec-keygen.rs"
 bench = false
 
 [[bin]]
-name = "dnssec-sign"
-path = "src/bin/dnssec-sign.rs"
+name = "rgbsec-sign"
+path = "src/bin/rgbsec-sign.rs"
 bench = false
 
 [[bin]]
-name = "dnssec-data"
-path = "src/bin/dnssec-data.rs"
+name = "rgbsec-data"
+path = "src/bin/rgbsec-data.rs"
 bench = false
 
 [[bin]]
-name = "dnssec-ds"
-path = "src/bin/dnssec-ds.rs"
+name = "rgbsec-ds"
+path = "src/bin/rgbsec-ds.rs"
 bench = false
 
 [[bin]]
-name = "dnssec-check"
-path = "src/bin/dnssec-check.rs"
+name = "rgbsec-check"
+path = "src/bin/rgbsec-check.rs"
 bench = false
 
 [[bin]]

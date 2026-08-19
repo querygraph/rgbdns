@@ -36,11 +36,11 @@ Authoritative DNSSEC is entirely opt-in. With no `dnssec` policy file, rgbdns
 uses the original djbdns-compatible `data` → `tinydns-data` → `data.cdb` path
 and preserves its existing query, referral, ANAME, ACME, and service behavior.
 
-When enabled, small utilities compose an offline signed snapshot: `dnssec-keygen`
+When enabled, small utilities compose an offline signed snapshot: `rgbsec-keygen`
 creates a protected ECDSA P-256 key, `aname-materialize` converts ANAME answers
-to ordinary A/AAAA records, `dnssec-sign` adds DNSKEY/NSEC/RRSIG records,
-`dnssec-data` compiles atomically, `dnssec-ds` prints the parent DS, and
-`dnssec-check` verifies every signature and its remaining lifetime. `tinydns`
+to ordinary A/AAAA records, `rgbsec-sign` adds DNSKEY/NSEC/RRSIG records,
+`rgbsec-data` compiles atomically, `rgbsec-ds` prints the parent DS, and
+`rgbsec-check` verifies every signature and its remaining lifetime. `tinydns`
 and all secondaries remain keyless; standard AXFR carries the finished DNSSEC
 records. A `K` policy line signs a zone and a `U` line explicitly preserves an
 unsigned zone, so one CDB can safely serve both. See
@@ -172,7 +172,7 @@ On Debian or Ubuntu, build the package with:
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.6.0_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.6.1_$(dpkg --print-architecture).deb
 ```
 
 On openSUSE Leap 16.0, build the RPM with:
@@ -182,7 +182,7 @@ sudo zypper --non-interactive install \
   git cargo rust python3 rpm-build systemd-rpm-macros
 packaging/build-rpm.sh
 sudo zypper --non-interactive --no-gpg-checks install \
-  dist/rpmbuild/RPMS/x86_64/rgbdns-0.6.0-1.x86_64.rpm
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.6.1-1.x86_64.rpm
 ```
 
 ## Book

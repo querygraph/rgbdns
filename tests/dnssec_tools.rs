@@ -45,7 +45,7 @@ mod unix {
         .unwrap();
         let key = directory.join("example.pk8");
         let keygen = run(
-            env!("CARGO_BIN_EXE_dnssec-keygen"),
+            env!("CARGO_BIN_EXE_rgbsec-keygen"),
             &["example", key.to_str().unwrap()],
             &directory,
         );
@@ -54,12 +54,12 @@ mod unix {
         fs::write(directory.join("dnssec"), policy).unwrap();
 
         run(
-            env!("CARGO_BIN_EXE_dnssec-sign"),
+            env!("CARGO_BIN_EXE_rgbsec-sign"),
             &["data", "data.signed"],
             &directory,
         );
         let check = run(
-            env!("CARGO_BIN_EXE_dnssec-check"),
+            env!("CARGO_BIN_EXE_rgbsec-check"),
             &["data.signed", "dnssec"],
             &directory,
         );
@@ -72,7 +72,7 @@ mod unix {
             signed.replace("192.0.2.1", "192.0.2.2"),
         )
         .unwrap();
-        let tampered = Command::new(env!("CARGO_BIN_EXE_dnssec-check"))
+        let tampered = Command::new(env!("CARGO_BIN_EXE_rgbsec-check"))
             .args(["data.tampered", "dnssec"])
             .current_dir(&directory)
             .output()
@@ -80,12 +80,12 @@ mod unix {
         assert!(!tampered.status.success());
 
         run(
-            env!("CARGO_BIN_EXE_dnssec-data"),
+            env!("CARGO_BIN_EXE_rgbsec-data"),
             &["data", "data.cdb"],
             &directory,
         );
         run(
-            env!("CARGO_BIN_EXE_dnssec-check"),
+            env!("CARGO_BIN_EXE_rgbsec-check"),
             &["data.cdb", "dnssec"],
             &directory,
         );

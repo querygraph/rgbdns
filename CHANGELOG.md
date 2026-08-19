@@ -5,6 +5,14 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-08-19
+
+### Fixed
+
+- Rename the DNSSEC utility suite to the collision-free `rgbsec-keygen`,
+  `rgbsec-sign`, `rgbsec-data`, `rgbsec-ds`, and `rgbsec-check` commands so the
+  package can coexist with BIND utilities such as `dnssec-keygen`.
+
 ## [0.6.0] - 2026-08-18
 
 ### Added

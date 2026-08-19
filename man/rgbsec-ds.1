@@ -1,8 +1,8 @@
-.TH DNSSEC-DS 1 "2026-08-18" "rgbdns 0.6.0" "User Commands"
+.TH RGBSEC-DS 1 "2026-08-19" "rgbdns 0.6.1" "User Commands"
 .SH NAME
-dnssec-ds \- derive the parent DS record from an rgbdns DNSSEC policy
+rgbsec-ds \- derive the parent DS record from an rgbdns DNSSEC policy
 .SH SYNOPSIS
-.B dnssec-ds
+.B rgbsec-ds
 .I dnssec-line
 .SH DESCRIPTION
 Reads one complete
@@ -12,6 +12,6 @@ DS record. Publishing that record at the parent activates the chain of trust.
 .SH EXIT STATUS
 Zero on success, 100 for usage errors, and 111 for operational failures.
 .SH SEE ALSO
-.BR dnssec-keygen (1),
-.BR dnssec-check (1),
+.BR rgbsec-keygen (1),
+.BR rgbsec-check (1),
 .BR rgbdns (7)

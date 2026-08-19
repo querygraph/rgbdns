@@ -9,8 +9,8 @@ state_dir=${1:-${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}}
 : "${DNSSEC_OUTPUT:=$state_dir/data.cdb}"
 : "${RGBDNS_ACME_MATERIALIZE:=/usr/bin/acme-materialize}"
 : "${RGBDNS_ANAME_MATERIALIZE:=/usr/bin/aname-materialize}"
-: "${RGBDNS_DNSSEC_DATA:=/usr/bin/dnssec-data}"
-: "${RGBDNS_DNSSEC_CHECK:=/usr/bin/dnssec-check}"
+: "${RGBDNS_DNSSEC_DATA:=/usr/bin/rgbsec-data}"
+: "${RGBDNS_DNSSEC_CHECK:=/usr/bin/rgbsec-check}"
 : "${RGBDNS_INSTALL:=/usr/bin/install}"
 : "${RGBDNS_SYNC:=/bin/sync}"
 

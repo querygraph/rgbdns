@@ -15,6 +15,6 @@ if [ -r /etc/rgbdns/dnssec.env ]; then
     . /etc/rgbdns/dnssec.env
     : "${DNSSEC_POLICY:=/etc/rgbdns/dnssec}"
     test -r data.cdb
-    exec /usr/bin/dnssec-check data.cdb "$DNSSEC_POLICY"
+    exec /usr/bin/rgbsec-check data.cdb "$DNSSEC_POLICY"
 fi
 exec /usr/bin/tinydns-data

@@ -4,7 +4,7 @@ use std::{path::Path, process::ExitCode};
 fn main() -> ExitCode {
     let arguments = std::env::args().skip(1).collect::<Vec<_>>();
     if arguments.len() != 2 {
-        eprintln!("usage: dnssec-keygen zone keyfile");
+        eprintln!("usage: rgbsec-keygen zone keyfile");
         return ExitCode::from(100);
     }
     let result = arguments[0]
@@ -19,7 +19,7 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(error) => {
-            eprintln!("dnssec-keygen: {error}");
+            eprintln!("rgbsec-keygen: {error}");
             ExitCode::from(111)
         }
     }

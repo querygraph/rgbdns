@@ -15,11 +15,11 @@ man/dnsmx.1
 man/dnsname.1
 man/dnsq.1
 man/dnsqr.1
-man/dnssec-check.1
-man/dnssec-data.1
-man/dnssec-ds.1
-man/dnssec-keygen.1
-man/dnssec-sign.1
+man/rgbsec-check.1
+man/rgbsec-data.1
+man/rgbsec-ds.1
+man/rgbsec-keygen.1
+man/rgbsec-sign.1
 man/dnstrace.1
 man/dnstxt.1
 man/multilog.1
