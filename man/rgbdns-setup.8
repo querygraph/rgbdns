@@ -1,4 +1,4 @@
-.TH RGBDNS-SETUP 8 "2026-07-26" "rgbdns 0.2.0" "System Administration"
+.TH RGBDNS-SETUP 8 "2026-07-26" "rgbdns 0.6.0" "System Administration"
 .SH NAME
 rgbdns-setup \- configure a packaged rgbdns primary or secondary
 .SH SYNOPSIS
@@ -46,8 +46,14 @@ use the authoritative TCP address and port.
 Enable original-compatible per-request logging (default: 1). Use 0 to disable
 it on a deliberately unlogged deployment.
 .TP
+.BI --dnssec-policy " file"
+Enable offline authoritative DNSSEC on a primary using the absolute policy
+file. If omitted, setup preserves the ordinary djbdns-compatible unsigned
+publication path.
+.TP
 .B --no-start
 Write configuration without enabling or starting services.
 .SH SEE ALSO
 .BR rgbdns (7),
-.BR tinydns (1)
+.BR tinydns (1),
+.BR dnssec-keygen (1)

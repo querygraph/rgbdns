@@ -9,6 +9,7 @@ User=root
 Group=root
 EnvironmentFile=/etc/rgbdns/data-drop.env
 ExecStart=/usr/lib/rgbdns/import-data
+ExecStartPost=/bin/systemctl start rgbdns-dnssec-publish.service
 ExecStartPost=/bin/systemctl try-restart rgbdns-tinydns.service
 LockPersonality=yes
 MemoryDenyWriteExecute=yes

@@ -1,0 +1,17 @@
+.TH ACME-MATERIALIZE 1 "2026-08-18" "rgbdns 0.6.0" "User Commands"
+.SH NAME
+acme-materialize \- merge durable ACME DNS-01 state into tinydns source
+.SH SYNOPSIS
+.B acme-materialize
+.I data acme-config state-directory output
+.SH DESCRIPTION
+Validates the scoped ACME update configuration and durable overlay, applies
+challenge TXT values and monotonic SOA serials to the source zone, and writes
+the merged tinydns snapshot atomically. It is a non-networked publication
+stage intended to precede ANAME materialization and DNSSEC signing.
+.SH EXIT STATUS
+Zero on success, 100 for usage errors, and 111 for operational failures.
+.SH SEE ALSO
+.BR rgbdns-acme (1),
+.BR aname-materialize (1),
+.BR dnssec-sign (1)

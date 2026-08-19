@@ -4,7 +4,7 @@ use std::{
     net::{Ipv4Addr, Ipv6Addr},
 };
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum RecordType {
     A,
     Ns,
@@ -168,6 +168,38 @@ pub enum RData {
     },
     Opaque(RecordType, Vec<u8>),
 }
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum DnssecRData {
+    Ds {
+        key_tag: u16,
+        algorithm: u8,
+        digest_type: u8,
+        digest: Vec<u8>,
+    },
+    Rrsig {
+        type_covered: RecordType,
+        algorithm: u8,
+        labels: u8,
+        original_ttl: u32,
+        expiration: u32,
+        inception: u32,
+        key_tag: u16,
+        signer: Name,
+        signature: Vec<u8>,
+    },
+    Nsec {
+        next: Name,
+        types: Vec<RecordType>,
+    },
+    Dnskey {
+        flags: u16,
+        protocol: u8,
+        algorithm: u8,
+        public_key: Vec<u8>,
+    },
+}
+
 impl RData {
     pub fn rr_type(&self) -> RecordType {
         match self {
@@ -183,6 +215,128 @@ impl RData {
             Self::Opaque(t, _) => *t,
         }
     }
+
+    pub fn dnssec(&self) -> Result<Option<DnssecRData>> {
+        let Self::Opaque(record_type, bytes) = self else {
+            return Ok(None);
+        };
+        Ok(Some(match record_type {
+            RecordType::Ds => {
+                if bytes.len() < 5 {
+                    return Err(Error::Format("short DS RDATA"));
+                }
+                DnssecRData::Ds {
+                    key_tag: u16::from_be_bytes([bytes[0], bytes[1]]),
+                    algorithm: bytes[2],
+                    digest_type: bytes[3],
+                    digest: bytes[4..].to_vec(),
+                }
+            }
+            RecordType::Dnskey => {
+                if bytes.len() < 5 {
+                    return Err(Error::Format("short DNSKEY RDATA"));
+                }
+                if bytes[2] != 3 {
+                    return Err(Error::Format("DNSKEY protocol is not 3"));
+                }
+                DnssecRData::Dnskey {
+                    flags: u16::from_be_bytes([bytes[0], bytes[1]]),
+                    protocol: bytes[2],
+                    algorithm: bytes[3],
+                    public_key: bytes[4..].to_vec(),
+                }
+            }
+            RecordType::Rrsig => {
+                if bytes.len() < 19 {
+                    return Err(Error::Format("short RRSIG RDATA"));
+                }
+                let (signer, consumed) = uncompressed_name(&bytes[18..])?;
+                let signature = bytes
+                    .get(18 + consumed..)
+                    .filter(|signature| !signature.is_empty())
+                    .ok_or(Error::Format("RRSIG has no signature"))?
+                    .to_vec();
+                DnssecRData::Rrsig {
+                    type_covered: RecordType::from_code(u16::from_be_bytes([bytes[0], bytes[1]])),
+                    algorithm: bytes[2],
+                    labels: bytes[3],
+                    original_ttl: u32::from_be_bytes(bytes[4..8].try_into().unwrap()),
+                    expiration: u32::from_be_bytes(bytes[8..12].try_into().unwrap()),
+                    inception: u32::from_be_bytes(bytes[12..16].try_into().unwrap()),
+                    key_tag: u16::from_be_bytes([bytes[16], bytes[17]]),
+                    signer,
+                    signature,
+                }
+            }
+            RecordType::Nsec => {
+                let (next, consumed) = uncompressed_name(bytes)?;
+                let bitmap = bytes
+                    .get(consumed..)
+                    .filter(|bitmap| !bitmap.is_empty())
+                    .ok_or(Error::Format("NSEC has no type bitmap"))?;
+                DnssecRData::Nsec {
+                    next,
+                    types: type_bitmap(bitmap)?,
+                }
+            }
+            _ => return Ok(None),
+        }))
+    }
+}
+
+fn uncompressed_name(bytes: &[u8]) -> Result<(Name, usize)> {
+    let mut labels = Vec::new();
+    let mut position = 0;
+    loop {
+        let length = usize::from(
+            *bytes
+                .get(position)
+                .ok_or(Error::Format("truncated DNSSEC name"))?,
+        );
+        position += 1;
+        if length == 0 {
+            return Ok((Name::from_labels(labels)?, position));
+        }
+        if length > 63 || length & 0xc0 != 0 {
+            return Err(Error::Format("compressed or invalid DNSSEC name"));
+        }
+        let label = bytes
+            .get(position..position + length)
+            .ok_or(Error::Format("truncated DNSSEC label"))?;
+        labels.push(label.to_vec());
+        position += length;
+    }
+}
+
+fn type_bitmap(mut bytes: &[u8]) -> Result<Vec<RecordType>> {
+    let mut types = Vec::new();
+    let mut previous = None;
+    while !bytes.is_empty() {
+        if bytes.len() < 3 {
+            return Err(Error::Format("truncated NSEC type bitmap"));
+        }
+        let window = bytes[0];
+        let length = usize::from(bytes[1]);
+        if !(1..=32).contains(&length)
+            || bytes.len() < 2 + length
+            || previous.is_some_and(|value| window <= value)
+            || bytes[1 + length] == 0
+        {
+            return Err(Error::Format("invalid NSEC type bitmap"));
+        }
+        for (octet, bits) in bytes[2..2 + length].iter().enumerate() {
+            for bit in 0..8 {
+                if bits & (0x80 >> bit) != 0 {
+                    types.push(RecordType::from_code(
+                        u16::from(window) * 256 + (octet * 8 + bit) as u16,
+                    ));
+                }
+            }
+        }
+        previous = Some(window);
+        bytes = &bytes[2 + length..];
+    }
+    Ok(types)
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -365,7 +519,9 @@ impl<'a> Reader<'a> {
             _ => {
                 let v = self.b[self.p..end].to_vec();
                 self.p = end;
-                RData::Opaque(typ, v)
+                let data = RData::Opaque(typ, v);
+                data.dnssec()?;
+                data
             }
         };
         if self.p != end {
@@ -695,6 +851,47 @@ mod tests {
         assert_eq!(
             Message::decode(&message.encode().unwrap()).unwrap(),
             message
+        );
+    }
+
+    #[test]
+    fn dnssec_rdata_is_typed_and_malformed_values_are_rejected() {
+        assert!(
+            RData::Opaque(RecordType::Dnskey, vec![1, 0, 2, 13, 1])
+                .dnssec()
+                .is_err()
+        );
+        assert!(RData::Opaque(RecordType::Ds, vec![0; 4]).dnssec().is_err());
+        assert!(
+            RData::Opaque(RecordType::Rrsig, vec![0; 18])
+                .dnssec()
+                .is_err()
+        );
+        assert!(
+            RData::Opaque(RecordType::Nsec, vec![0, 0, 1, 0])
+                .dnssec()
+                .is_err()
+        );
+
+        assert_eq!(
+            RData::Opaque(RecordType::Dnskey, vec![1, 1, 3, 13, 7])
+                .dnssec()
+                .unwrap(),
+            Some(DnssecRData::Dnskey {
+                flags: 257,
+                protocol: 3,
+                algorithm: 13,
+                public_key: vec![7],
+            })
+        );
+        assert_eq!(
+            RData::Opaque(RecordType::Nsec, vec![0, 0, 1, 0x40])
+                .dnssec()
+                .unwrap(),
+            Some(DnssecRData::Nsec {
+                next: Name::root(),
+                types: vec![RecordType::A],
+            })
         );
     }
 

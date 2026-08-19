@@ -30,8 +30,10 @@ today=${RGBDNS_TODAY:-$(date +%F)}
 report_date=${RGBDNS_REPORT_DATE:-$(date --date=yesterday +%F)}
 zones=$(mktemp)
 body=$(mktemp)
-trap 'rm -f "$zones" "$body"' EXIT HUP INT TERM
+html_body=$(mktemp)
+trap 'rm -f "$zones" "$body" "$html_body"' EXIT HUP INT TERM
 chmod 0600 "$zones" "$body"
+chmod 0600 "$html_body"
 
 if [ -s "$state_dir/zones" ]; then
     cp "$state_dir/zones" "$zones"
@@ -50,6 +52,8 @@ fi
     --since "$report_date 00:00:00" --until "$today 00:00:00" |
     "$analyzer" --zones "$zones" --date "$report_date" >"$body"
 
+sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' "$body" >"$html_body"
+
 if [ -n "${REPORT_FROM:-}" ]; then
     from=$REPORT_FROM
 else
@@ -63,15 +67,27 @@ else
     from=rgbdns@$report_host
 fi
 subject="rgbdns daily query report for $report_date"
+boundary="rgbdns-report-$$-$(date +%s)"
 {
     printf 'To: %s\n' "$REPORT_TO"
     printf 'From: %s\n' "$from"
     printf 'Subject: %s\n' "$subject"
     printf 'Date: %s\n' "$(date -R)"
-    # The report uses padding to form a table.  Mark it as fixed-format so
-    # clients such as Gmail render the plain-text body in a monospace font.
-    printf 'Content-Type: text/plain; charset=UTF-8; format=fixed\n'
+    printf 'MIME-Version: 1.0\n'
+    printf 'Content-Type: multipart/alternative; boundary="%s"\n' "$boundary"
     printf 'Auto-Submitted: auto-generated\n'
     printf '\n'
+    printf -- '--%s\n' "$boundary"
+    printf 'Content-Type: text/plain; charset=UTF-8; format=fixed\n'
+    printf 'Content-Transfer-Encoding: 8bit\n'
+    printf '\n'
     cat "$body"
+    printf '\n--%s\n' "$boundary"
+    printf 'Content-Type: text/html; charset=UTF-8\n'
+    printf 'Content-Transfer-Encoding: 8bit\n'
+    printf '\n'
+    printf '<!doctype html><html><body><pre style="font-family: monospace;">\n'
+    cat "$html_body"
+    printf '</pre></body></html>\n'
+    printf -- '--%s--\n' "$boundary"
 } | "$sendmail" -t

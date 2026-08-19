@@ -32,6 +32,7 @@ pub(crate) struct RecordMetadata {
     pub cutoff: u64,
     pub location: Option<[u8; 2]>,
 }
+pub(crate) type MaterializationInput = (Vec<Record>, Vec<(Name, Aname)>);
 impl Zone {
     /// Returns a validated snapshot with the supplied ACME TXT overlay and SOA
     /// serial overrides. The source zone is not modified.
@@ -96,6 +97,13 @@ impl Zone {
 
     pub(crate) fn is_authoritative(&self, zone: &Name) -> bool {
         self.authoritative.contains(zone)
+    }
+    pub(crate) fn is_dnssec_signed(&self, zone: &Name) -> bool {
+        self.records.get(zone).is_some_and(|records| {
+            [RecordType::Dnskey, RecordType::Nsec, RecordType::Rrsig]
+                .iter()
+                .all(|typ| records.iter().any(|record| record.rr_type() == *typ))
+        })
     }
     pub fn from_file(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref();
@@ -235,6 +243,54 @@ impl Zone {
     }
     pub(crate) fn has_anames(&self) -> bool {
         !self.anames.is_empty()
+    }
+    pub(crate) fn has_aname_in_zone(&self, name: &Name) -> bool {
+        self.transfer_anames(name)
+            .is_some_and(|anames| !anames.is_empty())
+    }
+    pub(crate) fn has_qualified_data_in_zone(&self, name: &Name) -> bool {
+        self.records.iter().any(|(owner, records)| {
+            owner.is_subdomain_of(name)
+                && !self.authoritative.iter().any(|child| {
+                    child != name && child.is_subdomain_of(name) && owner.is_subdomain_of(child)
+                })
+                && records.iter().enumerate().any(|(index, _)| {
+                    let metadata = self.metadata[owner][index];
+                    metadata.location.is_some() || metadata.cutoff != 0
+                })
+        })
+    }
+    pub(crate) fn authoritative_names(&self) -> BTreeSet<Name> {
+        self.authoritative.clone()
+    }
+    pub(crate) fn records_outside(&self, zones: &BTreeSet<Name>) -> Vec<Record> {
+        self.record_entries()
+            .filter(|(record, metadata)| {
+                metadata.location.is_none()
+                    && metadata.cutoff == 0
+                    && !zones.iter().any(|zone| record.name.is_subdomain_of(zone))
+            })
+            .map(|(record, _)| record.clone())
+            .collect()
+    }
+    pub(crate) fn materialization_input(&self) -> Result<MaterializationInput> {
+        if self
+            .record_entries()
+            .any(|(_, metadata)| metadata.location.is_some() || metadata.cutoff != 0)
+        {
+            return Err(Error::InvalidRecord(
+                "ANAME materialization does not accept location-dependent or expiring data".into(),
+            ));
+        }
+        Ok((
+            self.record_entries()
+                .map(|(record, _)| record.clone())
+                .collect(),
+            self.anames
+                .iter()
+                .map(|(owner, aname)| (owner.clone(), aname.clone()))
+                .collect(),
+        ))
     }
     pub fn transfer(&self, name: &Name) -> Option<Vec<Record>> {
         if !self.authoritative.contains(name) {
@@ -523,12 +579,14 @@ impl Zone {
                         "record type is prohibited for the generic marker".into(),
                     ));
                 }
+                let data = RData::Opaque(typ, unescape(field(&f, 2)?)?);
+                data.dnssec()?;
                 self.add(Record {
                     name,
                     ttl: field_opt(&f, 3)
                         .and_then(|x| x.parse().ok())
                         .unwrap_or(86400),
-                    data: RData::Opaque(typ, unescape(field(&f, 2)?)?),
+                    data,
                 })
             }
             b'&' | b'.' => {
@@ -630,6 +688,24 @@ impl Zone {
             .filter(|owner| name.is_subdomain_of(owner))
             .max_by_key(|owner| owner.labels().count())
         {
+            if typ == RecordType::Ds && name == delegation {
+                let parent = self
+                    .authoritative
+                    .iter()
+                    .filter(|zone| delegation.is_subdomain_of(zone))
+                    .max_by_key(|zone| zone.labels().count());
+                if parent.is_some_and(|zone| self.is_dnssec_signed(zone)) {
+                    let answer = self
+                        .visible_records(delegation, location, now)
+                        .into_iter()
+                        .filter(|record| record.rr_type() == RecordType::Ds)
+                        .collect::<Vec<_>>();
+                    if !answer.is_empty() {
+                        return Lookup::Answer(answer);
+                    }
+                    return Lookup::NoData(parent.and_then(|zone| self.soa(zone, location, now)));
+                }
+            }
             let authorities = self
                 .visible_records(delegation, location, now)
                 .into_iter()
@@ -761,6 +837,103 @@ impl Zone {
         self.records.keys().any(|owner| {
             owner.is_subdomain_of(name) && !self.visible_records(owner, location, now).is_empty()
         })
+    }
+
+    pub(crate) fn dnssec_signatures(
+        &self,
+        name: &Name,
+        covered: &BTreeSet<RecordType>,
+        client: Option<IpAddr>,
+    ) -> Vec<Record> {
+        let location = self.client_location(client);
+        let now = 4_611_686_018_427_387_914u64.saturating_add(unix_now());
+        let mut owner = name.clone();
+        let mut signatures = self.visible_records(&owner, location, now);
+        if !signatures
+            .iter()
+            .any(|record| record.rr_type() == RecordType::Rrsig)
+        {
+            let mut parent = name.parent();
+            while let Some(candidate) = parent {
+                if self.name_exists(&candidate, location, now) {
+                    owner = candidate.wildcard();
+                    signatures = self.visible_records(&owner, location, now);
+                    break;
+                }
+                parent = candidate.parent();
+            }
+        }
+        signatures
+            .into_iter()
+            .filter(|record| {
+                record.rr_type() == RecordType::Rrsig
+                    && rrsig_covered(&record.data).is_some_and(|typ| covered.contains(&typ))
+            })
+            .map(|mut record| {
+                record.name = name.clone();
+                record
+            })
+            .collect()
+    }
+
+    pub(crate) fn dnssec_nsec_at(&self, name: &Name, client: Option<IpAddr>) -> Vec<Record> {
+        let location = self.client_location(client);
+        let now = 4_611_686_018_427_387_914u64.saturating_add(unix_now());
+        let mut records = self
+            .visible_records(name, location, now)
+            .into_iter()
+            .filter(|record| record.rr_type() == RecordType::Nsec)
+            .collect::<Vec<_>>();
+        if !records.is_empty() {
+            records.extend(self.dnssec_signatures(
+                name,
+                &BTreeSet::from([RecordType::Nsec]),
+                client,
+            ));
+        }
+        records
+    }
+
+    pub(crate) fn dnssec_nsec_zone(&self, name: &Name, client: Option<IpAddr>) -> Vec<Record> {
+        let location = self.client_location(client);
+        let now = 4_611_686_018_427_387_914u64.saturating_add(unix_now());
+        let Some(zone) = self
+            .authoritative
+            .iter()
+            .filter(|zone| name.is_subdomain_of(zone))
+            .max_by_key(|zone| zone.labels().count())
+        else {
+            return Vec::new();
+        };
+        let mut output = Vec::new();
+        for owner in self.records.keys().filter(|owner| {
+            owner.is_subdomain_of(zone)
+                && !self.authoritative.iter().any(|child| {
+                    child != zone && child.is_subdomain_of(zone) && owner.is_subdomain_of(child)
+                })
+        }) {
+            let nsec = self
+                .visible_records(owner, location, now)
+                .into_iter()
+                .filter(|record| record.rr_type() == RecordType::Nsec)
+                .collect::<Vec<_>>();
+            if !nsec.is_empty() {
+                output.extend(nsec);
+                output.extend(self.dnssec_signatures(
+                    owner,
+                    &BTreeSet::from([RecordType::Nsec]),
+                    client,
+                ));
+            }
+        }
+        output
+    }
+}
+
+fn rrsig_covered(data: &RData) -> Option<RecordType> {
+    match data.dnssec().ok().flatten()? {
+        crate::DnssecRData::Rrsig { type_covered, .. } => Some(type_covered),
+        _ => None,
     }
 }
 

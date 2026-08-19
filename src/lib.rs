@@ -7,6 +7,7 @@ pub mod cdb;
 pub mod client;
 pub mod conf;
 pub mod dnscache_config;
+pub mod dnssec;
 pub mod multilog;
 pub mod name;
 pub mod packet;
@@ -23,7 +24,7 @@ pub mod wall;
 pub mod zone;
 
 pub use name::Name;
-pub use packet::{Message, Question, RData, Record, RecordType};
+pub use packet::{DnssecRData, Message, Question, RData, Record, RecordType};
 
 #[derive(Debug)]
 pub enum Error {

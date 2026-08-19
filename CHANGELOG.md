@@ -5,6 +5,28 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-18
+
+### Added
+
+- Opt-in, offline authoritative DNSSEC with ECDSA P-256/SHA-256, NSEC denial,
+  signed wildcard and delegation behavior, standard signed AXFR, DS derivation,
+  cryptographic snapshot checks, and signed-RRset-aware UDP truncation.
+- Tinydns-style `dnssec-keygen`, `dnssec-sign`, `dnssec-data`, `dnssec-ds`,
+  `dnssec-check`, `aname-materialize`, and `acme-materialize` utilities with
+  line-oriented configuration and atomic last-known-good publication.
+- Fail-closed mixed snapshots: `K` lines select signed zones and explicit `U`
+  lines retain unsigned zones, including their ANAME and qualified data.
+- Root-only signing and unprivileged monitoring timers. DNSSEC remains disabled
+  unless an operator supplies a policy; the original rgbdns path is unchanged.
+
+### Security
+
+- Private signing keys are primary-only 0600 files and are never opened by
+  `tinydns`, `axfrdns`, or a secondary.
+- DS, DNSKEY, RRSIG, and NSEC data are structurally validated at text, CDB,
+  packet, and AXFR boundaries before publication or service.
+
 ### Fixed
 
 - Daily email delivery no longer requires the optional `hostname` utility when

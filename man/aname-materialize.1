@@ -1,0 +1,22 @@
+.TH ANAME-MATERIALIZE 1 "2026-08-18" "rgbdns 0.6.0" "User Commands"
+.SH NAME
+aname-materialize \- replace rgbdns ANAME directives with address records
+.SH SYNOPSIS
+.B aname-materialize
+.RI [ data
+.RI [ data.materialized
+.RI [ dnssec ]]]
+.SH DESCRIPTION
+Resolves each private rgbdns ANAME directive into ordinary owner A and AAAA
+records, respecting its TTL ceiling, then atomically writes tinydns text. If
+no ANAME exists, the input records pass through unchanged. Resolution failure
+does not replace the destination.
+.PP
+With a DNSSEC policy argument, only ANAME directives in K zones are
+materialized; directives in explicit U zones pass through unchanged.
+.SH EXIT STATUS
+Zero on success, 100 for usage errors, and 111 for operational failures.
+.SH SEE ALSO
+.BR dnssec-sign (1),
+.BR tinydns-data (1),
+.BR rgbdns (7)

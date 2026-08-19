@@ -1,11 +1,16 @@
-.TH COMPILE-ZONE 8 "2026-07-23" "rgbdns 0.2.0" "System Administration"
+.TH COMPILE-ZONE 8 "2026-07-23" "rgbdns 0.6.0" "System Administration"
 .SH NAME
 compile-zone \- compile the packaged authoritative zone
 .SH SYNOPSIS
 .B /usr/lib/rgbdns/compile-zone
 .SH DESCRIPTION
 Internal package helper that compiles the managed tinydns source to a
-temporary database and atomically installs it as data.cdb.
+temporary database and atomically installs it as data.cdb. With
+.I /etc/rgbdns/dnssec.env
+present, it verifies the already published signed CDB instead; without that
+explicit file it retains the original
+.BR tinydns-data (1)
+path.
 .SH ENVIRONMENT
 .TP
 .B RGBDNS_STATE_DIR

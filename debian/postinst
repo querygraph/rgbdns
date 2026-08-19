@@ -9,6 +9,7 @@ if ! getent passwd rgbdns >/dev/null 2>&1; then
         --no-create-home --disabled-login --gecos "rgbdns service" rgbdns
 fi
 install -d -o root -g rgbdns -m 0750 /etc/rgbdns
+install -d -o root -g root -m 0700 /etc/rgbdns/keys
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chown root:rgbdns /etc/rgbdns/tinydns.env
 chmod 0640 /etc/rgbdns/tinydns.env

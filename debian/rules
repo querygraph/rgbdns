@@ -9,7 +9,7 @@ export CARGO_TARGET_DIR = $(CURDIR)/target
 
 ifeq ($(RGBDNS_SKIP_RUST_BUILD),1)
 override_dh_auto_build:
-	test -x target/release/rgbdns
+	test -x target/release/rgbdns-log-report
 override_dh_auto_test:
 	true
 else
@@ -43,6 +43,8 @@ override_dh_auto_install:
 		debian/rgbdns/usr/lib/rgbdns/restore-role-units
 	install -D -m 0755 packaging/scripts/daily-query-report \
 		debian/rgbdns/usr/lib/rgbdns/daily-query-report
+	install -D -m 0755 packaging/scripts/publish-dnssec \
+		debian/rgbdns/usr/lib/rgbdns/publish-dnssec
 	install -D -m 0755 packaging/scripts/rgbdns-setup \
 		debian/rgbdns/usr/sbin/rgbdns-setup
 	install -D -m 0644 packaging/default/tinydns.env \

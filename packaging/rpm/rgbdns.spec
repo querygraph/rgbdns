@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.5.1
+Version:        0.6.0
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -66,6 +66,8 @@ install -D -m 0755 packaging/scripts/restore-role-units \
     %{buildroot}%{_prefix}/lib/rgbdns/restore-role-units
 install -D -m 0755 packaging/scripts/daily-query-report \
     %{buildroot}%{_prefix}/lib/rgbdns/daily-query-report
+install -D -m 0755 packaging/scripts/publish-dnssec \
+    %{buildroot}%{_prefix}/lib/rgbdns/publish-dnssec
 install -D -m 0755 packaging/scripts/rgbdns-setup \
     %{buildroot}%{_sbindir}/rgbdns-setup
 install -D -m 0640 packaging/default/tinydns.env \
@@ -86,6 +88,12 @@ install -D -m 0644 man/rgbdns-acme.1 \
     %{buildroot}%{_mandir}/man1/rgbdns-acme.1
 install -D -m 0644 man/rgbdns-log-report.1 \
     %{buildroot}%{_mandir}/man1/rgbdns-log-report.1
+for manual in man/acme-materialize.1 man/aname-materialize.1 \
+    man/dnssec-check.1 man/dnssec-data.1 man/dnssec-ds.1 \
+    man/dnssec-keygen.1 man/dnssec-sign.1; do
+    install -D -m 0644 "$manual" \
+        "%{buildroot}%{_mandir}/man1/$(basename "$manual")"
+done
 
 %pre
 getent group rgbdns >/dev/null 2>&1 || groupadd --system rgbdns
@@ -96,6 +104,7 @@ exit 0
 
 %post
 install -d -o root -g rgbdns -m 0750 %{_sysconfdir}/rgbdns
+install -d -o root -g root -m 0700 %{_sysconfdir}/rgbdns/keys
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chown root:rgbdns %{_sysconfdir}/rgbdns/tinydns.env
 chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
@@ -106,19 +115,19 @@ chmod 0640 %{_sysconfdir}/rgbdns/query-report.env
 %{_prefix}/lib/rgbdns/migrate-zones
 %{_prefix}/lib/rgbdns/migrate-zone-state
 %{_prefix}/lib/rgbdns/migrate-zone-drop
-%service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
+%service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer rgbdns-dnssec-publish.service rgbdns-dnssec-publish.timer rgbdns-dnssec-check.service rgbdns-dnssec-check.timer
 if [ "$1" -gt 1 ]; then
     %{_prefix}/lib/rgbdns/restore-role-units
 fi
 
 %preun
-%service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
+%service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer rgbdns-dnssec-publish.service rgbdns-dnssec-publish.timer rgbdns-dnssec-check.service rgbdns-dnssec-check.timer
 
 %postun
-%service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
+%service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer rgbdns-dnssec-publish.service rgbdns-dnssec-publish.timer rgbdns-dnssec-check.service rgbdns-dnssec-check.timer
 
 %files
-%doc README.md docs/OPENSUSE.md
+%doc README.md docs/OPENSUSE.md docs/DNSSEC.md docs/DNSSEC-DESIGN.md
 %{_bindir}/*
 %{_sbindir}/rgbdns-setup
 %dir %{_prefix}/lib/rgbdns
@@ -131,6 +140,7 @@ fi
 %{_prefix}/lib/rgbdns/migrate-zone-state
 %{_prefix}/lib/rgbdns/restore-role-units
 %{_prefix}/lib/rgbdns/daily-query-report
+%{_prefix}/lib/rgbdns/publish-dnssec
 %attr(0750,root,rgbdns) %dir %{_sysconfdir}/rgbdns
 %attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
 %attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/acme-update.conf
@@ -144,12 +154,37 @@ fi
 %{_unitdir}/rgbdns-data.path
 %{_unitdir}/rgbdns-query-report.service
 %{_unitdir}/rgbdns-query-report.timer
+%{_unitdir}/rgbdns-dnssec-publish.service
+%{_unitdir}/rgbdns-dnssec-publish.timer
+%{_unitdir}/rgbdns-dnssec-check.service
+%{_unitdir}/rgbdns-dnssec-check.timer
 %{_docdir}/%{name}/examples/data
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 %{_mandir}/man1/rgbdns-acme.1%{?ext_man}
 %{_mandir}/man1/rgbdns-log-report.1%{?ext_man}
+%{_mandir}/man1/acme-materialize.1%{?ext_man}
+%{_mandir}/man1/aname-materialize.1%{?ext_man}
+%{_mandir}/man1/dnssec-check.1%{?ext_man}
+%{_mandir}/man1/dnssec-data.1%{?ext_man}
+%{_mandir}/man1/dnssec-ds.1%{?ext_man}
+%{_mandir}/man1/dnssec-keygen.1%{?ext_man}
+%{_mandir}/man1/dnssec-sign.1%{?ext_man}
 
 %changelog
+* Tue Aug 18 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.0-1
+- Add opt-in offline authoritative DNSSEC signing and denial proofs
+- Compose ACME and ANAME inputs into verified atomic signed snapshots
+- Keep authority and secondaries keyless; transfer DNSSEC over standard AXFR
+- Support explicit mixed signed and unsigned zones in one CDB
+
+* Thu Aug 07 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.3-1
+- Add a monospace HTML view to daily query report email
+
+* Thu Aug 06 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.2-1
+- Render daily query report email bodies with a monospace HTML view and a
+  fixed-format plain-text fallback
+- Add fast Debian and RPM repackaging without rebuilding Rust binaries
+
 * Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.1-1
 - Avoid requiring the optional hostname utility for report delivery
 
