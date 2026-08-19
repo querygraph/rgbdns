@@ -24,7 +24,7 @@ pub mod wall;
 pub mod zone;
 
 pub use name::Name;
-pub use packet::{Message, Question, RData, Record, RecordType};
+pub use packet::{DnssecRData, Message, Question, RData, Record, RecordType};
 
 #[derive(Debug)]
 pub enum Error {

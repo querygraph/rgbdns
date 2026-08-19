@@ -575,12 +575,14 @@ impl Zone {
                         "record type is prohibited for the generic marker".into(),
                     ));
                 }
+                let data = RData::Opaque(typ, unescape(field(&f, 2)?)?);
+                data.dnssec()?;
                 self.add(Record {
                     name,
                     ttl: field_opt(&f, 3)
                         .and_then(|x| x.parse().ok())
                         .unwrap_or(86400),
-                    data: RData::Opaque(typ, unescape(field(&f, 2)?)?),
+                    data,
                 })
             }
             b'&' | b'.' => {
@@ -683,20 +685,22 @@ impl Zone {
             .max_by_key(|owner| owner.labels().count())
         {
             if typ == RecordType::Ds && name == delegation {
-                let answer = self
-                    .visible_records(delegation, location, now)
-                    .into_iter()
-                    .filter(|record| record.rr_type() == RecordType::Ds)
-                    .collect::<Vec<_>>();
-                if !answer.is_empty() {
-                    return Lookup::Answer(answer);
-                }
                 let parent = self
                     .authoritative
                     .iter()
                     .filter(|zone| delegation.is_subdomain_of(zone))
                     .max_by_key(|zone| zone.labels().count());
-                return Lookup::NoData(parent.and_then(|zone| self.soa(zone, location, now)));
+                if parent.is_some_and(|zone| self.is_dnssec_signed(zone)) {
+                    let answer = self
+                        .visible_records(delegation, location, now)
+                        .into_iter()
+                        .filter(|record| record.rr_type() == RecordType::Ds)
+                        .collect::<Vec<_>>();
+                    if !answer.is_empty() {
+                        return Lookup::Answer(answer);
+                    }
+                    return Lookup::NoData(parent.and_then(|zone| self.soa(zone, location, now)));
+                }
             }
             let authorities = self
                 .visible_records(delegation, location, now)

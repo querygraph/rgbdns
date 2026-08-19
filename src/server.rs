@@ -1007,6 +1007,21 @@ mod tests {
                 .iter()
                 .any(|record| record.rr_type() == RecordType::A)
         );
+        let ds = Message::decode(
+            &respond(
+                &zone,
+                &query("child.example", RecordType::Ds, Some((1232, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(ds.flags & 0x0400, 0);
+        assert!(
+            ds.authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Ns)
+        );
     }
 
     #[test]
