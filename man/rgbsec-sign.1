@@ -1,8 +1,8 @@
-.TH DNSSEC-SIGN 1 "2026-08-18" "rgbdns 0.6.0" "User Commands"
+.TH RGBSEC-SIGN 1 "2026-08-19" "rgbdns 0.6.1" "User Commands"
 .SH NAME
-dnssec-sign \- sign tinydns source as an offline DNSSEC snapshot
+rgbsec-sign \- sign tinydns source as an offline DNSSEC snapshot
 .SH SYNOPSIS
-.B dnssec-sign
+.B rgbsec-sign
 .RI [ data
 .RI [ data.signed ]]
 .SH DESCRIPTION
@@ -12,11 +12,11 @@ in the working directory. A K line signs its zone and a Uzone line explicitly
 preserves an unsigned zone. The command atomically writes tinydns text, adds
 DNSKEY, NSEC, and RRSIG records, and rejects unmaterialized ANAME, conditional
 or expiring records that cannot be represented by this diagnostic text export,
-pre-existing signing data, and policy/zone mismatch. Use dnssec-data to retain
+pre-existing signing data, and policy/zone mismatch. Use rgbsec-data to retain
 qualified records in U zones directly in CDB form.
 .SH EXIT STATUS
 Zero on success, 100 for usage errors, and 111 for operational failures.
 .SH SEE ALSO
-.BR dnssec-data (1),
-.BR dnssec-check (1),
+.BR rgbsec-data (1),
+.BR rgbsec-check (1),
 .BR aname-materialize (1)

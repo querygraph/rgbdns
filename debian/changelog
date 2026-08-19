@@ -1,3 +1,10 @@
+rgbdns (0.6.1) unstable; urgency=medium
+
+  * Rename DNSSEC utilities into the rgbsec namespace so packages coexist
+    with BIND's dnssec-keygen and related tools.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Wed, 19 Aug 2026 00:00:00 -0700
+
 rgbdns (0.6.0) unstable; urgency=medium
 
   * Add opt-in offline authoritative DNSSEC signing with ECDSA P-256.

@@ -4,7 +4,7 @@ use std::{path::Path, process::ExitCode};
 fn main() -> ExitCode {
     let arguments = std::env::args().skip(1).collect::<Vec<_>>();
     if arguments.len() > 2 {
-        eprintln!("usage: dnssec-check [data.signed [dnssec]]");
+        eprintln!("usage: rgbsec-check [data.signed [dnssec]]");
         return ExitCode::from(100);
     }
     let input = Path::new(arguments.first().map_or("data.signed", String::as_str));
@@ -17,7 +17,7 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(error) => {
-            eprintln!("dnssec-check: {error}");
+            eprintln!("rgbsec-check: {error}");
             ExitCode::from(111)
         }
     }

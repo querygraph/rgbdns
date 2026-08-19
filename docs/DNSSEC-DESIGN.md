@@ -1,6 +1,6 @@
 # DNSSEC design: small tools and visible state
 
-Status: implementation contract for rgbdns 0.6.0.
+Status: implementation contract for rgbdns 0.6.1.
 
 rgbdns DNSSEC follows the tinydns posture: each program does one bounded job,
 configuration is one record per line, persistent state is an ordinary file, and
@@ -13,27 +13,27 @@ are not part of the operator-facing design.
 
 ## Programs
 
-`dnssec-keygen zone keyfile` creates one ECDSA P-256/SHA-256 key in PKCS#8 DER
+`rgbsec-keygen zone keyfile` creates one ECDSA P-256/SHA-256 key in PKCS#8 DER
 form. It creates the key with mode 0600 and refuses to overwrite a path. The
 only stdout output is the public `K` policy line described below.
 
-`dnssec-sign [data [data.signed]]` reads tinydns data plus `dnssec` in the
+`rgbsec-sign [data [data.signed]]` reads tinydns data plus `dnssec` in the
 current directory. It resolves no names and changes no live file. It writes a
 complete signed tinydns snapshot to a sibling temporary file, syncs it, and
 renames it over the requested output. It exits nonzero without changing the
 last good output if any input, key, zone, or signature is invalid.
 
-`dnssec-data [data [data.cdb]]` is the composition used for publication. It
+`rgbsec-data [data [data.cdb]]` is the composition used for publication. It
 runs the same signing transform and CDB compiler, writes a sibling temporary
 CDB, syncs it, validates it by loading it, and renames it over `data.cdb`.
-Keeping `dnssec-sign` separate makes signed text inspectable and lets an
+Keeping `rgbsec-sign` separate makes signed text inspectable and lets an
 operator compose it with other compilers.
 
-`dnssec-ds dnssec-line` prints the DS record which must be installed at the
+`rgbsec-ds dnssec-line` prints the DS record which must be installed at the
 parent. It reads the referenced private key only to derive its public key and
 does not modify any file.
 
-`dnssec-check [data.signed [dnssec]]` performs structural and cryptographic checks and
+`rgbsec-check [data.signed [dnssec]]` performs structural and cryptographic checks and
 prints one tab-separated status line per signed zone. Nagios, cron, systemd,
 or a shell script can consume the same output. Exit status alone is sufficient
 for supervision.
@@ -61,7 +61,7 @@ Kzone:keyfile:algorithm:validity:refresh:inception-skew
 - `keyfile` is an absolute path to a PKCS#8 DER private key.
 - `algorithm` is `13` (ECDSAP256SHA256). Unknown algorithms are rejected.
 - `validity` is the RRSIG lifetime in seconds.
-- `refresh` is the minimum remaining lifetime accepted by `dnssec-check`.
+- `refresh` is the minimum remaining lifetime accepted by `rgbsec-check`.
 - `inception-skew` moves signature inception into the past to tolerate clock
   skew.
 
@@ -125,7 +125,7 @@ A signed snapshot cannot contain answers synthesized after signing. The
 publication pipeline is therefore explicit:
 
 ```text
-source -> acme overlay -> selected ANAME materialize -> dnssec-data -> verify -> rename
+source -> acme overlay -> selected ANAME materialize -> rgbsec-data -> verify -> rename
 ```
 
 Each arrow is a program reading a stable input and producing a new sibling
@@ -150,7 +150,7 @@ they do not resolve the target independently for a signed zone.
 
 Key creation, activation, parent DS publication, rollover, revocation, and
 retirement are distinct operator actions represented by files and policy
-lines. Version 0.6.0 delivers safe single-key operation and DS derivation. A
+lines. Version 0.6.1 delivers safe single-key operation and DS derivation. A
 later feature release will add a deliberately specified multi-key rollover
 state machine; operators must not simulate rollover by silently swapping a key
 file under an unchanged policy line.
@@ -162,7 +162,7 @@ access. Backups and destruction are operator-visible file operations.
 ## Failure and observability
 
 All programs log one line per failure to stderr and use stable nonzero exit
-status. They do not retry indefinitely. `dnssec-check` reports the SOA serial,
+status. They do not retry indefinitely. `rgbsec-check` reports the SOA serial,
 key tag, earliest expiration, remaining lifetime, and status. Service timers
 run the check frequently enough to alert before the configured refresh window.
 

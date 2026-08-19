@@ -1,6 +1,6 @@
 # Optional authoritative DNSSEC
 
-rgbdns 0.6.0 adds authoritative DNSSEC as an explicit offline publication
+rgbdns 0.6.1 adds authoritative DNSSEC as an explicit offline publication
 pipeline. It is disabled by default. If `/etc/rgbdns/dnssec.env` and the
 working-directory `dnssec` policy are absent, `tinydns-data`, `tinydns`, ACME,
 ANAME, setup, and secondary synchronization follow the existing
@@ -12,12 +12,12 @@ same finished records over ordinary AXFR and also need no key.
 
 ## Create a key and policy
 
-Create the key as root on the primary. `dnssec-keygen` refuses to overwrite a
+Create the key as root on the primary. `rgbsec-keygen` refuses to overwrite a
 file and creates it mode 0600:
 
 ```sh
 sudo install -d -o root -g root -m 0700 /etc/rgbdns/keys
-sudo dnssec-keygen example.com /etc/rgbdns/keys/example.com.pk8 \
+sudo rgbsec-keygen example.com /etc/rgbdns/keys/example.com.pk8 \
   | sudo tee /etc/rgbdns/dnssec
 sudo chown root:rgbdns /etc/rgbdns/dnssec
 sudo chmod 0640 /etc/rgbdns/dnssec
@@ -43,7 +43,7 @@ This permits a deliberate mixed signed/unsigned CDB without making omission
 mean “unsigned.”
 
 Keep a recoverable encrypted backup of the key. Key replacement is not an
-implicit file operation: version 0.6.0 deliberately supports one active
+implicit file operation: version 0.6.1 deliberately supports one active
 combined signing key per zone and does not claim an automated multi-key
 rollover state machine.
 
@@ -56,19 +56,19 @@ acme-materialize data /etc/rgbdns/acme-update.conf \
   /var/lib/rgbdns/tinydns data.acme
 aname-materialize data.acme data.materialized dnssec
 ln -s /etc/rgbdns/dnssec dnssec
-dnssec-sign data.materialized data.signed
-dnssec-data data.materialized data.cdb
-dnssec-check data.cdb /etc/rgbdns/dnssec
-dnssec-ds 'Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600'
+rgbsec-sign data.materialized data.signed
+rgbsec-data data.materialized data.cdb
+rgbsec-check data.cdb /etc/rgbdns/dnssec
+rgbsec-ds 'Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600'
 ```
 
 With the third argument, `aname-materialize` resolves ANAME only in `K` zones
 and preserves ANAME directives in `U` zones. The first three commands expose
-each text stage for inspection. `dnssec-data` is the shorter sign-and-compile
+each text stage for inspection. `rgbsec-data` is the shorter sign-and-compile
 transform when the intermediate signed text is not needed. Both signing
 commands read the one-line policy from `dnssec` in their working directory.
 Every output is built beside its destination and renamed only after a successful
-write. `dnssec-check` cryptographically verifies every authoritative RRset,
+write. `rgbsec-check` cryptographically verifies every authoritative RRset,
 checks the NSEC chain and validity interval, and emits:
 
 ```text
@@ -119,7 +119,7 @@ signed zone refuses ACME update startup rather than publishing unsigned TXT.
 
 ## Parent DS and activation
 
-Print the DS line with `dnssec-ds`, then install the exact key tag, algorithm
+Print the DS line with `rgbsec-ds`, then install the exact key tag, algorithm
 13, digest type 2, and digest at the parent. Do not publish the DS until every
 delegated authority answers DNSKEY and signed positive and negative queries.
 
@@ -140,8 +140,8 @@ negative caches, and only then remove local policy and republish unsigned data.
 ## Constraints
 
 - Location-dependent (`%`) or TAI64 activation/expiration data cannot be
-  signed because one owner/type must identify one stable RRset. `dnssec-data`
-  retains such data in `U` zones. The text-only `dnssec-sign` export cannot.
+  signed because one owner/type must identify one stable RRset. `rgbsec-data`
+  retains such data in `U` zones. The text-only `rgbsec-sign` export cannot.
 - If a `K` zone contains ANAME, the current text materialization stage requires
   all zones in that source to be free of location and time qualifiers. Without
   ANAME in a `K` zone, mixed-zone materialization is a byte-for-byte pass-through.

@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.6.0
+Version:        0.6.1
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -89,8 +89,8 @@ install -D -m 0644 man/rgbdns-acme.1 \
 install -D -m 0644 man/rgbdns-log-report.1 \
     %{buildroot}%{_mandir}/man1/rgbdns-log-report.1
 for manual in man/acme-materialize.1 man/aname-materialize.1 \
-    man/dnssec-check.1 man/dnssec-data.1 man/dnssec-ds.1 \
-    man/dnssec-keygen.1 man/dnssec-sign.1; do
+    man/rgbsec-check.1 man/rgbsec-data.1 man/rgbsec-ds.1 \
+    man/rgbsec-keygen.1 man/rgbsec-sign.1; do
     install -D -m 0644 "$manual" \
         "%{buildroot}%{_mandir}/man1/$(basename "$manual")"
 done
@@ -164,13 +164,16 @@ fi
 %{_mandir}/man1/rgbdns-log-report.1%{?ext_man}
 %{_mandir}/man1/acme-materialize.1%{?ext_man}
 %{_mandir}/man1/aname-materialize.1%{?ext_man}
-%{_mandir}/man1/dnssec-check.1%{?ext_man}
-%{_mandir}/man1/dnssec-data.1%{?ext_man}
-%{_mandir}/man1/dnssec-ds.1%{?ext_man}
-%{_mandir}/man1/dnssec-keygen.1%{?ext_man}
-%{_mandir}/man1/dnssec-sign.1%{?ext_man}
+%{_mandir}/man1/rgbsec-check.1%{?ext_man}
+%{_mandir}/man1/rgbsec-data.1%{?ext_man}
+%{_mandir}/man1/rgbsec-ds.1%{?ext_man}
+%{_mandir}/man1/rgbsec-keygen.1%{?ext_man}
+%{_mandir}/man1/rgbsec-sign.1%{?ext_man}
 
 %changelog
+* Wed Aug 19 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.1-1
+- Rename DNSSEC utilities into the rgbsec namespace to avoid BIND collisions
+
 * Tue Aug 18 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.0-1
 - Add opt-in offline authoritative DNSSEC signing and denial proofs
 - Compose ACME and ANAME inputs into verified atomic signed snapshots

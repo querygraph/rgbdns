@@ -1,8 +1,8 @@
-.TH DNSSEC-CHECK 1 "2026-08-18" "rgbdns 0.6.0" "User Commands"
+.TH RGBSEC-CHECK 1 "2026-08-19" "rgbdns 0.6.1" "User Commands"
 .SH NAME
-dnssec-check \- verify an rgbdns signed snapshot and signature lifetime
+rgbsec-check \- verify an rgbdns signed snapshot and signature lifetime
 .SH SYNOPSIS
-.B dnssec-check
+.B rgbsec-check
 .RI [ data.signed
 .RI [ dnssec ]]
 .SH DESCRIPTION
@@ -17,6 +17,6 @@ records are absent.
 Zero only when every configured zone verifies; 100 for usage errors and 111
 for verification or operational failures.
 .SH SEE ALSO
-.BR dnssec-sign (1),
-.BR dnssec-data (1),
+.BR rgbsec-sign (1),
+.BR rgbsec-data (1),
 .BR rgbdns (7)
