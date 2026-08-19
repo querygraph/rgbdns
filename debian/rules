@@ -9,7 +9,7 @@ export CARGO_TARGET_DIR = $(CURDIR)/target
 
 ifeq ($(RGBDNS_SKIP_RUST_BUILD),1)
 override_dh_auto_build:
-	test -x target/release/rgbdns
+	test -x target/release/rgbdns-log-report
 override_dh_auto_test:
 	true
 else

@@ -177,6 +177,14 @@ fi
 - Keep authority and secondaries keyless; transfer DNSSEC over standard AXFR
 - Support explicit mixed signed and unsigned zones in one CDB
 
+* Thu Aug 07 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.3-1
+- Add a monospace HTML view to daily query report email
+
+* Thu Aug 06 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.2-1
+- Render daily query report email bodies with a monospace HTML view and a
+  fixed-format plain-text fallback
+- Add fast Debian and RPM repackaging without rebuilding Rust binaries
+
 * Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.1-1
 - Avoid requiring the optional hostname utility for report delivery
 
