@@ -29,11 +29,18 @@ grep -qx 'enable --now rgbdns-tinydns.service' "$log"
 grep -qx 'enable --now rgbdns-data.path' "$log"
 ! grep -q 'enable --now rgbdns-secondary-sync.timer' "$log"
 
+touch "$root/config/dnssec.env"
+run_restore
+grep -qx 'enable --now rgbdns-dnssec-publish.timer' "$log"
+grep -qx 'enable --now rgbdns-dnssec-check.timer' "$log"
+rm "$root/config/dnssec.env"
+
 rm "$root/config/data-drop.env"
 touch "$root/config/secondary.env" "$root/config/zones-drop.env"
 run_restore
 grep -qx 'daemon-reload' "$log"
 grep -qx 'disable --now rgbdns-data.path' "$log"
+grep -qx 'disable --now rgbdns-dnssec-publish.timer rgbdns-dnssec-check.timer' "$log"
 grep -qx 'enable --now rgbdns-tinydns.service' "$log"
 grep -qx 'enable --now rgbdns-secondary-sync.timer' "$log"
 grep -qx 'enable --now rgbdns-zones.path' "$log"

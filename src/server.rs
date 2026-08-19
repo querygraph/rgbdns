@@ -604,8 +604,28 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
         .map(|config| {
             let state_dir = std::env::var("ACME_STATE_DIR")
                 .unwrap_or_else(|_| "/var/lib/rgbdns/tinydns".into());
-            crate::acme::AcmeUpdates::from_file(config, state_dir, zone.clone(), live.clone())
-                .map(Arc::new)
+            let publication = match (
+                std::env::var("ACME_PUBLISH_COMMAND").ok(),
+                std::env::var("ACME_PUBLISHED_DATA").ok(),
+            ) {
+                (Some(command), Some(data)) => {
+                    Some(crate::acme::Publication::new(command.into(), data.into())?)
+                }
+                (None, None) => None,
+                _ => {
+                    return Err(Error::Format(
+                        "ACME_PUBLISH_COMMAND and ACME_PUBLISHED_DATA must be set together",
+                    ));
+                }
+            };
+            crate::acme::AcmeUpdates::from_file_with_publication(
+                config,
+                state_dir,
+                zone.clone(),
+                live.clone(),
+                publication,
+            )
+            .map(Arc::new)
         })
         .transpose()?;
     let allowed = std::env::var("ALLOW_NETS")

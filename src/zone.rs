@@ -32,6 +32,7 @@ pub(crate) struct RecordMetadata {
     pub cutoff: u64,
     pub location: Option<[u8; 2]>,
 }
+pub(crate) type MaterializationInput = (Vec<Record>, Vec<(Name, Aname)>);
 impl Zone {
     /// Returns a validated snapshot with the supplied ACME TXT overlay and SOA
     /// serial overrides. The source zone is not modified.
@@ -96,6 +97,13 @@ impl Zone {
 
     pub(crate) fn is_authoritative(&self, zone: &Name) -> bool {
         self.authoritative.contains(zone)
+    }
+    pub(crate) fn is_dnssec_signed(&self, zone: &Name) -> bool {
+        self.records.get(zone).is_some_and(|records| {
+            [RecordType::Dnskey, RecordType::Nsec, RecordType::Rrsig]
+                .iter()
+                .all(|typ| records.iter().any(|record| record.rr_type() == *typ))
+        })
     }
     pub fn from_file(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref();
@@ -260,6 +268,25 @@ impl Zone {
             })
             .map(|(record, _)| record.clone())
             .collect()
+    }
+    pub(crate) fn materialization_input(&self) -> Result<MaterializationInput> {
+        if self
+            .record_entries()
+            .any(|(_, metadata)| metadata.location.is_some() || metadata.cutoff != 0)
+        {
+            return Err(Error::InvalidRecord(
+                "ANAME materialization does not accept location-dependent or expiring data".into(),
+            ));
+        }
+        Ok((
+            self.record_entries()
+                .map(|(record, _)| record.clone())
+                .collect(),
+            self.anames
+                .iter()
+                .map(|(owner, aname)| (owner.clone(), aname.clone()))
+                .collect(),
+        ))
     }
     pub fn transfer(&self, name: &Name) -> Option<Vec<Record>> {
         if !self.authoritative.contains(name) {

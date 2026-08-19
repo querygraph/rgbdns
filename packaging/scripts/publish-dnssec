@@ -1,0 +1,52 @@
+#!/bin/sh
+set -eu
+
+state_dir=${1:-${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}}
+[ -r /etc/rgbdns/dnssec.env ] && . /etc/rgbdns/dnssec.env
+
+: "${DNSSEC_SOURCE:=$state_dir/data}"
+: "${DNSSEC_POLICY:=/etc/rgbdns/dnssec}"
+: "${DNSSEC_OUTPUT:=$state_dir/data.cdb}"
+: "${RGBDNS_ACME_MATERIALIZE:=/usr/bin/acme-materialize}"
+: "${RGBDNS_ANAME_MATERIALIZE:=/usr/bin/aname-materialize}"
+: "${RGBDNS_DNSSEC_SIGN:=/usr/bin/dnssec-sign}"
+: "${RGBDNS_TINYDNS_DATA:=/usr/bin/tinydns-data}"
+: "${RGBDNS_DNSSEC_CHECK:=/usr/bin/dnssec-check}"
+: "${RGBDNS_INSTALL:=/usr/bin/install}"
+: "${RGBDNS_SYNC:=/bin/sync}"
+
+test -r "$DNSSEC_SOURCE"
+test -r "$DNSSEC_POLICY"
+case $DNSSEC_OUTPUT in
+    "$state_dir"/*) ;;
+    *) echo "publish-dnssec: output must be inside $state_dir" >&2; exit 100 ;;
+esac
+
+umask 077
+stage=$(mktemp -d "$state_dir/.dnssec-publish.XXXXXX")
+trap 'rm -rf "$stage"' EXIT HUP INT TERM
+
+if [ -n "${ACME_UPDATE_CONFIG:-}" ]; then
+    "$RGBDNS_ACME_MATERIALIZE" \
+        "$DNSSEC_SOURCE" "$ACME_UPDATE_CONFIG" "$state_dir" "$stage/data.acme"
+else
+    cp "$DNSSEC_SOURCE" "$stage/data.acme"
+fi
+
+"$RGBDNS_ANAME_MATERIALIZE" "$stage/data.acme" "$stage/data.materialized"
+ln -s "$DNSSEC_POLICY" "$stage/dnssec"
+(
+    cd "$stage"
+    "$RGBDNS_DNSSEC_SIGN" data.materialized data.signed
+    mv data.signed data
+    "$RGBDNS_TINYDNS_DATA"
+    "$RGBDNS_DNSSEC_CHECK" data.cdb dnssec
+)
+
+"$RGBDNS_INSTALL" -o root -g rgbdns -m 0640 "$stage/data.cdb" "$stage/data.cdb.ready"
+"$RGBDNS_INSTALL" -o root -g rgbdns -m 0640 "$stage/data" "$stage/data.signed.ready"
+mv "$stage/data.cdb.ready" "$DNSSEC_OUTPUT"
+mv "$stage/data.signed.ready" "$state_dir/data.signed"
+
+# Make both renames durable before reporting success to systemd or RFC 2136.
+"$RGBDNS_SYNC" -d "$state_dir"

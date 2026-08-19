@@ -11,6 +11,7 @@ use std::{
     io::{Read, Write},
     net::{SocketAddr, TcpStream},
     path::{Path, PathBuf},
+    process::Command,
     str::FromStr,
     sync::{Arc, Mutex, RwLock},
     time::{SystemTime, UNIX_EPOCH},
@@ -61,7 +62,41 @@ pub struct AcmeUpdates {
     base: Zone,
     live: LiveZone,
     state_dir: PathBuf,
+    publication: Option<Publication>,
     state: Mutex<State>,
+}
+
+#[derive(Clone)]
+pub struct Publication {
+    command: PathBuf,
+    data: PathBuf,
+}
+
+impl Publication {
+    pub fn new(command: PathBuf, data: PathBuf) -> Result<Self> {
+        if !command.is_absolute() || !data.is_absolute() {
+            return Err(Error::InvalidRecord(
+                "ACME publication command and data path must be absolute".into(),
+            ));
+        }
+        Ok(Self { command, data })
+    }
+
+    fn run(
+        &self,
+        state_dir: &Path,
+        overlay: &Overlay,
+        serials: &BTreeMap<Name, u32>,
+        policies: &BTreeMap<Name, Policy>,
+    ) -> Result<Zone> {
+        let status = Command::new(&self.command).arg(state_dir).status()?;
+        if !status.success() {
+            return Err(Error::Format("ACME publication command failed"));
+        }
+        let zone = Zone::from_file(&self.data)?;
+        validate_published(&zone, overlay, serials, policies)?;
+        Ok(zone)
+    }
 }
 
 pub enum AdminAction<'a> {
@@ -152,6 +187,29 @@ pub fn list_overlay(state_dir: impl AsRef<Path>) -> Result<Vec<(Name, Vec<u8>)>>
         .collect())
 }
 
+pub fn materialize_state(
+    input: impl AsRef<Path>,
+    config: impl AsRef<Path>,
+    state_dir: impl AsRef<Path>,
+    output: impl AsRef<Path>,
+) -> Result<()> {
+    let base = Zone::from_file(input)?;
+    let policies = parse_config(&fs::read_to_string(config)?, &base)?;
+    let state_dir = state_dir.as_ref();
+    let overlay = read_overlay(&state_dir.join("acme-overlay.data"))?;
+    let serials = read_serials(&state_dir.join("acme-serials"))?;
+    validate_overlay(&overlay, &policies)?;
+    let candidate = base.with_acme_overlay(&flatten(&overlay, &policies)?, &serials)?;
+    let output = output.as_ref();
+    let temporary = output.with_extension(format!("tmp.{}", std::process::id()));
+    crate::axfr::write_zone(&candidate, output, &temporary)?;
+    FileSync::sync_directory(
+        output
+            .parent()
+            .ok_or(Error::Format("ACME materialized output has no parent"))?,
+    )
+}
+
 struct State {
     overlay: Overlay,
     serials: BTreeMap<Name, u32>,
@@ -195,18 +253,41 @@ impl AcmeUpdates {
         base: Zone,
         live: LiveZone,
     ) -> Result<Self> {
+        Self::from_file_with_publication(config, state_dir, base, live, None)
+    }
+
+    pub fn from_file_with_publication(
+        config: impl AsRef<Path>,
+        state_dir: impl AsRef<Path>,
+        base: Zone,
+        live: LiveZone,
+        publication: Option<Publication>,
+    ) -> Result<Self> {
         let policies = parse_config(&fs::read_to_string(config)?, &base)?;
         let state_dir = state_dir.as_ref().to_path_buf();
         let overlay = read_overlay(&state_dir.join("acme-overlay.data"))?;
         let serials = read_serials(&state_dir.join("acme-serials"))?;
         validate_overlay(&overlay, &policies)?;
-        let published = base.with_acme_overlay(&flatten(&overlay, &policies)?, &serials)?;
+        let signed = policies
+            .values()
+            .any(|policy| base.is_dnssec_signed(&policy.zone));
+        if signed && publication.is_none() {
+            return Err(Error::InvalidRecord(
+                "ACME updates to a signed zone require an external publication command".into(),
+            ));
+        }
+        let published = if let Some(publication) = &publication {
+            publication.run(&state_dir, &overlay, &serials, &policies)?
+        } else {
+            base.with_acme_overlay(&flatten(&overlay, &policies)?, &serials)?
+        };
         live.publish(published);
         Ok(Self {
             policies,
             base,
             live,
             state_dir,
+            publication,
             state: Mutex::new(State {
                 overlay,
                 serials,
@@ -284,13 +365,66 @@ impl AcmeUpdates {
                     &state.serials,
                     &self.policies,
                 )?;
-                self.live.publish(candidate);
-                0
+                let published = if let Some(publication) = &self.publication {
+                    publication.run(
+                        &self.state_dir,
+                        &state.overlay,
+                        &state.serials,
+                        &self.policies,
+                    )
+                } else {
+                    Ok(candidate)
+                };
+                match published {
+                    Ok(published) => {
+                        self.live.publish(published);
+                        0
+                    }
+                    Err(error) => {
+                        eprintln!("rgbdns ACME publication: {error}");
+                        2
+                    }
+                }
             }
             Err(rcode) => rcode,
         };
         signed_response(&parsed, policy, rcode, 0, &[])
     }
+}
+
+fn validate_published(
+    zone: &Zone,
+    overlay: &Overlay,
+    serials: &BTreeMap<Name, u32>,
+    policies: &BTreeMap<Name, Policy>,
+) -> Result<()> {
+    for policy in policies.values() {
+        if !zone.is_dnssec_signed(&policy.zone) {
+            return Err(Error::Format("ACME publication produced an unsigned zone"));
+        }
+        if serials
+            .get(&policy.zone)
+            .is_some_and(|serial| zone.soa_serial(&policy.zone) != Some(*serial))
+        {
+            return Err(Error::Format("ACME publication has the wrong SOA serial"));
+        }
+    }
+    for (owner, values) in overlay {
+        let found = match zone.lookup(owner, crate::RecordType::Txt) {
+            crate::zone::Lookup::Answer(records) => records
+                .into_iter()
+                .filter_map(|record| match record.data {
+                    crate::RData::Txt(chunks) => Some(chunks.into_iter().flatten().collect()),
+                    _ => None,
+                })
+                .collect::<BTreeSet<Vec<u8>>>(),
+            _ => BTreeSet::new(),
+        };
+        if !values.is_subset(&found) {
+            return Err(Error::Format("ACME publication omitted challenge data"));
+        }
+    }
+    Ok(())
 }
 
 fn parse_config(text: &str, base: &Zone) -> Result<BTreeMap<Name, Policy>> {

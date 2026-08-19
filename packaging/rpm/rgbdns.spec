@@ -66,6 +66,8 @@ install -D -m 0755 packaging/scripts/restore-role-units \
     %{buildroot}%{_prefix}/lib/rgbdns/restore-role-units
 install -D -m 0755 packaging/scripts/daily-query-report \
     %{buildroot}%{_prefix}/lib/rgbdns/daily-query-report
+install -D -m 0755 packaging/scripts/publish-dnssec \
+    %{buildroot}%{_prefix}/lib/rgbdns/publish-dnssec
 install -D -m 0755 packaging/scripts/rgbdns-setup \
     %{buildroot}%{_sbindir}/rgbdns-setup
 install -D -m 0640 packaging/default/tinydns.env \
@@ -96,6 +98,7 @@ exit 0
 
 %post
 install -d -o root -g rgbdns -m 0750 %{_sysconfdir}/rgbdns
+install -d -o root -g root -m 0700 %{_sysconfdir}/rgbdns/keys
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 chown root:rgbdns %{_sysconfdir}/rgbdns/tinydns.env
 chmod 0640 %{_sysconfdir}/rgbdns/tinydns.env
@@ -106,16 +109,16 @@ chmod 0640 %{_sysconfdir}/rgbdns/query-report.env
 %{_prefix}/lib/rgbdns/migrate-zones
 %{_prefix}/lib/rgbdns/migrate-zone-state
 %{_prefix}/lib/rgbdns/migrate-zone-drop
-%service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
+%service_add_post rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer rgbdns-dnssec-publish.service rgbdns-dnssec-publish.timer rgbdns-dnssec-check.service rgbdns-dnssec-check.timer
 if [ "$1" -gt 1 ]; then
     %{_prefix}/lib/rgbdns/restore-role-units
 fi
 
 %preun
-%service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
+%service_del_preun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer rgbdns-dnssec-publish.service rgbdns-dnssec-publish.timer rgbdns-dnssec-check.service rgbdns-dnssec-check.timer
 
 %postun
-%service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer
+%service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer rgbdns-dnssec-publish.service rgbdns-dnssec-publish.timer rgbdns-dnssec-check.service rgbdns-dnssec-check.timer
 
 %files
 %doc README.md docs/OPENSUSE.md
@@ -131,6 +134,7 @@ fi
 %{_prefix}/lib/rgbdns/migrate-zone-state
 %{_prefix}/lib/rgbdns/restore-role-units
 %{_prefix}/lib/rgbdns/daily-query-report
+%{_prefix}/lib/rgbdns/publish-dnssec
 %attr(0750,root,rgbdns) %dir %{_sysconfdir}/rgbdns
 %attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/tinydns.env
 %attr(0640,root,rgbdns) %config(noreplace) %{_sysconfdir}/rgbdns/acme-update.conf
@@ -144,6 +148,10 @@ fi
 %{_unitdir}/rgbdns-data.path
 %{_unitdir}/rgbdns-query-report.service
 %{_unitdir}/rgbdns-query-report.timer
+%{_unitdir}/rgbdns-dnssec-publish.service
+%{_unitdir}/rgbdns-dnssec-publish.timer
+%{_unitdir}/rgbdns-dnssec-check.service
+%{_unitdir}/rgbdns-dnssec-check.timer
 %{_docdir}/%{name}/examples/data
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 %{_mandir}/man1/rgbdns-acme.1%{?ext_man}

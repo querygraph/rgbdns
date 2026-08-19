@@ -14,6 +14,7 @@ options:
   --allow-nets CIDRS        enable AXFR for these secondary CIDRs
   --query-log BOOL          log each request (default: 1; use 0 to disable)
   --acme-update-config FILE enable scoped ACME RFC 2136 updates (primary only)
+  --dnssec-policy FILE      sign every primary zone using one K line per zone
   --data-drop FILE          watch an scp destination for primary rgbdns.data
   --data-drop-owner USER    require data uploads to be owned by USER
   --zone NAME               add a zone to transfer (repeatable)
@@ -70,12 +71,13 @@ zones_drop=
 zones_drop_owner=${SUDO_USER:-root}
 start=yes
 acme_update_config=
+dnssec_policy=
 
 while [ $# -gt 0 ]; do
     option=$1
     shift
     case $option in
-        --listen-ip|--port|--allow-nets|--query-log|--acme-update-config|--data|--data-drop|--data-drop-owner|--zone|--zones|--primary|--zones-drop|--zones-drop-owner)
+        --listen-ip|--port|--allow-nets|--query-log|--acme-update-config|--dnssec-policy|--data|--data-drop|--data-drop-owner|--zone|--zones|--primary|--zones-drop|--zones-drop-owner)
             [ $# -gt 0 ] || die "$option requires a value"
             value=$1
             shift
@@ -85,6 +87,7 @@ while [ $# -gt 0 ]; do
                 --allow-nets) allow_nets=$value ;;
                 --query-log) query_log=$value ;;
                 --acme-update-config) acme_update_config=$value ;;
+                --dnssec-policy) dnssec_policy=$value ;;
                 --data) data_file=$value ;;
                 --data-drop) data_drop=$value ;;
                 --data-drop-owner) data_drop_owner=$value ;;
@@ -168,6 +171,15 @@ if [ -n "$acme_update_config" ]; then
     [ "$role" = primary ] || die "ACME updates can be enabled only on a primary"
 fi
 
+if [ -n "$dnssec_policy" ]; then
+    case $dnssec_policy in
+        /*) ;;
+        *) die "DNSSEC policy path must be absolute: $dnssec_policy" ;;
+    esac
+    [ -r "$dnssec_policy" ] || die "cannot read DNSSEC policy: $dnssec_policy"
+    [ "$role" = primary ] || die "DNSSEC keys and signing policy belong only on a primary"
+fi
+
 getent group rgbdns >/dev/null 2>&1 ||
     groupadd --system rgbdns
 getent passwd rgbdns >/dev/null 2>&1 ||
@@ -175,6 +187,7 @@ getent passwd rgbdns >/dev/null 2>&1 ||
         --shell /usr/sbin/nologin --comment "rgbdns service" rgbdns
 
 install -d -o root -g rgbdns -m 0750 /etc/rgbdns
+install -d -o root -g root -m 0700 /etc/rgbdns/keys
 install -d -o rgbdns -g rgbdns -m 0750 /var/lib/rgbdns/tinydns
 set -- "IP=$listen_ip" "PORT=$port" \
     "DATA=/var/lib/rgbdns/tinydns/data.cdb" "QUERY_LOG=$query_log"
@@ -183,6 +196,11 @@ if [ -n "$acme_update_config" ]; then
     set -- "$@" "ACME_UPDATE_CONFIG=$acme_update_config" \
         "ACME_STATE_DIR=/var/lib/rgbdns/tinydns"
 fi
+if [ -n "$dnssec_policy" ] && [ -n "$acme_update_config" ]; then
+    set -- "$@" \
+        "ACME_PUBLISH_COMMAND=/usr/lib/rgbdns/publish-dnssec" \
+        "ACME_PUBLISHED_DATA=/var/lib/rgbdns/tinydns/data.cdb"
+fi
 write_env /etc/rgbdns/tinydns.env "$@"
 
 case $role in
@@ -190,6 +208,18 @@ case $role in
         [ -n "$data_file" ] || die "primary requires --data FILE"
         [ -r "$data_file" ] || die "cannot read data file: $data_file"
         install -o rgbdns -g rgbdns -m 0640 "$data_file" /var/lib/rgbdns/tinydns/data
+        if [ -n "$dnssec_policy" ]; then
+            install -o root -g rgbdns -m 0640 "$dnssec_policy" /etc/rgbdns/dnssec
+            set -- \
+                "DNSSEC_SOURCE=/var/lib/rgbdns/tinydns/data" \
+                "DNSSEC_POLICY=/etc/rgbdns/dnssec" \
+                "DNSSEC_OUTPUT=/var/lib/rgbdns/tinydns/data.cdb"
+            [ -z "$acme_update_config" ] || \
+                set -- "$@" "ACME_UPDATE_CONFIG=$acme_update_config"
+            write_env /etc/rgbdns/dnssec.env "$@"
+        else
+            rm -f /etc/rgbdns/dnssec.env /etc/rgbdns/dnssec
+        fi
         rm -f /etc/rgbdns/secondary.env /var/lib/rgbdns/tinydns/zones \
             /etc/rgbdns/zones-drop.env
         rm -rf /etc/systemd/system/rgbdns-zones.path.d
@@ -201,12 +231,16 @@ case $role in
             printf 'PathChanged=%s\n' "$data_drop"
         } >/etc/systemd/system/rgbdns-data.path.d/path.conf
         chmod 0644 /etc/systemd/system/rgbdns-data.path.d/path.conf
-        runuser -u rgbdns -- /usr/lib/rgbdns/compile-zone
+        if [ -n "$dnssec_policy" ]; then
+            /usr/lib/rgbdns/publish-dnssec /var/lib/rgbdns/tinydns
+        else
+            runuser -u rgbdns -- /usr/lib/rgbdns/compile-zone
+        fi
         ;;
     secondary)
         [ -n "$zones" ] || die "secondary requires at least one --zone NAME"
         [ -n "$primary" ] || die "secondary requires --primary ADDRESS[:PORT]"
-        rm -f /etc/rgbdns/data-drop.env
+        rm -f /etc/rgbdns/data-drop.env /etc/rgbdns/dnssec.env /etc/rgbdns/dnssec
         rm -rf /etc/systemd/system/rgbdns-data.path.d
         write_env /etc/rgbdns/secondary.env "PRIMARY=$primary"
         case $zones_drop in
@@ -243,6 +277,8 @@ if [ "$role" = secondary ]; then
     systemctl disable --now rgbdns-secondary-sync.timer >/dev/null 2>&1 || true
     systemctl disable --now rgbdns-zones.path >/dev/null 2>&1 || true
     systemctl disable --now rgbdns-data.path >/dev/null 2>&1 || true
+    systemctl disable --now rgbdns-dnssec-publish.timer >/dev/null 2>&1 || true
+    systemctl disable --now rgbdns-dnssec-check.timer >/dev/null 2>&1 || true
     systemctl start rgbdns-secondary-sync.service
     systemctl enable rgbdns-secondary-sync.timer
     systemctl enable rgbdns-zones.path
@@ -251,6 +287,13 @@ else
     systemctl disable --now rgbdns-zones.path >/dev/null 2>&1 || true
     systemctl disable --now rgbdns-data.path >/dev/null 2>&1 || true
     systemctl enable rgbdns-data.path
+    if [ -n "$dnssec_policy" ]; then
+        systemctl enable rgbdns-dnssec-publish.timer
+        systemctl enable rgbdns-dnssec-check.timer
+    else
+        systemctl disable --now rgbdns-dnssec-publish.timer >/dev/null 2>&1 || true
+        systemctl disable --now rgbdns-dnssec-check.timer >/dev/null 2>&1 || true
+    fi
 fi
 systemctl enable rgbdns-tinydns.service
 systemctl restart rgbdns-tinydns.service
@@ -259,4 +302,8 @@ if [ "$role" = secondary ]; then
     systemctl start rgbdns-zones.path
 else
     systemctl start rgbdns-data.path
+    if [ -n "$dnssec_policy" ]; then
+        systemctl start rgbdns-dnssec-publish.timer
+        systemctl start rgbdns-dnssec-check.timer
+    fi
 fi

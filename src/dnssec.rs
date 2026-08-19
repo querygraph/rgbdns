@@ -457,6 +457,41 @@ pub fn check_zone(zone: &Zone, policy: &Policy) -> Result<CheckStatus> {
     })
 }
 
+pub fn materialize_file(input: &Path, output: &Path) -> Result<Option<u64>> {
+    let zone = Zone::from_file(input)?;
+    let (mut records, anames) = zone.materialization_input()?;
+    if anames.is_empty() {
+        let temporary = sibling_temporary(output);
+        axfr::write_tinydns(&records, output, &temporary)?;
+        sync_parent(output)?;
+        return Ok(None);
+    }
+    let resolver = crate::aname::Resolver::from_system()?;
+    let mut minimum_ttl = u32::MAX;
+    for (owner, aname) in anames {
+        let mut addresses = Vec::new();
+        for record_type in [RecordType::A, RecordType::Aaaa] {
+            addresses.extend(resolver.resolve(&owner, &aname.target, record_type, aname.ttl)?);
+        }
+        if addresses.is_empty() {
+            return Err(Error::InvalidRecord(format!(
+                "ANAME target {} produced no addresses for {}",
+                aname.target, owner
+            )));
+        }
+        minimum_ttl = minimum_ttl.min(addresses.iter().map(|record| record.ttl).min().unwrap());
+        records.extend(addresses);
+    }
+    let temporary = sibling_temporary(output);
+    axfr::write_tinydns(&records, output, &temporary)?;
+    sync_parent(output)?;
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::SystemTime::UNIX_EPOCH)
+        .map_err(|_| Error::Format("system clock predates Unix epoch"))?
+        .as_secs();
+    Ok(Some(now.saturating_add(u64::from(minimum_ttl))))
+}
+
 pub fn sign_zone(zone: &Zone, policy: &Policy) -> Result<Vec<Record>> {
     if zone.has_aname_below(&policy.zone) {
         return Err(Error::InvalidRecord(format!(

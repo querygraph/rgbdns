@@ -84,6 +84,16 @@ path = "src/bin/dnssec-check.rs"
 bench = false
 
 [[bin]]
+name = "aname-materialize"
+path = "src/bin/aname-materialize.rs"
+bench = false
+
+[[bin]]
+name = "acme-materialize"
+path = "src/bin/acme-materialize.rs"
+bench = false
+
+[[bin]]
 name = "tinydns-get"
 path = "src/bin/tinydns-get.rs"
 bench = false

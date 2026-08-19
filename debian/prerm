@@ -3,6 +3,8 @@ set -e
 
 if [ "$1" = remove ]; then
     deb-systemd-invoke stop rgbdns-query-report.timer \
+        rgbdns-dnssec-publish.timer \
+        rgbdns-dnssec-check.timer \
         rgbdns-secondary-sync.timer \
         rgbdns-secondary-sync.service \
         rgbdns-tinydns.service >/dev/null || true

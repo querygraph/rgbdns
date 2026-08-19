@@ -1,0 +1,13 @@
+[Unit]
+Description=Refresh rgbdns DNSSEC signatures and materialized ANAME records
+Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=12h
+RandomizedDelaySec=10min
+Persistent=yes
+Unit=rgbdns-dnssec-publish.service
+
+[Install]
+WantedBy=timers.target

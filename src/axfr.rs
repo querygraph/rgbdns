@@ -361,6 +361,38 @@ pub fn write_tinydns(records: &[Record], output: &Path, temporary: &Path) -> Res
     Ok(())
 }
 
+pub fn write_zone(zone: &Zone, output: &Path, temporary: &Path) -> Result<()> {
+    if output == temporary {
+        return Err(Error::Format("zone output and temporary paths must differ"));
+    }
+    let (records, anames) = zone.materialization_input()?;
+    let mut file = File::create(temporary)?;
+    let write_result: Result<()> = (|| {
+        for record in &records {
+            writeln!(file, "{}", tinydns_line(record)?)?;
+        }
+        for (owner, aname) in anames {
+            writeln!(
+                file,
+                "A{}:{}:{}",
+                tinydns_name(&owner),
+                tinydns_name(&aname.target),
+                aname.ttl
+            )?;
+        }
+        file.sync_all()?;
+        Ok(())
+    })();
+    if let Err(error) = write_result {
+        drop(file);
+        let _ = fs::remove_file(temporary);
+        return Err(error);
+    }
+    drop(file);
+    fs::rename(temporary, output)?;
+    Ok(())
+}
+
 fn tinydns_line(record: &Record) -> Result<String> {
     let owner = record.name.to_string();
     let ttl = record.ttl;
