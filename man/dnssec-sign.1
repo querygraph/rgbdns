@@ -6,11 +6,14 @@ dnssec-sign \- sign tinydns source as an offline DNSSEC snapshot
 .RI [ data
 .RI [ data.signed ]]
 .SH DESCRIPTION
-Reads one policy line per authoritative zone from
+Reads one disposition line per authoritative zone from
 .I dnssec
-in the working directory and atomically writes signed tinydns text. It adds
-DNSKEY, NSEC, and RRSIG records and rejects unmaterialized ANAME, conditional
-records, expiring records, pre-existing DNSSEC data, and policy/zone mismatch.
+in the working directory. A K line signs its zone and a Uzone line explicitly
+preserves an unsigned zone. The command atomically writes tinydns text, adds
+DNSKEY, NSEC, and RRSIG records, and rejects unmaterialized ANAME, conditional
+or expiring records that cannot be represented by this diagnostic text export,
+pre-existing signing data, and policy/zone mismatch. Use dnssec-data to retain
+qualified records in U zones directly in CDB form.
 .SH EXIT STATUS
 Zero on success, 100 for usage errors, and 111 for operational failures.
 .SH SEE ALSO

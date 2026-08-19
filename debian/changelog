@@ -5,6 +5,8 @@ rgbdns (0.6.0) unstable; urgency=medium
     authorities and transfer signed snapshots over standard AXFR.
   * Compose ACME overlays and ANAME materialization through atomic publication
     utilities, with cryptographic monitoring and last-known-good activation.
+  * Support fail-closed mixed CDBs with explicit signed K and unsigned U zone
+    dispositions while preserving unsigned ANAME and qualified data.
 
  -- Alexy Khrabrov <deliverable@gmail.com>  Tue, 18 Aug 2026 00:00:00 -0700
 

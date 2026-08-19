@@ -42,7 +42,9 @@ to ordinary A/AAAA records, `dnssec-sign` adds DNSKEY/NSEC/RRSIG records,
 `dnssec-data` compiles atomically, `dnssec-ds` prints the parent DS, and
 `dnssec-check` verifies every signature and its remaining lifetime. `tinydns`
 and all secondaries remain keyless; standard AXFR carries the finished DNSSEC
-records. See [`docs/DNSSEC.md`](docs/DNSSEC.md).
+records. A `K` policy line signs a zone and a `U` line explicitly preserves an
+unsigned zone, so one CDB can safely serve both. See
+[`docs/DNSSEC.md`](docs/DNSSEC.md).
 
 ## Related private services
 

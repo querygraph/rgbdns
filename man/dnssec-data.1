@@ -12,6 +12,9 @@ and compiles the result directly to a CDB. It reads
 .I dnssec
 in the working directory and replaces the destination only after the new CDB
 has been written, synchronized, and successfully reloaded.
+.PP
+K zones are signed; explicit U zones retain their unsigned records, locations,
+cutoffs, and ANAME directives.
 .SH EXIT STATUS
 Zero on success, 100 for usage errors, and 111 for operational failures.
 .SH SEE ALSO

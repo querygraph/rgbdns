@@ -31,8 +31,16 @@ Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600
 
 The fields are zone, absolute key path, algorithm, signature validity, refresh
 window, and inception skew. Algorithm 13 is ECDSA P-256/SHA-256. Put exactly
-one `K` line in the policy for every authoritative zone in the source file.
-The signer fails closed if a zone is missing or duplicated.
+one disposition line in the policy for every authoritative zone in the source
+file. `K` signs a zone; `Uzone` explicitly leaves one unsigned:
+
+```text
+Ulegacy.example.
+```
+
+The signer fails closed if a zone is missing, duplicated, or both `K` and `U`.
+This permits a deliberate mixed signed/unsigned CDB without making omission
+mean “unsigned.”
 
 Keep a recoverable encrypted backup of the key. Key replacement is not an
 implicit file operation: version 0.6.0 deliberately supports one active
@@ -46,7 +54,7 @@ The individual transformations can be run without systemd:
 ```sh
 acme-materialize data /etc/rgbdns/acme-update.conf \
   /var/lib/rgbdns/tinydns data.acme
-aname-materialize data.acme data.materialized
+aname-materialize data.acme data.materialized dnssec
 ln -s /etc/rgbdns/dnssec dnssec
 dnssec-sign data.materialized data.signed
 dnssec-data data.materialized data.cdb
@@ -54,10 +62,11 @@ dnssec-check data.cdb /etc/rgbdns/dnssec
 dnssec-ds 'Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600'
 ```
 
-The first three commands expose each text stage for inspection. `dnssec-data`
-is the shorter sign-and-compile transform when the intermediate signed text is
-not needed. Both signing commands read the one-line policy from `dnssec` in
-their working directory.
+With the third argument, `aname-materialize` resolves ANAME only in `K` zones
+and preserves ANAME directives in `U` zones. The first three commands expose
+each text stage for inspection. `dnssec-data` is the shorter sign-and-compile
+transform when the intermediate signed text is not needed. Both signing
+commands read the one-line policy from `dnssec` in their working directory.
 Every output is built beside its destination and renamed only after a successful
 write. `dnssec-check` cryptographically verifies every authoritative RRset,
 checks the NSEC chain and validity interval, and emits:
@@ -93,11 +102,12 @@ timer state remains consistent.
 ## ANAME and ACME
 
 A signed answer cannot be synthesized after signing. `aname-materialize`
-therefore resolves every private `Aowner:target:ttl-cap` directive first and
-writes ordinary A/AAAA records with capped TTLs. The scheduled publisher
-refreshes them before signatures expire. Signed AXFR contains the materialized
-addresses and signatures, not a requirement for the secondary to resolve the
-target.
+therefore resolves private `Aowner:target:ttl-cap` directives in `K` zones and
+writes ordinary A/AAAA records with capped TTLs. It preserves the directives in
+`U` zones, which continue using the original runtime resolver. The scheduled
+publisher refreshes signed materializations before signatures expire. Signed
+AXFR contains the materialized addresses and signatures, not a requirement for
+the secondary to resolve the target.
 
 For ACME, delegation of `_acme-challenge` to a small unsigned validation zone
 is simplest. Inline updates to a signed zone require the packaged synchronous
@@ -130,7 +140,11 @@ negative caches, and only then remove local policy and republish unsigned data.
 ## Constraints
 
 - Location-dependent (`%`) or TAI64 activation/expiration data cannot be
-  signed because one owner/type must identify one stable RRset.
+  signed because one owner/type must identify one stable RRset. `dnssec-data`
+  retains such data in `U` zones. The text-only `dnssec-sign` export cannot.
+- If a `K` zone contains ANAME, the current text materialization stage requires
+  all zones in that source to be free of location and time qualifiers. Without
+  ANAME in a `K` zone, mixed-zone materialization is a byte-for-byte pass-through.
 - ANAME must be materialized before signing.
 - Pre-existing DNSKEY, RRSIG, NSEC, or NSEC3 records in source are rejected.
 - NSEC is intentionally used instead of NSEC3: it is smaller, simpler, and

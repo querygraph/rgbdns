@@ -175,6 +175,7 @@ fi
 - Add opt-in offline authoritative DNSSEC signing and denial proofs
 - Compose ACME and ANAME inputs into verified atomic signed snapshots
 - Keep authority and secondaries keyless; transfer DNSSEC over standard AXFR
+- Support explicit mixed signed and unsigned zones in one CDB
 
 * Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.1-1
 - Avoid requiring the optional hostname utility for report delivery

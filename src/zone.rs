@@ -244,12 +244,16 @@ impl Zone {
     pub(crate) fn has_anames(&self) -> bool {
         !self.anames.is_empty()
     }
-    pub(crate) fn has_aname_below(&self, name: &Name) -> bool {
-        self.anames.keys().any(|owner| owner.is_subdomain_of(name))
+    pub(crate) fn has_aname_in_zone(&self, name: &Name) -> bool {
+        self.transfer_anames(name)
+            .is_some_and(|anames| !anames.is_empty())
     }
-    pub(crate) fn has_qualified_data_below(&self, name: &Name) -> bool {
+    pub(crate) fn has_qualified_data_in_zone(&self, name: &Name) -> bool {
         self.records.iter().any(|(owner, records)| {
             owner.is_subdomain_of(name)
+                && !self.authoritative.iter().any(|child| {
+                    child != name && child.is_subdomain_of(name) && owner.is_subdomain_of(child)
+                })
                 && records.iter().enumerate().any(|(index, _)| {
                     let metadata = self.metadata[owner][index];
                     metadata.location.is_some() || metadata.cutoff != 0

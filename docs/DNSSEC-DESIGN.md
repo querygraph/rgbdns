@@ -43,10 +43,12 @@ manager. Every stage can be invoked and tested independently.
 
 ## One-line policy
 
-The file named `dnssec` contains comments, blank lines, and one line per key:
+The file named `dnssec` contains comments, blank lines, and exactly one
+disposition line per authoritative zone:
 
 ```text
 Kexample.com:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600
+Ulegacy.example
 ```
 
 Fields are colon-delimited and contain no whitespace:
@@ -62,6 +64,12 @@ Kzone:keyfile:algorithm:validity:refresh:inception-skew
 - `refresh` is the minimum remaining lifetime accepted by `dnssec-check`.
 - `inception-skew` moves signature inception into the past to tolerate clock
   skew.
+
+`Uzone` explicitly retains a zone as unsigned. It has no other fields and does
+not weaken coverage checking: every authoritative zone must have exactly one
+`K` or `U` line, duplicate or missing dispositions fail publication, and a
+zone marked `U` must contain no stale DNSKEY, RRSIG, NSEC, or NSEC3 signing
+records.
 
 The initial release uses one combined signing key per zone. Multiple active
 `K` lines for a zone are reserved for an explicit rollover release; accepting
@@ -88,12 +96,12 @@ The SOA serial belongs to the input producer. Signing does not invent a second
 serial sequence. A byte-identical input, policy, key, and signing instant
 produce the same RRset content (ECDSA signature bytes need not be reproducible).
 
-Every authoritative zone in one source snapshot must have exactly one `K`
-line. This fail-closed rule prevents an accidentally omitted policy line from
-silently publishing an insecure zone. Unscoped glue outside those zones passes
-through unchanged. DNSSEC must not be enabled for a zone whose answer varies
-by client location or time: one signed owner/type must always identify one
-RRset.
+Every authoritative zone in one source snapshot must have exactly one `K` or
+`U` line. This fail-closed rule prevents an accidentally omitted policy line
+from silently changing security state. Unsigned zones, their ANAME directives,
+qualified records, and unscoped glue pass through the CDB compiler unchanged.
+DNSSEC must not be enabled for a zone whose answer varies by client location or
+time: one signed owner/type must always identify one RRset.
 
 ## Serving contract
 
@@ -117,7 +125,7 @@ A signed snapshot cannot contain answers synthesized after signing. The
 publication pipeline is therefore explicit:
 
 ```text
-source -> acme overlay -> aname materialize -> dnssec-sign -> tinydns-data -> rename
+source -> acme overlay -> selected ANAME materialize -> dnssec-data -> verify -> rename
 ```
 
 Each arrow is a program reading a stable input and producing a new sibling
@@ -131,11 +139,12 @@ publication command synchronously; an update is acknowledged only after the
 new signed CDB is durable. The command is replaceable and receives paths, not
 private key bytes.
 
-For ANAME, a separate materializer resolves targets, enforces the configured
-TTL ceiling, writes ordinary address records, and records their earliest
-expiry. The signing/publishing schedule must refresh before that expiry.
-Secondaries receive the materialized records and their signatures; they do not
-resolve the target independently for a signed zone.
+For ANAME, a separate materializer resolves targets only inside `K` zones,
+enforces the configured TTL ceiling, writes ordinary address records, and
+records their earliest expiry. ANAME directives in `U` zones remain ordinary
+runtime rgbdns ANAME data. The signing/publishing schedule must refresh before
+that expiry. Secondaries receive the materialized records and their signatures;
+they do not resolve the target independently for a signed zone.
 
 ## Key lifecycle
 

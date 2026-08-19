@@ -47,7 +47,8 @@ Configured primary-data scp drop path and required upload owner.
 Tinydns-format zone source.
 .TP
 .I /etc/rgbdns/dnssec
-Optional one-line-per-zone DNSSEC signing policy. With this file and
+Optional one-line-per-zone DNSSEC disposition policy. A K line signs its zone;
+a U line explicitly retains an unsigned zone. With this file and
 .I /etc/rgbdns/dnssec.env
 both absent, rgbdns retains its ordinary djbdns-compatible compilation and
 serving behavior.

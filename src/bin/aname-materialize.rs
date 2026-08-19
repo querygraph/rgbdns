@@ -3,13 +3,18 @@ use std::{path::Path, process::ExitCode};
 
 fn main() -> ExitCode {
     let arguments = std::env::args().skip(1).collect::<Vec<_>>();
-    if arguments.len() > 2 {
-        eprintln!("usage: aname-materialize [data [data.materialized]]");
+    if arguments.len() > 3 {
+        eprintln!("usage: aname-materialize [data [data.materialized [dnssec]]]");
         return ExitCode::from(100);
     }
     let input = Path::new(arguments.first().map_or("data", String::as_str));
     let output = Path::new(arguments.get(1).map_or("data.materialized", String::as_str));
-    match dnssec::materialize_file(input, output) {
+    let result = if let Some(policy) = arguments.get(2) {
+        dnssec::materialize_policy_file(input, Path::new(policy), output)
+    } else {
+        dnssec::materialize_file(input, output)
+    };
+    match result {
         Ok(Some(expires)) => {
             println!("{expires}\tok");
             ExitCode::SUCCESS

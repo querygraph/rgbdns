@@ -37,7 +37,10 @@ mod unix {
             directory.join("data"),
             "Zexample:ns.example:hostmaster.example:7:3600:600:86400:300:300\n\
              &example:192.0.2.53:ns.example:300\n\
-             +www.example:192.0.2.1:300\n",
+             +www.example:192.0.2.1:300\n\
+             Zlegacy.example:ns.legacy.example:hostmaster.legacy.example:8:3600:600:86400:300:300\n\
+             &legacy.example:192.0.2.54:ns.legacy.example:300\n\
+             Alegacy.example:target.example:120\n",
         )
         .unwrap();
         let key = directory.join("example.pk8");
@@ -46,7 +49,9 @@ mod unix {
             &["example", key.to_str().unwrap()],
             &directory,
         );
-        fs::write(directory.join("dnssec"), keygen.stdout).unwrap();
+        let mut policy = keygen.stdout;
+        policy.extend_from_slice(b"Ulegacy.example.\n");
+        fs::write(directory.join("dnssec"), policy).unwrap();
 
         run(
             env!("CARGO_BIN_EXE_dnssec-sign"),
@@ -61,6 +66,7 @@ mod unix {
         assert!(String::from_utf8(check.stdout).unwrap().ends_with("\tok\n"));
 
         let signed = fs::read_to_string(directory.join("data.signed")).unwrap();
+        assert!(signed.contains("Alegacy.example:target.example:120"));
         fs::write(
             directory.join("data.tampered"),
             signed.replace("192.0.2.1", "192.0.2.2"),

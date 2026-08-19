@@ -14,7 +14,7 @@ options:
   --allow-nets CIDRS        enable AXFR for these secondary CIDRs
   --query-log BOOL          log each request (default: 1; use 0 to disable)
   --acme-update-config FILE enable scoped ACME RFC 2136 updates (primary only)
-  --dnssec-policy FILE      sign every primary zone using one K line per zone
+  --dnssec-policy FILE      apply one explicit K (signed) or U (unsigned) line per zone
   --data-drop FILE          watch an scp destination for primary rgbdns.data
   --data-drop-owner USER    require data uploads to be owned by USER
   --zone NAME               add a zone to transfer (repeatable)

@@ -126,6 +126,61 @@ pub struct Policy {
     pub inception_skew: u64,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PolicySet {
+    pub signing: Vec<Policy>,
+    pub unsigned: BTreeSet<Name>,
+}
+
+impl PolicySet {
+    fn covered(&self) -> BTreeSet<Name> {
+        self.signing
+            .iter()
+            .map(|policy| policy.zone.clone())
+            .chain(self.unsigned.iter().cloned())
+            .collect()
+    }
+
+    fn validate_zone_coverage(&self, zone: &Zone) -> Result<()> {
+        let configured = self.covered();
+        let authoritative = zone.authoritative_names();
+        if configured == authoritative {
+            return Ok(());
+        }
+        let missing = authoritative
+            .difference(&configured)
+            .map(ToString::to_string)
+            .collect::<Vec<_>>();
+        let unknown = configured
+            .difference(&authoritative)
+            .map(ToString::to_string)
+            .collect::<Vec<_>>();
+        Err(Error::InvalidRecord(format!(
+            "DNSSEC policy and authoritative zones differ (missing: {}; unknown: {})",
+            if missing.is_empty() {
+                "none".into()
+            } else {
+                missing.join(",")
+            },
+            if unknown.is_empty() {
+                "none".into()
+            } else {
+                unknown.join(",")
+            }
+        )))
+    }
+
+    fn signs_owner(&self, owner: &Name) -> bool {
+        self.signing
+            .iter()
+            .map(|policy| (&policy.zone, true))
+            .chain(self.unsigned.iter().map(|zone| (zone, false)))
+            .filter(|(zone, _)| owner.is_subdomain_of(zone))
+            .max_by_key(|(zone, _)| zone.labels().count())
+            .is_some_and(|(_, signed)| signed)
+    }
+}
+
 impl Policy {
     pub fn parse(line: &str) -> Result<Self> {
         let fields = line
@@ -190,32 +245,50 @@ impl Policy {
     }
 }
 
-pub fn read_policies(path: impl AsRef<Path>) -> Result<Vec<Policy>> {
+pub fn read_policies(path: impl AsRef<Path>) -> Result<PolicySet> {
     let text = fs::read_to_string(path)?;
-    let mut policies = Vec::new();
+    let mut signing = Vec::new();
+    let mut unsigned = BTreeSet::new();
+    let mut covered = BTreeSet::new();
     for (index, raw) in text.lines().enumerate() {
         let line = raw.trim();
         if line.is_empty() || line.starts_with('#') {
             continue;
         }
-        let policy = Policy::parse(line).map_err(|error| {
-            Error::InvalidRecord(format!("DNSSEC policy line {}: {error}", index + 1))
-        })?;
-        if policies
-            .iter()
-            .any(|existing: &Policy| existing.zone == policy.zone)
-        {
+        let (zone, policy) = if let Some(name) = line.strip_prefix('U') {
+            if name.is_empty() || name.contains(':') {
+                return Err(Error::InvalidRecord(format!(
+                    "DNSSEC policy line {}: unsigned policy is Uzone",
+                    index + 1
+                )));
+            }
+            let zone = name.parse::<Name>().map_err(|error| {
+                Error::InvalidRecord(format!("DNSSEC policy line {}: {error}", index + 1))
+            })?;
+            (zone, None)
+        } else {
+            let policy = Policy::parse(line).map_err(|error| {
+                Error::InvalidRecord(format!("DNSSEC policy line {}: {error}", index + 1))
+            })?;
+            (policy.zone.clone(), Some(policy))
+        };
+        if !covered.insert(zone.clone()) {
             return Err(Error::InvalidRecord(format!(
-                "multiple active DNSSEC keys for {} are not supported",
-                policy.zone
+                "multiple DNSSEC dispositions for {zone} are not supported"
             )));
         }
-        policies.push(policy);
+        if let Some(policy) = policy {
+            signing.push(policy);
+        } else {
+            unsigned.insert(zone);
+        }
     }
-    if policies.is_empty() {
-        return Err(Error::InvalidRecord("DNSSEC policy is empty".into()));
+    if signing.is_empty() {
+        return Err(Error::InvalidRecord(
+            "DNSSEC policy has no signed zones".into(),
+        ));
     }
-    Ok(policies)
+    Ok(PolicySet { signing, unsigned })
 }
 
 #[cfg(unix)]
@@ -256,24 +329,16 @@ pub fn generate_key(_zone: &Name, _path: &Path) -> Result<Policy> {
 pub fn sign_file(input: &Path, policy_file: &Path, output: &Path) -> Result<()> {
     let policies = read_policies(policy_file)?;
     let zone = Zone::from_file(input)?;
-    let records = sign_snapshot(&zone, &policies)?;
+    let signed = build_snapshot(&zone, &policies)?;
     let temporary = sibling_temporary(output);
-    axfr::write_tinydns(&records, output, &temporary)?;
+    axfr::write_zone(&signed, output, &temporary)?;
     sync_parent(output)
 }
 
 pub fn compile_file(input: &Path, policy_file: &Path, output: &Path) -> Result<()> {
     let policies = read_policies(policy_file)?;
     let source = Zone::from_file(input)?;
-    let records = sign_snapshot(&source, &policies)?;
-    let signed = Zone::from_compiled_records(
-        records
-            .into_iter()
-            .map(|record| (record, crate::zone::RecordMetadata::default()))
-            .collect(),
-        Vec::new(),
-        Vec::new(),
-    );
+    let signed = build_snapshot(&source, &policies)?;
     let temporary = sibling_temporary(output);
     if let Err(error) = crate::cdb::compile(&signed, &temporary) {
         let _ = fs::remove_file(&temporary);
@@ -286,39 +351,47 @@ pub fn compile_file(input: &Path, policy_file: &Path, output: &Path) -> Result<(
 }
 
 pub fn sign_snapshot(zone: &Zone, policies: &[Policy]) -> Result<Vec<Record>> {
-    let configured = policies
-        .iter()
-        .map(|policy| policy.zone.clone())
-        .collect::<BTreeSet<_>>();
+    let policy_set = PolicySet {
+        signing: policies.to_vec(),
+        unsigned: BTreeSet::new(),
+    };
+    policy_set.validate_zone_coverage(zone)?;
+    sign_zones(zone, policies)
+}
+
+fn sign_zones(zone: &Zone, policies: &[Policy]) -> Result<Vec<Record>> {
     let authoritative = zone.authoritative_names();
-    if configured != authoritative {
-        let missing = authoritative
-            .difference(&configured)
-            .map(ToString::to_string)
-            .collect::<Vec<_>>();
-        let unknown = configured
-            .difference(&authoritative)
-            .map(ToString::to_string)
-            .collect::<Vec<_>>();
-        return Err(Error::InvalidRecord(format!(
-            "DNSSEC policy and authoritative zones differ (missing: {}; unknown: {})",
-            if missing.is_empty() {
-                "none".into()
-            } else {
-                missing.join(",")
-            },
-            if unknown.is_empty() {
-                "none".into()
-            } else {
-                unknown.join(",")
-            }
-        )));
-    }
     let mut records = zone.records_outside(&authoritative);
     for policy in policies {
         records.extend(sign_zone(zone, policy)?);
     }
     Ok(records)
+}
+
+fn build_snapshot(zone: &Zone, policies: &PolicySet) -> Result<Zone> {
+    policies.validate_zone_coverage(zone)?;
+    let mut records = zone
+        .record_entries()
+        .filter(|(record, _)| !policies.signs_owner(&record.name))
+        .map(|(record, metadata)| (record.clone(), metadata))
+        .collect::<Vec<_>>();
+    for policy in &policies.signing {
+        records.extend(
+            sign_zone(zone, policy)?
+                .into_iter()
+                .map(|record| (record, crate::zone::RecordMetadata::default())),
+        );
+    }
+    Ok(Zone::from_compiled_records(
+        records,
+        zone.location_entries()
+            .map(|(prefix, location)| (prefix.to_vec(), location))
+            .collect(),
+        zone.aname_entries()
+            .filter(|(owner, _)| !policies.signs_owner(owner))
+            .map(|(owner, aname)| (owner.clone(), aname.clone()))
+            .collect(),
+    ))
 }
 
 pub fn ds_line(policy: &Policy) -> Result<String> {
@@ -349,16 +422,24 @@ pub fn ds_line(policy: &Policy) -> Result<String> {
 pub fn check_file(input: &Path, policy_file: &Path) -> Result<Vec<CheckStatus>> {
     let policies = read_policies(policy_file)?;
     let zone = Zone::from_file(input)?;
-    let configured = policies
-        .iter()
-        .map(|policy| policy.zone.clone())
-        .collect::<BTreeSet<_>>();
-    if zone.authoritative_names() != configured {
-        return Err(Error::InvalidRecord(
-            "signed snapshot zones do not match DNSSEC policy".into(),
-        ));
+    policies.validate_zone_coverage(&zone)?;
+    for unsigned in &policies.unsigned {
+        let records = zone
+            .transfer(unsigned)
+            .ok_or_else(|| Error::InvalidRecord(format!("{unsigned} is not authoritative")))?;
+        if records.iter().any(|record| {
+            matches!(
+                record.rr_type(),
+                RecordType::Dnskey | RecordType::Rrsig | RecordType::Nsec | RecordType::Unknown(50)
+            )
+        }) {
+            return Err(Error::InvalidRecord(format!(
+                "explicitly unsigned zone {unsigned} contains DNSSEC signing records"
+            )));
+        }
     }
     policies
+        .signing
         .iter()
         .map(|policy| check_zone(&zone, policy))
         .collect()
@@ -530,33 +611,82 @@ fn canonical_name_cmp(left: &Name, right: &Name) -> Ordering {
 }
 
 pub fn materialize_file(input: &Path, output: &Path) -> Result<Option<u64>> {
+    materialize_file_with_policies(input, None, output)
+}
+
+pub fn materialize_policy_file(
+    input: &Path,
+    policy_file: &Path,
+    output: &Path,
+) -> Result<Option<u64>> {
+    let policies = read_policies(policy_file)?;
+    materialize_file_with_policies(input, Some(&policies), output)
+}
+
+fn materialize_file_with_policies(
+    input: &Path,
+    policies: Option<&PolicySet>,
+    output: &Path,
+) -> Result<Option<u64>> {
     let zone = Zone::from_file(input)?;
+    if let Some(policies) = policies {
+        policies.validate_zone_coverage(&zone)?;
+        if !policies
+            .signing
+            .iter()
+            .any(|policy| zone.has_aname_in_zone(&policy.zone))
+        {
+            atomic_copy(input, output)?;
+            return Ok(None);
+        }
+    }
     let (mut records, anames) = zone.materialization_input()?;
-    if anames.is_empty() {
-        let temporary = sibling_temporary(output);
-        axfr::write_tinydns(&records, output, &temporary)?;
-        sync_parent(output)?;
+    let mut retained = Vec::new();
+    let mut selected = Vec::new();
+    for (owner, aname) in anames {
+        if policies.is_none_or(|policies| policies.signs_owner(&owner)) {
+            selected.push((owner, aname));
+        } else {
+            retained.push((owner, aname));
+        }
+    }
+    let mut minimum_ttl = u32::MAX;
+    if !selected.is_empty() {
+        let resolver = crate::aname::Resolver::from_system()?;
+        for (owner, aname) in selected {
+            let mut addresses = Vec::new();
+            for record_type in [RecordType::A, RecordType::Aaaa] {
+                addresses.extend(resolver.resolve(
+                    &owner,
+                    &aname.target,
+                    record_type,
+                    aname.ttl,
+                )?);
+            }
+            if addresses.is_empty() {
+                return Err(Error::InvalidRecord(format!(
+                    "ANAME target {} produced no addresses for {}",
+                    aname.target, owner
+                )));
+            }
+            minimum_ttl = minimum_ttl.min(addresses.iter().map(|record| record.ttl).min().unwrap());
+            records.extend(addresses);
+        }
+    }
+    let materialized = Zone::from_compiled_records(
+        records
+            .into_iter()
+            .map(|record| (record, crate::zone::RecordMetadata::default()))
+            .collect(),
+        Vec::new(),
+        retained,
+    );
+    let temporary = sibling_temporary(output);
+    axfr::write_zone(&materialized, output, &temporary)?;
+    sync_parent(output)?;
+    if minimum_ttl == u32::MAX {
         return Ok(None);
     }
-    let resolver = crate::aname::Resolver::from_system()?;
-    let mut minimum_ttl = u32::MAX;
-    for (owner, aname) in anames {
-        let mut addresses = Vec::new();
-        for record_type in [RecordType::A, RecordType::Aaaa] {
-            addresses.extend(resolver.resolve(&owner, &aname.target, record_type, aname.ttl)?);
-        }
-        if addresses.is_empty() {
-            return Err(Error::InvalidRecord(format!(
-                "ANAME target {} produced no addresses for {}",
-                aname.target, owner
-            )));
-        }
-        minimum_ttl = minimum_ttl.min(addresses.iter().map(|record| record.ttl).min().unwrap());
-        records.extend(addresses);
-    }
-    let temporary = sibling_temporary(output);
-    axfr::write_tinydns(&records, output, &temporary)?;
-    sync_parent(output)?;
     let now = std::time::SystemTime::now()
         .duration_since(std::time::SystemTime::UNIX_EPOCH)
         .map_err(|_| Error::Format("system clock predates Unix epoch"))?
@@ -564,14 +694,28 @@ pub fn materialize_file(input: &Path, output: &Path) -> Result<Option<u64>> {
     Ok(Some(now.saturating_add(u64::from(minimum_ttl))))
 }
 
+fn atomic_copy(input: &Path, output: &Path) -> Result<()> {
+    let temporary = sibling_temporary(output);
+    if let Err(error) = (|| -> Result<()> {
+        fs::copy(input, &temporary)?;
+        File::open(&temporary)?.sync_all()?;
+        fs::rename(&temporary, output)?;
+        sync_parent(output)
+    })() {
+        let _ = fs::remove_file(&temporary);
+        return Err(error);
+    }
+    Ok(())
+}
+
 pub fn sign_zone(zone: &Zone, policy: &Policy) -> Result<Vec<Record>> {
-    if zone.has_aname_below(&policy.zone) {
+    if zone.has_aname_in_zone(&policy.zone) {
         return Err(Error::InvalidRecord(format!(
             "signed zone {} contains an unmaterialized ANAME",
             policy.zone
         )));
     }
-    if zone.has_qualified_data_below(&policy.zone) {
+    if zone.has_qualified_data_in_zone(&policy.zone) {
         return Err(Error::InvalidRecord(format!(
             "signed zone {} contains location-dependent or expiring data",
             policy.zone
@@ -724,6 +868,121 @@ mod tests {
         assert!(Policy::parse("Kexample:key:13:1209600:86400:3600").is_err());
         assert!(Policy::parse("Kexample:/key:15:1209600:86400:3600").is_err());
         assert!(Policy::parse("Kexample:/key:13:86400:86400:3600").is_err());
+    }
+
+    #[test]
+    fn mixed_policy_requires_one_explicit_disposition_per_zone() {
+        let directory = std::env::temp_dir().join(format!(
+            "rgbdns-dnssec-policy-{}-{}",
+            std::process::id(),
+            std::thread::current().name().unwrap_or("test")
+        ));
+        fs::create_dir_all(&directory).unwrap();
+        let policy_file = directory.join("dnssec");
+        fs::write(
+            &policy_file,
+            "Ksigned.example.:/key:13:1209600:86400:3600\nUlegacy.example.\n",
+        )
+        .unwrap();
+        let policies = read_policies(&policy_file).unwrap();
+        assert_eq!(policies.signing.len(), 1);
+        assert!(
+            policies
+                .unsigned
+                .contains(&"legacy.example".parse().unwrap())
+        );
+
+        fs::write(
+            &policy_file,
+            "Ksigned.example.:/key:13:1209600:86400:3600\nUsigned.example.\n",
+        )
+        .unwrap();
+        assert!(read_policies(&policy_file).is_err());
+        fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[test]
+    fn mixed_snapshot_signs_k_zones_and_preserves_u_zone_aname() {
+        let directory = std::env::temp_dir().join(format!(
+            "rgbdns-dnssec-mixed-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        fs::create_dir_all(&directory).unwrap();
+        let signed_name: Name = "signed.example".parse().unwrap();
+        let unsigned_name: Name = "legacy.example".parse().unwrap();
+        let policy = generate_key(&signed_name, &directory.join("signed.pk8")).unwrap();
+        let policies = PolicySet {
+            signing: vec![policy.clone()],
+            unsigned: BTreeSet::from([unsigned_name.clone()]),
+        };
+        let source = Zone::parse(
+            "Zsigned.example:ns.signed.example:hostmaster.signed.example:7:3600:600:86400:300:300\n\
+             &signed.example:192.0.2.53:ns.signed.example:300\n\
+             +www.signed.example:192.0.2.1:300\n\
+             Zlegacy.example:ns.legacy.example:hostmaster.legacy.example:8:3600:600:86400:300:300\n\
+             &legacy.example:192.0.2.54:ns.legacy.example:300\n\
+             Alegacy.example:target.example:120\n\
+             %aa:192.0.2\n\
+             +geo.legacy.example:192.0.2.9:60::aa\n\
+             +geo.legacy.example:198.51.100.9:60\n",
+        )
+        .unwrap();
+        let snapshot = build_snapshot(&source, &policies).unwrap();
+        assert!(snapshot.is_dnssec_signed(&signed_name));
+        assert!(!snapshot.is_dnssec_signed(&unsigned_name));
+        assert_eq!(
+            snapshot.aname(&unsigned_name).unwrap().target,
+            "target.example".parse().unwrap()
+        );
+        assert!(matches!(
+            snapshot.lookup_from(
+                &"geo.legacy.example".parse().unwrap(),
+                RecordType::A,
+                "192.0.2.44".parse().unwrap()
+            ),
+            crate::zone::Lookup::Answer(records)
+                if records.iter().any(|record| record.data == RData::A("192.0.2.9".parse().unwrap()))
+        ));
+        check_zone(&snapshot, &policy).unwrap();
+
+        let source_file = directory.join("data");
+        let policy_file = directory.join("dnssec");
+        let materialized = directory.join("data.materialized");
+        fs::write(
+            &source_file,
+            "Zsigned.example:ns.signed.example:hostmaster.signed.example:7:3600:600:86400:300:300\n\
+             &signed.example:192.0.2.53:ns.signed.example:300\n\
+             Zlegacy.example:ns.legacy.example:hostmaster.legacy.example:8:3600:600:86400:300:300\n\
+             &legacy.example:192.0.2.54:ns.legacy.example:300\n\
+             Alegacy.example:target.example:120\n\
+             %aa:192.0.2\n\
+             +geo.legacy.example:192.0.2.9:60::aa\n",
+        )
+        .unwrap();
+        fs::write(
+            &policy_file,
+            format!("{}\nUlegacy.example.\n", policies.signing[0].line()),
+        )
+        .unwrap();
+        assert_eq!(
+            materialize_policy_file(&source_file, &policy_file, &materialized).unwrap(),
+            None
+        );
+        assert_eq!(
+            fs::read(&source_file).unwrap(),
+            fs::read(&materialized).unwrap()
+        );
+
+        let incomplete = PolicySet {
+            signing: vec![policy],
+            unsigned: BTreeSet::new(),
+        };
+        assert!(build_snapshot(&source, &incomplete).is_err());
+        fs::remove_dir_all(directory).unwrap();
     }
 
     #[test]

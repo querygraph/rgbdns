@@ -15,6 +15,8 @@ versioning once its djbdns-compatible public surface stabilizes.
 - Tinydns-style `dnssec-keygen`, `dnssec-sign`, `dnssec-data`, `dnssec-ds`,
   `dnssec-check`, `aname-materialize`, and `acme-materialize` utilities with
   line-oriented configuration and atomic last-known-good publication.
+- Fail-closed mixed snapshots: `K` lines select signed zones and explicit `U`
+  lines retain unsigned zones, including their ANAME and qualified data.
 - Root-only signing and unprivileged monitoring timers. DNSSEC remains disabled
   unless an operator supplies a policy; the original rgbdns path is unchanged.
 

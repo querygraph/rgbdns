@@ -10,16 +10,14 @@ printf '%s\n' 'last good' >"$test_dir/state/data.cdb"
 
 cat >"$test_dir/bin/aname" <<'EOF'
 #!/bin/sh
+test "$#" -eq 3
+test -r "$3"
 cp "$1" "$2"
 EOF
-cat >"$test_dir/bin/sign" <<'EOF'
+cat >"$test_dir/bin/dnssec-data" <<'EOF'
 #!/bin/sh
 cp "$1" "$2"
 printf '%s\n' signed >>"$2"
-EOF
-cat >"$test_dir/bin/compile" <<'EOF'
-#!/bin/sh
-cp data data.cdb
 EOF
 cat >"$test_dir/bin/check" <<'EOF'
 #!/bin/sh
@@ -41,8 +39,7 @@ run_publish() {
     DNSSEC_POLICY=$test_dir/dnssec \
     DNSSEC_OUTPUT=$test_dir/state/data.cdb \
     RGBDNS_ANAME_MATERIALIZE=$test_dir/bin/aname \
-    RGBDNS_DNSSEC_SIGN=$test_dir/bin/sign \
-    RGBDNS_TINYDNS_DATA=$test_dir/bin/compile \
+    RGBDNS_DNSSEC_DATA=$test_dir/bin/dnssec-data \
     RGBDNS_DNSSEC_CHECK=$test_dir/bin/check \
     RGBDNS_INSTALL=$test_dir/bin/install \
     RGBDNS_SYNC=$test_dir/bin/sync \
@@ -51,7 +48,6 @@ run_publish() {
 
 run_publish
 grep -q signed "$test_dir/state/data.cdb"
-cmp "$test_dir/state/data.cdb" "$test_dir/state/data.signed"
 
 printf '%s\n' 'last good again' >"$test_dir/state/data.cdb"
 cat >"$test_dir/bin/check" <<'EOF'
