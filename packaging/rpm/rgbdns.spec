@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.6.1
+Version:        0.6.2
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -171,6 +171,9 @@ fi
 %{_mandir}/man1/rgbsec-sign.1%{?ext_man}
 
 %changelog
+* Wed Aug 19 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.2-1
+- Keep unsigned ACME zones in mixed DNSSEC snapshots on the unprivileged path
+
 * Wed Aug 19 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.1-1
 - Rename DNSSEC utilities into the rgbsec namespace to avoid BIND collisions
 

@@ -5,6 +5,17 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-08-19
+
+### Fixed
+
+- Keep ACME-managed `U` zones on the unprivileged in-memory overlay path when
+  another zone in the same snapshot is signed. This avoids invoking the
+  root-only signer during authoritative startup or an unsigned-zone update.
+- Stop `rgbdns-setup` from installing a root-only signer as an unprivileged
+  ACME publication hook. ACME updates to a `K` zone continue to fail closed
+  unless the operator supplies an explicit privileged publication mechanism.
+
 ## [0.6.1] - 2026-08-19
 
 ### Fixed

@@ -1,6 +1,6 @@
 # Optional authoritative DNSSEC
 
-rgbdns 0.6.1 adds authoritative DNSSEC as an explicit offline publication
+rgbdns 0.6.2 adds authoritative DNSSEC as an explicit offline publication
 pipeline. It is disabled by default. If `/etc/rgbdns/dnssec.env` and the
 working-directory `dnssec` policy are absent, `tinydns-data`, `tinydns`, ACME,
 ANAME, setup, and secondary synchronization follow the existing
@@ -43,7 +43,7 @@ This permits a deliberate mixed signed/unsigned CDB without making omission
 mean “unsigned.”
 
 Keep a recoverable encrypted backup of the key. Key replacement is not an
-implicit file operation: version 0.6.1 deliberately supports one active
+implicit file operation: version 0.6.2 deliberately supports one active
 combined signing key per zone and does not claim an automated multi-key
 rollover state machine.
 
@@ -110,12 +110,13 @@ AXFR contains the materialized addresses and signatures, not a requirement for
 the secondary to resolve the target.
 
 For ACME, delegation of `_acme-challenge` to a small unsigned validation zone
-is simplest. Inline updates to a signed zone require the packaged synchronous
-publisher. `rgbdns-setup` sets `ACME_PUBLISH_COMMAND` only when both
-`--acme-update-config` and `--dnssec-policy` are present. The UPDATE receiver
-persists the overlay, invokes the bounded publication command, reloads and
-validates the signed CDB, and returns success only then. Without the hook, a
-signed zone refuses ACME update startup rather than publishing unsigned TXT.
+is simplest. An ACME-managed `U` zone remains on the unprivileged live-overlay
+path even when another zone in the snapshot is signed; periodic root
+publication incorporates its durable overlay without invoking the signer from
+`tinydns`. Inline updates to a `K` zone require an explicitly configured
+privileged publication command. `rgbdns-setup` does not synthesize that trust
+boundary. Without such a hook, a signed ACME zone refuses startup rather than
+publishing unsigned TXT.
 
 ## Parent DS and activation
 

@@ -1,6 +1,6 @@
 # DNSSEC design: small tools and visible state
 
-Status: implementation contract for rgbdns 0.6.1.
+Status: implementation contract for rgbdns 0.6.2.
 
 rgbdns DNSSEC follows the tinydns posture: each program does one bounded job,
 configuration is one record per line, persistent state is an ordinary file, and
@@ -133,11 +133,13 @@ file. Failure leaves the prior CDB live. The signer performs no recursive DNS
 lookups.
 
 For ACME, delegation of `_acme-challenge` to a small unsigned validation zone is
-the simplest deployment. When an inline signed validation zone is required,
-the update receiver writes its overlay atomically and invokes the configured
-publication command synchronously; an update is acknowledged only after the
-new signed CDB is durable. The command is replaceable and receives paths, not
-private key bytes.
+the simplest deployment. An ACME policy for a `U` zone remains an unprivileged
+live overlay even if another zone in the snapshot is signed. When an inline
+signed validation zone is required, the update receiver writes its overlay
+atomically and invokes an explicitly configured privileged publication command
+synchronously; an update is acknowledged only after the new signed CDB is
+durable. Setup does not synthesize that privilege boundary. The command is
+replaceable and receives paths, not private key bytes.
 
 For ANAME, a separate materializer resolves targets only inside `K` zones,
 enforces the configured TTL ceiling, writes ordinary address records, and
@@ -150,7 +152,7 @@ they do not resolve the target independently for a signed zone.
 
 Key creation, activation, parent DS publication, rollover, revocation, and
 retirement are distinct operator actions represented by files and policy
-lines. Version 0.6.1 delivers safe single-key operation and DS derivation. A
+lines. Version 0.6.2 delivers safe single-key operation and DS derivation. A
 later feature release will add a deliberately specified multi-key rollover
 state machine; operators must not simulate rollover by silently swapping a key
 file under an unchanged policy line.
