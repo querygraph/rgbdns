@@ -248,6 +248,19 @@ impl Zone {
                 })
         })
     }
+    pub(crate) fn authoritative_names(&self) -> BTreeSet<Name> {
+        self.authoritative.clone()
+    }
+    pub(crate) fn records_outside(&self, zones: &BTreeSet<Name>) -> Vec<Record> {
+        self.record_entries()
+            .filter(|(record, metadata)| {
+                metadata.location.is_none()
+                    && metadata.cutoff == 0
+                    && !zones.iter().any(|zone| record.name.is_subdomain_of(zone))
+            })
+            .map(|(record, _)| record.clone())
+            .collect()
+    }
     pub fn transfer(&self, name: &Name) -> Option<Vec<Record>> {
         if !self.authoritative.contains(name) {
             return None;

@@ -88,9 +88,12 @@ The SOA serial belongs to the input producer. Signing does not invent a second
 serial sequence. A byte-identical input, policy, key, and explicit signing time
 produce the same RRset content (ECDSA signature bytes need not be reproducible).
 
-Unsigned zones may coexist in the source and pass through unchanged. DNSSEC
-must not be enabled for a zone whose answer varies by client location or time:
-one signed owner/type must always identify one RRset.
+Every authoritative zone in one source snapshot must have exactly one `K`
+line. This fail-closed rule prevents an accidentally omitted policy line from
+silently publishing an insecure zone. Unscoped glue outside those zones passes
+through unchanged. DNSSEC must not be enabled for a zone whose answer varies
+by client location or time: one signed owner/type must always identify one
+RRset.
 
 ## Serving contract
 
@@ -157,4 +160,3 @@ run the check frequently enough to alert before the configured refresh window.
 The last-known-good signed CDB remains authoritative after resolution, signing,
 validation, transfer, or disk failures. Expired signatures are treated as an
 urgent operational fault, never repaired by online signing inside `tinydns`.
-

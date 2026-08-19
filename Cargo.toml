@@ -6,6 +6,7 @@ license = "Unlicense"
 description = "A safe, faithful Rust reimplementation of the djbdns suite"
 
 [dependencies]
+async-trait = "0.1"
 base64 = "0.22"
 cdb = "0.6"
 chrono = "0.4"
@@ -75,6 +76,11 @@ bench = false
 [[bin]]
 name = "dnssec-ds"
 path = "src/bin/dnssec-ds.rs"
+bench = false
+
+[[bin]]
+name = "dnssec-check"
+path = "src/bin/dnssec-check.rs"
 bench = false
 
 [[bin]]
