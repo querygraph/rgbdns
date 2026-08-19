@@ -1,0 +1,20 @@
+.TH DNSSEC-DATA 1 "2026-08-18" "rgbdns 0.6.0" "User Commands"
+.SH NAME
+dnssec-data \- sign and compile an rgbdns DNSSEC snapshot
+.SH SYNOPSIS
+.B dnssec-data
+.RI [ data
+.RI [ data.cdb ]]
+.SH DESCRIPTION
+Performs the bounded offline signing transform of
+.BR dnssec-sign (1)
+and compiles the result directly to a CDB. It reads
+.I dnssec
+in the working directory and replaces the destination only after the new CDB
+has been written, synchronized, and successfully reloaded.
+.SH EXIT STATUS
+Zero on success, 100 for usage errors, and 111 for operational failures.
+.SH SEE ALSO
+.BR dnssec-sign (1),
+.BR dnssec-check (1),
+.BR tinydns-data (1)

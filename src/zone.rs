@@ -927,13 +927,10 @@ impl Zone {
 }
 
 fn rrsig_covered(data: &RData) -> Option<RecordType> {
-    let RData::Opaque(RecordType::Rrsig, bytes) = data else {
-        return None;
-    };
-    let bytes = bytes.get(..2)?;
-    Some(RecordType::from_code(u16::from_be_bytes([
-        bytes[0], bytes[1],
-    ])))
+    match data.dnssec().ok().flatten()? {
+        crate::DnssecRData::Rrsig { type_covered, .. } => Some(type_covered),
+        _ => None,
+    }
 }
 
 fn unix_now() -> u64 {

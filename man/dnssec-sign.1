@@ -1,0 +1,19 @@
+.TH DNSSEC-SIGN 1 "2026-08-18" "rgbdns 0.6.0" "User Commands"
+.SH NAME
+dnssec-sign \- sign tinydns source as an offline DNSSEC snapshot
+.SH SYNOPSIS
+.B dnssec-sign
+.RI [ data
+.RI [ data.signed ]]
+.SH DESCRIPTION
+Reads one policy line per authoritative zone from
+.I dnssec
+in the working directory and atomically writes signed tinydns text. It adds
+DNSKEY, NSEC, and RRSIG records and rejects unmaterialized ANAME, conditional
+records, expiring records, pre-existing DNSSEC data, and policy/zone mismatch.
+.SH EXIT STATUS
+Zero on success, 100 for usage errors, and 111 for operational failures.
+.SH SEE ALSO
+.BR dnssec-data (1),
+.BR dnssec-check (1),
+.BR aname-materialize (1)

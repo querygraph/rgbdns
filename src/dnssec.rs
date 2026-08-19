@@ -1,6 +1,8 @@
 //! Offline DNSSEC transforms used by the small `dnssec-*` utilities.
 
-use crate::{Error, Message, Name, RData, Record, RecordType, Result, axfr, zone::Zone};
+use crate::{
+    DnssecRData, Error, Message, Name, RData, Record, RecordType, Result, axfr, zone::Zone,
+};
 use hickory_server::{
     dnssec::NxProofKind,
     net::runtime::{RuntimeProvider, Time, TokioRuntimeProvider, TokioTime},
@@ -19,7 +21,8 @@ use hickory_server::{
 use rustls_pki_types::PrivatePkcs8KeyDer;
 use std::{
     cell::Cell,
-    collections::BTreeSet,
+    cmp::Ordering,
+    collections::{BTreeMap, BTreeSet},
     fs::{self, File, OpenOptions},
     future::Future,
     io,
@@ -373,12 +376,7 @@ pub fn check_zone(zone: &Zone, policy: &Policy) -> Result<CheckStatus> {
             _ => None,
         })
         .ok_or(Error::Format("signed zone has no apex SOA"))?;
-    if !records
-        .iter()
-        .any(|record| record.rr_type() == RecordType::Nsec)
-    {
-        return Err(Error::Format("signed zone has no NSEC chain"));
-    }
+    check_nsec_chain(&records, &policy.zone)?;
     let hickory = records.iter().map(to_hickory).collect::<Result<Vec<_>>>()?;
     let keys = hickory
         .iter()
@@ -419,14 +417,14 @@ pub fn check_zone(zone: &Zone, policy: &Policy) -> Result<CheckStatus> {
             custom.name.clone(),
             RecordType::from_code(input.type_covered.into()),
         ));
-        let RData::Opaque(RecordType::Rrsig, bytes) = &custom.data else {
+        let Some(DnssecRData::Rrsig {
+            expiration,
+            inception,
+            ..
+        }) = custom.data.dnssec()?
+        else {
             return Err(Error::Format("RRSIG conversion mismatch"));
         };
-        if bytes.len() < 18 {
-            return Err(Error::Format("short RRSIG"));
-        }
-        let expiration = u32::from_be_bytes(bytes[8..12].try_into().unwrap());
-        let inception = u32::from_be_bytes(bytes[12..16].try_into().unwrap());
         if u64::from(inception) > now || u64::from(expiration) <= now {
             return Err(Error::Format("RRSIG is outside its validity interval"));
         }
@@ -455,6 +453,80 @@ pub fn check_zone(zone: &Zone, policy: &Policy) -> Result<CheckStatus> {
         earliest_expiration,
         remaining,
     })
+}
+
+fn check_nsec_chain(records: &[Record], apex: &Name) -> Result<()> {
+    let mut chain = BTreeMap::new();
+    let cuts = records
+        .iter()
+        .filter(|record| {
+            record.name != *apex && matches!(record.data, RData::Name(RecordType::Ns, _))
+        })
+        .map(|record| record.name.clone())
+        .collect::<BTreeSet<_>>();
+    let authoritative_owners = records
+        .iter()
+        .filter(|record| {
+            !cuts
+                .iter()
+                .any(|cut| record.name != *cut && record.name.is_subdomain_of(cut))
+        })
+        .map(|record| record.name.clone())
+        .collect::<BTreeSet<_>>();
+    for record in records {
+        let Some(DnssecRData::Nsec { next, types }) = record.data.dnssec()? else {
+            continue;
+        };
+        if !types.contains(&RecordType::Nsec) || !types.contains(&RecordType::Rrsig) {
+            return Err(Error::Format("NSEC bitmap omits NSEC or RRSIG"));
+        }
+        if chain.insert(record.name.clone(), next).is_some() {
+            return Err(Error::Format("NSEC owner appears more than once"));
+        }
+        let expected_types = records
+            .iter()
+            .filter(|candidate| candidate.name == record.name)
+            .map(Record::rr_type)
+            .collect::<BTreeSet<_>>();
+        if types.into_iter().collect::<BTreeSet<_>>() != expected_types {
+            return Err(Error::Format("NSEC bitmap does not match its owner RRsets"));
+        }
+    }
+    if chain.is_empty() {
+        return Err(Error::Format("signed zone has no NSEC chain"));
+    }
+    if !chain.contains_key(apex) {
+        return Err(Error::Format("NSEC chain does not contain the zone apex"));
+    }
+    if !authoritative_owners.is_subset(&chain.keys().cloned().collect()) {
+        return Err(Error::Format("NSEC chain omits an authoritative owner"));
+    }
+    let mut owners = chain.keys().cloned().collect::<Vec<_>>();
+    owners.sort_by(canonical_name_cmp);
+    for (index, owner) in owners.iter().enumerate() {
+        let expected = &owners[(index + 1) % owners.len()];
+        if chain.get(owner) != Some(expected) {
+            return Err(Error::Format("NSEC chain is not in canonical name order"));
+        }
+    }
+    Ok(())
+}
+
+fn canonical_name_cmp(left: &Name, right: &Name) -> Ordering {
+    let mut left = left.labels().collect::<Vec<_>>();
+    let mut right = right.labels().collect::<Vec<_>>();
+    left.reverse();
+    right.reverse();
+    for (left, right) in left.iter().zip(&right) {
+        let ordering = left
+            .iter()
+            .map(u8::to_ascii_lowercase)
+            .cmp(right.iter().map(u8::to_ascii_lowercase));
+        if ordering != Ordering::Equal {
+            return ordering;
+        }
+    }
+    left.len().cmp(&right.len())
 }
 
 pub fn materialize_file(input: &Path, output: &Path) -> Result<Option<u64>> {
@@ -629,7 +701,11 @@ fn sibling_temporary(output: &Path) -> PathBuf {
 }
 
 pub fn sync_parent(path: &Path) -> Result<()> {
-    File::open(path.parent().unwrap_or_else(|| Path::new(".")))?.sync_all()?;
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    File::open(parent)?.sync_all()?;
     Ok(())
 }
 
@@ -686,15 +762,17 @@ mod tests {
         let ds = ds_line(&policy).unwrap();
         assert!(ds.starts_with("example. IN DS "));
         assert!(ds.contains(" 13 2 "));
-        let signature = records
+        let (expiration, inception) = records
             .iter()
-            .find_map(|record| match &record.data {
-                RData::Opaque(RecordType::Rrsig, bytes) => Some(bytes),
+            .find_map(|record| match record.data.dnssec().unwrap() {
+                Some(DnssecRData::Rrsig {
+                    expiration,
+                    inception,
+                    ..
+                }) => Some((expiration, inception)),
                 _ => None,
             })
             .unwrap();
-        let expiration = u32::from_be_bytes(signature[8..12].try_into().unwrap());
-        let inception = u32::from_be_bytes(signature[12..16].try_into().unwrap());
         assert_eq!(expiration.wrapping_sub(inception), policy.validity as u32);
         let now = std::time::SystemTime::now()
             .duration_since(std::time::SystemTime::UNIX_EPOCH)

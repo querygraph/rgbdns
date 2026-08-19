@@ -21,6 +21,9 @@ Implemented:
 - wildcard synthesis, NXDOMAIN/NODATA SOA authority, REFUSED outside zones
 - referrals with in-bailiwick glue and correct authoritative-bit behavior
 - EDNS(0), BADVERS, DO-bit echo, whole-record UDP truncation, and DNS over TCP
+- opt-in offline authoritative DNSSEC using ECDSA P-256, DNSKEY/RRSIG/NSEC,
+  signed positive and negative answers, DS delegation behavior, and keyless
+  standard AXFR of finished signed snapshots
 - pointer-loop, section-count, label/name, RDLENGTH, and TXT bounds checks
 - randomized property tests and live UDP/TCP integration tests
 - iterative DNSSEC-validating `dnscache`, verified live against signed

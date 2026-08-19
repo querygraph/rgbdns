@@ -1,4 +1,4 @@
-.TH RGBDNS 7 "2026-08-05" "rgbdns 0.5.1" "System Administration"
+.TH RGBDNS 7 "2026-08-18" "rgbdns 0.6.0" "System Administration"
 .SH NAME
 rgbdns \- authoritative DNS, AXFR, recursion, and djbdns-compatible tools
 .SH SYNOPSIS
@@ -45,6 +45,12 @@ Configured primary-data scp drop path and required upload owner.
 .TP
 .I /var/lib/rgbdns/tinydns/data
 Tinydns-format zone source.
+.TP
+.I /etc/rgbdns/dnssec
+Optional one-line-per-zone DNSSEC signing policy. With this file and
+.I /etc/rgbdns/dnssec.env
+both absent, rgbdns retains its ordinary djbdns-compatible compilation and
+serving behavior.
 .SH SERVICES
 .BR rgbdns-tinydns.service ,
 .BR rgbdns-secondary-sync.service ,
@@ -52,10 +58,16 @@ Tinydns-format zone source.
 .BR rgbdns-zones-import.service ,
 .BR rgbdns-data-import.service ,
 .BR rgbdns-data.path ,
+.BR rgbdns-dnssec-publish.service ,
+.BR rgbdns-dnssec-publish.timer ,
+.BR rgbdns-dnssec-check.service ,
+.BR rgbdns-dnssec-check.timer ,
 and
 .BR rgbdns-zones.path .
 .SH DOCUMENTATION
 See
 .I /usr/share/doc/rgbdns/debian.md.gz
 for complete primary, secondary, firewall, testing, and troubleshooting
-instructions.
+instructions. See
+.I /usr/share/doc/rgbdns/DNSSEC.md.gz
+for the optional signing and rollover-safety workflow.

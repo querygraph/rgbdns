@@ -52,11 +52,11 @@ normative RFC that supplies each oracle.
 
 ## Deliberate scope boundaries
 
-The following are not claimed as implemented by rgbdns 0.5.1:
+The following are not claimed as implemented by rgbdns 0.6.0:
 
 - general-purpose dynamic UPDATE, NOTIFY, IXFR, DSO, DNS Cookies, or SIG(0);
 - TSIG algorithms other than the ACME update profile's HMAC-SHA256;
-- authoritative DNSSEC signing and denial-of-existence generation;
+- automated multi-key DNSSEC rollover, NSEC3, CDS, or CDNSKEY;
 - DNS over TLS, HTTPS, or QUIC;
 - a general RFC 1035 master-file parser (rgbdns uses tinydns source and CDB);
 - recursive protocol internals supplied by Hickory beyond rgbdns's

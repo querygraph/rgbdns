@@ -33,7 +33,7 @@ operator compose it with other compilers.
 parent. It reads the referenced private key only to derive its public key and
 does not modify any file.
 
-`dnssec-check [data.signed]` performs structural and cryptographic checks and
+`dnssec-check [data.signed [dnssec]]` performs structural and cryptographic checks and
 prints one tab-separated status line per signed zone. Nagios, cron, systemd,
 or a shell script can consume the same output. Exit status alone is sufficient
 for supervision.
@@ -85,7 +85,7 @@ replaceable artifacts. For each configured zone, the signer:
 7. emits canonical generic tinydns records for DNSKEY, NSEC, and RRSIG.
 
 The SOA serial belongs to the input producer. Signing does not invent a second
-serial sequence. A byte-identical input, policy, key, and explicit signing time
+serial sequence. A byte-identical input, policy, key, and signing instant
 produce the same RRset content (ECDSA signature bytes need not be reproducible).
 
 Every authoritative zone in one source snapshot must have exactly one `K`

@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.5.1
+Version:        0.6.0
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -88,6 +88,12 @@ install -D -m 0644 man/rgbdns-acme.1 \
     %{buildroot}%{_mandir}/man1/rgbdns-acme.1
 install -D -m 0644 man/rgbdns-log-report.1 \
     %{buildroot}%{_mandir}/man1/rgbdns-log-report.1
+for manual in man/acme-materialize.1 man/aname-materialize.1 \
+    man/dnssec-check.1 man/dnssec-data.1 man/dnssec-ds.1 \
+    man/dnssec-keygen.1 man/dnssec-sign.1; do
+    install -D -m 0644 "$manual" \
+        "%{buildroot}%{_mandir}/man1/$(basename "$manual")"
+done
 
 %pre
 getent group rgbdns >/dev/null 2>&1 || groupadd --system rgbdns
@@ -121,7 +127,7 @@ fi
 %service_del_postun rgbdns-tinydns.service rgbdns-secondary-sync.service rgbdns-secondary-sync.timer rgbdns-zones-import.service rgbdns-zones.path rgbdns-data-import.service rgbdns-data.path rgbdns-query-report.service rgbdns-query-report.timer rgbdns-dnssec-publish.service rgbdns-dnssec-publish.timer rgbdns-dnssec-check.service rgbdns-dnssec-check.timer
 
 %files
-%doc README.md docs/OPENSUSE.md
+%doc README.md docs/OPENSUSE.md docs/DNSSEC.md docs/DNSSEC-DESIGN.md
 %{_bindir}/*
 %{_sbindir}/rgbdns-setup
 %dir %{_prefix}/lib/rgbdns
@@ -156,8 +162,20 @@ fi
 %{_mandir}/man7/rgbdns.7%{?ext_man}
 %{_mandir}/man1/rgbdns-acme.1%{?ext_man}
 %{_mandir}/man1/rgbdns-log-report.1%{?ext_man}
+%{_mandir}/man1/acme-materialize.1%{?ext_man}
+%{_mandir}/man1/aname-materialize.1%{?ext_man}
+%{_mandir}/man1/dnssec-check.1%{?ext_man}
+%{_mandir}/man1/dnssec-data.1%{?ext_man}
+%{_mandir}/man1/dnssec-ds.1%{?ext_man}
+%{_mandir}/man1/dnssec-keygen.1%{?ext_man}
+%{_mandir}/man1/dnssec-sign.1%{?ext_man}
 
 %changelog
+* Tue Aug 18 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.0-1
+- Add opt-in offline authoritative DNSSEC signing and denial proofs
+- Compose ACME and ANAME inputs into verified atomic signed snapshots
+- Keep authority and secondaries keyless; transfer DNSSEC over standard AXFR
+
 * Wed Aug 05 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.5.1-1
 - Avoid requiring the optional hostname utility for report delivery
 

@@ -1288,6 +1288,48 @@ mod tests {
         );
     }
 
+    #[cfg(unix)]
+    #[test]
+    fn signed_zone_requires_an_explicit_publication_hook() {
+        let directory = std::env::temp_dir().join(format!(
+            "rgbdns-acme-signed-test-{}-{}",
+            std::process::id(),
+            random_id().unwrap()
+        ));
+        fs::create_dir(&directory).unwrap();
+        let secret = STANDARD.encode([7u8; 32]);
+        let config = directory.join("acme.conf");
+        fs::write(
+            &config,
+            format!("certbot. hmac-sha256. {secret} example.org. _acme-challenge. 60\n"),
+        )
+        .unwrap();
+        let apex: Name = "example.org".parse().unwrap();
+        let dnssec_policy = crate::dnssec::generate_key(&apex, &directory.join("key.pk8")).unwrap();
+        let unsigned = Zone::parse(
+            "Zexample.org:ns.example.org:hostmaster.example.org:7:3600:600:86400:300:300\n\
+             &example.org:192.0.2.53:ns.example.org:300\n",
+        )
+        .unwrap();
+        let signed = Zone::from_compiled_records(
+            crate::dnssec::sign_zone(&unsigned, &dnssec_policy)
+                .unwrap()
+                .into_iter()
+                .map(|record| (record, crate::zone::RecordMetadata::default()))
+                .collect(),
+            Vec::new(),
+            Vec::new(),
+        );
+        let live = LiveZone::new(signed.clone());
+        let result = AcmeUpdates::from_file(&config, &directory, signed, live);
+        assert!(matches!(
+            result,
+            Err(Error::InvalidRecord(message))
+                if message.contains("require an external publication command")
+        ));
+        fs::remove_dir_all(directory).unwrap();
+    }
+
     #[test]
     fn wrong_owner_is_refused_without_state_change() {
         let policy = Policy {

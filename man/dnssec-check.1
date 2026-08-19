@@ -1,0 +1,19 @@
+.TH DNSSEC-CHECK 1 "2026-08-18" "rgbdns 0.6.0" "User Commands"
+.SH NAME
+dnssec-check \- verify an rgbdns signed snapshot and signature lifetime
+.SH SYNOPSIS
+.B dnssec-check
+.RI [ data.signed
+.RI [ dnssec ]]
+.SH DESCRIPTION
+Accepts signed tinydns text or CDB data, structurally validates DNSSEC records,
+cryptographically verifies every authoritative RRset, verifies the NSEC cycle,
+and rejects signatures that are invalid or inside the configured refresh
+window. One tab-separated status line is printed per zone.
+.SH EXIT STATUS
+Zero only when every configured zone verifies; 100 for usage errors and 111
+for verification or operational failures.
+.SH SEE ALSO
+.BR dnssec-sign (1),
+.BR dnssec-data (1),
+.BR rgbdns (7)

@@ -28,4 +28,5 @@ jobs:
       - run: packaging/tests/test-daily-query-report.sh target/debug/rgbdns-log-report
       - run: packaging/tests/test-secondary-sync.sh
       - run: packaging/tests/test-restore-role-units.sh
+      - run: packaging/tests/test-publish-dnssec.sh
       - run: cargo build --release --bins

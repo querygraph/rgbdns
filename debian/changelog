@@ -1,3 +1,13 @@
+rgbdns (0.6.0) unstable; urgency=medium
+
+  * Add opt-in offline authoritative DNSSEC signing with ECDSA P-256.
+  * Serve RRSIG, DNSKEY, NSEC, wildcard, and delegation proofs from keyless
+    authorities and transfer signed snapshots over standard AXFR.
+  * Compose ACME overlays and ANAME materialization through atomic publication
+    utilities, with cryptographic monitoring and last-known-good activation.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Tue, 18 Aug 2026 00:00:00 -0700
+
 rgbdns (0.5.1) unstable; urgency=medium
 
   * Avoid requiring the optional hostname utility for query-report delivery.
