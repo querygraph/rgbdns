@@ -5,6 +5,14 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-08-20
+
+### Fixed
+
+- Treat DNS suffix checks as ASCII case-insensitive so 0x20-randomized queries
+  for nonexistent names receive signed NXDOMAIN/NSEC proofs instead of
+  REFUSED responses.
+
 ## [0.6.2] - 2026-08-19
 
 ### Fixed

@@ -1,6 +1,6 @@
 # DNSSEC design: small tools and visible state
 
-Status: implementation contract for rgbdns 0.6.2.
+Status: implementation contract for rgbdns 0.6.3.
 
 rgbdns DNSSEC follows the tinydns posture: each program does one bounded job,
 configuration is one record per line, persistent state is an ordinary file, and
@@ -152,7 +152,7 @@ they do not resolve the target independently for a signed zone.
 
 Key creation, activation, parent DS publication, rollover, revocation, and
 retirement are distinct operator actions represented by files and policy
-lines. Version 0.6.2 delivers safe single-key operation and DS derivation. A
+lines. Version 0.6.3 delivers safe single-key operation and DS derivation. A
 later feature release will add a deliberately specified multi-key rollover
 state machine; operators must not simulate rollover by silently swapping a key
 file under an unchanged policy line.

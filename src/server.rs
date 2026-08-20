@@ -875,6 +875,29 @@ mod tests {
                 .any(|record| record.rr_type() == RecordType::Rrsig)
         );
 
+        let randomized_case = Message::decode(
+            &respond(
+                &zone,
+                &query("MiSsInG.ExAmPlE", RecordType::A, Some((4096, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(randomized_case.flags & 0x000f, 3);
+        assert!(
+            randomized_case
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Nsec)
+        );
+        assert!(
+            randomized_case
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Rrsig)
+        );
+
         let no_ds = Message::decode(
             &respond(
                 &zone,

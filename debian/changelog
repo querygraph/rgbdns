@@ -1,3 +1,10 @@
+rgbdns (0.6.3) unstable; urgency=medium
+
+  * Answer mixed-case negative queries with signed NSEC proofs instead of
+    refusing them, preserving interoperability with 0x20-randomizing resolvers.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Thu, 20 Aug 2026 08:00:00 -0700
+
 rgbdns (0.6.2) unstable; urgency=medium
 
   * Do not invoke the root-only DNSSEC publisher for ACME-managed zones that

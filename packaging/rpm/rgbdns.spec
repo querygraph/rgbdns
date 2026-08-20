@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.6.2
+Version:        0.6.3
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -171,6 +171,9 @@ fi
 %{_mandir}/man1/rgbsec-sign.1%{?ext_man}
 
 %changelog
+* Thu Aug 20 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.3-1
+- Answer 0x20-randomized negative queries with signed NSEC proofs
+
 * Wed Aug 19 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.2-1
 - Keep unsigned ACME zones in mixed DNSSEC snapshots on the unprivileged path
 
