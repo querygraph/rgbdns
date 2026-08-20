@@ -52,7 +52,7 @@ normative RFC that supplies each oracle.
 
 ## Deliberate scope boundaries
 
-The following are not claimed as implemented by rgbdns 0.6.2:
+The following are not claimed as implemented by rgbdns 0.6.3:
 
 - general-purpose dynamic UPDATE, NOTIFY, IXFR, DSO, DNS Cookies, or SIG(0);
 - TSIG algorithms other than the ACME update profile's HMAC-SHA256;

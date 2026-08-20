@@ -1,6 +1,6 @@
 # Optional authoritative DNSSEC
 
-rgbdns 0.6.2 adds authoritative DNSSEC as an explicit offline publication
+rgbdns 0.6.3 adds authoritative DNSSEC as an explicit offline publication
 pipeline. It is disabled by default. If `/etc/rgbdns/dnssec.env` and the
 working-directory `dnssec` policy are absent, `tinydns-data`, `tinydns`, ACME,
 ANAME, setup, and secondary synchronization follow the existing
@@ -43,7 +43,7 @@ This permits a deliberate mixed signed/unsigned CDB without making omission
 mean “unsigned.”
 
 Keep a recoverable encrypted backup of the key. Key replacement is not an
-implicit file operation: version 0.6.2 deliberately supports one active
+implicit file operation: version 0.6.3 deliberately supports one active
 combined signing key per zone and does not claim an automated multi-key
 rollover state machine.
 

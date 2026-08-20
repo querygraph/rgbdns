@@ -76,7 +76,19 @@ impl Name {
         (!self.0.is_empty()).then(|| Self(self.0[1..].to_vec()))
     }
     pub fn is_subdomain_of(&self, other: &Self) -> bool {
-        self.0.len() >= other.0.len() && self.0[self.0.len() - other.0.len()..] == other.0
+        if self.0.len() < other.0.len() {
+            return false;
+        }
+        self.0[self.0.len() - other.0.len()..]
+            .iter()
+            .zip(&other.0)
+            .all(|(left, right)| {
+                left.len() == right.len()
+                    && left
+                        .iter()
+                        .zip(right)
+                        .all(|(a, b)| a.eq_ignore_ascii_case(b))
+            })
     }
     pub fn wildcard(&self) -> Self {
         let mut labels = self.0.clone();
@@ -214,6 +226,12 @@ mod tests {
             "www.example".parse::<Name>().unwrap()
         );
         assert_eq!(".".parse::<Name>().unwrap(), Name::root());
+        assert!(
+            "MiSsInG.Bitcoin.Science"
+                .parse::<Name>()
+                .unwrap()
+                .is_subdomain_of(&"bitcoin.science".parse().unwrap())
+        );
     }
     #[test]
     fn escapes() {
