@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-31" />
+  <meta name="dcterms.date" content="2026-08-22" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>DNSSEC: authenticating the chain</title>
   <style>
@@ -33,6 +33,71 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="book.css" />
 </head>
@@ -85,16 +150,286 @@ safely.</li>
 <p>A resolver must not turn bogus data into a normal answer merely to
 improve availability. Clock correctness also becomes a dependency
 because signatures have inception and expiration times.</p>
-<h2 data-number="9.2" id="rgbdns-validation-policy"><span
-class="header-section-number">9.2</span> rgbdns validation policy</h2>
-<p>rgbdns configures the recursive handler with a static root trust
-anchor and DNSSEC validation enabled. Validation and NSEC3 work receive
-bounded caches and iteration policies. A failed validation surfaces as
-resolution failure rather than an unchecked answer.</p>
-<p>The authoritative rgbdns data path focuses on the djbdns record
-surface; the recursive path is where DNSSEC validation is currently
-integrated. This is an example of honest component boundaries: “the
-suite supports validating recursion” does not imply that every
-authoritative signing workflow has been recreated.</p>
+<h2 data-number="9.2" id="two-distinct-dnssec-roles"><span
+class="header-section-number">9.2</span> Two distinct DNSSEC roles</h2>
+<p>DNSSEC has a consumer side and a producer side. A validating
+recursive resolver follows DS and DNSKEY records from a trust anchor and
+rejects bogus answers. An authoritative operator creates keys, signs
+each stable RRset, publishes proofs of nonexistence, and arranges for
+the parent to publish the matching DS.</p>
+<p>rgbdns implements both roles, but deliberately keeps them separate.
+<code>dnscache</code> uses a static root trust anchor and DNSSEC
+validation. Validation and NSEC3 work receive bounded caches and
+iteration policies. A failed validation becomes a resolution failure
+rather than an unchecked answer.</p>
+<p>Authoritative signing is an offline publication pipeline.
+<code>tinydns</code> never opens a private key and never signs in
+response to a packet. It serves DNSKEY, RRSIG, NSEC, and DS records
+already present in its CDB. This is the same compile-then-serve division
+used by ordinary tinydns data, extended to signed snapshots.</p>
+<h2 data-number="9.3" id="dnssec-in-the-tinydns-posture"><span
+class="header-section-number">9.3</span> DNSSEC in the tinydns
+posture</h2>
+<p>The design goal is not a control plane. It is a set of small programs
+and visible files:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Program</th>
+<th>One bounded job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rgbsec-keygen</code></td>
+<td>create one ECDSA P-256 key and print its policy line</td>
+</tr>
+<tr>
+<td><code>rgbsec-sign</code></td>
+<td>turn tinydns text into inspectable signed tinydns text</td>
+</tr>
+<tr>
+<td><code>rgbsec-data</code></td>
+<td>sign and compile directly to a CDB</td>
+</tr>
+<tr>
+<td><code>rgbsec-ds</code></td>
+<td>derive the parent DS record from one policy line</td>
+</tr>
+<tr>
+<td><code>rgbsec-check</code></td>
+<td>verify RRsets, signatures, NSEC cycles, and remaining lifetime</td>
+</tr>
+</tbody>
+</table>
+<p>There is no signing daemon, key database, online RPC service, or
+implicit key generation in the authority. Each transformation writes
+beside its destination and renames only after success. A failed
+materialization, signature, compile, reload, or verification leaves the
+last-known-good CDB active.</p>
+<p>The feature is optional. Without a DNSSEC policy and
+<code>/etc/rgbdns/dnssec.env</code>, <code>tinydns-data</code>,
+<code>tinydns</code>, ACME, ANAME, AXFR, and secondary synchronization
+retain the djbdns-compatible path. Enabling signing for one zone does
+not force every zone in the same CDB to become signed.</p>
+<h2 data-number="9.4" id="one-line-per-zone"><span
+class="header-section-number">9.4</span> One line per zone</h2>
+<p>The policy file is intentionally close to tinydns data: comments,
+blank lines, and exactly one disposition line for every authoritative
+zone. <code>K</code> means sign; <code>U</code> means explicitly
+unsigned:</p>
+<pre class="text"><code>Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600
+Ulegacy.example.</code></pre>
+<p>The signed line has this shape:</p>
+<pre class="text"><code>Kzone:keyfile:algorithm:validity:refresh:inception-skew</code></pre>
+<p>Algorithm 13 is ECDSA P-256 with SHA-256. The example signs for
+fourteen days, requires at least one day of remaining lifetime, and
+moves inception one hour into the past to tolerate modest clock skew.
+The key path is absolute. Missing, duplicate, or conflicting
+dispositions stop publication; omission never means “probably unsigned.”
+A <code>U</code> zone is also checked for stale DNSKEY, RRSIG, NSEC, or
+NSEC3 records.</p>
+<p>This fail-closed coverage rule is what makes mixed snapshots
+understandable. The policy is not merely a list of zones that happened
+to be signed today. It is the security disposition of the complete
+authoritative source.</p>
+<h2 data-number="9.5" id="minimal-signed-primary"><span
+class="header-section-number">9.5</span> Minimal signed primary</h2>
+<p>Begin with ordinary tinydns source. The signer preserves the SOA
+serial, so the source producer must increment it when the signed
+publication first becomes visible:</p>
+<pre class="text"><code>Zexample.com:a.ns.example.com:hostmaster.example.com:2026082101:16384:2048:1048576:2560:3600
+&amp;example.com:192.0.2.53:a.ns.example.com:3600
++example.com:192.0.2.80:3600
++www.example.com:192.0.2.80:3600</code></pre>
+<p>Create the key only on the primary. The command refuses to overwrite
+an existing file and creates the PKCS#8 key with mode 0600:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-d</span> <span class="at">-o</span> root <span class="at">-g</span> root <span class="at">-m</span> 0700 /etc/rgbdns/keys</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbsec-keygen example.com <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  /etc/rgbdns/keys/example.com.pk8 <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">sudo</span> tee /etc/rgbdns/dnssec</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chown root:rgbdns /etc/rgbdns/dnssec</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chmod 0640 /etc/rgbdns/dnssec</span></code></pre></div>
+<p>Keep an encrypted, recoverable copy of the key outside the server.
+The public policy may be readable by the checker, but the key directory
+remains root-only. The authority process and the secondary never need
+access.</p>
+<p>Configure the packaged primary with the complete existing role
+options plus the policy:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup primary <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data</span> /srv/dns/rgbdns.data <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data-drop</span> /srv/dns/rgbdns.data <span class="dt">\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--data-drop-owner</span> dns-publisher <span class="dt">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0 <span class="dt">\</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--allow-nets</span> 10.0.2.10/32 <span class="dt">\</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--dnssec-policy</span> /etc/rgbdns/dnssec</span></code></pre></div>
+<p>Setup performs the first privileged publication and enables two
+supervised jobs. <code>rgbdns-dnssec-publish.timer</code> refreshes
+materialized data and signatures every twelve hours.
+<code>rgbdns-dnssec-check.timer</code> checks the active CDB hourly. The
+root publisher can read the key; the checker runs as <code>rgbdns</code>
+and verifies only public state.</p>
+<p>The same stages can be inspected manually in a scratch directory:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-s</span> /etc/rgbdns/dnssec dnssec</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">rgbsec-sign</span> data data.signed</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">rgbsec-data</span> data data.cdb</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">rgbsec-check</span> data.cdb /etc/rgbdns/dnssec</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">rgbsec-ds</span> <span class="st">&#39;Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600&#39;</span></span></code></pre></div>
+<p><code>rgbsec-check</code> emits one tab-separated line per
+<code>K</code> zone:</p>
+<pre class="text"><code>example.com.  2026082101  53856  20260904023527  1204490  ok</code></pre>
+<p>The exact times and key tag vary. The important operational contract
+is the exit status and final <code>ok</code>: every authoritative RRset
+verifies, the NSEC cycle is complete, and the earliest signature remains
+outside the refresh window.</p>
+<h2 data-number="9.6" id="mixed-zones-and-a-keyless-secondary"><span
+class="header-section-number">9.6</span> Mixed zones and a keyless
+secondary</h2>
+<p>One CDB can serve a stable signed zone beside a zone that must remain
+unsigned:</p>
+<pre class="text"><code>Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600
+Uacme-live.example.</code></pre>
+<p>The source contains both SOAs and both NS sets.
+<code>rgbsec-data</code> signs only <code>example.com</code>; it
+preserves ordinary records, qualified records, cutoffs, and ANAME
+directives in the <code>U</code> zone. This behavior is explicit rather
+than inferred from the absence of a key.</p>
+<p>A secondary needs neither the policy nor the private key. Configure
+it in the ordinary way:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbdns-setup secondary <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zone</span> example.com <span class="dt">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--zone</span> acme-live.example <span class="dt">\</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--primary</span> 10.0.1.10 <span class="dt">\</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--listen-ip</span> 0.0.0.0</span></code></pre></div>
+<p>AXFR carries DNSKEY, RRSIG, NSEC, and DS as standard resource
+records. The secondary validates the transfer framing, compiles the
+received snapshot, and serves the same finished signatures. A transfer
+failure retains the last good zone. This is a useful security boundary:
+compromise of a serving secondary does not disclose the signing key.</p>
+<p>Before touching the parent, query every delegated authority over UDP
+and TCP:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> server <span class="kw">in</span> a.ns.example.com b.ns.example.com<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dig</span> +dnssec +norecurse @<span class="st">&quot;</span><span class="va">$server</span><span class="st">&quot;</span> example.com DNSKEY</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dig</span> +dnssec +norecurse @<span class="st">&quot;</span><span class="va">$server</span><span class="st">&quot;</span> example.com A</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dig</span> +dnssec +norecurse @<span class="st">&quot;</span><span class="va">$server</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;MiXeD-</span><span class="va">$(</span><span class="fu">date</span> +%s<span class="va">)</span><span class="st">.example.com&quot;</span> A</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dig</span> +tcp +dnssec +norecurse @<span class="st">&quot;</span><span class="va">$server</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;tcp-</span><span class="va">$(</span><span class="fu">date</span> +%s<span class="va">)</span><span class="st">.example.com&quot;</span> A</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<p>Require matching SOA serials and DNSKEYs. Positive answers need the
+data RRset and its RRSIG. A nonexistent mixed-case name must return
+NXDOMAIN with NSEC and RRSIG. The mixed case is deliberate: validating
+resolvers use DNS 0x20 case randomization, and authoritative suffix
+matching must remain ASCII case-insensitive. A query for an absent type
+at an existing name tests signed NODATA separately from NXDOMAIN.</p>
+<h2 data-number="9.7" id="aname-and-acme-boundaries"><span
+class="header-section-number">9.7</span> ANAME and ACME boundaries</h2>
+<p>A signed answer cannot be synthesized after signing. The publication
+graph is therefore visible:</p>
+<pre class="text"><code>source -&gt; ACME overlay -&gt; selected ANAME materialization
+       -&gt; rgbsec-data -&gt; rgbsec-check -&gt; atomic activation</code></pre>
+<p>For an ANAME in a <code>K</code> zone, <code>aname-materialize</code>
+resolves the target before signing and writes ordinary A and AAAA RRsets
+under the configured TTL ceiling. The secondary receives those addresses
+and signatures; it does not resolve the target independently for that
+signed snapshot. ANAME directives in <code>U</code> zones retain the
+ordinary runtime behavior.</p>
+<p>ACME is a privilege-boundary question, not only a record-format
+question. An ACME-managed <code>U</code> zone can keep using the
+unprivileged live overlay even while another zone in the same CDB is
+signed. Inline updates to a <code>K</code> zone would need an explicitly
+designed privileged publisher that acknowledges an update only after a
+new signed CDB is durable. <code>rgbdns-setup</code> does not invent
+that escalation. Without such a hook, a signed ACME policy fails
+closed.</p>
+<p>The simplest arrangement is often a small unsigned validation
+child:</p>
+<pre class="text"><code>_acme-challenge.example.com.  NS  ns1.validation.example.</code></pre>
+<p>The production lesson is conservative: choose the first DNSSEC pilot
+from a stable zone with ordinary A or AAAA data, no live ACME overlay,
+and no ANAME. Move dynamic zones only after their signed publication
+boundary is explicit.</p>
+<h2 data-number="9.8" id="activating-the-parent-ds"><span
+class="header-section-number">9.8</span> Activating the parent DS</h2>
+<p>Signing the child does not complete the chain. The parent must
+publish a DS that matches the active child DNSKEY. Derive it from the
+installed policy rather than transcribing public-key material by
+hand:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rgbsec-ds <span class="st">&quot;</span><span class="va">$(</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sudo</span> grep <span class="st">&#39;^Kexample[.]com[.]:&#39;</span> /etc/rgbdns/dnssec</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="va">)</span><span class="st">&quot;</span></span></code></pre></div>
+<p>The output is a presentation-format record:</p>
+<pre class="text"><code>example.com. IN DS &lt;key-tag&gt; 13 2 &lt;64-hex-sha256-digest&gt;</code></pre>
+<p>That line is illustrative; use the output for the actual key.
+Registrar forms usually ask for four fields: key tag, algorithm 13,
+digest type 2, and the SHA-256 digest. Publish it only after every
+nameserver in the parent delegation serves the matching signed snapshot.
+A stale third-party secondary is enough to make validation
+intermittent.</p>
+<p>Check the parent directly, then use several independent validating
+resolvers:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +short +nosplit example.com DS</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> resolver <span class="kw">in</span> 1.1.1.1 9.9.9.9 8.8.8.8<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dig</span> +dnssec @<span class="st">&quot;</span><span class="va">$resolver</span><span class="st">&quot;</span> example.com A</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dig</span> +dnssec @<span class="st">&quot;</span><span class="va">$resolver</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;MiXeD-</span><span class="va">$(</span><span class="fu">date</span> +%s<span class="va">)</span><span class="st">.example.com&quot;</span> A</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<p>A secure positive response is <code>NOERROR</code> with the AD flag.
+A secure negative response is NXDOMAIN with AD. Querying a fresh name
+avoids mistaking an old negative cache entry for current behavior. The
+parent DS, child DNSKEY, and signatures can be correct while a resolver
+still exposes a transport, delegation, case-handling, or denial-proof
+defect; end-to-end testing is what turns a collection of records into
+evidence.</p>
+<h2 data-number="9.9" id="lifecycle-and-safe-rollback"><span
+class="header-section-number">9.9</span> Lifecycle and safe
+rollback</h2>
+<p>DNSSEC adds time to the authority contract. Monitor the publisher and
+checker, the earliest RRSIG expiration, key tag, parent DS,
+primary/secondary serials, and both positive and negative validation.
+Restart each authority during the pilot and prove that the last signed
+CDB remains available. Before the first signature window closes, observe
+an automatic refresh and verify the new inception and expiration on both
+authorities.</p>
+<p>Version 0.6.3 deliberately supports one active combined signing key
+per zone. It does not pretend that replacing a key file is a rollover
+protocol. A future multi-key release must represent publication, DS
+overlap, retirement, and recovery as explicit states.</p>
+<p>Rollback order is asymmetric. Before DS activation, the operator may
+return to the unsigned path because no validator expects signatures.
+After DS activation:</p>
+<ol type="1">
+<li>remove the DS at the parent;</li>
+<li>wait through the parent DS TTL, negative caches, and relevant
+resolver caches;</li>
+<li>confirm that independent resolvers no longer observe the DS; and
+only then</li>
+<li>disable signing and publish unsigned data.</li>
+</ol>
+<p>Removing signatures while the DS remains visible converts the zone
+from secure to bogus. Keep the retired private key backed up until the
+DS removal and cache window are conclusively complete.</p>
+<h2 data-number="9.10" id="constraints-are-part-of-the-design"><span
+class="header-section-number">9.10</span> Constraints are part of the
+design</h2>
+<p>rgbdns uses NSEC rather than NSEC3 for authoritative signing. NSEC is
+smaller, simpler, and avoids iteration and opt-out machinery; it also
+makes zone names enumerable. Location-dependent and time-qualified data
+cannot be signed because one owner and type must identify one stable
+RRset. Pre-existing DNSKEY, RRSIG, NSEC, and NSEC3 input is rejected.
+ANAME must be materialized before signing.</p>
+<p>These are not footnotes hidden behind a “DNSSEC enabled” switch. They
+are the conditions under which an offline immutable snapshot can
+honestly claim to be the zone. The small-tool approach makes each
+condition visible, testable, and replaceable without putting private
+keys in the packet-serving process.</p>
 </body>
 </html>
