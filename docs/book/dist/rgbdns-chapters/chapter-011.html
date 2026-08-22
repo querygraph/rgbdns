@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-31" />
+  <meta name="dcterms.date" content="2026-08-22" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Zone transfer and secondary service</title>
   <style>
@@ -111,5 +111,17 @@ timestamps and file rotation. <code>QUERY_LOG=1</code> is the default.
 <code>QUERY_LOG=0</code> is an explicit opt-out for an installation
 whose traffic, retention, or privacy policy forbids full query
 logging.</p>
+<p><code>rgbdns-log-report</code> turns a bounded daily slice of that
+stream into an operational summary. It maps each accepted query name to
+the longest matching configured authoritative zone, so
+<code>www.wishful.ly</code> contributes to <code>wishful.ly</code>
+rather than becoming a separate domain. For each zone it reports the
+total query count and the number of distinct client addresses, then
+sorts by total descending. A packaged opt-in timer reads the preceding
+local day from journald and submits the text through a
+sendmail-compatible transport. Distinct addresses usually identify
+recursive resolvers, not individual people, and DNS queries are not HTTP
+pageviews. The timer belongs on one authority only when duplicate
+reports are unwanted.</p>
 </body>
 </html>

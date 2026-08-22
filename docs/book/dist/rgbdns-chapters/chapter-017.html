@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-31" />
+  <meta name="dcterms.date" content="2026-08-22" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>Operating an authoritative service</title>
   <style>
@@ -241,10 +241,10 @@ are in-bailiwick nameservers for <code>cron.sh</code>; and</li>
 same primary endpoint.</li>
 </ul>
 <p>Consequently, advertise <code>b</code> only for zones included in
-<code>/etc/rgbdns/zones</code>. Add both <code>fieldnotes.es</code> and
-<code>cron.sh</code> when <code>b</code> should be authoritative for
-both; otherwise retain other working authorities for the omitted
-infrastructure zone.</p>
+<code>/var/lib/rgbdns/tinydns/zones</code>. Add both
+<code>fieldnotes.es</code> and <code>cron.sh</code> when <code>b</code>
+should be authoritative for both; otherwise retain other working
+authorities for the omitted infrastructure zone.</p>
 <h3 data-number="16.2.2"
 id="worked-deployment-fieldnotes.es-on-a.ns.cron.sh-and-b.ns.cron.sh"><span
 class="header-section-number">16.2.2</span> Worked deployment:
@@ -622,9 +622,9 @@ successful zones advance. The snapshots are compiled together and the
 combined CDB is installed atomically. The randomized five-minute timer
 does not use NOTIFY or IXFR.</p>
 <p>Setup stores the canonical one-zone-per-line list in
-<code>/etc/rgbdns/zones</code> and watches <code>rgbdns.zones</code> in
-the invoking sudo user’s home. Manage later changes as a file and
-publish them with an atomic rename:</p>
+<code>/var/lib/rgbdns/tinydns/zones</code> and watches
+<code>rgbdns.zones</code> in the invoking sudo user’s home. Manage later
+changes as a file and publish them with an atomic rename:</p>
 <div class="sourceCode" id="cb34"><pre
 class="sourceCode sh"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> rgbdns.zones b.ns.example.net:rgbdns.zones.new</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> b.ns.example.net <span class="st">&#39;mv rgbdns.zones.new rgbdns.zones&#39;</span></span></code></pre></div>
@@ -773,7 +773,7 @@ class="sourceCode sh"><code class="sourceCode bash"><span id="cb44-1"><a href="#
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-u</span> rgbdns-secondary-sync.service <span class="at">-n</span> 100 <span class="at">--no-pager</span></span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +tcp @10.0.1.10 example.net SOA +norecurse</span>
 <span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/secondary.env</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/zones</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /var/lib/rgbdns/tinydns/zones</span>
 <span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cat /etc/rgbdns/tinydns.env</span></code></pre></div>
 <p>A connection timeout points toward routes, security groups, or
 firewalls. <code>REFUSED</code> points toward <code>ALLOW_NETS</code> or

@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-31" />
+  <meta name="dcterms.date" content="2026-08-22" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>DNS from First Principles</title>
   <style>
@@ -57,7 +57,7 @@
 <p class="subtitle">Names, Packets, Authority, Recursion, and the Design
 of rgbdns</p>
 <p class="author">Alexy Khrabrov</p>
-<p class="date">2026-07-31</p>
+<p class="date">2026-08-22</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
@@ -195,9 +195,37 @@ class="toc-section-number">9</span> DNSSEC: authenticating the chain</a>
 id="toc-what-ordinary-dns-cannot-prove"><span
 class="toc-section-number">9.1</span> What ordinary DNS cannot
 prove</a></li>
-<li><a href="chapter-010.html#rgbdns-validation-policy"
-id="toc-rgbdns-validation-policy"><span
-class="toc-section-number">9.2</span> rgbdns validation policy</a></li>
+<li><a href="chapter-010.html#two-distinct-dnssec-roles"
+id="toc-two-distinct-dnssec-roles"><span
+class="toc-section-number">9.2</span> Two distinct DNSSEC roles</a></li>
+<li><a href="chapter-010.html#dnssec-in-the-tinydns-posture"
+id="toc-dnssec-in-the-tinydns-posture"><span
+class="toc-section-number">9.3</span> DNSSEC in the tinydns
+posture</a></li>
+<li><a href="chapter-010.html#one-line-per-zone"
+id="toc-one-line-per-zone"><span class="toc-section-number">9.4</span>
+One line per zone</a></li>
+<li><a href="chapter-010.html#minimal-signed-primary"
+id="toc-minimal-signed-primary"><span
+class="toc-section-number">9.5</span> Minimal signed primary</a></li>
+<li><a href="chapter-010.html#mixed-zones-and-a-keyless-secondary"
+id="toc-mixed-zones-and-a-keyless-secondary"><span
+class="toc-section-number">9.6</span> Mixed zones and a keyless
+secondary</a></li>
+<li><a href="chapter-010.html#aname-and-acme-boundaries"
+id="toc-aname-and-acme-boundaries"><span
+class="toc-section-number">9.7</span> ANAME and ACME boundaries</a></li>
+<li><a href="chapter-010.html#activating-the-parent-ds"
+id="toc-activating-the-parent-ds"><span
+class="toc-section-number">9.8</span> Activating the parent DS</a></li>
+<li><a href="chapter-010.html#lifecycle-and-safe-rollback"
+id="toc-lifecycle-and-safe-rollback"><span
+class="toc-section-number">9.9</span> Lifecycle and safe
+rollback</a></li>
+<li><a href="chapter-010.html#constraints-are-part-of-the-design"
+id="toc-constraints-are-part-of-the-design"><span
+class="toc-section-number">9.10</span> Constraints are part of the
+design</a></li>
 </ul></li>
 <li><a href="chapter-011.html#zone-transfer-and-secondary-service"
 id="toc-zone-transfer-and-secondary-service"><span

@@ -78,7 +78,9 @@ impl Database {
                 }
                 let name = crate::cdb::decode_name(&key[3..])?;
                 let addresses = value
-                    .chunks_exact(4)
+                    .as_chunks::<4>()
+                    .0
+                    .iter()
                     .map(|bytes| Ipv4Addr::new(bytes[0], bytes[1], bytes[2], bytes[3]))
                     .collect();
                 database

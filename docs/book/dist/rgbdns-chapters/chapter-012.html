@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov" />
-  <meta name="dcterms.date" content="2026-07-31" />
+  <meta name="dcterms.date" content="2026-08-22" />
   <meta name="description" content="A ground-up explanation of DNS followed by a guided tour of rgbdns, a memory-safe Rust reimplementation of the djbdns suite." />
   <title>The rgbdns program family</title>
   <style>
@@ -106,6 +106,10 @@ class="header-section-number">11.1</span> One suite, small purposes</h2>
 <td><code>dnsfilter</code>, <code>dnstrace</code>,
 <code>random-ip</code></td>
 <td>stream lookup, delegation tracing, testing</td>
+</tr>
+<tr>
+<td><code>rgbdns-log-report</code></td>
+<td>daily per-zone query and distinct-client aggregation</td>
 </tr>
 <tr>
 <td><code>*-conf</code></td>
