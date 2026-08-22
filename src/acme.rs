@@ -11,6 +11,7 @@ use std::{
     io::{Read, Write},
     net::{SocketAddr, TcpStream},
     path::{Path, PathBuf},
+    process::Command,
     str::FromStr,
     sync::{Arc, Mutex, RwLock},
     time::{SystemTime, UNIX_EPOCH},
@@ -61,7 +62,41 @@ pub struct AcmeUpdates {
     base: Zone,
     live: LiveZone,
     state_dir: PathBuf,
+    publication: Option<Publication>,
     state: Mutex<State>,
+}
+
+#[derive(Clone)]
+pub struct Publication {
+    command: PathBuf,
+    data: PathBuf,
+}
+
+impl Publication {
+    pub fn new(command: PathBuf, data: PathBuf) -> Result<Self> {
+        if !command.is_absolute() || !data.is_absolute() {
+            return Err(Error::InvalidRecord(
+                "ACME publication command and data path must be absolute".into(),
+            ));
+        }
+        Ok(Self { command, data })
+    }
+
+    fn run(
+        &self,
+        state_dir: &Path,
+        overlay: &Overlay,
+        serials: &BTreeMap<Name, u32>,
+        policies: &BTreeMap<Name, Policy>,
+    ) -> Result<Zone> {
+        let status = Command::new(&self.command).arg(state_dir).status()?;
+        if !status.success() {
+            return Err(Error::Format("ACME publication command failed"));
+        }
+        let zone = Zone::from_file(&self.data)?;
+        validate_published(&zone, overlay, serials, policies)?;
+        Ok(zone)
+    }
 }
 
 pub enum AdminAction<'a> {
@@ -152,6 +187,29 @@ pub fn list_overlay(state_dir: impl AsRef<Path>) -> Result<Vec<(Name, Vec<u8>)>>
         .collect())
 }
 
+pub fn materialize_state(
+    input: impl AsRef<Path>,
+    config: impl AsRef<Path>,
+    state_dir: impl AsRef<Path>,
+    output: impl AsRef<Path>,
+) -> Result<()> {
+    let base = Zone::from_file(input)?;
+    let policies = parse_config(&fs::read_to_string(config)?, &base)?;
+    let state_dir = state_dir.as_ref();
+    let overlay = read_overlay(&state_dir.join("acme-overlay.data"))?;
+    let serials = read_serials(&state_dir.join("acme-serials"))?;
+    validate_overlay(&overlay, &policies)?;
+    let candidate = base.with_acme_overlay(&flatten(&overlay, &policies)?, &serials)?;
+    let output = output.as_ref();
+    let temporary = output.with_extension(format!("tmp.{}", std::process::id()));
+    crate::axfr::write_zone(&candidate, output, &temporary)?;
+    FileSync::sync_directory(
+        output
+            .parent()
+            .ok_or(Error::Format("ACME materialized output has no parent"))?,
+    )
+}
+
 struct State {
     overlay: Overlay,
     serials: BTreeMap<Name, u32>,
@@ -195,18 +253,48 @@ impl AcmeUpdates {
         base: Zone,
         live: LiveZone,
     ) -> Result<Self> {
+        Self::from_file_with_publication(config, state_dir, base, live, None)
+    }
+
+    pub fn from_file_with_publication(
+        config: impl AsRef<Path>,
+        state_dir: impl AsRef<Path>,
+        base: Zone,
+        live: LiveZone,
+        publication: Option<Publication>,
+    ) -> Result<Self> {
         let policies = parse_config(&fs::read_to_string(config)?, &base)?;
         let state_dir = state_dir.as_ref().to_path_buf();
         let overlay = read_overlay(&state_dir.join("acme-overlay.data"))?;
         let serials = read_serials(&state_dir.join("acme-serials"))?;
         validate_overlay(&overlay, &policies)?;
-        let published = base.with_acme_overlay(&flatten(&overlay, &policies)?, &serials)?;
+        let signed = policies
+            .values()
+            .any(|policy| base.is_dnssec_signed(&policy.zone));
+        let publication = if signed {
+            Some(publication.ok_or_else(|| {
+                Error::InvalidRecord(
+                    "ACME updates to a signed zone require an external publication command".into(),
+                )
+            })?)
+        } else {
+            // A mixed snapshot may contain signed zones which have no ACME policy.
+            // Applying an unsigned-zone overlay in memory preserves those signatures;
+            // invoking a root-only signer here would be unnecessary and unsafe.
+            None
+        };
+        let published = if let Some(publication) = &publication {
+            publication.run(&state_dir, &overlay, &serials, &policies)?
+        } else {
+            base.with_acme_overlay(&flatten(&overlay, &policies)?, &serials)?
+        };
         live.publish(published);
         Ok(Self {
             policies,
             base,
             live,
             state_dir,
+            publication,
             state: Mutex::new(State {
                 overlay,
                 serials,
@@ -284,13 +372,66 @@ impl AcmeUpdates {
                     &state.serials,
                     &self.policies,
                 )?;
-                self.live.publish(candidate);
-                0
+                let published = if let Some(publication) = &self.publication {
+                    publication.run(
+                        &self.state_dir,
+                        &state.overlay,
+                        &state.serials,
+                        &self.policies,
+                    )
+                } else {
+                    Ok(candidate)
+                };
+                match published {
+                    Ok(published) => {
+                        self.live.publish(published);
+                        0
+                    }
+                    Err(error) => {
+                        eprintln!("rgbdns ACME publication: {error}");
+                        2
+                    }
+                }
             }
             Err(rcode) => rcode,
         };
         signed_response(&parsed, policy, rcode, 0, &[])
     }
+}
+
+fn validate_published(
+    zone: &Zone,
+    overlay: &Overlay,
+    serials: &BTreeMap<Name, u32>,
+    policies: &BTreeMap<Name, Policy>,
+) -> Result<()> {
+    for policy in policies.values() {
+        if !zone.is_dnssec_signed(&policy.zone) {
+            return Err(Error::Format("ACME publication produced an unsigned zone"));
+        }
+        if serials
+            .get(&policy.zone)
+            .is_some_and(|serial| zone.soa_serial(&policy.zone) != Some(*serial))
+        {
+            return Err(Error::Format("ACME publication has the wrong SOA serial"));
+        }
+    }
+    for (owner, values) in overlay {
+        let found = match zone.lookup(owner, crate::RecordType::Txt) {
+            crate::zone::Lookup::Answer(records) => records
+                .into_iter()
+                .filter_map(|record| match record.data {
+                    crate::RData::Txt(chunks) => Some(chunks.into_iter().flatten().collect()),
+                    _ => None,
+                })
+                .collect::<BTreeSet<Vec<u8>>>(),
+            _ => BTreeSet::new(),
+        };
+        if !values.is_subset(&found) {
+            return Err(Error::Format("ACME publication omitted challenge data"));
+        }
+    }
+    Ok(())
 }
 
 fn parse_config(text: &str, base: &Zone) -> Result<BTreeMap<Name, Policy>> {
@@ -1152,6 +1293,124 @@ mod tests {
             read_overlay(&directory.join("acme-overlay.data")).unwrap()[&owner].len(),
             9
         );
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn signed_zone_requires_an_explicit_publication_hook() {
+        let directory = std::env::temp_dir().join(format!(
+            "rgbdns-acme-signed-test-{}-{}",
+            std::process::id(),
+            random_id().unwrap()
+        ));
+        fs::create_dir(&directory).unwrap();
+        let secret = STANDARD.encode([7u8; 32]);
+        let config = directory.join("acme.conf");
+        fs::write(
+            &config,
+            format!("certbot. hmac-sha256. {secret} example.org. _acme-challenge. 60\n"),
+        )
+        .unwrap();
+        let apex: Name = "example.org".parse().unwrap();
+        let dnssec_policy = crate::dnssec::generate_key(&apex, &directory.join("key.pk8")).unwrap();
+        let unsigned = Zone::parse(
+            "Zexample.org:ns.example.org:hostmaster.example.org:7:3600:600:86400:300:300\n\
+             &example.org:192.0.2.53:ns.example.org:300\n",
+        )
+        .unwrap();
+        let signed = Zone::from_compiled_records(
+            crate::dnssec::sign_zone(&unsigned, &dnssec_policy)
+                .unwrap()
+                .into_iter()
+                .map(|record| (record, crate::zone::RecordMetadata::default()))
+                .collect(),
+            Vec::new(),
+            Vec::new(),
+        );
+        let live = LiveZone::new(signed.clone());
+        let result = AcmeUpdates::from_file(&config, &directory, signed, live);
+        assert!(matches!(
+            result,
+            Err(Error::InvalidRecord(message))
+                if message.contains("require an external publication command")
+        ));
+        fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn unsigned_acme_zone_ignores_signer_hook_in_a_mixed_snapshot() {
+        let directory = std::env::temp_dir().join(format!(
+            "rgbdns-acme-mixed-test-{}-{}",
+            std::process::id(),
+            random_id().unwrap()
+        ));
+        fs::create_dir(&directory).unwrap();
+        let secret = vec![7u8; 32];
+        let config = directory.join("acme.conf");
+        fs::write(
+            &config,
+            format!(
+                "certbot. hmac-sha256. {} legacy.example. _acme-challenge. 60\n",
+                STANDARD.encode(&secret)
+            ),
+        )
+        .unwrap();
+
+        let signed_apex: Name = "signed.example".parse().unwrap();
+        let signed_source = Zone::parse(
+            "Zsigned.example:ns.signed.example:hostmaster.signed.example:7:3600:600:86400:300:300\n\
+             &signed.example:192.0.2.53:ns.signed.example:300\n",
+        )
+        .unwrap();
+        let signing_policy =
+            crate::dnssec::generate_key(&signed_apex, &directory.join("key.pk8")).unwrap();
+        let unsigned_source = Zone::parse(
+            "Zlegacy.example:ns.legacy.example:hostmaster.legacy.example:8:3600:600:86400:300:300\n\
+             &legacy.example:192.0.2.54:ns.legacy.example:300\n",
+        )
+        .unwrap();
+        let mut records = crate::dnssec::sign_zone(&signed_source, &signing_policy)
+            .unwrap()
+            .into_iter()
+            .map(|record| (record, crate::zone::RecordMetadata::default()))
+            .collect::<Vec<_>>();
+        records.extend(
+            unsigned_source
+                .record_entries()
+                .map(|(record, metadata)| (record.clone(), metadata)),
+        );
+        let mixed = Zone::from_compiled_records(records, Vec::new(), Vec::new());
+        assert!(mixed.is_dnssec_signed(&signed_apex));
+        assert!(!mixed.is_dnssec_signed(&"legacy.example".parse().unwrap()));
+
+        let live = LiveZone::new(mixed.clone());
+        let invalid_publication = Publication::new(
+            directory.join("does-not-exist"),
+            directory.join("also-does-not-exist"),
+        )
+        .unwrap();
+        let updates = AcmeUpdates::from_file_with_publication(
+            &config,
+            &directory,
+            mixed,
+            live.clone(),
+            Some(invalid_publication),
+        )
+        .unwrap();
+        assert!(updates.publication.is_none());
+
+        let policy = updates.policies.values().next().unwrap();
+        let zone: Name = "legacy.example".parse().unwrap();
+        let owner: Name = "_acme-challenge.legacy.example".parse().unwrap();
+        let wire = admin_wire(policy, &zone, &owner, AdminAction::Present(b"token")).unwrap();
+        assert_eq!(updates.handle(&wire).unwrap()[3] & 0x0f, 0);
+        assert!(matches!(
+            live.snapshot().lookup(&owner, crate::RecordType::Txt),
+            crate::zone::Lookup::Answer(records) if records.len() == 1
+        ));
+
+        fs::remove_dir_all(directory).unwrap();
     }
 
     #[test]

@@ -16,8 +16,14 @@ if [ -f "$config_dir/data-drop.env" ]; then
         rgbdns-zones.path >/dev/null 2>&1 || true
     "$systemctl" enable --now rgbdns-tinydns.service
     "$systemctl" enable --now rgbdns-data.path
+    if [ -f "$config_dir/dnssec.env" ]; then
+        "$systemctl" enable --now rgbdns-dnssec-publish.timer
+        "$systemctl" enable --now rgbdns-dnssec-check.timer
+    fi
 elif [ -f "$config_dir/secondary.env" ]; then
     "$systemctl" disable --now rgbdns-data.path >/dev/null 2>&1 || true
+    "$systemctl" disable --now rgbdns-dnssec-publish.timer \
+        rgbdns-dnssec-check.timer >/dev/null 2>&1 || true
     "$systemctl" enable --now rgbdns-tinydns.service
     "$systemctl" enable --now rgbdns-secondary-sync.timer
     if [ -f "$config_dir/zones-drop.env" ]; then

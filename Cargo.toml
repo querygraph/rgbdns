@@ -1,11 +1,12 @@
 [package]
 name = "rgbdns"
-version = "0.5.3"
+version = "0.6.3"
 edition = "2024"
 license = "Unlicense"
 description = "A safe, faithful Rust reimplementation of the djbdns suite"
 
 [dependencies]
+async-trait = "0.1"
 base64 = "0.22"
 cdb = "0.6"
 chrono = "0.4"
@@ -15,6 +16,7 @@ hmac = "0.12"
 hickory-server = { version = "0.26.1", default-features = false, features = ["dnssec-ring", "recursor", "resolver"] }
 ipnet = "2"
 nix = { version = "0.31.3", features = ["process", "user"] }
+rustls-pki-types = "1"
 sha2 = "0.10"
 tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
@@ -54,6 +56,41 @@ bench = false
 [[bin]]
 name = "tinydns-data"
 path = "src/bin/tinydns-data.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-keygen"
+path = "src/bin/rgbsec-keygen.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-sign"
+path = "src/bin/rgbsec-sign.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-data"
+path = "src/bin/rgbsec-data.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-ds"
+path = "src/bin/rgbsec-ds.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-check"
+path = "src/bin/rgbsec-check.rs"
+bench = false
+
+[[bin]]
+name = "aname-materialize"
+path = "src/bin/aname-materialize.rs"
+bench = false
+
+[[bin]]
+name = "acme-materialize"
+path = "src/bin/acme-materialize.rs"
 bench = false
 
 [[bin]]

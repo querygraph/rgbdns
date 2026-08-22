@@ -1,0 +1,37 @@
+[Unit]
+Description=Materialize, sign, verify, and publish rgbdns zones
+Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/etc/rgbdns/dnssec.env
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=/var/lib/rgbdns/tinydns
+EnvironmentFile=/etc/rgbdns/dnssec.env
+ExecStart=/usr/lib/rgbdns/publish-dnssec /var/lib/rgbdns/tinydns
+ExecStartPost=/bin/systemctl try-restart rgbdns-tinydns.service
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=read-only
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectProc=invisible
+ProtectSystem=strict
+ReadOnlyPaths=/etc/rgbdns
+ReadWritePaths=/var/lib/rgbdns/tinydns
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+UMask=0077

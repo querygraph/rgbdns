@@ -1,0 +1,17 @@
+.TH RGBSEC-DS 1 "2026-08-19" "rgbdns 0.6.3" "User Commands"
+.SH NAME
+rgbsec-ds \- derive the parent DS record from an rgbdns DNSSEC policy
+.SH SYNOPSIS
+.B rgbsec-ds
+.I dnssec-line
+.SH DESCRIPTION
+Reads one complete
+.B Kzone:keyfile:algorithm:validity:refresh:inception-skew
+argument, derives the public DNSKEY, and prints a presentation-format SHA-256
+DS record. Publishing that record at the parent activates the chain of trust.
+.SH EXIT STATUS
+Zero on success, 100 for usage errors, and 111 for operational failures.
+.SH SEE ALSO
+.BR rgbsec-keygen (1),
+.BR rgbsec-check (1),
+.BR rgbdns (7)

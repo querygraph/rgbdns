@@ -5,6 +5,55 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-08-20
+
+### Fixed
+
+- Treat DNS suffix checks as ASCII case-insensitive so 0x20-randomized queries
+  for nonexistent names receive signed NXDOMAIN/NSEC proofs instead of
+  REFUSED responses.
+
+## [0.6.2] - 2026-08-19
+
+### Fixed
+
+- Keep ACME-managed `U` zones on the unprivileged in-memory overlay path when
+  another zone in the same snapshot is signed. This avoids invoking the
+  root-only signer during authoritative startup or an unsigned-zone update.
+- Stop `rgbdns-setup` from installing a root-only signer as an unprivileged
+  ACME publication hook. ACME updates to a `K` zone continue to fail closed
+  unless the operator supplies an explicit privileged publication mechanism.
+
+## [0.6.1] - 2026-08-19
+
+### Fixed
+
+- Rename the DNSSEC utility suite to the collision-free `rgbsec-keygen`,
+  `rgbsec-sign`, `rgbsec-data`, `rgbsec-ds`, and `rgbsec-check` commands so the
+  package can coexist with BIND utilities such as `dnssec-keygen`.
+
+## [0.6.0] - 2026-08-18
+
+### Added
+
+- Opt-in, offline authoritative DNSSEC with ECDSA P-256/SHA-256, NSEC denial,
+  signed wildcard and delegation behavior, standard signed AXFR, DS derivation,
+  cryptographic snapshot checks, and signed-RRset-aware UDP truncation.
+- Tinydns-style `dnssec-keygen`, `dnssec-sign`, `dnssec-data`, `dnssec-ds`,
+  `dnssec-check`, `aname-materialize`, and `acme-materialize` utilities with
+  line-oriented configuration and atomic last-known-good publication.
+- Fail-closed mixed snapshots: `K` lines select signed zones and explicit `U`
+  lines retain unsigned zones, including their ANAME and qualified data.
+- Root-only signing and unprivileged monitoring timers. DNSSEC remains disabled
+  unless an operator supplies a policy; the original rgbdns path is unchanged.
+
+### Security
+
+- Private signing keys are primary-only 0600 files and are never opened by
+  `tinydns`, `axfrdns`, or a secondary.
+- DS, DNSKEY, RRSIG, and NSEC data are structurally validated at text, CDB,
+  packet, and AXFR boundaries before publication or service.
+
 ### Fixed
 
 - Daily email delivery no longer requires the optional `hostname` utility when

@@ -10,4 +10,11 @@ fi
 cd "$state_dir"
 test -r data
 umask 027
+if [ -r /etc/rgbdns/dnssec.env ]; then
+    # shellcheck disable=SC1091
+    . /etc/rgbdns/dnssec.env
+    : "${DNSSEC_POLICY:=/etc/rgbdns/dnssec}"
+    test -r data.cdb
+    exec /usr/bin/rgbsec-check data.cdb "$DNSSEC_POLICY"
+fi
 exec /usr/bin/tinydns-data

@@ -1,0 +1,23 @@
+.TH RGBSEC-DATA 1 "2026-08-19" "rgbdns 0.6.3" "User Commands"
+.SH NAME
+rgbsec-data \- sign and compile an rgbdns DNSSEC snapshot
+.SH SYNOPSIS
+.B rgbsec-data
+.RI [ data
+.RI [ data.cdb ]]
+.SH DESCRIPTION
+Performs the bounded offline signing transform of
+.BR rgbsec-sign (1)
+and compiles the result directly to a CDB. It reads
+.I dnssec
+in the working directory and replaces the destination only after the new CDB
+has been written, synchronized, and successfully reloaded.
+.PP
+K zones are signed; explicit U zones retain their unsigned records, locations,
+cutoffs, and ANAME directives.
+.SH EXIT STATUS
+Zero on success, 100 for usage errors, and 111 for operational failures.
+.SH SEE ALSO
+.BR rgbsec-sign (1),
+.BR rgbsec-check (1),
+.BR tinydns-data (1)

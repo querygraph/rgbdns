@@ -1,0 +1,24 @@
+[Unit]
+Description=Verify the active rgbdns DNSSEC snapshot
+Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
+ConditionPathExists=/etc/rgbdns/dnssec.env
+
+[Service]
+Type=oneshot
+User=rgbdns
+Group=rgbdns
+WorkingDirectory=/var/lib/rgbdns/tinydns
+EnvironmentFile=/etc/rgbdns/dnssec.env
+ExecStart=/usr/bin/rgbsec-check /var/lib/rgbdns/tinydns/data.cdb /etc/rgbdns/dnssec
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native

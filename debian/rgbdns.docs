@@ -3,4 +3,6 @@ CHANGELOG.md
 docs/DEBIAN.md
 docs/compatibility.md
 docs/conformance.md
+docs/DNSSEC.md
+docs/DNSSEC-DESIGN.md
 docs/performance.md

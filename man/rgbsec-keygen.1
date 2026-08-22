@@ -1,0 +1,16 @@
+.TH RGBSEC-KEYGEN 1 "2026-08-19" "rgbdns 0.6.3" "User Commands"
+.SH NAME
+rgbsec-keygen \- create an rgbdns DNSSEC signing key and policy line
+.SH SYNOPSIS
+.B rgbsec-keygen
+.I zone keyfile
+.SH DESCRIPTION
+Creates a new ECDSA P-256 PKCS#8 private key with mode 0600 and prints the
+corresponding one-line rgbdns DNSSEC policy. The key file must not already
+exist. Run this command only on the signing primary.
+.SH EXIT STATUS
+Zero on success, 100 for usage errors, and 111 for operational failures.
+.SH SEE ALSO
+.BR rgbsec-sign (1),
+.BR rgbsec-ds (1),
+.BR rgbdns (7)

@@ -1,0 +1,13 @@
+[Unit]
+Description=Monitor rgbdns DNSSEC signature lifetime
+Documentation=man:rgbdns(7) https://github.com/querygraph/rgbdns
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1h
+RandomizedDelaySec=5min
+Persistent=yes
+Unit=rgbdns-dnssec-check.service
+
+[Install]
+WantedBy=timers.target
