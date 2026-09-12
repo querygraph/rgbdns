@@ -100,8 +100,10 @@ test "$(cat "$signed/data")" = '.example.net:192.0.2.2:a' ||
     fail "DNSSEC source was not replaced"
 test "$(cat "$signed/data.cdb")" = 'SIGNED' ||
     fail "an unsigned database replaced the signed data.cdb"
-leftovers=$(find "$signed" -mindepth 1 -name '.primary-import.*')
-[ -z "$leftovers" ] || fail "stage left behind: $leftovers"
+# No find(1) here: the openSUSE build container does not ship findutils.
+for leftover in "$signed"/.primary-import.*; do
+    [ ! -e "$leftover" ] || fail "stage left behind: $leftover"
+done
 
 printf 'INVALID\n' >"$drop"
 if import_signed; then
