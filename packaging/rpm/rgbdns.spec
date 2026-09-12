@@ -1,5 +1,5 @@
 Name:           rgbdns
-Version:        0.6.3
+Version:        0.6.4
 Release:        1%{?dist}
 Summary:        Memory-safe DNS server and djbdns-compatible tool suite
 License:        Unlicense
@@ -171,6 +171,9 @@ fi
 %{_mandir}/man1/rgbsec-sign.1%{?ext_man}
 
 %changelog
+* Sat Sep 12 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.4-1
+- Publish the newer of the source and stored ACME serials
+
 * Thu Aug 20 2026 Alexy Khrabrov <deliverable@gmail.com> - 0.6.3-1
 - Answer 0x20-randomized negative queries with signed NSEC proofs
 

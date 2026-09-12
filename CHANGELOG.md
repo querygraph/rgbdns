@@ -5,6 +5,15 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ## [Unreleased]
 
+## [0.6.4] - 2026-09-12
+
+### Fixed
+
+- Publish the newer (RFC 1982 order) of the source data's SOA serial and the
+  stored ACME serial for ACME-managed zones. The stored serial used to replace
+  the source serial unconditionally, so an operator's edit with a higher serial
+  kept publishing the older ACME serial and secondaries never transferred it.
+
 ## [0.6.3] - 2026-08-20
 
 ### Fixed
