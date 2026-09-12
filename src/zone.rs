@@ -33,6 +33,15 @@ pub(crate) struct RecordMetadata {
     pub location: Option<[u8; 2]>,
 }
 pub(crate) type MaterializationInput = (Vec<Record>, Vec<(Name, Aname)>);
+/// The later of two SOA serials in RFC 1982 serial-number order.
+pub(crate) fn newer_serial(a: u32, b: u32) -> u32 {
+    if b != a && b.wrapping_sub(a) < (1 << 31) {
+        b
+    } else {
+        a
+    }
+}
+
 impl Zone {
     /// Returns a validated snapshot with the supplied ACME TXT overlay and SOA
     /// serial overrides. The source zone is not modified.
@@ -78,7 +87,10 @@ impl Zone {
                 serial: current, ..
             } = &mut soa.data
             {
-                *current = *serial;
+                // The stored ACME serial only moves forward from updates; a newer
+                // source serial (an operator's edit) must still publish, or
+                // secondaries never see the change.
+                *current = newer_serial(*current, *serial);
             }
         }
         zone.validate_aliases()?;
@@ -1215,6 +1227,34 @@ mod tests {
             Lookup::Answer(records)
                 if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
         ));
+    }
+
+    #[test]
+    fn acme_overlay_publishes_the_newer_of_source_and_stored_serials() {
+        let zone: Name = "example".parse().unwrap();
+        let soa = |base: u32| {
+            Zone::parse(&format!(
+                "Zexample:ns.example:hostmaster.example:{base}:16384:2048:1048576:2560:3600\n"
+            ))
+            .unwrap()
+        };
+        let published = |base: u32, stored: u32| {
+            let serials = BTreeMap::from([(zone.clone(), stored)]);
+            soa(base)
+                .with_acme_overlay(&[], &serials)
+                .unwrap()
+                .soa_serial(&zone)
+                .unwrap()
+        };
+        // an operator's edit after the last ACME update must still publish
+        assert_eq!(published(2_026_091_201, 2_026_081_503), 2_026_091_201);
+        // ACME updates since the last edit keep their higher serial
+        assert_eq!(published(2_026_081_501, 2_026_081_503), 2_026_081_503);
+        assert_eq!(published(7, 7), 7);
+        // RFC 1982 order across the wrap
+        assert_eq!(published(2, u32::MAX), 2);
+        assert_eq!(newer_serial(u32::MAX, 2), 2);
+        assert_eq!(newer_serial(2, u32::MAX), 2);
     }
 
     #[test]
