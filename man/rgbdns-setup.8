@@ -1,4 +1,4 @@
-.TH RGBDNS-SETUP 8 "2026-07-26" "rgbdns 0.6.4" "System Administration"
+.TH RGBDNS-SETUP 8 "2026-07-26" "rgbdns 0.6.5" "System Administration"
 .SH NAME
 rgbdns-setup \- configure a packaged rgbdns primary or secondary
 .SH SYNOPSIS
@@ -50,6 +50,15 @@ it on a deliberately unlogged deployment.
 Enable offline authoritative DNSSEC on a primary using the absolute policy
 file. If omitted, setup preserves the ordinary djbdns-compatible unsigned
 publication path.
+.TP
+.BI --data-drop-import " mode"
+.B enabled
+(default) or
+.BR disabled .
+A disabled primary skips uploads to the data drop; use it when the data is
+deployed into
+.I /var/lib/rgbdns/tinydns
+by other means.
 .TP
 .B --no-start
 Write configuration without enabling or starting services.

@@ -20,7 +20,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.6.4_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.6.5_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -131,6 +131,15 @@ ssh primary.example 'mv rgbdns.data.new rgbdns.data'
 replaces the live `data` and `data.cdb` only after compilation succeeds. It
 then restarts tinydns. A malformed, partial, or symlinked upload leaves the
 currently served database unchanged.
+
+On a DNSSEC primary the import validates the upload with the plain
+`tinydns-data` compiler, replaces only `data`, and leaves `data.cdb` to
+`rgbdns-dnssec-publish.service`, which signs, verifies and publishes it.
+
+A primary whose data is deployed into `/var/lib/rgbdns/tinydns` directly, for
+example by a CI workflow, can turn the import off with
+`--data-drop-import disabled`, or by adding `DATA_DROP_IMPORT=disabled` to
+`/etc/rgbdns/data-drop.env`. Uploads are then skipped, not failed.
 
 To validate before starting anything, add `--no-start`, then inspect:
 
@@ -258,16 +267,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.6.4_amd64.deb
+dpkg-deb --info ../rgbdns_0.6.5_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.6.4_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.6.5_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.6.4_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.6.5_amd64.deb
 dpkg-query -W rgbdns
 ```
 
