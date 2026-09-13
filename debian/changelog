@@ -1,3 +1,13 @@
+rgbdns (0.6.5) unstable; urgency=medium
+
+  * Import primary data uploads on DNSSEC primaries: validate with
+    tinydns-data, replace only the source and let rgbdns-dnssec-publish
+    sign and publish it. The import used to fail silently.
+  * Add DATA_DROP_IMPORT=disabled (rgbdns-setup --data-drop-import) to skip
+    the import where data is deployed into the state directory directly.
+
+ -- Alexy Khrabrov <deliverable@gmail.com>  Sat, 12 Sep 2026 23:55:25 +0200
+
 rgbdns (0.6.4) unstable; urgency=medium
 
   * Publish the newer of the source data serial and the stored ACME serial for

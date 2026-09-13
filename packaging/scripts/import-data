@@ -1,11 +1,56 @@
 #!/bin/sh
 set -eu
 
+# rgbdns-data-import.service: validate an uploaded primary data file and make
+# it live.
+#
+#   import-data                   import $DATA_DROP (see /etc/rgbdns/data-drop.env)
+#   import-data --check-enabled   ExecCondition: exit 0 when the import is
+#                                 enabled, 1 to skip the run cleanly when
+#                                 DATA_DROP_IMPORT=disabled, 255 (a unit
+#                                 failure) for any other value
+#
+# Without DNSSEC the staged upload is compiled with compile-zone and both data
+# and data.cdb are replaced. On a DNSSEC primary (/etc/rgbdns/dnssec.env)
+# compile-zone only verifies the already signed CDB, so the upload is instead
+# validated with the plain tinydns-data compiler and only data is replaced;
+# rgbdns-dnssec-publish.service, started after this script, signs, verifies
+# and publishes data.cdb from it. An unsigned validation database is never
+# served.
+
+import_mode() {
+    case ${DATA_DROP_IMPORT:-enabled} in
+        enabled) return 0 ;;
+        disabled) return 1 ;;
+        *)
+            echo "rgbdns-import-data: DATA_DROP_IMPORT must be enabled or disabled, not: $DATA_DROP_IMPORT" >&2
+            exit 255
+            ;;
+    esac
+}
+
+case ${1-} in
+    --check-enabled)
+        import_mode && exit 0
+        echo "rgbdns-import-data: skipped: DATA_DROP_IMPORT=disabled"
+        exit 1
+        ;;
+    '') ;;
+    *) echo "usage: import-data [--check-enabled]" >&2; exit 2 ;;
+esac
+
+import_mode || {
+    echo "rgbdns-import-data: DATA_DROP_IMPORT=disabled; nothing imported"
+    exit 0
+}
+
 : "${DATA_DROP:?DATA_DROP is required in /etc/rgbdns/data-drop.env}"
 : "${DATA_DROP_OWNER:?DATA_DROP_OWNER is required in /etc/rgbdns/data-drop.env}"
 
 state_dir=${RGBDNS_STATE_DIR:-/var/lib/rgbdns/tinydns}
 compile_zone=${RGBDNS_COMPILE_ZONE:-/usr/lib/rgbdns/compile-zone}
+dnssec_env=${RGBDNS_DNSSEC_ENV:-/etc/rgbdns/dnssec.env}
+tinydns_data=${RGBDNS_TINYDNS_DATA:-/usr/bin/tinydns-data}
 service_user=${RGBDNS_SERVICE_USER-rgbdns}
 
 exec 9>"$state_dir/acme-update.lock"
@@ -36,6 +81,26 @@ umask 027
 install -m 0640 "$DATA_DROP" "$stage/data"
 if [ -n "$service_user" ]; then
     chown "$service_user:$service_user" "$stage" "$stage/data"
+fi
+
+if [ -r "$dnssec_env" ]; then
+    # Validation only: the compiled database stays in the stage and is removed.
+    if [ -n "$service_user" ]; then
+        # shellcheck disable=SC2016 # $1 and $2 expand in the child shell
+        runuser -u "$service_user" -- sh -c 'cd "$1" && exec "$2"' sh "$stage" "$tinydns_data"
+    else
+        (cd "$stage" && "$tinydns_data")
+    fi
+    [ -s "$stage/data.cdb" ] || {
+        echo "rgbdns-import-data: validation produced no data.cdb" >&2
+        exit 1
+    }
+    mv -f "$stage/data" "$state_dir/data"
+    echo "rgbdns-import-data: validated $DATA_DROP and installed it as the DNSSEC source; rgbdns-dnssec-publish.service signs and publishes it"
+    exit 0
+fi
+
+if [ -n "$service_user" ]; then
     runuser -u "$service_user" -- env RGBDNS_STATE_DIR="$stage" "$compile_zone"
 else
     RGBDNS_STATE_DIR=$stage "$compile_zone"

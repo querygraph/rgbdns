@@ -17,6 +17,8 @@ options:
   --dnssec-policy FILE      apply one explicit K (signed) or U (unsigned) line per zone
   --data-drop FILE          watch an scp destination for primary rgbdns.data
   --data-drop-owner USER    require data uploads to be owned by USER
+  --data-drop-import MODE   enabled (default) or disabled, for primaries whose
+                            data is deployed into the state directory directly
   --zone NAME               add a zone to transfer (repeatable)
   --zones "NAME ..."        add a whitespace- or comma-separated zone list
   --zones-drop FILE         watch an scp destination for a one-zone-per-line list
@@ -65,6 +67,7 @@ query_log=1
 data_file=
 data_drop=
 data_drop_owner=${SUDO_USER:-root}
+data_drop_import=enabled
 zones=
 primary=
 zones_drop=
@@ -77,7 +80,7 @@ while [ $# -gt 0 ]; do
     option=$1
     shift
     case $option in
-        --listen-ip|--port|--allow-nets|--query-log|--acme-update-config|--dnssec-policy|--data|--data-drop|--data-drop-owner|--zone|--zones|--primary|--zones-drop|--zones-drop-owner)
+        --listen-ip|--port|--allow-nets|--query-log|--acme-update-config|--dnssec-policy|--data|--data-drop|--data-drop-owner|--data-drop-import|--zone|--zones|--primary|--zones-drop|--zones-drop-owner)
             [ $# -gt 0 ] || die "$option requires a value"
             value=$1
             shift
@@ -91,6 +94,7 @@ while [ $# -gt 0 ]; do
                 --data) data_file=$value ;;
                 --data-drop) data_drop=$value ;;
                 --data-drop-owner) data_drop_owner=$value ;;
+                --data-drop-import) data_drop_import=$value ;;
                 --zone) zones="${zones}${zones:+ }$value" ;;
                 --zones)
                     value=$(printf '%s' "$value" | tr ',' ' ')
@@ -147,6 +151,10 @@ case $data_drop in
 esac
 getent passwd "$data_drop_owner" >/dev/null 2>&1 ||
     die "data drop owner does not exist: $data_drop_owner"
+case $data_drop_import in
+    enabled|disabled) ;;
+    *) die "data drop import must be enabled or disabled: $data_drop_import" ;;
+esac
 
 if [ -z "$zones_drop" ]; then
     zones_drop=/var/lib/rgbdns/incoming/rgbdns.zones
@@ -219,7 +227,8 @@ case $role in
             /etc/rgbdns/zones-drop.env
         rm -rf /etc/systemd/system/rgbdns-zones.path.d
         write_env /etc/rgbdns/data-drop.env \
-            "DATA_DROP=$data_drop" "DATA_DROP_OWNER=$data_drop_owner"
+            "DATA_DROP=$data_drop" "DATA_DROP_OWNER=$data_drop_owner" \
+            "DATA_DROP_IMPORT=$data_drop_import"
         install -d -m 0755 /etc/systemd/system/rgbdns-data.path.d
         {
             printf '%s\n' '[Path]' 'PathChanged='

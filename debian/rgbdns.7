@@ -1,4 +1,4 @@
-.TH RGBDNS 7 "2026-08-18" "rgbdns 0.6.4" "System Administration"
+.TH RGBDNS 7 "2026-08-18" "rgbdns 0.6.5" "System Administration"
 .SH NAME
 rgbdns \- authoritative DNS, AXFR, recursion, and djbdns-compatible tools
 .SH SYNOPSIS
@@ -42,6 +42,9 @@ Configured scp drop path and required upload owner.
 .TP
 .I /etc/rgbdns/data-drop.env
 Configured primary-data scp drop path and required upload owner.
+.B DATA_DROP_IMPORT=disabled
+skips the import, for primaries whose data is deployed into the state
+directory directly.
 .TP
 .I /var/lib/rgbdns/tinydns/data
 Tinydns-format zone source.
