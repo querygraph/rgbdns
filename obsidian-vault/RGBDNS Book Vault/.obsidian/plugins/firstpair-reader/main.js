@@ -6,10 +6,10 @@
  * firstpair-reader/dictionary.js: sha256 a9e0470f3b444105567d5c2b967e4127e01410368095b8360f891229591c56f3
  * firstpair-reader/quotes.js: sha256 0b5243294ed374e473b9213edfcafc6f137c9c967628e5b285abe36dd3a6b63b
  * firstpair-reader/strings.js: sha256 772c1233567c3e9925c2592a67cee6131ec25f5c7b2d78a2adf0c0133bb69718
- * firstpair-triptych/review-state.js: sha256 704f02b06961d1c78113ddb760355e75c04715305ac338ae1f5c9dca848f4961
+ * firstpair-triptych/review-state.js: sha256 ca475578ae239aca9f6cca128d9eb014edc89bb9828650e3af02de2f184848a5
  * shared/metrics.js: sha256 038414feb3790124525a5dfcd2f80d66bed599af8cde01dc7f7757bc949a6e4e
  * shared/ledger-store.js: sha256 b35236c51a80555a3c3547893bce2613e4fcfc5114a2aed897e5a1a838937d33
- * shared/voice-core.js: sha256 a25183202274ce854ddc9f617ea9262fe35b69880292c7aa2b39f649a8b59ea3
+ * shared/voice-core.js: sha256 9c8c2541b9e66116b208711937ece95b831fd788194a107379ab9ea4b2f4c40a
  * shared/span-editor.js: sha256 fb9e5fc831012aa727a4484fa21b470d4930b8a8ddd7bcd95f3715d405f0f303
  * Do not edit this release asset directly.
  */
@@ -2562,7 +2562,7 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       settings_no_editions: "No editions seen yet — open any triptych note once.",
       action_note: "Note",
       action_voice: "🎙 Voice",
-      note_dialog_title: "Note on this span",
+      note_dialog_title: "Note on “{quote}”",
       note_text_aria: "Text note",
       note_text_placeholder: "Type a note, record one, or both.",
       record: "Record",
@@ -2787,7 +2787,7 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       settings_no_editions: "Nessuna edizione ancora vista: aprite una volta una nota di trittico.",
       action_note: "Nota",
       action_voice: "🎙 Voce",
-      note_dialog_title: "Nota su questo passo",
+      note_dialog_title: "Nota su «{quote}»",
       note_text_aria: "Nota scritta",
       note_text_placeholder: "Scrivete una nota, registratela, o entrambe le cose.",
       record: "Registra",
@@ -3011,7 +3011,7 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       settings_no_editions: "Издания ещё не встречались — откройте любую заметку-триптих.",
       action_note: "Заметка",
       action_voice: "🎙 Голос",
-      note_dialog_title: "Заметка к выделенному",
+      note_dialog_title: "Заметка к «{quote}»",
       note_text_aria: "Текст заметки",
       note_text_placeholder: "Напишите заметку, запишите голосом — или то и другое.",
       record: "Записать",
@@ -3827,10 +3827,8 @@ __firstpairModules["shared/voice-core.js"] = (module, exports) => {
         dialog.setAttribute("role", "dialog");
         dialog.setAttribute("aria-modal", "true");
         const title = document.createElement("h2");
-        title.textContent = t("note_dialog_title");
-        const quote = document.createElement("p");
-        quote.className = "lt-correction-quote";
-        quote.textContent = t("selected_quote", { quote: selector.exact });
+        title.className = "lt-note-title";
+        title.textContent = t("note_dialog_title", { quote: selector.exact });
         const field = document.createElement("textarea");
         field.rows = 3;
         field.placeholder = t("note_text_placeholder");
@@ -3869,9 +3867,24 @@ __firstpairModules["shared/voice-core.js"] = (module, exports) => {
         save.className = "mod-cta";
         save.textContent = t("save_note");
         actions.append(deleteNote, cancel, save);
-        dialog.append(title, quote, field, recorderRow, clipsHeading, clipList, error, actions);
+        // Save sits right under the text so the iOS keyboard never covers it.
+        dialog.append(title, field, error, actions, recorderRow, clipsHeading, clipList);
         overlay.appendChild(dialog);
         document.body.appendChild(overlay);
+        // Fit the overlay to the visible viewport: when the on-screen keyboard
+        // opens, the dialog shrinks and scrolls above it instead of under it.
+        const viewport = view.visualViewport;
+        const fitViewport = () => {
+          if (!viewport) return;
+          overlay.style.top = `${viewport.offsetTop}px`;
+          overlay.style.height = `${viewport.height}px`;
+          overlay.style.bottom = "auto";
+        };
+        if (viewport) {
+          viewport.addEventListener("resize", fitViewport);
+          viewport.addEventListener("scroll", fitViewport);
+          fitViewport();
+        }
 
         const recorder = new VoiceRecorder();
         let ticker = null;
@@ -4024,6 +4037,10 @@ __firstpairModules["shared/voice-core.js"] = (module, exports) => {
           closed = true;
           this.voiceListeners.delete(listener);
           document.removeEventListener("keydown", keydown, true);
+          if (viewport) {
+            viewport.removeEventListener("resize", fitViewport);
+            viewport.removeEventListener("scroll", fitViewport);
+          }
           overlay.remove();
           if (onClose) onClose();
         };
