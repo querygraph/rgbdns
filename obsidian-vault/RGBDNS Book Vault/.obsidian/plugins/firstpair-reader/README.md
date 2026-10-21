@@ -46,8 +46,14 @@ language bar per note; at least one language stays on.
 
 ## Editing tools (optional)
 
-Settings → **Editing tools** lets you select text on a page and attach a note:
-typed, recorded with **🎙 Voice**, or both. A recording is saved and verified
+Settings → **Editing tools** adds a **Sentence & words** toggle to each page.
+It puts a **Words** button beside every paragraph, list item, and heading;
+pick words (tap or drag on a phone, checkboxes on a Mac) and attach a note:
+typed, recorded with **🎙 Voice**, or both. Noted spans are coloured, up to
+three may overlap (overlapping ones in different colours, shared words
+striped), and tapping a coloured word reopens its note. This is the same
+editor module FirstPair Triptych uses (`shared/span-editor.js`), so the two
+behave alike. A recording is saved and verified
 under `Preferences/voice/` before anything refers to it; transcription (local
 `mlx_whisper` on a Mac, or an OpenAI-compatible service) follows and never
 replaces it. Notes go to the shared `Preferences/triptych-decisions.json` with
@@ -63,6 +69,7 @@ Author `main-source.js` and its modules, then bundle the single release file:
 python3 publishing/scripts/bundle-obsidian-plugin.py publishing/vault/plugin/firstpair-reader
 ```
 
-The bundle embeds the shared modules (`../shared/*.js` and FirstPair
-Triptych's `review-state.js`). Vaults install `manifest.json`, `main.js`,
+The bundle embeds the shared modules (`../shared/*.js`, including the span
+editor, and FirstPair Triptych's `review-state.js`), and `styles-source.css`
+is expanded with `../shared/span-editor.css` into `styles.css`. Vaults install `manifest.json`, `main.js`,
 `styles.css`, and this README, disabled by default.
