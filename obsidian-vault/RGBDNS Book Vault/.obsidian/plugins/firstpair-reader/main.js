@@ -10,7 +10,7 @@
  * shared/metrics.js: sha256 038414feb3790124525a5dfcd2f80d66bed599af8cde01dc7f7757bc949a6e4e
  * shared/ledger-store.js: sha256 b35236c51a80555a3c3547893bce2613e4fcfc5114a2aed897e5a1a838937d33
  * shared/voice-core.js: sha256 9c8c2541b9e66116b208711937ece95b831fd788194a107379ab9ea4b2f4c40a
- * shared/span-editor.js: sha256 fb9e5fc831012aa727a4484fa21b470d4930b8a8ddd7bcd95f3715d405f0f303
+ * shared/span-editor.js: sha256 3eeb6c598f0d65974cdb47fb9265397732a106165dabc458cc100c264829a233
  * Do not edit this release asset directly.
  */
 const __firstpairModules = {};
@@ -4409,9 +4409,17 @@ __firstpairModules["shared/span-editor.js"] = (module, exports) => {
       }
     }
 
+    // A note with a recording is a voice span: it takes the voice palette.
+    const isVoice = (record) => Array.isArray(record.voice) && record.voice.length > 0;
+    // The colour token of one span: its overlap colour in its own palette.
+    function fillToken(record, colors) {
+      return `${isVoice(record) ? "voice" : "span"}-${colors.get(record.id) || 0}`;
+    }
+
     // A span's colour, or the stripes of the two or three spans on one word.
+    // Each entry is a token ("span-1", "voice-0") or a bare overlap index.
     function spanFill(colors) {
-      const palette = colors.map((color) => `var(--lt-span-${color})`);
+      const palette = colors.map((color) => `var(--lt-${typeof color === "number" ? `span-${color}` : color})`);
       if (palette.length === 1) return palette[0];
       const band = 7;
       const stops = palette.map((value, index) => `${value} ${index * band}px ${(index + 1) * band}px`);
@@ -4499,7 +4507,8 @@ __firstpairModules["shared/span-editor.js"] = (module, exports) => {
           spanRecords.length > 1 ? "lt-phrase-overlap" : ""].filter(Boolean).join(" ");
         mark.setAttribute("role", "button");
         mark.setAttribute("tabindex", "0");
-        mark.style.background = spanFill(spanRecords.map((record) => colors.get(record.id) || 0));
+        if (spanRecords.some(isVoice)) mark.classList.add("lt-phrase-voice");
+        mark.style.background = spanFill(spanRecords.map((record) => fillToken(record, colors)));
         piece.node.parentNode.insertBefore(mark, piece.node);
         mark.appendChild(piece.node);
         const activate = (event) => {
@@ -4534,8 +4543,9 @@ __firstpairModules["shared/span-editor.js"] = (module, exports) => {
         button.className = "lt-span-choice";
         const swatch = document.createElement("span");
         swatch.className = "lt-span-swatch";
-        swatch.style.background = spanFill([colors.get(record.id) || 0]);
-        button.append(swatch, document.createTextNode(`“${record.exact}” · ${actionLabel(record.action)}`));
+        swatch.style.background = spanFill([fillToken(record, colors)]);
+        const label = actionLabel(isVoice(record) ? "voice" : record.action);
+        button.append(swatch, document.createTextNode(`“${record.exact}” · ${label}`));
         button.addEventListener("click", () => {
           menu.remove();
           onOpen(record);
@@ -4704,7 +4714,7 @@ __firstpairModules["shared/span-editor.js"] = (module, exports) => {
           const covering = spans.filter((entry) => entry.at.start < token.end && token.start < entry.at.end);
           label.toggleClass("lt-token-in-span", covering.length > 0);
           label.style.background = covering.length
-            ? spanFill(covering.map((entry) => colors.get(entry.record.id) || 0)) : "";
+            ? spanFill(covering.map((entry) => fillToken(entry.record, colors))) : "";
         }
       };
       picker.clear();
@@ -4750,7 +4760,7 @@ __firstpairModules["shared/span-editor.js"] = (module, exports) => {
     }
 
     return {
-      chooseSpan, createWordPicker, isTouchDevice, overlapAllowed, paintSpans, renderSavedRows, spanFill, textNodes,
+      chooseSpan, createWordPicker, fillToken, isTouchDevice, overlapAllowed, paintSpans, renderSavedRows, spanFill, textNodes,
     };
   };
 };
