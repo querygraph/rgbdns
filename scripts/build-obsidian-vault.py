@@ -10,6 +10,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Iterable
@@ -20,6 +21,13 @@ DEFAULT_RGBDNS_ROOT = Path(os.environ.get("RGBDNS_CODE_ROOT", str(REPO_ROOT)))
 DEFAULT_OUTPUT = REPO_ROOT / "obsidian-vault" / "RGBDNS Book Vault"
 VAULT_BOOK = "DNS from First Principles"
 MANUSCRIPT = REPO_ROOT / "docs" / "book" / "rgbdns.md"
+
+# FirstPair Reader 2 is the vault's reader plugin. It is installed from the
+# FirstPair checkout as its four release files, never its sources.
+FIRSTPAIR_ROOT = Path(os.environ.get("FIRSTPAIR_ROOT") or Path.home() / "src" / "firstpair").expanduser()
+READER_PLUGIN_ID = "firstpair-reader"
+READER_RELEASE_FILES = ("README.md", "main.js", "manifest.json", "styles.css")
+LEGACY_PLUGIN_IDS = ("rgbdns-reader",)
 
 SKIP_DIRS = {
     ".git",
@@ -160,6 +168,16 @@ def write_text(path: Path, text: str) -> None:
 def write_note(root: Path, path: str, metadata: dict[str, object], body: str) -> None:
     note = root / (path if path.endswith(".md") else f"{path}.md")
     write_text(note, f"{frontmatter(metadata)}\n\n{body}")
+
+
+def fence_for(lines: Iterable[str]) -> str:
+    """Return a backtick fence longer than any fence-like run inside ``lines``."""
+    longest = 0
+    for line in lines:
+        match = re.match(r" {0,3}(`{3,})", line)
+        if match:
+            longest = max(longest, len(match.group(1)))
+    return "`" * max(3, longest + 1)
 
 
 def language_for(path: str) -> str:
@@ -405,7 +423,6 @@ def render_fragment_block(fragment: Fragment) -> str:
     payload = {
         "id": fragment.id,
         "codeNote": fragment.code_note,
-        "heading": fragment.heading,
         "sourcePath": fragment.source_path,
         "startLine": fragment.start_line,
         "endLine": fragment.end_line,
@@ -417,7 +434,10 @@ def render_chapter(title: str, text: str, fragments: list[Fragment]) -> str:
     related = choose_chapter_fragments(title, fragments)
     body = [text, "", "## Generated Code Fragment Index", ""]
     if related:
-        body.append("These generated links open the collocated rgbdns codebase notes.")
+        body.append(
+            "Each card names an rgbdns fragment. In FirstPair Reader, Show code lists its "
+            "numbered lines and Open file opens the collocated code note with those lines marked."
+        )
         body.append("")
         for fragment in related:
             body.append(render_fragment_block(fragment))
@@ -445,14 +465,19 @@ def render_source_file(source: SourceFile) -> str:
     ])
     for fragment in source.fragments[:80]:
         lines.append(f"- [[{fragment.note_path}|{fragment.symbol}]]: lines {fragment.start_line}-{fragment.end_line}")
-    lines.extend(["", "## Full Source", "", f"```{source.language}"])
-    lines.extend(source.lines)
-    lines.append("```")
+    # Verbatim: fence_for picks an outer fence longer than any inside, which
+    # Obsidian and FirstPair Reader 2 both honour (CommonMark).
+    shown = source.lines
+    fence = fence_for(shown)
+    lines.extend(["", "## Full Source", "", f"{fence}{source.language}"])
+    lines.extend(shown)
+    lines.append(fence)
     return "\n".join(lines)
 
 
 def render_fragment_note(fragment: Fragment, source: SourceFile) -> str:
     excerpt = source.lines[fragment.start_line - 1:fragment.end_line]
+    fence = fence_for(excerpt)
     lines = [
         f"# {fragment.symbol}",
         "",
@@ -472,9 +497,9 @@ def render_fragment_note(fragment: Fragment, source: SourceFile) -> str:
         f'<span id="{fragment.id}" class="rgbdns-fragment-target"></span>',
         f"### {fragment.heading}",
         "",
-        f"```{fragment.language}",
+        f"{fence}{fragment.language}",
         *excerpt,
-        "```",
+        fence,
     ])
     return "\n".join(lines)
 
@@ -510,10 +535,12 @@ def render_vault_readme(manifest: dict[str, object]) -> str:
         "",
         "## Fragment Navigation",
         "",
-        "The vault includes a local Obsidian plugin named `rgbdns-reader`.",
-        "When enabled, generated `rgbdns-fragment` cards can open the related code-file note",
-        "and highlight the selected fragment. The plugin is bundled inside `.obsidian/plugins/`",
-        "and does not require a build step.",
+        "The vault bundles FirstPair Reader (`firstpair-reader`) in `.obsidian/plugins/`.",
+        "Enable it under Settings -> Community plugins; it needs no build step and makes",
+        "no network requests. It opens the chapters with a rail (Previous, Up, Back, Top,",
+        "TOC, Next) and turns each generated `rgbdns-fragment` block into a card:",
+        "Show code lists the fragment's numbered lines, and Open file opens the code note",
+        "with those lines marked. Without the plugin the notes remain a complete book.",
         "",
         "## Data Ledgers",
         "",
@@ -531,13 +558,90 @@ def render_vault_readme(manifest: dict[str, object]) -> str:
     ])
 
 
-def copy_plugin(output: Path) -> None:
-    source = REPO_ROOT / "obsidian-plugin" / "rgbdns-reader"
-    target = output / ".obsidian" / "plugins" / "rgbdns-reader"
+def reader_plugin_source() -> Path:
+    """Return the FirstPair Reader 2 release folder, failing if it is unusable."""
+    source = FIRSTPAIR_ROOT / "publishing" / "vault" / "plugin" / READER_PLUGIN_ID
+    missing = [name for name in READER_RELEASE_FILES if not (source / name).is_file()]
+    if missing:
+        raise SystemExit(
+            f"FirstPair Reader release files missing from {source}: {', '.join(missing)} "
+            "(set FIRSTPAIR_ROOT to a FirstPair checkout)"
+        )
+    manifest = json.loads((source / "manifest.json").read_text(encoding="utf-8"))
+    if manifest.get("id") != READER_PLUGIN_ID:
+        raise SystemExit(f"{source}/manifest.json has id {manifest.get('id')!r}, expected {READER_PLUGIN_ID!r}")
+    bundler = FIRSTPAIR_ROOT / "publishing" / "scripts" / "bundle-obsidian-plugin.py"
+    if not bundler.is_file():
+        raise SystemExit(f"FirstPair plugin bundler missing: {bundler}")
+    check = subprocess.run(
+        [sys.executable, str(bundler), str(source), "--check"],
+        capture_output=True,
+        text=True,
+    )
+    if check.returncode != 0:
+        raise SystemExit(
+            "FirstPair Reader main.js is stale; rebuild it with "
+            f"python3 {bundler} {source}\n{check.stdout}{check.stderr}".rstrip()
+        )
+    return source
+
+
+def read_plugin_list(output: Path) -> list[str] | None:
+    """Return an existing vault's community plugin list, or None for a clean output."""
+    path = output / ".obsidian" / "community-plugins.json"
+    if not path.is_file():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        return None
+    return value
+
+
+def migrate_plugin_list(previous: list[str] | None) -> list[str]:
+    """Carry an existing enablement list onto FirstPair Reader.
+
+    A clean output seeds an empty list (FirstPair: bundled plugins are disabled
+    until the reader enables them). A rebuild keeps the existing list and its
+    order, replacing a legacy reader id with ``firstpair-reader`` in place.
+    """
+    if previous is None:
+        return []
+    migrated: list[str] = []
+    for plugin_id in previous:
+        if plugin_id in LEGACY_PLUGIN_IDS:
+            plugin_id = READER_PLUGIN_ID
+        if plugin_id not in migrated:
+            migrated.append(plugin_id)
+    return migrated
+
+
+def copy_plugin(output: Path, source: Path, previous_plugins: list[str] | None) -> None:
+    plugins = output / ".obsidian" / "plugins"
+    for legacy in LEGACY_PLUGIN_IDS:
+        if (plugins / legacy).exists():
+            shutil.rmtree(plugins / legacy)
+    target = plugins / READER_PLUGIN_ID
     if target.exists():
         shutil.rmtree(target)
-    shutil.copytree(source, target)
-    write_text(output / ".obsidian" / "community-plugins.json", json.dumps(["rgbdns-reader"], indent=2))
+    target.mkdir(parents=True)
+    for name in READER_RELEASE_FILES:
+        shutil.copyfile(source / name, target / name)
+    write_text(
+        output / ".obsidian" / "community-plugins.json",
+        json.dumps(migrate_plugin_list(previous_plugins), indent=2),
+    )
+
+
+def portable_root(rgbdns_root: Path) -> str:
+    """Describe the code checkout without recording a local absolute path."""
+    try:
+        relative = rgbdns_root.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
+    except ValueError:
+        return "$RGBDNS_CODE_ROOT"
+    return relative or "."
 
 
 def copy_book_assets(output: Path) -> None:
@@ -548,6 +652,8 @@ def copy_book_assets(output: Path) -> None:
 
 
 def build_vault(rgbdns_root: Path, output: Path) -> dict[str, object]:
+    plugin_source = reader_plugin_source()
+    previous_plugins = read_plugin_list(output)
     if output.exists():
         shutil.rmtree(output)
     output.mkdir(parents=True)
@@ -570,7 +676,8 @@ def build_vault(rgbdns_root: Path, output: Path) -> dict[str, object]:
         f"Open {wiki(f'{VAULT_BOOK}/Book', 'the book map')} to start.",
         "",
         "This generated Obsidian vault collocates the book text with the current rgbdns codebase.",
-        "Use fragment cards to jump from explanatory text to highlighted code excerpts.",
+        "With FirstPair Reader enabled, fragment cards show the numbered code lines in place",
+        "or open the code note with those lines marked.",
     ]))
 
     chapter_links: list[tuple[str, str]] = []
@@ -762,18 +869,19 @@ def build_vault(rgbdns_root: Path, output: Path) -> dict[str, object]:
         "\n".join(json.dumps(unit, ensure_ascii=True) for unit in units),
     )
 
-    copy_plugin(output)
+    copy_plugin(output, plugin_source, previous_plugins)
     copy_book_assets(output)
 
     manifest = {
         "book": "DNS from First Principles",
-        "rgbdns_root": str(rgbdns_root),
+        "rgbdns_root": portable_root(rgbdns_root),
         "rgbdns_commit": rgbdns_commit,
         "book_commit": book_commit,
         "chapter_count": len(chapter_links),
         "code_file_count": len(sources),
         "fragment_count": len(fragments),
-        "output": str(output),
+        "vault_name": output.name,
+        "reader_plugin": READER_PLUGIN_ID,
     }
     write_text(data_dir / "manifest.json", json.dumps(manifest, indent=2, ensure_ascii=True))
     write_text(output / "README.md", render_vault_readme(manifest))

@@ -32,6 +32,13 @@ Before running `scripts/build-obsidian-vault.py`, editing files under
 ask the user to close the vault in Obsidian and wait for confirmation. After
 regeneration, run `scripts/check-obsidian-vault.py` before delivery.
 
+The vault bundles FirstPair's standard reader, FirstPair Reader 2
+(`firstpair-reader`), copied as its four release files from
+`$FIRSTPAIR_ROOT/publishing/vault/plugin/firstpair-reader/`. It reads the book
+as a code book (`DNS from First Principles/_data/fragments.json` beside
+`Chapters/`). The retired `rgbdns-reader` source stays under `obsidian-plugin/`
+for reference only. See `docs/OBSIDIAN-VAULT.md`.
+
 `vault.build.json` drives the same builder and validator through FirstPair's
 transactional candidate, complete-guide, privacy, comparison, and deterministic
 archive gates. The candidate is generated beside the tracked vault and never
