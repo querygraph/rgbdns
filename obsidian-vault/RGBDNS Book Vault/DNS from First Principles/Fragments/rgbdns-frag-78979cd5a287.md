@@ -21,7 +21,7 @@ end_line: 266
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-78979cd5a287", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-78979cd5a287: fn loads_bounded_per_zone_forwarders", "sourcePath": "src/dnscache_config.rs", "startLine": 245, "endLine": 266}
+{"id": "rgbdns-frag-78979cd5a287", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 245, "endLine": 266}
 ```
 
 ## Excerpt

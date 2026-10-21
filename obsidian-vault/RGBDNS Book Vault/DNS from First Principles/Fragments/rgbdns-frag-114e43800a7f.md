@@ -19,7 +19,7 @@ end_line: 37
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-114e43800a7f", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-114e43800a7f: fn rfc9619_standard_queries_require_exactly_one_question", "sourcePath": "tests/rfc_conformance.rs", "startLine": 23, "endLine": 37}
+{"id": "rgbdns-frag-114e43800a7f", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 23, "endLine": 37}
 ```
 
 ## Excerpt

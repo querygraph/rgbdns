@@ -21,7 +21,7 @@ end_line: 270
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-323d4d71bfa4", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "heading": "rgbdns-frag-323d4d71bfa4: fn rotation_does_not_separate_a_timestamp_from_its_line", "sourcePath": "src/multilog.rs", "startLine": 254, "endLine": 270}
+{"id": "rgbdns-frag-323d4d71bfa4", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "sourcePath": "src/multilog.rs", "startLine": 254, "endLine": 270}
 ```
 
 ## Excerpt

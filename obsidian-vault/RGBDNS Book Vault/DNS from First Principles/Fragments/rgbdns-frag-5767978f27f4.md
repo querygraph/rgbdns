@@ -19,7 +19,7 @@ end_line: 45
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5767978f27f4", "codeNote": "DNS from First Principles/Code/tests/support/mod.rs.source", "heading": "rgbdns-frag-5767978f27f4: fn opt", "sourcePath": "tests/support/mod.rs", "startLine": 32, "endLine": 45}
+{"id": "rgbdns-frag-5767978f27f4", "codeNote": "DNS from First Principles/Code/tests/support/mod.rs.source", "sourcePath": "tests/support/mod.rs", "startLine": 32, "endLine": 45}
 ```
 
 ## Excerpt

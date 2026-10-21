@@ -19,7 +19,7 @@ end_line: 455
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1a6bc17026f7", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-1a6bc17026f7: heading ANAME owner target maximum-ttl", "sourcePath": "docs/book/rgbdns.md", "startLine": 453, "endLine": 455}
+{"id": "rgbdns-frag-1a6bc17026f7", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 453, "endLine": 455}
 ```
 
 ## Excerpt

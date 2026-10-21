@@ -21,7 +21,7 @@ end_line: 204
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1ff993436298", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-1ff993436298: mod tests", "sourcePath": "src/dnscache_config.rs", "startLine": 202, "endLine": 204}
+{"id": "rgbdns-frag-1ff993436298", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 202, "endLine": 204}
 ```
 
 ## Excerpt

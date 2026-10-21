@@ -19,7 +19,7 @@ end_line: 78
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e4a8c49fe363", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-e4a8c49fe363: fn rfc8906_unknown_header_flags_do_not_suppress_or_taint_answers", "sourcePath": "tests/rfc_conformance.rs", "startLine": 66, "endLine": 78}
+{"id": "rgbdns-frag-e4a8c49fe363", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 66, "endLine": 78}
 ```
 
 ## Excerpt

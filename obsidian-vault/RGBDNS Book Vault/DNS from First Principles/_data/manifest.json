@@ -1,10 +1,11 @@
 {
   "book": "DNS from First Principles",
-  "rgbdns_root": "/data/data/com.termux/files/home/src/rgbdns",
-  "rgbdns_commit": "79502939",
-  "book_commit": "79502939",
-  "chapter_count": 31,
-  "code_file_count": 96,
-  "fragment_count": 696,
-  "output": "/data/data/com.termux/files/home/src/rgbdns/obsidian-vault/RGBDNS Book Vault"
+  "rgbdns_root": ".",
+  "rgbdns_commit": "5ae24772",
+  "book_commit": "5ae24772",
+  "chapter_count": 32,
+  "code_file_count": 139,
+  "fragment_count": 1097,
+  "vault_name": "RGBDNS Book Vault",
+  "reader_plugin": "firstpair-reader"
 }

@@ -21,7 +21,7 @@ end_line: 186
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1997fc89b5d1", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-1997fc89b5d1: fn private_temporary_path", "sourcePath": "src/dnscache_config.rs", "startLine": 167, "endLine": 186}
+{"id": "rgbdns-frag-1997fc89b5d1", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 167, "endLine": 186}
 ```
 
 ## Excerpt

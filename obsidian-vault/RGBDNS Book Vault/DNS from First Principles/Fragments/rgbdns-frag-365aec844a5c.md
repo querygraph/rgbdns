@@ -21,7 +21,7 @@ end_line: 273
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-365aec844a5c", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "heading": "rgbdns-frag-365aec844a5c: fn allocates_next_ns_and_mx_slots_atomically", "sourcePath": "src/tinydns_edit.rs", "startLine": 244, "endLine": 273}
+{"id": "rgbdns-frag-365aec844a5c", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "sourcePath": "src/tinydns_edit.rs", "startLine": 244, "endLine": 273}
 ```
 
 ## Excerpt

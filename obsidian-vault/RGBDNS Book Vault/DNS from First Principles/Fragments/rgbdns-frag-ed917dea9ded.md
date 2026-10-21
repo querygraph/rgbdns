@@ -21,7 +21,7 @@ end_line: 10
 - Component: [[DNS from First Principles/Components/dnstrace|dnstrace]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ed917dea9ded", "codeNote": "DNS from First Principles/Code/src/bin/dnstrace.rs.source", "heading": "rgbdns-frag-ed917dea9ded: fn main", "sourcePath": "src/bin/dnstrace.rs", "startLine": 4, "endLine": 10}
+{"id": "rgbdns-frag-ed917dea9ded", "codeNote": "DNS from First Principles/Code/src/bin/dnstrace.rs.source", "sourcePath": "src/bin/dnstrace.rs", "startLine": 4, "endLine": 10}
 ```
 
 ## Excerpt

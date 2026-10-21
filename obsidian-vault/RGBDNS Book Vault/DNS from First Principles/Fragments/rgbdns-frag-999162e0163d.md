@@ -19,7 +19,7 @@ end_line: 108
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-999162e0163d", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "heading": "rgbdns-frag-999162e0163d: fn decoder_rejects_every_truncation_of_a_valid_structured_packet", "sourcePath": "tests/wire_security.rs", "startLine": 88, "endLine": 108}
+{"id": "rgbdns-frag-999162e0163d", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "sourcePath": "tests/wire_security.rs", "startLine": 88, "endLine": 108}
 ```
 
 ## Excerpt

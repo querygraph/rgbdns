@@ -21,7 +21,7 @@ end_line: 10
 - Component: [[DNS from First Principles/Components/walldns|walldns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c79107e4094a", "codeNote": "DNS from First Principles/Code/src/bin/walldns.rs.source", "heading": "rgbdns-frag-c79107e4094a: fn main", "sourcePath": "src/bin/walldns.rs", "startLine": 4, "endLine": 10}
+{"id": "rgbdns-frag-c79107e4094a", "codeNote": "DNS from First Principles/Code/src/bin/walldns.rs.source", "sourcePath": "src/bin/walldns.rs", "startLine": 4, "endLine": 10}
 ```
 
 ## Excerpt

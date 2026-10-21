@@ -53,52 +53,52 @@ a timeout, SERVFAIL, or REFUSED, and each points to a different layer.
 
 ## Generated Code Fragment Index
 
-These generated links open the collocated rgbdns codebase notes.
+Each card names an rgbdns fragment. In FirstPair Reader, Show code lists its numbered lines and Open file opens the collocated code note with those lines marked.
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d8a776f4a8ff", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-d8a776f4a8ff: const TIMEOUT", "sourcePath": "src/client.rs", "startLine": 11, "endLine": 12}
+{"id": "rgbdns-frag-d8a776f4a8ff", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 11, "endLine": 12}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-87ff6d272c3e", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-87ff6d272c3e: fn recursive", "sourcePath": "src/client.rs", "startLine": 13, "endLine": 16}
+{"id": "rgbdns-frag-87ff6d272c3e", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 13, "endLine": 16}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-8adf36f03d5d", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-8adf36f03d5d: fn query", "sourcePath": "src/client.rs", "startLine": 17, "endLine": 56}
+{"id": "rgbdns-frag-8adf36f03d5d", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 17, "endLine": 56}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-690e4ae608a4", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-690e4ae608a4: fn servers", "sourcePath": "src/client.rs", "startLine": 57, "endLine": 83}
+{"id": "rgbdns-frag-690e4ae608a4", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 57, "endLine": 83}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c4ff7d3f54c7", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-c4ff7d3f54c7: fn server_address", "sourcePath": "src/client.rs", "startLine": 84, "endLine": 93}
+{"id": "rgbdns-frag-c4ff7d3f54c7", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 84, "endLine": 93}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5406a3b7ab21", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-5406a3b7ab21: fn udp_query", "sourcePath": "src/client.rs", "startLine": 94, "endLine": 109}
+{"id": "rgbdns-frag-5406a3b7ab21", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 94, "endLine": 109}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-4c8bd136a924", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-4c8bd136a924: fn tcp_query", "sourcePath": "src/client.rs", "startLine": 110, "endLine": 126}
+{"id": "rgbdns-frag-4c8bd136a924", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 110, "endLine": 126}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-460f16558db2", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-460f16558db2: fn validate", "sourcePath": "src/client.rs", "startLine": 127, "endLine": 139}
+{"id": "rgbdns-frag-460f16558db2", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 127, "endLine": 139}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-3d3fb10dac1b", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-3d3fb10dac1b: fn random_id", "sourcePath": "src/client.rs", "startLine": 140, "endLine": 147}
+{"id": "rgbdns-frag-3d3fb10dac1b", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 140, "endLine": 147}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-99e21bd0c5e3", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-99e21bd0c5e3: mod tests", "sourcePath": "src/client.rs", "startLine": 148, "endLine": 153}
+{"id": "rgbdns-frag-99e21bd0c5e3", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 148, "endLine": 153}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-681cb74d8929", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-681cb74d8929: fn truncated_udp_response_falls_back_to_tcp", "sourcePath": "src/client.rs", "startLine": 154, "endLine": 207}
+{"id": "rgbdns-frag-681cb74d8929", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 154, "endLine": 207}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b8619bcfbdf7", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-b8619bcfbdf7: fn parses_bare_and_explicit_port_server_addresses", "sourcePath": "src/client.rs", "startLine": 208, "endLine": 219}
+{"id": "rgbdns-frag-b8619bcfbdf7", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 208, "endLine": 219}
 ```

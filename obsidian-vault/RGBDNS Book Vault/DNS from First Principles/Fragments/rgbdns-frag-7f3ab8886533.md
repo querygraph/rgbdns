@@ -21,7 +21,7 @@ end_line: 7
 - Component: [[DNS from First Principles/Components/pickdns-conf|pickdns-conf]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-7f3ab8886533", "codeNote": "DNS from First Principles/Code/src/bin/pickdns-conf.rs.source", "heading": "rgbdns-frag-7f3ab8886533: fn main", "sourcePath": "src/bin/pickdns-conf.rs", "startLine": 1, "endLine": 7}
+{"id": "rgbdns-frag-7f3ab8886533", "codeNote": "DNS from First Principles/Code/src/bin/pickdns-conf.rs.source", "sourcePath": "src/bin/pickdns-conf.rs", "startLine": 1, "endLine": 7}
 ```
 
 ## Excerpt

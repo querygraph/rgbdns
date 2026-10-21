@@ -19,7 +19,7 @@ end_line: 21
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ca8e2e56fa9a", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-ca8e2e56fa9a: heading Preface {-}", "sourcePath": "docs/book/rgbdns.md", "startLine": 1, "endLine": 21}
+{"id": "rgbdns-frag-ca8e2e56fa9a", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 1, "endLine": 21}
 ```
 
 ## Excerpt
@@ -47,6 +47,6 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.1.0 as built on 2026-07-23.
+rgbdns 0.6.3 and book version 0.4.0 as built on 2026-08-21.
 
 ```

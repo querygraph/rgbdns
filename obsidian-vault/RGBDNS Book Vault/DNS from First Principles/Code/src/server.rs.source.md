@@ -4,9 +4,9 @@ source_path: "src/server.rs"
 language: "rust"
 subsystem: "Authoritative service"
 crate: "rgbdns"
-line_count: 833
-fragment_count: 26
-rgbdns_commit: "79502939"
+line_count: 1346
+fragment_count: 49
+rgbdns_commit: "5ae24772"
 ---
 
 # src/server.rs
@@ -14,37 +14,60 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/Authoritative service|Authoritative service]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/server.rs`
-- Lines: 833
+- Lines: 1346
 - Summary: Source file in the Authoritative service subsystem.
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-d3da65fbc724|respond]]: lines 12-19
-- [[DNS from First Principles/Fragments/rgbdns-frag-e0990e79e0f5|respond_from]]: lines 20-39
-- [[DNS from First Principles/Fragments/rgbdns-frag-85698b1ce866|respond_over_transport]]: lines 40-120
-- [[DNS from First Principles/Fragments/rgbdns-frag-413307db626e|normalize_rrsets]]: lines 196-219
-- [[DNS from First Principles/Fragments/rgbdns-frag-ff4f3e36f844|negative_soa]]: lines 220-226
-- [[DNS from First Principles/Fragments/rgbdns-frag-aba7f2385996|error_response]]: lines 227-238
-- [[DNS from First Principles/Fragments/rgbdns-frag-8a745a4a8208|zone_lookup]]: lines 239-250
-- [[DNS from First Principles/Fragments/rgbdns-frag-4625cc9215e0|expand_cname_chain]]: lines 251-291
-- [[DNS from First Principles/Fragments/rgbdns-frag-cb35766a16c9|add_target_addresses]]: lines 292-318
-- [[DNS from First Principles/Fragments/rgbdns-frag-b79b1695d38f|truncate]]: lines 319-360
-- [[DNS from First Principles/Fragments/rgbdns-frag-0f2b54775d5e|with_tail_records_removed]]: lines 361-386
-- [[DNS from First Principles/Fragments/rgbdns-frag-31d10be4bc98|serve]]: lines 387-423
-- [[DNS from First Principles/Fragments/rgbdns-frag-76bf4ddcc8ad|axfr_stream_handler]]: lines 424-444
-- [[DNS from First Principles/Fragments/rgbdns-frag-053b53ae57e0|serve_sockets]]: lines 445-476
-- [[DNS from First Principles/Fragments/rgbdns-frag-20be16ba4c51|tests]]: lines 477-486
-- [[DNS from First Principles/Fragments/rgbdns-frag-6ee0c357f63d|query]]: lines 487-514
-- [[DNS from First Principles/Fragments/rgbdns-frag-138ac655395d|referral_has_no_aa_and_contains_bailiwick_glue]]: lines 515-537
-- [[DNS from First Principles/Fragments/rgbdns-frag-78a254dd8c92|client_address_selects_tinydns_location]]: lines 538-572
-- [[DNS from First Principles/Fragments/rgbdns-frag-8f699a31cc8b|expands_bounded_cname_chains_and_target_additionals]]: lines 573-599
-- [[DNS from First Principles/Fragments/rgbdns-frag-80e9e786f228|cname_loops_return_servfail_with_bounded_work]]: lines 600-615
-- [[DNS from First Principles/Fragments/rgbdns-frag-a64686cbedbb|aname_synthesizes_authoritative_addresses_without_emitting_cname]]: lines 616-677
-- [[DNS from First Principles/Fragments/rgbdns-frag-5c417caa83ca|malformed_queries_get_bounded_formerr_and_unknown_opcode_gets_notimp]]: lines 678-703
-- [[DNS from First Principles/Fragments/rgbdns-frag-4020f1673346|edns_negotiation_and_bad_version]]: lines 704-743
-- [[DNS from First Principles/Fragments/rgbdns-frag-afd2662300da|legacy_udp_is_limited_to_512_and_keeps_whole_records]]: lines 744-758
-- [[DNS from First Principles/Fragments/rgbdns-frag-6c49d3a84895|live_udp_and_tcp_service]]: lines 759-811
-- [[DNS from First Principles/Fragments/rgbdns-frag-95f0d422d9b2|integrated_tcp_listener_serves_axfr]]: lines 812-833
+- [[DNS from First Principles/Fragments/rgbdns-frag-5990c10856eb|QueryLogger]]: lines 14-17
+- [[DNS from First Principles/Fragments/rgbdns-frag-f26e1431507a|QueryLogger]]: lines 18-18
+- [[DNS from First Principles/Fragments/rgbdns-frag-bb9eedd8227f|from_env]]: lines 19-29
+- [[DNS from First Principles/Fragments/rgbdns-frag-f754131d20f6|starting]]: lines 30-35
+- [[DNS from First Principles/Fragments/rgbdns-frag-05dbed3b9e8c|request]]: lines 36-41
+- [[DNS from First Principles/Fragments/rgbdns-frag-de0eec0da407|axfr]]: lines 42-52
+- [[DNS from First Principles/Fragments/rgbdns-frag-63b1cf7ef29d|parse_query_log]]: lines 53-60
+- [[DNS from First Principles/Fragments/rgbdns-frag-9b0af663cc6d|write_log_line]]: lines 61-66
+- [[DNS from First Principles/Fragments/rgbdns-frag-9702afa51684|query_log_line]]: lines 67-85
+- [[DNS from First Principles/Fragments/rgbdns-frag-0ccf5c904072|query_log_line_with_code]]: lines 86-98
+- [[DNS from First Principles/Fragments/rgbdns-frag-d7ec343834ce|query_log_line_for_query]]: lines 99-116
+- [[DNS from First Principles/Fragments/rgbdns-frag-757458f47dae|malformed_log_line]]: lines 117-120
+- [[DNS from First Principles/Fragments/rgbdns-frag-e264d7a03b5d|log_ip]]: lines 121-135
+- [[DNS from First Principles/Fragments/rgbdns-frag-7d5ad2f48fd1|respond]]: lines 136-143
+- [[DNS from First Principles/Fragments/rgbdns-frag-218410321d42|respond_from]]: lines 144-163
+- [[DNS from First Principles/Fragments/rgbdns-frag-63a71f788372|respond_over_transport]]: lines 164-244
+- [[DNS from First Principles/Fragments/rgbdns-frag-879eec9eaf14|is_dnssec_type]]: lines 327-338
+- [[DNS from First Principles/Fragments/rgbdns-frag-8ff60dd0438d|add_dnssec_records]]: lines 339-377
+- [[DNS from First Principles/Fragments/rgbdns-frag-e48566f1ec8d|add_section_signatures]]: lines 378-395
+- [[DNS from First Principles/Fragments/rgbdns-frag-7c7b048f644c|normalize_rrsets]]: lines 396-419
+- [[DNS from First Principles/Fragments/rgbdns-frag-9b84faea4653|negative_soa]]: lines 420-426
+- [[DNS from First Principles/Fragments/rgbdns-frag-5c85e7004422|error_response]]: lines 427-438
+- [[DNS from First Principles/Fragments/rgbdns-frag-474d0aef755d|zone_lookup]]: lines 439-450
+- [[DNS from First Principles/Fragments/rgbdns-frag-0a1deeba2799|expand_cname_chain]]: lines 451-491
+- [[DNS from First Principles/Fragments/rgbdns-frag-bac87031d331|add_target_addresses]]: lines 492-518
+- [[DNS from First Principles/Fragments/rgbdns-frag-bf9e0818baaf|truncate]]: lines 519-546
+- [[DNS from First Principles/Fragments/rgbdns-frag-f83a15cfd75c|remove_tail_rrset]]: lines 547-592
+- [[DNS from First Principles/Fragments/rgbdns-frag-41728d016c64|serve]]: lines 593-673
+- [[DNS from First Principles/Fragments/rgbdns-frag-dfdc979d66ff|authoritative_stream_handler]]: lines 679-717
+- [[DNS from First Principles/Fragments/rgbdns-frag-d5c190f439d7|serve_sockets]]: lines 718-752
+- [[DNS from First Principles/Fragments/rgbdns-frag-1b04b3628374|tests]]: lines 753-762
+- [[DNS from First Principles/Fragments/rgbdns-frag-4ba46468e413|query]]: lines 763-789
+- [[DNS from First Principles/Fragments/rgbdns-frag-5884160e012f|signed_test_zone]]: lines 790-817
+- [[DNS from First Principles/Fragments/rgbdns-frag-d46e8d20b6e1|dnssec_is_do_gated_and_serves_signed_denial_and_ds_denial]]: lines 818-898
+- [[DNS from First Principles/Fragments/rgbdns-frag-dcb0e69b0619|query_logs_match_the_original_tinydns_ipv4_format]]: lines 921-947
+- [[DNS from First Principles/Fragments/rgbdns-frag-99c3ecaa97b0|query_logs_cover_malformed_unimplemented_class_ipv6_and_axfr]]: lines 948-979
+- [[DNS from First Principles/Fragments/rgbdns-frag-48afa462421d|query_log_names_cannot_inject_lines]]: lines 980-989
+- [[DNS from First Principles/Fragments/rgbdns-frag-c63dc3bb3049|query_logging_defaults_on_and_has_an_explicit_opt_out]]: lines 990-1001
+- [[DNS from First Principles/Fragments/rgbdns-frag-b839244ad944|any_class_retains_original_tinydns_behavior]]: lines 1002-1012
+- [[DNS from First Principles/Fragments/rgbdns-frag-676e65075207|referral_has_no_aa_and_contains_bailiwick_glue]]: lines 1013-1050
+- [[DNS from First Principles/Fragments/rgbdns-frag-707e4dba6577|client_address_selects_tinydns_location]]: lines 1051-1085
+- [[DNS from First Principles/Fragments/rgbdns-frag-5d2e4e8afc9f|expands_bounded_cname_chains_and_target_additionals]]: lines 1086-1112
+- [[DNS from First Principles/Fragments/rgbdns-frag-b6bb370d9ec7|cname_loops_return_servfail_with_bounded_work]]: lines 1113-1128
+- [[DNS from First Principles/Fragments/rgbdns-frag-0a9491a7abda|aname_synthesizes_authoritative_addresses_without_emitting_cname]]: lines 1129-1190
+- [[DNS from First Principles/Fragments/rgbdns-frag-9e40f402b89b|malformed_queries_get_bounded_formerr_and_unknown_opcode_gets_notimp]]: lines 1191-1216
+- [[DNS from First Principles/Fragments/rgbdns-frag-a6ab5fc33e0b|edns_negotiation_and_bad_version]]: lines 1217-1256
+- [[DNS from First Principles/Fragments/rgbdns-frag-ba0217ae545e|legacy_udp_is_limited_to_512_and_keeps_whole_records]]: lines 1257-1271
+- [[DNS from First Principles/Fragments/rgbdns-frag-1e71098c47cb|live_udp_and_tcp_service]]: lines 1272-1324
+- [[DNS from First Principles/Fragments/rgbdns-frag-4896c460a78a|integrated_tcp_listener_serves_axfr]]: lines 1325-1346
 
 ## Full Source
 
@@ -56,9 +79,133 @@ use crate::{
 };
 use std::{
     collections::{HashMap, HashSet},
-    net::IpAddr,
+    io::Write,
+    net::{IpAddr, SocketAddr},
     sync::Arc,
 };
+
+#[derive(Clone, Copy)]
+struct QueryLogger {
+    enabled: bool,
+}
+
+impl QueryLogger {
+    fn from_env() -> Result<Self> {
+        let enabled = match std::env::var("QUERY_LOG") {
+            Ok(value) => parse_query_log(Some(&value))?,
+            Err(std::env::VarError::NotPresent) => true,
+            Err(std::env::VarError::NotUnicode(_)) => {
+                return Err(Error::Format("invalid QUERY_LOG"));
+            }
+        };
+        Ok(Self { enabled })
+    }
+
+    fn starting(self) {
+        if self.enabled {
+            write_log_line("starting tinydns");
+        }
+    }
+
+    fn request(self, peer: SocketAddr, wire: &[u8], response: Option<&[u8]>) {
+        if self.enabled {
+            write_log_line(&query_log_line(peer, wire, response));
+        }
+    }
+
+    fn axfr(self, peer: SocketAddr, wire: &[u8], accepted: bool) {
+        if self.enabled {
+            write_log_line(&query_log_line_with_code(
+                peer,
+                wire,
+                if accepted { '+' } else { '-' },
+            ));
+        }
+    }
+}
+
+fn parse_query_log(value: Option<&str>) -> Result<bool> {
+    match value.map(str::trim).map(str::to_ascii_lowercase).as_deref() {
+        None | Some("1" | "true" | "yes" | "on") => Ok(true),
+        Some("0" | "false" | "no" | "off") => Ok(false),
+        Some(_) => Err(Error::Format("invalid QUERY_LOG")),
+    }
+}
+
+fn write_log_line(line: &str) {
+    let stderr = std::io::stderr();
+    let mut stderr = stderr.lock();
+    let _ = writeln!(stderr, "{line}");
+}
+
+fn query_log_line(peer: SocketAddr, wire: &[u8], response: Option<&[u8]>) -> String {
+    let Ok(query) = Message::decode(wire) else {
+        return malformed_log_line(peer);
+    };
+    if query.questions.len() != 1 {
+        return malformed_log_line(peer);
+    }
+    let code = if query.flags & 0x8000 != 0 || query.flags & 0x7800 != 0 {
+        'I'
+    } else if query.questions[0].qclass != 1 && query.questions[0].qclass != 255 {
+        'C'
+    } else if response.is_some_and(|wire| wire.get(3).is_some_and(|flags| flags & 0x0f == 5)) {
+        '-'
+    } else {
+        '+'
+    };
+    query_log_line_for_query(peer, &query, code)
+}
+
+fn query_log_line_with_code(peer: SocketAddr, wire: &[u8], code: char) -> String {
+    Message::decode(wire).map_or_else(
+        |_| malformed_log_line(peer),
+        |query| {
+            if query.questions.len() == 1 {
+                query_log_line_for_query(peer, &query, code)
+            } else {
+                malformed_log_line(peer)
+            }
+        },
+    )
+}
+
+fn query_log_line_for_query(peer: SocketAddr, query: &Message, code: char) -> String {
+    let question = &query.questions[0];
+    let display_name = question.name.to_string();
+    let display_name = if display_name == "." {
+        display_name.as_str()
+    } else {
+        display_name.strip_suffix('.').unwrap_or(&display_name)
+    };
+    format!(
+        "{}:{:04x}:{:04x} {code} {:04x} {}",
+        log_ip(peer.ip()),
+        peer.port(),
+        query.id,
+        question.qtype.code(),
+        display_name
+    )
+}
+
+fn malformed_log_line(peer: SocketAddr) -> String {
+    format!("{}:{:04x}:0000 / 0000 .", log_ip(peer.ip()), peer.port())
+}
+
+fn log_ip(address: IpAddr) -> String {
+    match address {
+        IpAddr::V4(address) => address
+            .octets()
+            .iter()
+            .map(|octet| format!("{octet:02x}"))
+            .collect(),
+        IpAddr::V6(address) => address
+            .octets()
+            .iter()
+            .map(|octet| format!("{octet:02x}"))
+            .collect(),
+    }
+}
 
 pub fn respond(zone: &Zone, wire: &[u8], transport_limit: usize) -> Result<Vec<u8>> {
     let resolver = zone
@@ -146,6 +293,7 @@ fn respond_over_transport(
         return error_response(wire, 1);
     }
     let opt = options.first().copied();
+    let dnssec_ok = opt.is_some_and(|(_, _, flags)| flags & 0x8000 != 0);
     let response_limit = if is_udp {
         opt.map_or(512, |(size, _, _)| usize::from(size).max(512))
             .min(transport_limit)
@@ -175,7 +323,7 @@ fn respond_over_transport(
             return r.encode();
         }
     }
-    if question.qclass != 1 {
+    if question.qclass != 1 && question.qclass != 255 {
         r.flags |= 4
     } else {
         let ordinary_lookup = zone_lookup(zone, &question.name, question.qtype, client);
@@ -206,6 +354,9 @@ fn respond_over_transport(
         match lookup {
             Lookup::Answer(x) => {
                 r.answers = x;
+                if question.qtype == crate::RecordType::Any && !dnssec_ok {
+                    r.answers.retain(|record| !is_dnssec_type(record.rr_type()));
+                }
                 if !matches!(
                     question.qtype,
                     crate::RecordType::Cname | crate::RecordType::Any
@@ -237,11 +388,83 @@ fn respond_over_transport(
             }
             Lookup::Refused => r.flags |= 5,
         }
+        if dnssec_ok {
+            add_dnssec_records(zone, &question, &mut r, client);
+        }
     }
     normalize_rrsets(&mut r.answers);
     normalize_rrsets(&mut r.authorities);
     normalize_rrsets(&mut r.additionals);
     truncate(r, response_limit)
+}
+
+fn is_dnssec_type(record_type: crate::RecordType) -> bool {
+    matches!(
+        record_type,
+        crate::RecordType::Ds
+            | crate::RecordType::Rrsig
+            | crate::RecordType::Nsec
+            | crate::RecordType::Dnskey
+            | crate::RecordType::Unknown(50)
+            | crate::RecordType::Unknown(51)
+    )
+}
+
+fn add_dnssec_records(
+    zone: &Zone,
+    question: &crate::Question,
+    response: &mut Message,
+    client: Option<IpAddr>,
+) {
+    add_section_signatures(zone, &mut response.answers, client);
+    add_section_signatures(zone, &mut response.authorities, client);
+
+    match response.flags & 0x000f {
+        3 => response
+            .authorities
+            .extend(zone.dnssec_nsec_zone(&question.name, client)),
+        0 if response.answers.is_empty() && response.flags & 0x0400 != 0 => {
+            let mut proof = zone.dnssec_nsec_at(&question.name, client);
+            if proof.is_empty() {
+                proof = zone.dnssec_nsec_zone(&question.name, client);
+            }
+            response.authorities.extend(proof);
+        }
+        _ => {}
+    }
+
+    let wildcard_answer = response.answers.iter().any(|record| {
+        if let crate::RData::Opaque(crate::RecordType::Rrsig, bytes) = &record.data {
+            bytes
+                .get(3)
+                .is_some_and(|labels| usize::from(*labels) < record.name.labels().count())
+        } else {
+            false
+        }
+    });
+    if wildcard_answer {
+        response
+            .authorities
+            .extend(zone.dnssec_nsec_zone(&question.name, client));
+    }
+}
+
+fn add_section_signatures(zone: &Zone, section: &mut Vec<crate::Record>, client: Option<IpAddr>) {
+    let rrsets = section
+        .iter()
+        .filter(|record| record.rr_type() != crate::RecordType::Rrsig)
+        .fold(
+            HashMap::<crate::Name, std::collections::BTreeSet<_>>::new(),
+            |mut sets, record| {
+                sets.entry(record.name.clone())
+                    .or_default()
+                    .insert(record.rr_type());
+                sets
+            },
+        );
+    for (name, covered) in rrsets {
+        section.extend(zone.dnssec_signatures(&name, &covered, client));
+    }
 }
 
 fn normalize_rrsets(records: &mut Vec<crate::Record>) {
@@ -373,75 +596,112 @@ fn truncate(mut response: Message, limit: usize) -> Result<Vec<u8>> {
         return Ok(full);
     }
     response.flags |= 0x0200;
-    let removable = response
-        .additionals
-        .iter()
-        .filter(|record| record.rr_type() != crate::RecordType::Opt)
-        .count()
-        + response.authorities.len()
-        + response.answers.len()
-        + response
-            .additionals
-            .iter()
-            .filter(|record| record.rr_type() == crate::RecordType::Opt)
-            .count()
-        + usize::from(!response.questions.is_empty());
-
-    let mut low = 0;
-    let mut high = removable;
-    while low < high {
-        let middle = low + (high - low) / 2;
-        let candidate = with_tail_records_removed(&response, middle);
-        if candidate.encode()?.len() <= limit {
-            high = middle;
-        } else {
-            low = middle + 1;
-        }
-    }
-    while low <= removable {
-        let candidate = with_tail_records_removed(&response, low);
-        let wire = candidate.encode()?;
+    loop {
+        let wire = response.encode()?;
         if wire.len() <= limit {
             return Ok(wire);
         }
-        low += 1;
+        if remove_tail_rrset(&mut response.additionals, true)
+            || remove_tail_rrset(&mut response.authorities, false)
+            || remove_tail_rrset(&mut response.answers, false)
+        {
+            continue;
+        }
+        if response.additionals.pop().is_some() {
+            continue;
+        }
+        if !response.questions.is_empty() {
+            response.questions.clear();
+            continue;
+        }
+        return Err(Error::Format("DNS response cannot fit transport limit"));
     }
-    Err(Error::Format("DNS response cannot fit transport limit"))
 }
 
-fn with_tail_records_removed(response: &Message, mut count: usize) -> Message {
-    let mut candidate = response.clone();
-    while count != 0
-        && let Some(index) = candidate
-            .additionals
-            .iter()
-            .rposition(|record| record.rr_type() != crate::RecordType::Opt)
-    {
-        candidate.additionals.remove(index);
-        count -= 1;
+fn remove_tail_rrset(records: &mut Vec<crate::Record>, preserve_opt: bool) -> bool {
+    let Some(index) = records
+        .iter()
+        .rposition(|record| !preserve_opt || record.rr_type() != crate::RecordType::Opt)
+    else {
+        return false;
+    };
+    let name = records[index].name.clone();
+    let record_type = match &records[index].data {
+        crate::RData::Opaque(crate::RecordType::Rrsig, bytes) if bytes.len() >= 2 => {
+            crate::RecordType::from_code(u16::from_be_bytes([bytes[0], bytes[1]]))
+        }
+        _ => records[index].rr_type(),
+    };
+    let signed = records.iter().any(|record| {
+        record.name == name
+            && matches!(
+                &record.data,
+                crate::RData::Opaque(crate::RecordType::Rrsig, bytes)
+                    if bytes.len() >= 2
+                        && crate::RecordType::from_code(u16::from_be_bytes([bytes[0], bytes[1]]))
+                            == record_type
+            )
+    });
+    if !signed && records[index].rr_type() != crate::RecordType::Rrsig {
+        records.remove(index);
+        return true;
     }
-    while count != 0 && candidate.authorities.pop().is_some() {
-        count -= 1;
-    }
-    while count != 0 && candidate.answers.pop().is_some() {
-        count -= 1;
-    }
-    while count != 0 && candidate.additionals.pop().is_some() {
-        count -= 1;
-    }
-    if count != 0 {
-        candidate.questions.clear();
-    }
-    candidate
+    records.retain(|record| {
+        if record.name != name {
+            return true;
+        }
+        if record.rr_type() == record_type {
+            return false;
+        }
+        !matches!(
+            &record.data,
+            crate::RData::Opaque(crate::RecordType::Rrsig, bytes)
+                if bytes.len() >= 2
+                    && crate::RecordType::from_code(u16::from_be_bytes([bytes[0], bytes[1]]))
+                        == record_type
+        )
+    });
+    true
 }
 
 pub fn serve(zone: Zone, addr: &str) -> Result<()> {
+    let query_logger = QueryLogger::from_env()?;
     let resolver = zone
         .has_anames()
         .then(crate::aname::Resolver::from_system)
         .transpose()?
         .map(Arc::new);
-    let zone = Arc::new(zone);
+    let live = crate::acme::LiveZone::new(zone.clone());
+    let acme = std::env::var("ACME_UPDATE_CONFIG")
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+        .map(|config| {
+            let state_dir = std::env::var("ACME_STATE_DIR")
+                .unwrap_or_else(|_| "/var/lib/rgbdns/tinydns".into());
+            let publication = match (
+                std::env::var("ACME_PUBLISH_COMMAND").ok(),
+                std::env::var("ACME_PUBLISHED_DATA").ok(),
+            ) {
+                (Some(command), Some(data)) => {
+                    Some(crate::acme::Publication::new(command.into(), data.into())?)
+                }
+                (None, None) => None,
+                _ => {
+                    return Err(Error::Format(
+                        "ACME_PUBLISH_COMMAND and ACME_PUBLISHED_DATA must be set together",
+                    ));
+                }
+            };
+            crate::acme::AcmeUpdates::from_file_with_publication(
+                config,
+                state_dir,
+                zone.clone(),
+                live.clone(),
+                publication,
+            )
+            .map(Arc::new)
+        })
+        .transpose()?;
     let allowed = std::env::var("ALLOW_NETS")
         .ok()
         .map(|value| {
@@ -455,28 +715,57 @@ pub fn serve(zone: Zone, addr: &str) -> Result<()> {
         })
         .transpose()?
         .map(Arc::new);
-    let stream_handler = allowed.map(|allowed| axfr_stream_handler(zone.clone(), allowed));
+    let stream_handler = if allowed.is_some() || acme.is_some() {
+        Some(authoritative_stream_handler(
+            live.clone(),
+            allowed,
+            acme.clone(),
+            query_logger,
+        ))
+    } else {
+        None
+    };
+    query_logger.starting();
     crate::transport::serve(
         addr,
         Arc::new(move |wire, limit, client| {
-            respond_over_transport(
+            if crate::acme::AcmeUpdates::is_update(wire) {
+                let response = error_response(wire, 5);
+                query_logger.request(client, wire, response.as_deref().ok());
+                return response;
+            }
+            let zone = live.snapshot();
+            let response = respond_over_transport(
                 &zone,
                 resolver.as_deref(),
                 wire,
                 limit,
                 limit <= 4096,
-                Some(client),
-            )
+                Some(client.ip()),
+            );
+            query_logger.request(client, wire, response.as_deref().ok());
+            response
         }),
         stream_handler,
     )
 }
 
-fn axfr_stream_handler(
-    zone: Arc<Zone>,
-    allowed: Arc<Vec<ipnet::IpNet>>,
+fn authoritative_stream_handler(
+    zone: crate::acme::LiveZone,
+    allowed: Option<Arc<Vec<ipnet::IpNet>>>,
+    acme: Option<Arc<crate::acme::AcmeUpdates>>,
+    query_logger: QueryLogger,
 ) -> Arc<crate::transport::StreamHandler> {
-    Arc::new(move |wire: &[u8], client: IpAddr| {
+    Arc::new(move |wire: &[u8], client: SocketAddr| {
+        if crate::acme::AcmeUpdates::is_update(wire) {
+            let response = if let Some(acme) = &acme {
+                acme.handle(wire)
+            } else {
+                error_response(wire, 5)
+            }?;
+            query_logger.request(client, wire, Some(&response));
+            return Ok(Some(vec![response]));
+        }
         let Ok(query) = Message::decode(wire) else {
             return Ok(None);
         };
@@ -485,10 +774,17 @@ fn axfr_stream_handler(
         if !is_axfr {
             return Ok(None);
         }
-        if !allowed.iter().any(|network| network.contains(&client)) {
+        let Some(allowed) = &allowed else {
+            return Ok(None);
+        };
+        if !allowed.iter().any(|network| network.contains(&client.ip())) {
+            query_logger.axfr(client, wire, false);
             return Err(Error::Format("AXFR client is not allowed"));
         }
-        crate::axfr::response_wires(&zone, query).map(Some)
+        let snapshot = zone.snapshot();
+        let response = crate::axfr::response_wires(&snapshot, query).map(Some);
+        query_logger.axfr(client, wire, response.is_ok());
+        response
     })
 }
 
@@ -505,8 +801,11 @@ fn serve_sockets(
         .transpose()?
         .map(Arc::new);
     let zone = Arc::new(zone);
-    let stream_handler =
-        allowed.map(|allowed| axfr_stream_handler(zone.clone(), Arc::new(allowed)));
+    let query_logger = QueryLogger { enabled: false };
+    let stream_handler = allowed.map(|allowed| {
+        let live = crate::acme::LiveZone::new((*zone).clone());
+        authoritative_stream_handler(live, Some(Arc::new(allowed)), None, query_logger)
+    });
     crate::transport::serve_sockets(
         udp,
         tcp,
@@ -517,7 +816,7 @@ fn serve_sockets(
                 wire,
                 limit,
                 limit <= 4096,
-                Some(client),
+                Some(client.ip()),
             )
         }),
         stream_handler,
@@ -527,7 +826,7 @@ fn serve_sockets(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Name, Question, RData, Record, RecordType};
+    use crate::{Name, Question, RData, Record, RecordType, zone::RecordMetadata};
     use std::{
         io::{Read, Write},
         net::{TcpListener, TcpStream, UdpSocket},
@@ -562,6 +861,228 @@ mod tests {
         message.encode().unwrap()
     }
 
+    fn signed_test_zone() -> Zone {
+        let directory =
+            std::env::temp_dir().join(format!("rgbdns-server-dnssec-{}", std::process::id()));
+        std::fs::create_dir_all(&directory).unwrap();
+        let key = directory.join("example.pk8");
+        let zone_name = "example".parse().unwrap();
+        let policy = crate::dnssec::generate_key(&zone_name, &key).unwrap();
+        let source = Zone::parse(
+            "Zexample:ns.example:hostmaster.example:7:3600:600:86400:300:300\n\
+             &example:192.0.2.53:ns.example:300\n\
+             +www.example:192.0.2.1:300\n\
+             +*.wild.example:192.0.2.2:300\n\
+             &child.example:192.0.2.54:ns.child.example:300\n",
+        )
+        .unwrap();
+        let records = crate::dnssec::sign_zone(&source, &policy).unwrap();
+        std::fs::remove_dir_all(directory).unwrap();
+        Zone::from_compiled_records(
+            records
+                .into_iter()
+                .map(|record| (record, RecordMetadata::default()))
+                .collect(),
+            Vec::new(),
+            Vec::new(),
+        )
+    }
+
+    #[test]
+    fn dnssec_is_do_gated_and_serves_signed_denial_and_ds_denial() {
+        let zone = signed_test_zone();
+        let unsigned = Message::decode(
+            &respond(&zone, &query("www.example", RecordType::A, None), 4096).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(
+            unsigned
+                .answers
+                .iter()
+                .filter(|record| record.rr_type() == RecordType::Rrsig)
+                .count(),
+            0
+        );
+
+        let signed = Message::decode(
+            &respond(
+                &zone,
+                &query("www.example", RecordType::A, Some((4096, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            signed
+                .answers
+                .iter()
+                .any(|record| record.rr_type() == RecordType::A)
+        );
+        assert!(
+            signed
+                .answers
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Rrsig)
+        );
+
+        let nonexistent = Message::decode(
+            &respond(
+                &zone,
+                &query("missing.example", RecordType::A, Some((4096, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(nonexistent.flags & 0x000f, 3);
+        assert!(
+            nonexistent
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Nsec)
+        );
+        assert!(
+            nonexistent
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Rrsig)
+        );
+
+        let randomized_case = Message::decode(
+            &respond(
+                &zone,
+                &query("MiSsInG.ExAmPlE", RecordType::A, Some((4096, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(randomized_case.flags & 0x000f, 3);
+        assert!(
+            randomized_case
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Nsec)
+        );
+        assert!(
+            randomized_case
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Rrsig)
+        );
+
+        let no_ds = Message::decode(
+            &respond(
+                &zone,
+                &query("child.example", RecordType::Ds, Some((4096, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_ne!(no_ds.flags & 0x0400, 0);
+        assert!(no_ds.answers.is_empty());
+        assert!(
+            no_ds
+                .authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Nsec)
+        );
+    }
+
+    #[test]
+    fn query_logs_match_the_original_tinydns_ipv4_format() {
+        let peer = "127.0.0.1:57876".parse().unwrap();
+        let request = query("fieldnotes.es", RecordType::A, None);
+        let response = respond(
+            &Zone::parse(".fieldnotes.es::a.ns.cron.sh\n").unwrap(),
+            &request,
+            4096,
+        )
+        .unwrap();
+        assert_eq!(
+            query_log_line(peer, &request, Some(&response)),
+            "7f000001:e214:1234 + 0001 fieldnotes.es"
+        );
+
+        let refused = respond(
+            &Zone::parse(".example::ns.example\n").unwrap(),
+            &request,
+            4096,
+        )
+        .unwrap();
+        assert_eq!(
+            query_log_line(peer, &request, Some(&refused)),
+            "7f000001:e214:1234 - 0001 fieldnotes.es"
+        );
+    }
+
+    #[test]
+    fn query_logs_cover_malformed_unimplemented_class_ipv6_and_axfr() {
+        let ipv4 = "192.0.2.1:53".parse().unwrap();
+        assert_eq!(
+            query_log_line(ipv4, &[0, 1, 2], None),
+            "c0000201:0035:0000 / 0000 ."
+        );
+
+        let mut unimplemented = Message::decode(&query("example", RecordType::Aaaa, None)).unwrap();
+        unimplemented.flags |= 0x0800;
+        let unimplemented = unimplemented.encode().unwrap();
+        assert_eq!(
+            query_log_line(ipv4, &unimplemented, None),
+            "c0000201:0035:1234 I 001c example"
+        );
+
+        let mut other_class = Message::decode(&query("example", RecordType::A, None)).unwrap();
+        other_class.questions[0].qclass = 3;
+        let other_class = other_class.encode().unwrap();
+        assert_eq!(
+            query_log_line(ipv4, &other_class, None),
+            "c0000201:0035:1234 C 0001 example"
+        );
+
+        let ipv6 = "[2001:db8::1]:4660".parse().unwrap();
+        let axfr = query("example", RecordType::Axfr, None);
+        assert_eq!(
+            query_log_line_with_code(ipv6, &axfr, '+'),
+            "20010db8000000000000000000000001:1234:1234 + 00fc example"
+        );
+    }
+
+    #[test]
+    fn query_log_names_cannot_inject_lines() {
+        let peer = "127.0.0.1:53".parse().unwrap();
+        let request = query("line\\010break.example", RecordType::Txt, None);
+        let line = query_log_line(peer, &request, None);
+        assert_eq!(line, "7f000001:0035:1234 + 0010 line\\010break.example");
+        assert!(!line.contains('\n'));
+        assert!(!line.contains('\r'));
+    }
+
+    #[test]
+    fn query_logging_defaults_on_and_has_an_explicit_opt_out() {
+        assert!(parse_query_log(None).unwrap());
+        for value in ["1", "true", "YES", "on"] {
+            assert!(parse_query_log(Some(value)).unwrap());
+        }
+        for value in ["0", "false", "NO", "off"] {
+            assert!(!parse_query_log(Some(value)).unwrap());
+        }
+        assert!(parse_query_log(Some("sometimes")).is_err());
+    }
+
+    #[test]
+    fn any_class_retains_original_tinydns_behavior() {
+        let zone = Zone::parse(".example::ns.example\n+www.example:192.0.2.1\n").unwrap();
+        let mut request = Message::decode(&query("www.example", RecordType::A, None)).unwrap();
+        request.questions[0].qclass = 255;
+        let response =
+            Message::decode(&respond(&zone, &request.encode().unwrap(), 4096).unwrap()).unwrap();
+        assert_eq!(response.flags & 0x000f, 0);
+        assert_eq!(response.answers.len(), 1);
+    }
+
     #[test]
     fn referral_has_no_aa_and_contains_bailiwick_glue() {
         let zone = Zone::parse(".example::ns.example\n&child.example:192.0.2.2:ns.child.example\n")
@@ -582,6 +1103,21 @@ mod tests {
                 .additionals
                 .iter()
                 .any(|record| record.rr_type() == RecordType::A)
+        );
+        let ds = Message::decode(
+            &respond(
+                &zone,
+                &query("child.example", RecordType::Ds, Some((1232, 0))),
+                4096,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(ds.flags & 0x0400, 0);
+        assert!(
+            ds.authorities
+                .iter()
+                .any(|record| record.rr_type() == RecordType::Ns)
         );
     }
 

@@ -19,7 +19,7 @@ end_line: 81
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-a9fb5639f1f9", "codeNote": "DNS from First Principles/Code/Cargo.lock.source", "heading": "rgbdns-frag-a9fb5639f1f9: file Cargo.lock", "sourcePath": "Cargo.lock", "startLine": 1, "endLine": 81}
+{"id": "rgbdns-frag-a9fb5639f1f9", "codeNote": "DNS from First Principles/Code/Cargo.lock.source", "sourcePath": "Cargo.lock", "startLine": 1, "endLine": 81}
 ```
 
 ## Excerpt
@@ -79,6 +79,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
+name = "base64"
+version = "0.22.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
+
+[[package]]
 name = "bit-set"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -100,13 +106,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b588b76d00fde79687d7646a9b5bdf3cc0f655e0bbd080335a95d7e96f3587da"
 
 [[package]]
-name = "bumpalo"
-version = "3.20.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72f5acc6cb2ba439de613abc23857ec3d78374d8ed5ac84e9d11336e87da8649"
-
-[[package]]
-name = "bytes"
-version = "1.12.1"
+name = "block-buffer"
+version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 ```

@@ -19,7 +19,7 @@ end_line: 149
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-8679aacc97e7", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-8679aacc97e7: heading Zones are administrative cuts", "sourcePath": "docs/book/rgbdns.md", "startLine": 128, "endLine": 149}
+{"id": "rgbdns-frag-8679aacc97e7", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 128, "endLine": 149}
 ```
 
 ## Excerpt

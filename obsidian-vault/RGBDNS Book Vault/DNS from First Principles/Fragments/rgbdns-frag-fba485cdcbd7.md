@@ -19,7 +19,7 @@ end_line: 11
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-fba485cdcbd7", "codeNote": "DNS from First Principles/Code/docs/book/cover.md.source", "heading": "rgbdns-frag-fba485cdcbd7: heading Names, Packets, Authority, Recursion, and the Design of rgbdns", "sourcePath": "docs/book/cover.md", "startLine": 3, "endLine": 11}
+{"id": "rgbdns-frag-fba485cdcbd7", "codeNote": "DNS from First Principles/Code/docs/book/cover.md.source", "sourcePath": "docs/book/cover.md", "startLine": 3, "endLine": 11}
 ```
 
 ## Excerpt
@@ -32,7 +32,7 @@ end_line: 11
 
 Alexy Khrabrov
 
-Version 0.1.1 · 2026-07-23
+Version 0.4.0 · 2026-08-21
 
 Released into the public domain under the Unlicense.
 

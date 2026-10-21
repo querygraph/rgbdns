@@ -19,7 +19,7 @@ end_line: 12
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d7b7baba4e7b", "codeNote": "DNS from First Principles/Code/FIRSTPAIR.md.source", "heading": "rgbdns-frag-d7b7baba4e7b: heading FirstPair Library Contract", "sourcePath": "FIRSTPAIR.md", "startLine": 1, "endLine": 12}
+{"id": "rgbdns-frag-d7b7baba4e7b", "codeNote": "DNS from First Principles/Code/FIRSTPAIR.md.source", "sourcePath": "FIRSTPAIR.md", "startLine": 1, "endLine": 12}
 ```
 
 ## Excerpt

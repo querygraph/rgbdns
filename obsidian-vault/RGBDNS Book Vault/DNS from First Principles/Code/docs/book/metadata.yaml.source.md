@@ -5,7 +5,7 @@ language: "yaml"
 subsystem: "Documentation"
 line_count: 14
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/book/metadata.yaml
@@ -27,13 +27,13 @@ title: DNS from First Principles
 subtitle: Names, Packets, Authority, Recursion, and the Design of rgbdns
 author:
   - Alexy Khrabrov
-date: 2026-07-23
+date: 2026-08-21
 lang: en-US
 rights: Released into the public domain under the Unlicense
 subject: Domain Name System architecture and the rgbdns implementation
 description: >-
   A ground-up explanation of DNS followed by a guided tour of rgbdns, a
   memory-safe Rust reimplementation of the djbdns suite.
-identifier: urn:rgbdns:book:0.1.1
+identifier: urn:rgbdns:book:0.4.0
 ...
 ```

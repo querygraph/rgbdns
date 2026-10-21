@@ -19,7 +19,7 @@ end_line: 124
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-da555be27060", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-da555be27060: fn rfc2308_negative_soa_ttl_is_the_minimum_of_soa_ttl_and_minimum", "sourcePath": "tests/rfc_conformance.rs", "startLine": 113, "endLine": 124}
+{"id": "rgbdns-frag-da555be27060", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 113, "endLine": 124}
 ```
 
 ## Excerpt

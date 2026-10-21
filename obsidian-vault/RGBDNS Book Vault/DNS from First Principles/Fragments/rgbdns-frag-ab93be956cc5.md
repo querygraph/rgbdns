@@ -21,7 +21,7 @@ end_line: 218
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ab93be956cc5", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "heading": "rgbdns-frag-ab93be956cc5: mod tests", "sourcePath": "src/multilog.rs", "startLine": 215, "endLine": 218}
+{"id": "rgbdns-frag-ab93be956cc5", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "sourcePath": "src/multilog.rs", "startLine": 215, "endLine": 218}
 ```
 
 ## Excerpt

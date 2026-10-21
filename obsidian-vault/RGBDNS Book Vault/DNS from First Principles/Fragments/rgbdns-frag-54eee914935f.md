@@ -19,7 +19,7 @@ end_line: 42
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-54eee914935f", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "heading": "rgbdns-frag-54eee914935f: heading A suite of small programs", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 21, "endLine": 42}
+{"id": "rgbdns-frag-54eee914935f", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 21, "endLine": 42}
 ```
 
 ## Excerpt

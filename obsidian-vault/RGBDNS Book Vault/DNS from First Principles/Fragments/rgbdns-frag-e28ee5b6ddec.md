@@ -19,7 +19,7 @@ end_line: 47
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e28ee5b6ddec", "codeNote": "DNS from First Principles/Code/docs/book/validate.sh.source", "heading": "rgbdns-frag-e28ee5b6ddec: file validate.sh", "sourcePath": "docs/book/validate.sh", "startLine": 1, "endLine": 47}
+{"id": "rgbdns-frag-e28ee5b6ddec", "codeNote": "DNS from First Principles/Code/docs/book/validate.sh.source", "sourcePath": "docs/book/validate.sh", "startLine": 1, "endLine": 47}
 ```
 
 ## Excerpt

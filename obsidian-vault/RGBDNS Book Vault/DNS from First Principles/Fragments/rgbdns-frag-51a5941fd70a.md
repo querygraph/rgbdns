@@ -19,7 +19,7 @@ end_line: 162
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-51a5941fd70a", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-51a5941fd70a: heading Wildcards are synthesis rules", "sourcePath": "docs/book/rgbdns.md", "startLine": 150, "endLine": 162}
+{"id": "rgbdns-frag-51a5941fd70a", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 150, "endLine": 162}
 ```
 
 ## Excerpt

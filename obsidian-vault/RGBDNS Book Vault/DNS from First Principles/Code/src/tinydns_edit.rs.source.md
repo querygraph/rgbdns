@@ -6,7 +6,7 @@ subsystem: "Rust library"
 crate: "rgbdns"
 line_count: 319
 fragment_count: 16
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/tinydns_edit.rs

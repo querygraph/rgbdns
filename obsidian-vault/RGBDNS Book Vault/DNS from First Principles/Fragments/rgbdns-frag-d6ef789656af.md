@@ -19,7 +19,7 @@ end_line: 5
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d6ef789656af", "codeNote": "DNS from First Principles/Code/CHANGELOG.md.source", "heading": "rgbdns-frag-d6ef789656af: heading Changelog", "sourcePath": "CHANGELOG.md", "startLine": 1, "endLine": 5}
+{"id": "rgbdns-frag-d6ef789656af", "codeNote": "DNS from First Principles/Code/CHANGELOG.md.source", "sourcePath": "CHANGELOG.md", "startLine": 1, "endLine": 5}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 72
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-861b81bcf5ae", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-861b81bcf5ae: heading Requirements that pull in different directions", "sourcePath": "docs/book/rgbdns.md", "startLine": 54, "endLine": 72}
+{"id": "rgbdns-frag-861b81bcf5ae", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 54, "endLine": 72}
 ```
 
 ## Excerpt

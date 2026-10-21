@@ -1,11 +1,13 @@
 ---
 type: "subsystem"
 subsystem: "Command-line programs"
-file_count: 34
+file_count: 43
 ---
 
 # Command-line programs
 
+- [[DNS from First Principles/Code/src/bin/acme-materialize.rs.source|src/bin/acme-materialize.rs]]
+- [[DNS from First Principles/Code/src/bin/aname-materialize.rs.source|src/bin/aname-materialize.rs]]
 - [[DNS from First Principles/Code/src/bin/axfr-get.rs.source|src/bin/axfr-get.rs]]
 - [[DNS from First Principles/Code/src/bin/axfrdns-conf.rs.source|src/bin/axfrdns-conf.rs]]
 - [[DNS from First Principles/Code/src/bin/axfrdns.rs.source|src/bin/axfrdns.rs]]
@@ -30,6 +32,13 @@ file_count: 34
 - [[DNS from First Principles/Code/src/bin/rbldns-conf.rs.source|src/bin/rbldns-conf.rs]]
 - [[DNS from First Principles/Code/src/bin/rbldns-data.rs.source|src/bin/rbldns-data.rs]]
 - [[DNS from First Principles/Code/src/bin/rbldns.rs.source|src/bin/rbldns.rs]]
+- [[DNS from First Principles/Code/src/bin/rgbdns-acme.rs.source|src/bin/rgbdns-acme.rs]]
+- [[DNS from First Principles/Code/src/bin/rgbdns-log-report.rs.source|src/bin/rgbdns-log-report.rs]]
+- [[DNS from First Principles/Code/src/bin/rgbsec-check.rs.source|src/bin/rgbsec-check.rs]]
+- [[DNS from First Principles/Code/src/bin/rgbsec-data.rs.source|src/bin/rgbsec-data.rs]]
+- [[DNS from First Principles/Code/src/bin/rgbsec-ds.rs.source|src/bin/rgbsec-ds.rs]]
+- [[DNS from First Principles/Code/src/bin/rgbsec-keygen.rs.source|src/bin/rgbsec-keygen.rs]]
+- [[DNS from First Principles/Code/src/bin/rgbsec-sign.rs.source|src/bin/rgbsec-sign.rs]]
 - [[DNS from First Principles/Code/src/bin/setuidgid.rs.source|src/bin/setuidgid.rs]]
 - [[DNS from First Principles/Code/src/bin/tai64n.rs.source|src/bin/tai64n.rs]]
 - [[DNS from First Principles/Code/src/bin/tai64nlocal.rs.source|src/bin/tai64nlocal.rs]]

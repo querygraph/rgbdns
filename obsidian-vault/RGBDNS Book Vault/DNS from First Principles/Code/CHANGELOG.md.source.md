@@ -3,22 +3,28 @@ type: "code-file"
 source_path: "CHANGELOG.md"
 language: "markdown"
 subsystem: "Repository and build"
-line_count: 144
-fragment_count: 2
-rgbdns_commit: "79502939"
+line_count: 252
+fragment_count: 8
+rgbdns_commit: "5ae24772"
 ---
 
 # CHANGELOG.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 - Source path: `CHANGELOG.md`
-- Lines: 144
+- Lines: 252
 - Summary: Changelog
 
 ## Extracted Fragments
 
 - [[DNS from First Principles/Fragments/rgbdns-frag-d6ef789656af|Changelog]]: lines 1-5
-- [[DNS from First Principles/Fragments/rgbdns-frag-0c7e91de1c2d|Unreleased]]: lines 6-86
+- [[DNS from First Principles/Fragments/rgbdns-frag-4e5a09338a1e|Unreleased]]: lines 6-7
+- [[DNS from First Principles/Fragments/rgbdns-frag-ed4699815d6e|0.6.5 - 2026-09-12]]: lines 8-27
+- [[DNS from First Principles/Fragments/rgbdns-frag-4860ba91b2b0|0.6.4 - 2026-09-12]]: lines 28-36
+- [[DNS from First Principles/Fragments/rgbdns-frag-0faf57baefc2|0.6.3 - 2026-08-20]]: lines 37-44
+- [[DNS from First Principles/Fragments/rgbdns-frag-8fba6b50a005|0.6.2 - 2026-08-19]]: lines 45-55
+- [[DNS from First Principles/Fragments/rgbdns-frag-8d358cad514b|0.6.1 - 2026-08-19]]: lines 56-63
+- [[DNS from First Principles/Fragments/rgbdns-frag-dffc4349ff75|0.6.0 - 2026-08-18]]: lines 64-144
 
 ## Full Source
 
@@ -30,11 +36,119 @@ versioning once its djbdns-compatible public surface stabilizes.
 
 ## [Unreleased]
 
+## [0.6.5] - 2026-09-12
+
+### Fixed
+
+- `rgbdns-data-import` now works on a DNSSEC primary. In DNSSEC mode
+  `compile-zone` only verifies the already published signed CDB, which the
+  import's private stage does not contain, so every upload failed silently
+  with status 1. The upload is now validated with the plain `tinydns-data`
+  compiler, only the `data` source is replaced, and
+  `rgbdns-dnssec-publish.service` (already started after the import) signs,
+  verifies and publishes `data.cdb`. An unsigned database is never served.
+
 ### Added
 
+- `DATA_DROP_IMPORT=disabled` in `/etc/rgbdns/data-drop.env`, written by
+  `rgbdns-setup primary --data-drop-import disabled`, skips the data import
+  for primaries whose data is deployed into the state directory by other
+  means. `rgbdns-data-import.service` checks it with `ExecCondition=`, so a
+  disabled run is skipped rather than failed.
+
+## [0.6.4] - 2026-09-12
+
+### Fixed
+
+- Publish the newer (RFC 1982 order) of the source data's SOA serial and the
+  stored ACME serial for ACME-managed zones. The stored serial used to replace
+  the source serial unconditionally, so an operator's edit with a higher serial
+  kept publishing the older ACME serial and secondaries never transferred it.
+
+## [0.6.3] - 2026-08-20
+
+### Fixed
+
+- Treat DNS suffix checks as ASCII case-insensitive so 0x20-randomized queries
+  for nonexistent names receive signed NXDOMAIN/NSEC proofs instead of
+  REFUSED responses.
+
+## [0.6.2] - 2026-08-19
+
+### Fixed
+
+- Keep ACME-managed `U` zones on the unprivileged in-memory overlay path when
+  another zone in the same snapshot is signed. This avoids invoking the
+  root-only signer during authoritative startup or an unsigned-zone update.
+- Stop `rgbdns-setup` from installing a root-only signer as an unprivileged
+  ACME publication hook. ACME updates to a `K` zone continue to fail closed
+  unless the operator supplies an explicit privileged publication mechanism.
+
+## [0.6.1] - 2026-08-19
+
+### Fixed
+
+- Rename the DNSSEC utility suite to the collision-free `rgbsec-keygen`,
+  `rgbsec-sign`, `rgbsec-data`, `rgbsec-ds`, and `rgbsec-check` commands so the
+  package can coexist with BIND utilities such as `dnssec-keygen`.
+
+## [0.6.0] - 2026-08-18
+
+### Added
+
+- Opt-in, offline authoritative DNSSEC with ECDSA P-256/SHA-256, NSEC denial,
+  signed wildcard and delegation behavior, standard signed AXFR, DS derivation,
+  cryptographic snapshot checks, and signed-RRset-aware UDP truncation.
+- Tinydns-style `dnssec-keygen`, `dnssec-sign`, `dnssec-data`, `dnssec-ds`,
+  `dnssec-check`, `aname-materialize`, and `acme-materialize` utilities with
+  line-oriented configuration and atomic last-known-good publication.
+- Fail-closed mixed snapshots: `K` lines select signed zones and explicit `U`
+  lines retain unsigned zones, including their ANAME and qualified data.
+- Root-only signing and unprivileged monitoring timers. DNSSEC remains disabled
+  unless an operator supplies a policy; the original rgbdns path is unchanged.
+
+### Security
+
+- Private signing keys are primary-only 0600 files and are never opened by
+  `tinydns`, `axfrdns`, or a secondary.
+- DS, DNSKEY, RRSIG, and NSEC data are structurally validated at text, CDB,
+  packet, and AXFR boundaries before publication or service.
+
+### Fixed
+
+- Daily email delivery no longer requires the optional `hostname` utility when
+  a sender is configured, and has portable fallbacks when it is not.
+
+### Added
+
+- A committed FirstPair vault contract now builds non-replacing, standardized
+  candidates through the existing RGBDNS builder and strict validator.
+
+- Daily per-zone DNS query reports with total and distinct client/resolver IP
+  counts, longest-zone matching, descending totals, journald collection,
+  sendmail-compatible delivery, and a hardened systemd timer.
+
+- Scoped TCP RFC 2136 updates authenticated by HMAC-SHA256 TSIG for ACME
+  DNS-01 TXT values, with per-key zone/owner policy, replay and resource
+  bounds, signed responses, durable overlays, monotonic SOA serials, live
+  publication, standard AXFR propagation, canonical-import merge validation,
+  Certbot interoperability guidance, and the `rgbdns-acme` administrative
+  client.
+
+- Original tinydns-compatible per-request logging for UDP, TCP, malformed,
+  refused, class, opcode, and AXFR requests, emitted as untimestamped stderr
+  lines for journald or `multilog`, with a default-on `QUERY_LOG` control.
+- Multi-zone secondary synchronization from a single primary, with repeatable
+  setup arguments, per-zone last-known-good snapshots, and atomic combined CDB
+  activation.
 - Private ANAME zone directives with CDB persistence, bounded recursive
   CNAME following, TTL-capped address caching, and authoritative apex-safe
   A/AAAA synthesis.
+- ANAME miss coalescing and short-lived failure suppression, limiting
+  duplicate recursive work and cross-provider loop amplification.
+- An RFCXML v3 standards-track ANAME and zone-transfer proposal, with rendered
+  text/HTML, provider deployment analysis, native AXFR/IXFR semantics, and a
+  reproducible asdf/uv validation toolchain.
 - Manual pages for every command and packaged service helper, installed by the
   Debian package alongside the rgbdns(7) overview.
 - Native Debian packaging with dedicated service accounts, hardened systemd

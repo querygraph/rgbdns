@@ -19,7 +19,7 @@ end_line: 70
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b05f56fdf049", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "heading": "rgbdns-frag-b05f56fdf049: fn malformed_wire_corpus_is_rejected_without_partial_acceptance", "sourcePath": "tests/wire_security.rs", "startLine": 34, "endLine": 70}
+{"id": "rgbdns-frag-b05f56fdf049", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "sourcePath": "tests/wire_security.rs", "startLine": 34, "endLine": 70}
 ```
 
 ## Excerpt

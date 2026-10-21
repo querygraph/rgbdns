@@ -21,7 +21,7 @@ end_line: 113
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-47a1aedc6982", "codeNote": "DNS from First Principles/Code/src/tai64.rs.source", "heading": "rgbdns-frag-47a1aedc6982: fn stamp", "sourcePath": "src/tai64.rs", "startLine": 91, "endLine": 113}
+{"id": "rgbdns-frag-47a1aedc6982", "codeNote": "DNS from First Principles/Code/src/tai64.rs.source", "sourcePath": "src/tai64.rs", "startLine": 91, "endLine": 113}
 ```
 
 ## Excerpt

@@ -21,7 +21,7 @@ end_line: 21
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-efba4e2a8a31", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "heading": "rgbdns-frag-efba4e2a8a31: enum Mode", "sourcePath": "src/tinydns_edit.rs", "startLine": 12, "endLine": 21}
+{"id": "rgbdns-frag-efba4e2a8a31", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "sourcePath": "src/tinydns_edit.rs", "startLine": 12, "endLine": 21}
 ```
 
 ## Excerpt

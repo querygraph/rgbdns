@@ -19,7 +19,7 @@ end_line: 249
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c211f7926605", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-c211f7926605: fn rfc4343_name_comparison_is_ascii_case_insensitive", "sourcePath": "tests/rfc_conformance.rs", "startLine": 240, "endLine": 249}
+{"id": "rgbdns-frag-c211f7926605", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 240, "endLine": 249}
 ```
 
 ## Excerpt

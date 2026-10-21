@@ -21,7 +21,7 @@ end_line: 176
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d570caaa761a", "codeNote": "DNS from First Principles/Code/src/rbl.rs.source", "heading": "rgbdns-frag-d570caaa761a: fn compile", "sourcePath": "src/rbl.rs", "startLine": 152, "endLine": 176}
+{"id": "rgbdns-frag-d570caaa761a", "codeNote": "DNS from First Principles/Code/src/rbl.rs.source", "sourcePath": "src/rbl.rs", "startLine": 152, "endLine": 176}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 33
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-8ddd872b47c4", "codeNote": "DNS from First Principles/Code/docs/book/epub.css.source", "heading": "rgbdns-frag-8ddd872b47c4: file epub.css", "sourcePath": "docs/book/epub.css", "startLine": 1, "endLine": 33}
+{"id": "rgbdns-frag-8ddd872b47c4", "codeNote": "DNS from First Principles/Code/docs/book/epub.css.source", "sourcePath": "docs/book/epub.css", "startLine": 1, "endLine": 33}
 ```
 
 ## Excerpt

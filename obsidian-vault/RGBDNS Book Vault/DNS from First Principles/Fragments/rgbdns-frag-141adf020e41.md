@@ -19,7 +19,7 @@ end_line: 56
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-141adf020e41", "codeNote": "DNS from First Principles/Code/tests/daemontools.rs.source", "heading": "rgbdns-frag-141adf020e41: fn multilog_binary_timestamps_and_rotates", "sourcePath": "tests/daemontools.rs", "startLine": 24, "endLine": 56}
+{"id": "rgbdns-frag-141adf020e41", "codeNote": "DNS from First Principles/Code/tests/daemontools.rs.source", "sourcePath": "tests/daemontools.rs", "startLine": 24, "endLine": 56}
 ```
 
 ## Excerpt

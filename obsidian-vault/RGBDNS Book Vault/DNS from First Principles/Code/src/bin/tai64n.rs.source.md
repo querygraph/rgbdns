@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "tai64n"
 line_count: 13
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/bin/tai64n.rs

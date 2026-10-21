@@ -72,52 +72,52 @@ known nodes in addition to records.
 
 ## Generated Code Fragment Index
 
-These generated links open the collocated rgbdns codebase notes.
+Each card names an rgbdns fragment. In FirstPair Reader, Show code lists its numbered lines and Open file opens the collocated code note with those lines marked.
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-fd362110f0ff", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-fd362110f0ff: struct Name", "sourcePath": "src/name.rs", "startLine": 15, "endLine": 16}
+{"id": "rgbdns-frag-fd362110f0ff", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 15, "endLine": 16}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0c521630e572", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-0c521630e572: impl PartialEq", "sourcePath": "src/name.rs", "startLine": 17, "endLine": 17}
+{"id": "rgbdns-frag-0c521630e572", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 17, "endLine": 17}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ad7b342aa5e0", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-ad7b342aa5e0: fn eq", "sourcePath": "src/name.rs", "startLine": 18, "endLine": 29}
+{"id": "rgbdns-frag-ad7b342aa5e0", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 18, "endLine": 29}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5aebca818d0e", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-5aebca818d0e: impl Eq", "sourcePath": "src/name.rs", "startLine": 30, "endLine": 31}
+{"id": "rgbdns-frag-5aebca818d0e", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 30, "endLine": 31}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-fe46138a7df6", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-fe46138a7df6: impl Hash", "sourcePath": "src/name.rs", "startLine": 32, "endLine": 32}
+{"id": "rgbdns-frag-fe46138a7df6", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 32, "endLine": 32}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d375ebc0f305", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-d375ebc0f305: fn hash", "sourcePath": "src/name.rs", "startLine": 33, "endLine": 43}
+{"id": "rgbdns-frag-d375ebc0f305", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 33, "endLine": 43}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1ecb9ab00152", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-1ecb9ab00152: impl PartialOrd", "sourcePath": "src/name.rs", "startLine": 44, "endLine": 44}
+{"id": "rgbdns-frag-1ecb9ab00152", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 44, "endLine": 44}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5f4c4b9589f4", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-5f4c4b9589f4: fn partial_cmp", "sourcePath": "src/name.rs", "startLine": 45, "endLine": 49}
+{"id": "rgbdns-frag-5f4c4b9589f4", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 45, "endLine": 49}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e4982a174651", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-e4982a174651: impl Ord", "sourcePath": "src/name.rs", "startLine": 50, "endLine": 50}
+{"id": "rgbdns-frag-e4982a174651", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 50, "endLine": 50}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0dc862d179e7", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-0dc862d179e7: fn cmp", "sourcePath": "src/name.rs", "startLine": 51, "endLine": 64}
+{"id": "rgbdns-frag-0dc862d179e7", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 51, "endLine": 64}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5029e4e250ec", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-5029e4e250ec: impl Name", "sourcePath": "src/name.rs", "startLine": 65, "endLine": 65}
+{"id": "rgbdns-frag-5029e4e250ec", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 65, "endLine": 65}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-695a58a3c146", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "heading": "rgbdns-frag-695a58a3c146: fn root", "sourcePath": "src/name.rs", "startLine": 66, "endLine": 68}
+{"id": "rgbdns-frag-695a58a3c146", "codeNote": "DNS from First Principles/Code/src/name.rs.source", "sourcePath": "src/name.rs", "startLine": 66, "endLine": 68}
 ```

@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "dnsip6"
 line_count: 26
 fragment_count: 2
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/bin/dnsip6.rs

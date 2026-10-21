@@ -21,7 +21,7 @@ end_line: 314
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-6bf6af6b6066", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "heading": "rgbdns-frag-6bf6af6b6066: fn refuses_a_symlinked_current_file", "sourcePath": "src/multilog.rs", "startLine": 296, "endLine": 314}
+{"id": "rgbdns-frag-6bf6af6b6066", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "sourcePath": "src/multilog.rs", "startLine": 296, "endLine": 314}
 ```
 
 ## Excerpt

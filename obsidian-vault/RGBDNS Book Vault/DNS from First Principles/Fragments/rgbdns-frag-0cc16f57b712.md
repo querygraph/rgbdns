@@ -19,7 +19,7 @@ end_line: 13
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0cc16f57b712", "codeNote": "DNS from First Principles/Code/packaging/build-deb.sh.source", "heading": "rgbdns-frag-0cc16f57b712: file build-deb.sh", "sourcePath": "packaging/build-deb.sh", "startLine": 1, "endLine": 13}
+{"id": "rgbdns-frag-0cc16f57b712", "codeNote": "DNS from First Principles/Code/packaging/build-deb.sh.source", "sourcePath": "packaging/build-deb.sh", "startLine": 1, "endLine": 13}
 ```
 
 ## Excerpt

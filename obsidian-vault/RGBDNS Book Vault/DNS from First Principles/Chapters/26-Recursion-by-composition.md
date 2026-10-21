@@ -31,52 +31,52 @@ library boundaries rather than forcing one architecture across the suite.
 
 ## Generated Code Fragment Index
 
-These generated links open the collocated rgbdns codebase notes.
+Each card names an rgbdns fragment. In FirstPair Reader, Show code lists its numbered lines and Open file opens the collocated code note with those lines marked.
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0c2a1a2a636a", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "heading": "rgbdns-frag-0c2a1a2a636a: fn main", "sourcePath": "src/bin/dnscache.rs", "startLine": 21, "endLine": 35}
+{"id": "rgbdns-frag-0c2a1a2a636a", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "sourcePath": "src/bin/dnscache.rs", "startLine": 21, "endLine": 35}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-f9c2e38b98db", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "heading": "rgbdns-frag-f9c2e38b98db: fn run", "sourcePath": "src/bin/dnscache.rs", "startLine": 36, "endLine": 116}
+{"id": "rgbdns-frag-f9c2e38b98db", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "sourcePath": "src/bin/dnscache.rs", "startLine": 36, "endLine": 116}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c4c75c363342", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "heading": "rgbdns-frag-c4c75c363342: fn bounded_env_usize", "sourcePath": "src/bin/dnscache.rs", "startLine": 143, "endLine": 151}
+{"id": "rgbdns-frag-c4c75c363342", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "sourcePath": "src/bin/dnscache.rs", "startLine": 143, "endLine": 151}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-93419b6c9023", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "heading": "rgbdns-frag-93419b6c9023: fn bounded_env_u8", "sourcePath": "src/bin/dnscache.rs", "startLine": 152, "endLine": 160}
+{"id": "rgbdns-frag-93419b6c9023", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "sourcePath": "src/bin/dnscache.rs", "startLine": 152, "endLine": 160}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-985f21d17a56", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "heading": "rgbdns-frag-985f21d17a56: fn bounded_env", "sourcePath": "src/bin/dnscache.rs", "startLine": 161, "endLine": 180}
+{"id": "rgbdns-frag-985f21d17a56", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "sourcePath": "src/bin/dnscache.rs", "startLine": 161, "endLine": 180}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-3790fed38817", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-3790fed38817: const MAX_ROOTS_FILE", "sourcePath": "src/dnscache_config.rs", "startLine": 12, "endLine": 12}
+{"id": "rgbdns-frag-3790fed38817", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 12, "endLine": 12}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-f59cd49b7a3e", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-f59cd49b7a3e: const MAX_ROOT_ADDRESSES", "sourcePath": "src/dnscache_config.rs", "startLine": 13, "endLine": 13}
+{"id": "rgbdns-frag-f59cd49b7a3e", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 13, "endLine": 13}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e2e70010249a", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-e2e70010249a: const MAX_FORWARD_ZONES", "sourcePath": "src/dnscache_config.rs", "startLine": 14, "endLine": 16}
+{"id": "rgbdns-frag-e2e70010249a", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 14, "endLine": 16}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-128d48d8a73e", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-128d48d8a73e: struct ForwardZone", "sourcePath": "src/dnscache_config.rs", "startLine": 17, "endLine": 26}
+{"id": "rgbdns-frag-128d48d8a73e", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 17, "endLine": 26}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c527bbc0d8ea", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-c527bbc0d8ea: struct PreparedRoots", "sourcePath": "src/dnscache_config.rs", "startLine": 27, "endLine": 31}
+{"id": "rgbdns-frag-c527bbc0d8ea", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 27, "endLine": 31}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-2ed2d81c2acf", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-2ed2d81c2acf: impl PreparedRoots", "sourcePath": "src/dnscache_config.rs", "startLine": 32, "endLine": 32}
+{"id": "rgbdns-frag-2ed2d81c2acf", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 32, "endLine": 32}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1c885999a2f2", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-1c885999a2f2: fn from_environment", "sourcePath": "src/dnscache_config.rs", "startLine": 33, "endLine": 45}
+{"id": "rgbdns-frag-1c885999a2f2", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 33, "endLine": 45}
 ```

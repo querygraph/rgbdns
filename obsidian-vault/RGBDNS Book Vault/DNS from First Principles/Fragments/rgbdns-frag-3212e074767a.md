@@ -19,7 +19,7 @@ end_line: 17
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-3212e074767a", "codeNote": "DNS from First Principles/Code/packaging/cargo-binaries.py.source", "heading": "rgbdns-frag-3212e074767a: file cargo-binaries.py", "sourcePath": "packaging/cargo-binaries.py", "startLine": 1, "endLine": 17}
+{"id": "rgbdns-frag-3212e074767a", "codeNote": "DNS from First Principles/Code/packaging/cargo-binaries.py.source", "sourcePath": "packaging/cargo-binaries.py", "startLine": 1, "endLine": 17}
 ```
 
 ## Excerpt

@@ -21,7 +21,7 @@ end_line: 104
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-2daa3b3665ed", "codeNote": "DNS from First Principles/Code/src/wall.rs.source", "heading": "rgbdns-frag-2daa3b3665ed: fn partial_reverse_names_have_self_ptr", "sourcePath": "src/wall.rs", "startLine": 96, "endLine": 104}
+{"id": "rgbdns-frag-2daa3b3665ed", "codeNote": "DNS from First Principles/Code/src/wall.rs.source", "sourcePath": "src/wall.rs", "startLine": 96, "endLine": 104}
 ```
 
 ## Excerpt

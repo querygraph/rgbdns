@@ -19,7 +19,7 @@ end_line: 7
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1c7366ed3996", "codeNote": "DNS from First Principles/Code/docs/OBSIDIAN-VAULT.md.source", "heading": "rgbdns-frag-1c7366ed3996: heading DNS from First Principles Obsidian vault", "sourcePath": "docs/OBSIDIAN-VAULT.md", "startLine": 1, "endLine": 7}
+{"id": "rgbdns-frag-1c7366ed3996", "codeNote": "DNS from First Principles/Code/docs/OBSIDIAN-VAULT.md.source", "sourcePath": "docs/OBSIDIAN-VAULT.md", "startLine": 1, "endLine": 7}
 ```
 
 ## Excerpt
@@ -33,6 +33,6 @@ end_line: 7
 The committed vault is a generated reader edition of *DNS from First
 Principles*. It contains the complete manuscript, the repository’s complete
 text/code surface, symbol-level excerpts, subsystem and component maps, and the
-bundled `rgbdns-reader` plugin.
+bundled FirstPair Reader 2 plugin (`firstpair-reader`).
 
 ```

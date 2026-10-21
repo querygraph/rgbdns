@@ -4,9 +4,9 @@ source_path: "src/aname.rs"
 language: "rust"
 subsystem: "Rust library"
 crate: "rgbdns"
-line_count: 212
-fragment_count: 15
-rgbdns_commit: "79502939"
+line_count: 348
+fragment_count: 20
+rgbdns_commit: "5ae24772"
 ---
 
 # src/aname.rs
@@ -14,43 +14,50 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/Rust library|Rust library]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/aname.rs`
-- Lines: 212
+- Lines: 348
 - Summary: Private ANAME resolution and bounded address caching.
 
 ## Extracted Fragments
 
 - [[DNS from First Principles/Fragments/rgbdns-frag-0eb12106aceb|MAX_CHAIN]]: lines 11-11
 - [[DNS from First Principles/Fragments/rgbdns-frag-82b35b6804ab|NEGATIVE_TTL]]: lines 12-12
-- [[DNS from First Principles/Fragments/rgbdns-frag-3d0508ce22a6|MAX_ADDRESSES]]: lines 13-15
-- [[DNS from First Principles/Fragments/rgbdns-frag-163088533e30|CacheKey]]: lines 16-21
-- [[DNS from First Principles/Fragments/rgbdns-frag-57473282a4ff|CacheEntry]]: lines 22-26
-- [[DNS from First Principles/Fragments/rgbdns-frag-3570b5155e9d|Resolver]]: lines 27-31
-- [[DNS from First Principles/Fragments/rgbdns-frag-a5b88df041d6|Resolver]]: lines 32-32
-- [[DNS from First Principles/Fragments/rgbdns-frag-583cdf24733b|from_system]]: lines 33-36
-- [[DNS from First Principles/Fragments/rgbdns-frag-ab345aca2e36|new]]: lines 37-43
-- [[DNS from First Principles/Fragments/rgbdns-frag-c4b0676dbea8|resolve]]: lines 44-95
-- [[DNS from First Principles/Fragments/rgbdns-frag-b8118dfc2f5e|addresses]]: lines 96-148
-- [[DNS from First Principles/Fragments/rgbdns-frag-07fa4d90c701|records]]: lines 149-167
-- [[DNS from First Principles/Fragments/rgbdns-frag-bca7f405b15b|tests]]: lines 168-172
-- [[DNS from First Principles/Fragments/rgbdns-frag-9f56afdfcc8f|follows_a_bounded_cname_chain_and_preserves_addresses]]: lines 173-193
-- [[DNS from First Principles/Fragments/rgbdns-frag-d418530011a5|separates_address_families_and_rejects_loops]]: lines 194-212
+- [[DNS from First Principles/Fragments/rgbdns-frag-038ca74536bb|MAX_ADDRESSES]]: lines 13-13
+- [[DNS from First Principles/Fragments/rgbdns-frag-54aeda666243|FAILURE_TTL]]: lines 14-14
+- [[DNS from First Principles/Fragments/rgbdns-frag-43af706ec4db|INFLIGHT_WAIT]]: lines 15-17
+- [[DNS from First Principles/Fragments/rgbdns-frag-27b46e14fabd|CacheKey]]: lines 18-23
+- [[DNS from First Principles/Fragments/rgbdns-frag-2203e709c4c4|CacheEntry]]: lines 24-29
+- [[DNS from First Principles/Fragments/rgbdns-frag-0286395bcdf6|Resolver]]: lines 30-35
+- [[DNS from First Principles/Fragments/rgbdns-frag-686609b1980f|Resolver]]: lines 36-36
+- [[DNS from First Principles/Fragments/rgbdns-frag-30a6c55c6ebe|from_system]]: lines 37-40
+- [[DNS from First Principles/Fragments/rgbdns-frag-10764465988c|new]]: lines 41-48
+- [[DNS from First Principles/Fragments/rgbdns-frag-6dec253528fc|resolve]]: lines 49-64
+- [[DNS from First Principles/Fragments/rgbdns-frag-c94aedc8bcdb|resolve_with]]: lines 65-145
+- [[DNS from First Principles/Fragments/rgbdns-frag-f36559dee8b3|addresses]]: lines 162-214
+- [[DNS from First Principles/Fragments/rgbdns-frag-aacd6857c3b9|records]]: lines 215-236
+- [[DNS from First Principles/Fragments/rgbdns-frag-3d80c9d6d68e|tests]]: lines 237-248
+- [[DNS from First Principles/Fragments/rgbdns-frag-03c91f9cbba2|follows_a_bounded_cname_chain_and_preserves_addresses]]: lines 249-269
+- [[DNS from First Principles/Fragments/rgbdns-frag-967b5f545b22|separates_address_families_and_rejects_loops]]: lines 270-289
+- [[DNS from First Principles/Fragments/rgbdns-frag-6c046f5c35d8|concurrent_misses_are_coalesced]]: lines 290-330
+- [[DNS from First Principles/Fragments/rgbdns-frag-4b79a1f3e124|failures_are_suppressed_briefly]]: lines 331-348
 
 ## Full Source
 
 ```rust
 //! Private ANAME resolution and bounded address caching.
 
-use crate::{Error, Name, RData, Record, RecordType, Result, client};
+use crate::{Error, Message, Name, RData, Record, RecordType, Result, client};
 use std::{
     collections::{HashMap, HashSet},
     net::SocketAddr,
-    sync::Mutex,
+    sync::{Condvar, Mutex},
     time::{Duration, Instant},
 };
 
 const MAX_CHAIN: usize = 16;
 const NEGATIVE_TTL: u32 = 60;
 const MAX_ADDRESSES: usize = 64;
+const FAILURE_TTL: Duration = Duration::from_secs(5);
+const INFLIGHT_WAIT: Duration = Duration::from_secs(30);
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 struct CacheKey {
@@ -59,14 +66,16 @@ struct CacheKey {
 }
 
 #[derive(Clone, Debug)]
-struct CacheEntry {
-    data: Vec<RData>,
-    expires: Instant,
+enum CacheEntry {
+    Ready { data: Vec<RData>, expires: Instant },
+    Loading,
+    Failed { expires: Instant },
 }
 
 pub(crate) struct Resolver {
     servers: Vec<SocketAddr>,
     cache: Mutex<HashMap<CacheKey, CacheEntry>>,
+    cache_changed: Condvar,
 }
 
 impl Resolver {
@@ -78,6 +87,7 @@ impl Resolver {
         Self {
             servers,
             cache: Mutex::new(HashMap::new()),
+            cache_changed: Condvar::new(),
         }
     }
 
@@ -88,6 +98,26 @@ impl Resolver {
         record_type: RecordType,
         ttl_limit: u32,
     ) -> Result<Vec<Record>> {
+        self.resolve_with(
+            owner,
+            target,
+            record_type,
+            ttl_limit,
+            |target, record_type| client::query(target, record_type, true, &self.servers),
+        )
+    }
+
+    fn resolve_with<F>(
+        &self,
+        owner: &Name,
+        target: &Name,
+        record_type: RecordType,
+        ttl_limit: u32,
+        query: F,
+    ) -> Result<Vec<Record>>
+    where
+        F: FnOnce(Name, RecordType) -> Result<Message>,
+    {
         if !matches!(record_type, RecordType::A | RecordType::Aaaa) {
             return Ok(Vec::new());
         }
@@ -95,41 +125,82 @@ impl Resolver {
             target: target.clone(),
             record_type,
         };
-        let now = Instant::now();
-        if let Some(entry) = self
-            .cache
-            .lock()
-            .map_err(|_| Error::Format("ANAME cache lock poisoned"))?
-            .get(&key)
-            .filter(|entry| entry.expires > now)
-            .cloned()
-        {
-            return Ok(records(owner, entry, now, ttl_limit));
+        loop {
+            let now = Instant::now();
+            let mut cache = self
+                .cache
+                .lock()
+                .map_err(|_| Error::Format("ANAME cache lock poisoned"))?;
+            match cache.get(&key).cloned() {
+                Some(CacheEntry::Ready { data, expires }) if expires > now => {
+                    return Ok(records(owner, data, expires, now, ttl_limit));
+                }
+                Some(CacheEntry::Failed { expires }) if expires > now => {
+                    return Err(Error::Format("ANAME target is temporarily suppressed"));
+                }
+                Some(CacheEntry::Loading) => {
+                    let (guard, timeout) = self
+                        .cache_changed
+                        .wait_timeout(cache, INFLIGHT_WAIT)
+                        .map_err(|_| Error::Format("ANAME cache lock poisoned"))?;
+                    drop(guard);
+                    if timeout.timed_out() {
+                        return Err(Error::Format("ANAME target lookup timed out"));
+                    }
+                    continue;
+                }
+                _ => {
+                    cache.insert(key.clone(), CacheEntry::Loading);
+                    break;
+                }
+            }
         }
 
-        let response = client::query(target.clone(), record_type, true, &self.servers)?;
-        if !matches!(response.flags & 0x000f, 0 | 3) {
-            return Err(Error::Format("ANAME upstream resolver returned an error"));
-        }
-        let (data, upstream_ttl) = addresses(&response.answers, target, record_type)?;
-        let negative_ttl = response
-            .authorities
-            .iter()
-            .filter_map(|record| match record.data {
-                RData::Soa { minimum, .. } => Some(record.ttl.min(minimum)),
-                _ => None,
-            })
-            .min();
-        let ttl = upstream_ttl.or(negative_ttl).unwrap_or(NEGATIVE_TTL).max(1);
-        let entry = CacheEntry {
-            data,
-            expires: now + Duration::from_secs(u64::from(ttl)),
-        };
-        self.cache
+        let result = query(target.clone(), record_type).and_then(|response| {
+            if !matches!(response.flags & 0x000f, 0 | 3) {
+                return Err(Error::Format("ANAME upstream resolver returned an error"));
+            }
+            let (data, upstream_ttl) = addresses(&response.answers, target, record_type)?;
+            let negative_ttl = response
+                .authorities
+                .iter()
+                .filter_map(|record| match record.data {
+                    RData::Soa { minimum, .. } => Some(record.ttl.min(minimum)),
+                    _ => None,
+                })
+                .min();
+            let ttl = upstream_ttl.or(negative_ttl).unwrap_or(NEGATIVE_TTL).max(1);
+            Ok((data, ttl))
+        });
+        let now = Instant::now();
+        let mut cache = self
+            .cache
             .lock()
-            .map_err(|_| Error::Format("ANAME cache lock poisoned"))?
-            .insert(key, entry.clone());
-        Ok(records(owner, entry, now, ttl_limit))
+            .map_err(|_| Error::Format("ANAME cache lock poisoned"))?;
+        match result {
+            Ok((data, ttl)) => {
+                let expires = now + Duration::from_secs(u64::from(ttl));
+                cache.insert(
+                    key,
+                    CacheEntry::Ready {
+                        data: data.clone(),
+                        expires,
+                    },
+                );
+                self.cache_changed.notify_all();
+                Ok(records(owner, data, expires, now, ttl_limit))
+            }
+            Err(error) => {
+                cache.insert(
+                    key,
+                    CacheEntry::Failed {
+                        expires: now + FAILURE_TTL,
+                    },
+                );
+                self.cache_changed.notify_all();
+                Err(error)
+            }
+        }
     }
 }
 
@@ -186,16 +257,19 @@ fn addresses(
     Err(Error::Format("ANAME target CNAME chain is too long"))
 }
 
-fn records(owner: &Name, entry: CacheEntry, now: Instant, ttl_limit: u32) -> Vec<Record> {
-    let ttl = entry
-        .expires
+fn records(
+    owner: &Name,
+    data: Vec<RData>,
+    expires: Instant,
+    now: Instant,
+    ttl_limit: u32,
+) -> Vec<Record> {
+    let ttl = expires
         .saturating_duration_since(now)
         .as_secs()
         .clamp(1, u64::from(u32::MAX)) as u32;
     let ttl = ttl.min(ttl_limit);
-    entry
-        .data
-        .into_iter()
+    data.into_iter()
         .map(|data| Record {
             name: owner.clone(),
             ttl,
@@ -207,7 +281,14 @@ fn records(owner: &Name, entry: CacheEntry, now: Instant, ttl_limit: u32) -> Vec
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::net::{Ipv4Addr, Ipv6Addr};
+    use std::{
+        net::{Ipv4Addr, Ipv6Addr},
+        sync::{
+            Arc, Barrier,
+            atomic::{AtomicUsize, Ordering},
+        },
+        thread,
+    };
 
     #[test]
     fn follows_a_bounded_cname_chain_and_preserves_addresses() {
@@ -248,6 +329,66 @@ mod tests {
         let (data, _) = addresses(&answers, &name, RecordType::Aaaa).unwrap();
         assert_eq!(data, [RData::Aaaa(Ipv6Addr::LOCALHOST)]);
         assert!(addresses(&answers[1..], &name, RecordType::A).is_err());
+    }
+
+    #[test]
+    fn concurrent_misses_are_coalesced() {
+        let resolver = Arc::new(Resolver::new(Vec::new()));
+        let owner: Name = "owner.example".parse().unwrap();
+        let target: Name = "target.example".parse().unwrap();
+        let calls = Arc::new(AtomicUsize::new(0));
+        let barrier = Arc::new(Barrier::new(8));
+        let workers = (0..8)
+            .map(|_| {
+                let resolver = resolver.clone();
+                let owner = owner.clone();
+                let target = target.clone();
+                let calls = calls.clone();
+                let barrier = barrier.clone();
+                thread::spawn(move || {
+                    barrier.wait();
+                    resolver
+                        .resolve_with(&owner, &target, RecordType::A, 300, |name, _| {
+                            calls.fetch_add(1, Ordering::SeqCst);
+                            thread::sleep(Duration::from_millis(50));
+                            Ok(Message {
+                                flags: 0x8000,
+                                answers: vec![Record {
+                                    name,
+                                    ttl: 60,
+                                    data: RData::A(Ipv4Addr::new(192, 0, 2, 8)),
+                                }],
+                                ..Default::default()
+                            })
+                        })
+                        .unwrap()
+                })
+            })
+            .collect::<Vec<_>>();
+        for worker in workers {
+            let records = worker.join().unwrap();
+            assert_eq!(records[0].data, RData::A(Ipv4Addr::new(192, 0, 2, 8)));
+        }
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+    }
+
+    #[test]
+    fn failures_are_suppressed_briefly() {
+        let resolver = Resolver::new(Vec::new());
+        let owner: Name = "owner.example".parse().unwrap();
+        let target: Name = "target.example".parse().unwrap();
+        let calls = AtomicUsize::new(0);
+        let first = resolver.resolve_with(&owner, &target, RecordType::A, 300, |_, _| {
+            calls.fetch_add(1, Ordering::SeqCst);
+            Err(Error::Format("simulated upstream failure"))
+        });
+        assert!(first.is_err());
+        let second = resolver.resolve_with(&owner, &target, RecordType::A, 300, |_, _| {
+            calls.fetch_add(1, Ordering::SeqCst);
+            Ok(Message::default())
+        });
+        assert!(second.is_err());
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
     }
 }
 ```

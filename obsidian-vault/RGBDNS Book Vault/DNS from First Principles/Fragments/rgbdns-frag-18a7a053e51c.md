@@ -21,7 +21,7 @@ end_line: 246
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-18a7a053e51c", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-18a7a053e51c: fn rejects_responses_with_a_mismatched_question_opcode_or_tcp_truncation", "sourcePath": "src/client.rs", "startLine": 220, "endLine": 246}
+{"id": "rgbdns-frag-18a7a053e51c", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 220, "endLine": 246}
 ```
 
 ## Excerpt

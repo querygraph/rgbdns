@@ -21,7 +21,7 @@ end_line: 319
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-087a0d573875", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "heading": "rgbdns-frag-087a0d573875: fn ipv6_modes_emit_flat_unambiguous_addresses", "sourcePath": "src/tinydns_edit.rs", "startLine": 301, "endLine": 319}
+{"id": "rgbdns-frag-087a0d573875", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "sourcePath": "src/tinydns_edit.rs", "startLine": 301, "endLine": 319}
 ```
 
 ## Excerpt

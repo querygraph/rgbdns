@@ -5,7 +5,7 @@ language: "yaml"
 subsystem: "Project automation"
 line_count: 51
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # .github/workflows/build-book.yml

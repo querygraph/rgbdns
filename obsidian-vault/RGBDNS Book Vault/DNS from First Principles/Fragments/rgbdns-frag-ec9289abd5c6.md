@@ -19,7 +19,7 @@ end_line: 13
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ec9289abd5c6", "codeNote": "DNS from First Principles/Code/docs/book/build.sh.source", "heading": "rgbdns-frag-ec9289abd5c6: file build.sh", "sourcePath": "docs/book/build.sh", "startLine": 1, "endLine": 13}
+{"id": "rgbdns-frag-ec9289abd5c6", "codeNote": "DNS from First Principles/Code/docs/book/build.sh.source", "sourcePath": "docs/book/build.sh", "startLine": 1, "endLine": 13}
 ```
 
 ## Excerpt

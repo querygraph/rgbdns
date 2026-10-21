@@ -21,7 +21,7 @@ end_line: 285
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ba9506807310", "codeNote": "DNS from First Principles/Code/src/conf.rs.source", "heading": "rgbdns-frag-ba9506807310: fn creates_tinydns_service_tree_without_overwriting", "sourcePath": "src/conf.rs", "startLine": 264, "endLine": 285}
+{"id": "rgbdns-frag-ba9506807310", "codeNote": "DNS from First Principles/Code/src/conf.rs.source", "sourcePath": "src/conf.rs", "startLine": 264, "endLine": 285}
 ```
 
 ## Excerpt

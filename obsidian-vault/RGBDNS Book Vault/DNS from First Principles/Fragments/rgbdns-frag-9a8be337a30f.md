@@ -19,7 +19,7 @@ end_line: 27
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-9a8be337a30f", "codeNote": "DNS from First Principles/Code/FIRSTPAIR.md.source", "heading": "rgbdns-frag-9a8be337a30f: heading Build", "sourcePath": "FIRSTPAIR.md", "startLine": 13, "endLine": 27}
+{"id": "rgbdns-frag-9a8be337a30f", "codeNote": "DNS from First Principles/Code/FIRSTPAIR.md.source", "sourcePath": "FIRSTPAIR.md", "startLine": 13, "endLine": 27}
 ```
 
 ## Excerpt
@@ -27,7 +27,7 @@ end_line: 27
 <span id="rgbdns-frag-9a8be337a30f" class="rgbdns-fragment-target"></span>
 ### rgbdns-frag-9a8be337a30f: heading Build
 
-```markdown
+````markdown
 ## Build
 
 From the repository root:
@@ -43,4 +43,4 @@ PDF, EPUB, standalone HTML, and `VERSION.md` under `docs/book/dist/`.
 Building does not publish. Public catalog or deployment actions require an
 explicit publishing request and the central FirstPair publishing workflow.
 
-```
+````

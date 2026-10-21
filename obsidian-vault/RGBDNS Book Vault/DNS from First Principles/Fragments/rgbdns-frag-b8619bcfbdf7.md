@@ -21,7 +21,7 @@ end_line: 219
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b8619bcfbdf7", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-b8619bcfbdf7: fn parses_bare_and_explicit_port_server_addresses", "sourcePath": "src/client.rs", "startLine": 208, "endLine": 219}
+{"id": "rgbdns-frag-b8619bcfbdf7", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 208, "endLine": 219}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 14
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-92fffee57aa5", "codeNote": "DNS from First Principles/Code/docs/book/metadata.yaml.source", "heading": "rgbdns-frag-92fffee57aa5: file metadata.yaml", "sourcePath": "docs/book/metadata.yaml", "startLine": 1, "endLine": 14}
+{"id": "rgbdns-frag-92fffee57aa5", "codeNote": "DNS from First Principles/Code/docs/book/metadata.yaml.source", "sourcePath": "docs/book/metadata.yaml", "startLine": 1, "endLine": 14}
 ```
 
 ## Excerpt
@@ -33,13 +33,13 @@ title: DNS from First Principles
 subtitle: Names, Packets, Authority, Recursion, and the Design of rgbdns
 author:
   - Alexy Khrabrov
-date: 2026-07-23
+date: 2026-08-21
 lang: en-US
 rights: Released into the public domain under the Unlicense
 subject: Domain Name System architecture and the rgbdns implementation
 description: >-
   A ground-up explanation of DNS followed by a guided tour of rgbdns, a
   memory-safe Rust reimplementation of the djbdns suite.
-identifier: urn:rgbdns:book:0.1.1
+identifier: urn:rgbdns:book:0.4.0
 ...
 ```

@@ -19,7 +19,7 @@ end_line: 11
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d3e351ff4ce5", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "heading": "rgbdns-frag-d3e351ff4ce5: fn standard_header", "sourcePath": "tests/wire_security.rs", "startLine": 3, "endLine": 11}
+{"id": "rgbdns-frag-d3e351ff4ce5", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "sourcePath": "tests/wire_security.rs", "startLine": 3, "endLine": 11}
 ```
 
 ## Excerpt

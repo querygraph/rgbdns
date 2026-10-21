@@ -1,0 +1,112 @@
+---
+type: "code-fragment"
+fragment_id: "rgbdns-frag-4f07827d15f9"
+source_path: ".github/workflows/build-deb.yml"
+code_note: "DNS from First Principles/Code/github/workflows/build-deb.yml.source"
+language: "yaml"
+subsystem: "Project automation"
+symbol: "build-deb.yml"
+kind: "file"
+start_line: 1
+end_line: 81
+---
+
+# build-deb.yml
+
+- Fragment ID: `rgbdns-frag-4f07827d15f9`
+- Source file: [[DNS from First Principles/Code/github/workflows/build-deb.yml.source|.github/workflows/build-deb.yml]]
+- Lines: 1-81
+- Subsystem: [[DNS from First Principles/Subsystems/Project automation|Project automation]]
+
+```rgbdns-fragment
+{"id": "rgbdns-frag-4f07827d15f9", "codeNote": "DNS from First Principles/Code/github/workflows/build-deb.yml.source", "sourcePath": ".github/workflows/build-deb.yml", "startLine": 1, "endLine": 81}
+```
+
+## Excerpt
+
+<span id="rgbdns-frag-4f07827d15f9" class="rgbdns-fragment-target"></span>
+### rgbdns-frag-4f07827d15f9: file build-deb.yml
+
+```yaml
+name: Build Debian package
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - debian/**
+      - packaging/**
+      - docs/DEBIAN.md
+      - .github/workflows/build-deb.yml
+  push:
+    branches:
+      - master
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - debian/**
+      - packaging/**
+      - docs/DEBIAN.md
+      - .github/workflows/build-deb.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: debian-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  amd64:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Test secondary synchronization
+        run: |
+          packaging/tests/test-secondary-sync.sh
+          packaging/tests/test-import-zones.sh
+          packaging/tests/test-migrate-zones.sh
+          packaging/tests/test-import-data.sh
+          packaging/tests/test-restore-role-units.sh
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install Debian packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes debhelper lintian
+
+      - name: Build package
+        run: packaging/build-deb.sh -d
+
+      - name: Test daily query reporting
+        run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
+
+      - name: Collect and inspect package
+        run: |
+          mkdir -p dist
+          cp ../rgbdns_*_amd64.deb dist/
+          dpkg-deb --info dist/rgbdns_*_amd64.deb
+          dpkg-deb --contents dist/rgbdns_*_amd64.deb
+          cargo metadata --format-version 1 --no-deps |
+            python3 packaging/cargo-binaries.py > /tmp/expected-binaries
+          dpkg-deb --fsys-tarfile dist/rgbdns_*_amd64.deb |
+            tar -tf - |
+            sed -n 's#^\./usr/bin/##p' |
+            sed '/^$/d' |
+            sort > /tmp/packaged-binaries
+          diff -u /tmp/expected-binaries /tmp/packaged-binaries
+          lintian --fail-on error dist/rgbdns_*_amd64.deb
+
+      - name: Verify installed package
+        run: |
+          docker run --rm \
+```

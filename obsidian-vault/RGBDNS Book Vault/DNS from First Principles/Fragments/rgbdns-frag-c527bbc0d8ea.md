@@ -21,7 +21,7 @@ end_line: 31
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c527bbc0d8ea", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-c527bbc0d8ea: struct PreparedRoots", "sourcePath": "src/dnscache_config.rs", "startLine": 27, "endLine": 31}
+{"id": "rgbdns-frag-c527bbc0d8ea", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 27, "endLine": 31}
 ```
 
 ## Excerpt

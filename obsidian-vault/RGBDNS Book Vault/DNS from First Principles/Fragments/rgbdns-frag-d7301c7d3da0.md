@@ -21,7 +21,7 @@ end_line: 86
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d7301c7d3da0", "codeNote": "DNS from First Principles/Code/src/setuidgid.rs.source", "heading": "rgbdns-frag-d7301c7d3da0: fn exec", "sourcePath": "src/setuidgid.rs", "startLine": 78, "endLine": 86}
+{"id": "rgbdns-frag-d7301c7d3da0", "codeNote": "DNS from First Principles/Code/src/setuidgid.rs.source", "sourcePath": "src/setuidgid.rs", "startLine": 78, "endLine": 86}
 ```
 
 ## Excerpt

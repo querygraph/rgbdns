@@ -19,7 +19,7 @@ end_line: 112
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-bb7e008e7e8c", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-bb7e008e7e8c: fn rfc2308_nodata_and_nxdomain_are_distinct_and_include_soa", "sourcePath": "tests/rfc_conformance.rs", "startLine": 100, "endLine": 112}
+{"id": "rgbdns-frag-bb7e008e7e8c", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 100, "endLine": 112}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 9
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-2730d2406cfe", "codeNote": "DNS from First Principles/Code/obsidian-plugin/rgbdns-reader/manifest.json.source", "heading": "rgbdns-frag-2730d2406cfe: file manifest.json", "sourcePath": "obsidian-plugin/rgbdns-reader/manifest.json", "startLine": 1, "endLine": 9}
+{"id": "rgbdns-frag-2730d2406cfe", "codeNote": "DNS from First Principles/Code/obsidian-plugin/rgbdns-reader/manifest.json.source", "sourcePath": "obsidian-plugin/rgbdns-reader/manifest.json", "startLine": 1, "endLine": 9}
 ```
 
 ## Excerpt

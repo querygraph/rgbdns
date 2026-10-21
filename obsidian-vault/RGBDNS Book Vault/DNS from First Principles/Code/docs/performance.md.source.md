@@ -5,7 +5,7 @@ language: "markdown"
 subsystem: "Documentation"
 line_count: 55
 fragment_count: 2
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/performance.md
@@ -22,7 +22,7 @@ rgbdns_commit: "79502939"
 
 ## Full Source
 
-```markdown
+````markdown
 # Performance methodology
 
 `benches/dns_core.rs` is a dependency-free, stable-Rust microbenchmark for the
@@ -78,4 +78,4 @@ Compression deliberately trades additional encoder CPU for roughly half the
 wire bytes in the repeated-owner workload. A last-owner cache keeps that cost
 well below the initial suffix-map implementation (34,075 ns), while preserving
 compression across different names that share suffixes.
-```
+````

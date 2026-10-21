@@ -19,7 +19,7 @@ end_line: 72
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0f8ff5c7a060", "codeNote": "DNS from First Principles/Code/tests/dnscache_network.rs.source", "heading": "rgbdns-frag-0f8ff5c7a060: fn validates_secure_and_rejects_bogus_dnssec", "sourcePath": "tests/dnscache_network.rs", "startLine": 48, "endLine": 72}
+{"id": "rgbdns-frag-0f8ff5c7a060", "codeNote": "DNS from First Principles/Code/tests/dnscache_network.rs.source", "sourcePath": "tests/dnscache_network.rs", "startLine": 48, "endLine": 72}
 ```
 
 ## Excerpt

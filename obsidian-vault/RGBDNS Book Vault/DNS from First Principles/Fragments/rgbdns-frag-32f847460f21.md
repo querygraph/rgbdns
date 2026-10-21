@@ -21,7 +21,7 @@ end_line: 299
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-32f847460f21", "codeNote": "DNS from First Principles/Code/src/conf.rs.source", "heading": "rgbdns-frag-32f847460f21: fn dnscache_tree_contains_current_hints_and_private_seed", "sourcePath": "src/conf.rs", "startLine": 286, "endLine": 299}
+{"id": "rgbdns-frag-32f847460f21", "codeNote": "DNS from First Principles/Code/src/conf.rs.source", "sourcePath": "src/conf.rs", "startLine": 286, "endLine": 299}
 ```
 
 ## Excerpt

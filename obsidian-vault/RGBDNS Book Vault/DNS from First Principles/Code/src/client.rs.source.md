@@ -6,7 +6,7 @@ subsystem: "Resolution and recursion"
 crate: "rgbdns"
 line_count: 246
 fragment_count: 13
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/client.rs

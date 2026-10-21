@@ -21,7 +21,7 @@ end_line: 116
 - Component: [[DNS from First Principles/Components/dnscache|dnscache]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-f9c2e38b98db", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "heading": "rgbdns-frag-f9c2e38b98db: fn run", "sourcePath": "src/bin/dnscache.rs", "startLine": 36, "endLine": 116}
+{"id": "rgbdns-frag-f9c2e38b98db", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "sourcePath": "src/bin/dnscache.rs", "startLine": 36, "endLine": 116}
 ```
 
 ## Excerpt

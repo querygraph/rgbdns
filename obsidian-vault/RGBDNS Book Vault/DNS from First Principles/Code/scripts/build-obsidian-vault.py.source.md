@@ -3,51 +3,56 @@ type: "code-file"
 source_path: "scripts/build-obsidian-vault.py"
 language: "python"
 subsystem: "Developer scripts"
-line_count: 794
-fragment_count: 31
-rgbdns_commit: "79502939"
+line_count: 902
+fragment_count: 36
+rgbdns_commit: "5ae24772"
 ---
 
 # scripts/build-obsidian-vault.py
 
 - Subsystem: [[DNS from First Principles/Subsystems/Developer scripts|Developer scripts]]
 - Source path: `scripts/build-obsidian-vault.py`
-- Lines: 794
+- Lines: 902
 - Summary: Build an Obsidian vault edition for the RGBDNS Rust book.
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-7ed2d0aadd41|SourceFile]]: lines 82-94
-- [[DNS from First Principles/Fragments/rgbdns-frag-8cdfea5c4ff2|Fragment]]: lines 95-110
-- [[DNS from First Principles/Fragments/rgbdns-frag-bdd14a990594|run_git]]: lines 111-117
-- [[DNS from First Principles/Fragments/rgbdns-frag-f9faa22d2dc1|clean_name]]: lines 118-123
-- [[DNS from First Principles/Fragments/rgbdns-frag-858328602ac9|slug]]: lines 124-128
-- [[DNS from First Principles/Fragments/rgbdns-frag-f4e9558a39ba|yaml_value]]: lines 129-132
-- [[DNS from First Principles/Fragments/rgbdns-frag-b1eb1379d854|frontmatter]]: lines 133-149
-- [[DNS from First Principles/Fragments/rgbdns-frag-b08d61618d58|wiki]]: lines 150-154
-- [[DNS from First Principles/Fragments/rgbdns-frag-081d5295a68c|write_text]]: lines 155-159
-- [[DNS from First Principles/Fragments/rgbdns-frag-bfac037b16e2|write_note]]: lines 160-164
-- [[DNS from First Principles/Fragments/rgbdns-frag-c9800fc63d4a|language_for]]: lines 165-186
-- [[DNS from First Principles/Fragments/rgbdns-frag-21255d969cef|subsystem_for]]: lines 187-216
-- [[DNS from First Principles/Fragments/rgbdns-frag-ea4248e89b2b|summary_for]]: lines 217-230
-- [[DNS from First Principles/Fragments/rgbdns-frag-019cc7ae0fc2|should_include]]: lines 231-243
-- [[DNS from First Principles/Fragments/rgbdns-frag-bf653af73806|read_text]]: lines 244-261
-- [[DNS from First Principles/Fragments/rgbdns-frag-cd968471f831|code_note_path]]: lines 262-266
-- [[DNS from First Principles/Fragments/rgbdns-frag-dc0f85fcbcf3|fragment_id]]: lines 267-271
-- [[DNS from First Principles/Fragments/rgbdns-frag-d6b1c2eb5152|extract_fragments]]: lines 272-315
-- [[DNS from First Principles/Fragments/rgbdns-frag-74b6413eb5f6|inventory_codebase]]: lines 316-341
-- [[DNS from First Principles/Fragments/rgbdns-frag-5fe89c86fc54|manuscript_chapters]]: lines 342-370
-- [[DNS from First Principles/Fragments/rgbdns-frag-6616eeda0eb5|choose_chapter_fragments]]: lines 371-403
-- [[DNS from First Principles/Fragments/rgbdns-frag-5cc71bf08187|render_fragment_block]]: lines 404-415
-- [[DNS from First Principles/Fragments/rgbdns-frag-8c6f87b3e8be|render_chapter]]: lines 416-429
-- [[DNS from First Principles/Fragments/rgbdns-frag-21b62d47f194|render_source_file]]: lines 430-453
-- [[DNS from First Principles/Fragments/rgbdns-frag-30f951300b24|render_fragment_note]]: lines 454-481
-- [[DNS from First Principles/Fragments/rgbdns-frag-3f8c0be55fcf|render_index]]: lines 482-488
-- [[DNS from First Principles/Fragments/rgbdns-frag-0a3e9642ceaa|render_vault_readme]]: lines 489-533
-- [[DNS from First Principles/Fragments/rgbdns-frag-51da6540a1a5|copy_plugin]]: lines 534-542
-- [[DNS from First Principles/Fragments/rgbdns-frag-99bc96942e75|copy_book_assets]]: lines 543-549
-- [[DNS from First Principles/Fragments/rgbdns-frag-1eac6942e335|build_vault]]: lines 550-630
-- [[DNS from First Principles/Fragments/rgbdns-frag-c1baa20d0152|main]]: lines 783-794
+- [[DNS from First Principles/Fragments/rgbdns-frag-2051053e2baa|SourceFile]]: lines 90-102
+- [[DNS from First Principles/Fragments/rgbdns-frag-ccd63ee23369|Fragment]]: lines 103-118
+- [[DNS from First Principles/Fragments/rgbdns-frag-cbdf5b28e18c|run_git]]: lines 119-125
+- [[DNS from First Principles/Fragments/rgbdns-frag-4fd0c5297991|clean_name]]: lines 126-131
+- [[DNS from First Principles/Fragments/rgbdns-frag-9ed141d4b751|slug]]: lines 132-136
+- [[DNS from First Principles/Fragments/rgbdns-frag-0db84fb61929|yaml_value]]: lines 137-140
+- [[DNS from First Principles/Fragments/rgbdns-frag-87af66a2e7a7|frontmatter]]: lines 141-157
+- [[DNS from First Principles/Fragments/rgbdns-frag-f30c6d208bb9|wiki]]: lines 158-162
+- [[DNS from First Principles/Fragments/rgbdns-frag-acdb0659eaed|write_text]]: lines 163-167
+- [[DNS from First Principles/Fragments/rgbdns-frag-642cb6ce432d|write_note]]: lines 168-172
+- [[DNS from First Principles/Fragments/rgbdns-frag-2589b4af7bb6|fence_for]]: lines 173-182
+- [[DNS from First Principles/Fragments/rgbdns-frag-f3fcdf78c7fa|language_for]]: lines 183-204
+- [[DNS from First Principles/Fragments/rgbdns-frag-32a42ef69bd0|subsystem_for]]: lines 205-234
+- [[DNS from First Principles/Fragments/rgbdns-frag-eb2303da0bde|summary_for]]: lines 235-248
+- [[DNS from First Principles/Fragments/rgbdns-frag-84f67dec262a|should_include]]: lines 249-261
+- [[DNS from First Principles/Fragments/rgbdns-frag-66fe076b7df1|read_text]]: lines 262-279
+- [[DNS from First Principles/Fragments/rgbdns-frag-a33046fca8a8|code_note_path]]: lines 280-284
+- [[DNS from First Principles/Fragments/rgbdns-frag-a1ba6e09005f|fragment_id]]: lines 285-289
+- [[DNS from First Principles/Fragments/rgbdns-frag-34fb657d89b1|extract_fragments]]: lines 290-333
+- [[DNS from First Principles/Fragments/rgbdns-frag-d63d7027223e|inventory_codebase]]: lines 334-359
+- [[DNS from First Principles/Fragments/rgbdns-frag-ca3cce7168e8|manuscript_chapters]]: lines 360-388
+- [[DNS from First Principles/Fragments/rgbdns-frag-fc9e5cff1939|choose_chapter_fragments]]: lines 389-421
+- [[DNS from First Principles/Fragments/rgbdns-frag-40cf69fdf4d3|render_fragment_block]]: lines 422-432
+- [[DNS from First Principles/Fragments/rgbdns-frag-c064dbf43539|render_chapter]]: lines 433-449
+- [[DNS from First Principles/Fragments/rgbdns-frag-4502bf0b4b7b|render_source_file]]: lines 450-477
+- [[DNS from First Principles/Fragments/rgbdns-frag-f46f28e994d6|render_fragment_note]]: lines 478-506
+- [[DNS from First Principles/Fragments/rgbdns-frag-533ecd320a13|render_index]]: lines 507-513
+- [[DNS from First Principles/Fragments/rgbdns-frag-a2353de86c18|render_vault_readme]]: lines 514-560
+- [[DNS from First Principles/Fragments/rgbdns-frag-c92aa9231edd|reader_plugin_source]]: lines 561-588
+- [[DNS from First Principles/Fragments/rgbdns-frag-cda642409407|read_plugin_list]]: lines 589-602
+- [[DNS from First Principles/Fragments/rgbdns-frag-09488aea3bcd|migrate_plugin_list]]: lines 603-620
+- [[DNS from First Principles/Fragments/rgbdns-frag-abbb87d8230b|copy_plugin]]: lines 621-637
+- [[DNS from First Principles/Fragments/rgbdns-frag-467cbf67f9b3|portable_root]]: lines 638-646
+- [[DNS from First Principles/Fragments/rgbdns-frag-59677aff8124|copy_book_assets]]: lines 647-653
+- [[DNS from First Principles/Fragments/rgbdns-frag-e6ed83fc8e4a|build_vault]]: lines 654-734
+- [[DNS from First Principles/Fragments/rgbdns-frag-3b94e6554e61|main]]: lines 891-902
 
 ## Full Source
 
@@ -64,6 +69,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Iterable
@@ -74,6 +80,13 @@ DEFAULT_RGBDNS_ROOT = Path(os.environ.get("RGBDNS_CODE_ROOT", str(REPO_ROOT)))
 DEFAULT_OUTPUT = REPO_ROOT / "obsidian-vault" / "RGBDNS Book Vault"
 VAULT_BOOK = "DNS from First Principles"
 MANUSCRIPT = REPO_ROOT / "docs" / "book" / "rgbdns.md"
+
+# FirstPair Reader 2 is the vault's reader plugin. It is installed from the
+# FirstPair checkout as its four release files, never its sources.
+FIRSTPAIR_ROOT = Path(os.environ.get("FIRSTPAIR_ROOT") or Path.home() / "src" / "firstpair").expanduser()
+READER_PLUGIN_ID = "firstpair-reader"
+READER_RELEASE_FILES = ("README.md", "main.js", "manifest.json", "styles.css")
+LEGACY_PLUGIN_IDS = ("rgbdns-reader",)
 
 SKIP_DIRS = {
     ".git",
@@ -214,6 +227,16 @@ def write_text(path: Path, text: str) -> None:
 def write_note(root: Path, path: str, metadata: dict[str, object], body: str) -> None:
     note = root / (path if path.endswith(".md") else f"{path}.md")
     write_text(note, f"{frontmatter(metadata)}\n\n{body}")
+
+
+def fence_for(lines: Iterable[str]) -> str:
+    """Return a backtick fence longer than any fence-like run inside ``lines``."""
+    longest = 0
+    for line in lines:
+        match = re.match(r" {0,3}(`{3,})", line)
+        if match:
+            longest = max(longest, len(match.group(1)))
+    return "`" * max(3, longest + 1)
 
 
 def language_for(path: str) -> str:
@@ -459,7 +482,6 @@ def render_fragment_block(fragment: Fragment) -> str:
     payload = {
         "id": fragment.id,
         "codeNote": fragment.code_note,
-        "heading": fragment.heading,
         "sourcePath": fragment.source_path,
         "startLine": fragment.start_line,
         "endLine": fragment.end_line,
@@ -471,7 +493,10 @@ def render_chapter(title: str, text: str, fragments: list[Fragment]) -> str:
     related = choose_chapter_fragments(title, fragments)
     body = [text, "", "## Generated Code Fragment Index", ""]
     if related:
-        body.append("These generated links open the collocated rgbdns codebase notes.")
+        body.append(
+            "Each card names an rgbdns fragment. In FirstPair Reader, Show code lists its "
+            "numbered lines and Open file opens the collocated code note with those lines marked."
+        )
         body.append("")
         for fragment in related:
             body.append(render_fragment_block(fragment))
@@ -499,14 +524,19 @@ def render_source_file(source: SourceFile) -> str:
     ])
     for fragment in source.fragments[:80]:
         lines.append(f"- [[{fragment.note_path}|{fragment.symbol}]]: lines {fragment.start_line}-{fragment.end_line}")
-    lines.extend(["", "## Full Source", "", f"```{source.language}"])
-    lines.extend(source.lines)
-    lines.append("```")
+    # Verbatim: fence_for picks an outer fence longer than any inside, which
+    # Obsidian and FirstPair Reader 2 both honour (CommonMark).
+    shown = source.lines
+    fence = fence_for(shown)
+    lines.extend(["", "## Full Source", "", f"{fence}{source.language}"])
+    lines.extend(shown)
+    lines.append(fence)
     return "\n".join(lines)
 
 
 def render_fragment_note(fragment: Fragment, source: SourceFile) -> str:
     excerpt = source.lines[fragment.start_line - 1:fragment.end_line]
+    fence = fence_for(excerpt)
     lines = [
         f"# {fragment.symbol}",
         "",
@@ -526,9 +556,9 @@ def render_fragment_note(fragment: Fragment, source: SourceFile) -> str:
         f'<span id="{fragment.id}" class="rgbdns-fragment-target"></span>',
         f"### {fragment.heading}",
         "",
-        f"```{fragment.language}",
+        f"{fence}{fragment.language}",
         *excerpt,
-        "```",
+        fence,
     ])
     return "\n".join(lines)
 
@@ -564,10 +594,12 @@ def render_vault_readme(manifest: dict[str, object]) -> str:
         "",
         "## Fragment Navigation",
         "",
-        "The vault includes a local Obsidian plugin named `rgbdns-reader`.",
-        "When enabled, generated `rgbdns-fragment` cards can open the related code-file note",
-        "and highlight the selected fragment. The plugin is bundled inside `.obsidian/plugins/`",
-        "and does not require a build step.",
+        "The vault bundles FirstPair Reader (`firstpair-reader`) in `.obsidian/plugins/`.",
+        "Enable it under Settings -> Community plugins; it needs no build step and makes",
+        "no network requests. It opens the chapters with a rail (Previous, Up, Back, Top,",
+        "TOC, Next) and turns each generated `rgbdns-fragment` block into a card:",
+        "Show code lists the fragment's numbered lines, and Open file opens the code note",
+        "with those lines marked. Without the plugin the notes remain a complete book.",
         "",
         "## Data Ledgers",
         "",
@@ -585,13 +617,90 @@ def render_vault_readme(manifest: dict[str, object]) -> str:
     ])
 
 
-def copy_plugin(output: Path) -> None:
-    source = REPO_ROOT / "obsidian-plugin" / "rgbdns-reader"
-    target = output / ".obsidian" / "plugins" / "rgbdns-reader"
+def reader_plugin_source() -> Path:
+    """Return the FirstPair Reader 2 release folder, failing if it is unusable."""
+    source = FIRSTPAIR_ROOT / "publishing" / "vault" / "plugin" / READER_PLUGIN_ID
+    missing = [name for name in READER_RELEASE_FILES if not (source / name).is_file()]
+    if missing:
+        raise SystemExit(
+            f"FirstPair Reader release files missing from {source}: {', '.join(missing)} "
+            "(set FIRSTPAIR_ROOT to a FirstPair checkout)"
+        )
+    manifest = json.loads((source / "manifest.json").read_text(encoding="utf-8"))
+    if manifest.get("id") != READER_PLUGIN_ID:
+        raise SystemExit(f"{source}/manifest.json has id {manifest.get('id')!r}, expected {READER_PLUGIN_ID!r}")
+    bundler = FIRSTPAIR_ROOT / "publishing" / "scripts" / "bundle-obsidian-plugin.py"
+    if not bundler.is_file():
+        raise SystemExit(f"FirstPair plugin bundler missing: {bundler}")
+    check = subprocess.run(
+        [sys.executable, str(bundler), str(source), "--check"],
+        capture_output=True,
+        text=True,
+    )
+    if check.returncode != 0:
+        raise SystemExit(
+            "FirstPair Reader main.js is stale; rebuild it with "
+            f"python3 {bundler} {source}\n{check.stdout}{check.stderr}".rstrip()
+        )
+    return source
+
+
+def read_plugin_list(output: Path) -> list[str] | None:
+    """Return an existing vault's community plugin list, or None for a clean output."""
+    path = output / ".obsidian" / "community-plugins.json"
+    if not path.is_file():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        return None
+    return value
+
+
+def migrate_plugin_list(previous: list[str] | None) -> list[str]:
+    """Carry an existing enablement list onto FirstPair Reader.
+
+    A clean output seeds an empty list (FirstPair: bundled plugins are disabled
+    until the reader enables them). A rebuild keeps the existing list and its
+    order, replacing a legacy reader id with ``firstpair-reader`` in place.
+    """
+    if previous is None:
+        return []
+    migrated: list[str] = []
+    for plugin_id in previous:
+        if plugin_id in LEGACY_PLUGIN_IDS:
+            plugin_id = READER_PLUGIN_ID
+        if plugin_id not in migrated:
+            migrated.append(plugin_id)
+    return migrated
+
+
+def copy_plugin(output: Path, source: Path, previous_plugins: list[str] | None) -> None:
+    plugins = output / ".obsidian" / "plugins"
+    for legacy in LEGACY_PLUGIN_IDS:
+        if (plugins / legacy).exists():
+            shutil.rmtree(plugins / legacy)
+    target = plugins / READER_PLUGIN_ID
     if target.exists():
         shutil.rmtree(target)
-    shutil.copytree(source, target)
-    write_text(output / ".obsidian" / "community-plugins.json", json.dumps(["rgbdns-reader"], indent=2))
+    target.mkdir(parents=True)
+    for name in READER_RELEASE_FILES:
+        shutil.copyfile(source / name, target / name)
+    write_text(
+        output / ".obsidian" / "community-plugins.json",
+        json.dumps(migrate_plugin_list(previous_plugins), indent=2),
+    )
+
+
+def portable_root(rgbdns_root: Path) -> str:
+    """Describe the code checkout without recording a local absolute path."""
+    try:
+        relative = rgbdns_root.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
+    except ValueError:
+        return "$RGBDNS_CODE_ROOT"
+    return relative or "."
 
 
 def copy_book_assets(output: Path) -> None:
@@ -602,6 +711,8 @@ def copy_book_assets(output: Path) -> None:
 
 
 def build_vault(rgbdns_root: Path, output: Path) -> dict[str, object]:
+    plugin_source = reader_plugin_source()
+    previous_plugins = read_plugin_list(output)
     if output.exists():
         shutil.rmtree(output)
     output.mkdir(parents=True)
@@ -624,7 +735,8 @@ def build_vault(rgbdns_root: Path, output: Path) -> dict[str, object]:
         f"Open {wiki(f'{VAULT_BOOK}/Book', 'the book map')} to start.",
         "",
         "This generated Obsidian vault collocates the book text with the current rgbdns codebase.",
-        "Use fragment cards to jump from explanatory text to highlighted code excerpts.",
+        "With FirstPair Reader enabled, fragment cards show the numbered code lines in place",
+        "or open the code note with those lines marked.",
     ]))
 
     chapter_links: list[tuple[str, str]] = []
@@ -816,18 +928,19 @@ def build_vault(rgbdns_root: Path, output: Path) -> dict[str, object]:
         "\n".join(json.dumps(unit, ensure_ascii=True) for unit in units),
     )
 
-    copy_plugin(output)
+    copy_plugin(output, plugin_source, previous_plugins)
     copy_book_assets(output)
 
     manifest = {
         "book": "DNS from First Principles",
-        "rgbdns_root": str(rgbdns_root),
+        "rgbdns_root": portable_root(rgbdns_root),
         "rgbdns_commit": rgbdns_commit,
         "book_commit": book_commit,
         "chapter_count": len(chapter_links),
         "code_file_count": len(sources),
         "fragment_count": len(fragments),
-        "output": str(output),
+        "vault_name": output.name,
+        "reader_plugin": READER_PLUGIN_ID,
     }
     write_text(data_dir / "manifest.json", json.dumps(manifest, indent=2, ensure_ascii=True))
     write_text(output / "README.md", render_vault_readme(manifest))

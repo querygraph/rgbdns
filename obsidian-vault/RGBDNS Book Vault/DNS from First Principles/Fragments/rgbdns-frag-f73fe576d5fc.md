@@ -19,7 +19,7 @@ end_line: 60
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-f73fe576d5fc", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "heading": "rgbdns-frag-f73fe576d5fc: heading Compatibility without inherited memory hazards", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 43, "endLine": 60}
+{"id": "rgbdns-frag-f73fe576d5fc", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 43, "endLine": 60}
 ```
 
 ## Excerpt

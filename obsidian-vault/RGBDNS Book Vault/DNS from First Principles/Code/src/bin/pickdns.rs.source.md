@@ -4,9 +4,9 @@ source_path: "src/bin/pickdns.rs"
 language: "rust"
 subsystem: "Command-line programs"
 crate: "pickdns"
-line_count: 21
+line_count: 24
 fragment_count: 2
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/bin/pickdns.rs
@@ -14,13 +14,13 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/Command-line programs|Command-line programs]]
 - Component: [[DNS from First Principles/Components/pickdns|pickdns]]
 - Source path: `src/bin/pickdns.rs`
-- Lines: 21
+- Lines: 24
 - Summary: Source file in the Command-line programs subsystem.
 
 ## Extracted Fragments
 
 - [[DNS from First Principles/Fragments/rgbdns-frag-43f5784a63d0|main]]: lines 4-10
-- [[DNS from First Principles/Fragments/rgbdns-frag-ae523517ba27|run]]: lines 11-21
+- [[DNS from First Principles/Fragments/rgbdns-frag-28305910fcf0|run]]: lines 11-24
 
 ## Full Source
 
@@ -38,8 +38,11 @@ fn main() {
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let data = std::env::var("DATA").unwrap_or_else(|_| "data.cdb".into());
     let database = Arc::new(Database::from_file(data)?);
-    let handler =
-        Arc::new(move |wire: &[u8], limit: usize, client| database.respond(wire, limit, client));
+    let handler = Arc::new(
+        move |wire: &[u8], limit: usize, client: std::net::SocketAddr| {
+            database.respond(wire, limit, client.ip())
+        },
+    );
     let ip = std::env::var("IP").unwrap_or_else(|_| "0.0.0.0".into());
     let port = std::env::var("PORT").unwrap_or_else(|_| "53".into());
     let address = rgbdns::socket_address(&ip, &port)?;

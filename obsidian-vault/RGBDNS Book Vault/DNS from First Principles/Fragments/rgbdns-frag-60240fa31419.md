@@ -19,7 +19,7 @@ end_line: 33
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-60240fa31419", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "heading": "rgbdns-frag-60240fa31419: fn rfc1035_maximum_name_is_accepted_and_one_octet_more_is_rejected", "sourcePath": "tests/wire_security.rs", "startLine": 12, "endLine": 33}
+{"id": "rgbdns-frag-60240fa31419", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "sourcePath": "tests/wire_security.rs", "startLine": 12, "endLine": 33}
 ```
 
 ## Excerpt

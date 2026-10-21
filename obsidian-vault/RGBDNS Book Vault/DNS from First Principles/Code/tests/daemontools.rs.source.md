@@ -5,7 +5,7 @@ language: "rust"
 subsystem: "Tests and performance"
 line_count: 99
 fragment_count: 4
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # tests/daemontools.rs

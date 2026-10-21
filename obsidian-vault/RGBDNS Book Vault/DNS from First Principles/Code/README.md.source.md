@@ -3,28 +3,31 @@ type: "code-file"
 source_path: "README.md"
 language: "markdown"
 subsystem: "Repository and build"
-line_count: 106
-fragment_count: 4
-rgbdns_commit: "79502939"
+line_count: 219
+fragment_count: 7
+rgbdns_commit: "5ae24772"
 ---
 
 # README.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 - Source path: `README.md`
-- Lines: 106
+- Lines: 219
 - Summary: rgbdns
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-5a01ae2d3ddb|rgbdns]]: lines 1-56
-- [[DNS from First Principles/Fragments/rgbdns-frag-c24b9da16705|Debian and systemd]]: lines 57-74
-- [[DNS from First Principles/Fragments/rgbdns-frag-003170c20cd5|Book]]: lines 75-94
-- [[DNS from First Principles/Fragments/rgbdns-frag-851308e1cfeb|Conformance and performance]]: lines 95-106
+- [[DNS from First Principles/Fragments/rgbdns-frag-df36f646ddea|rgbdns]]: lines 1-32
+- [[DNS from First Principles/Fragments/rgbdns-frag-530a102cf907|Optional authoritative DNSSEC]]: lines 33-48
+- [[DNS from First Principles/Fragments/rgbdns-frag-087f5fd9bf6b|Related private services]]: lines 49-111
+- [[DNS from First Principles/Fragments/rgbdns-frag-c50fc5b27770|Linux packages and systemd]]: lines 112-127
+- [[DNS from First Principles/Fragments/rgbdns-frag-8f6c800e8ac3|ACME DNS-01 updates]]: lines 128-187
+- [[DNS from First Principles/Fragments/rgbdns-frag-44ef9d3327cb|Book]]: lines 188-207
+- [[DNS from First Principles/Fragments/rgbdns-frag-d1fb368f56c0|Conformance and performance]]: lines 208-219
 
 ## Full Source
 
-```markdown
+````markdown
 # rgbdns
 
 `rgbdns` is a memory-safe Rust reimplementation of djbdns. The current runnable
@@ -57,6 +60,37 @@ separated CIDR list to authorize additional clients.
 `axfrdns` is TCP-only and likewise permits loopback clients by default. Its
 `ALLOW_NETS` setting accepts comma-separated IPv4 or IPv6 CIDRs.
 
+## Optional authoritative DNSSEC
+
+Authoritative DNSSEC is entirely opt-in. With no `dnssec` policy file, rgbdns
+uses the original djbdns-compatible `data` → `tinydns-data` → `data.cdb` path
+and preserves its existing query, referral, ANAME, ACME, and service behavior.
+
+When enabled, small utilities compose an offline signed snapshot: `rgbsec-keygen`
+creates a protected ECDSA P-256 key, `aname-materialize` converts ANAME answers
+to ordinary A/AAAA records, `rgbsec-sign` adds DNSKEY/NSEC/RRSIG records,
+`rgbsec-data` compiles atomically, `rgbsec-ds` prints the parent DS, and
+`rgbsec-check` verifies every signature and its remaining lifetime. `tinydns`
+and all secondaries remain keyless; standard AXFR carries the finished DNSSEC
+records. A `K` policy line signs a zone and a `U` line explicitly preserves an
+unsigned zone, so one CDB can safely serve both. See
+[`docs/DNSSEC.md`](docs/DNSSEC.md).
+
+## Related private services
+
+Production configuration and application code are intentionally maintained
+outside this public implementation repository:
+
+- [`alexy/cronsh`](https://github.com/alexy/cronsh) owns the private
+  consolidated `rgbdns.data`, `rgbdns.zones`, BuddyNS policy, and deployment
+  workflow for `a.ns.cron.sh` and `b.ns.cron.sh`.
+- [`querygraph/wishfully`](https://github.com/querygraph/wishfully) owns the
+  private Wishfully Vercel control plane and CLI. It submits reviewed DNS-state
+  pull requests to `alexy/cronsh`.
+
+No production zone data, deployment credential, or Wishfully application
+secret belongs in this repository.
+
 The recursive client commands read `DNSCACHEIP` (a comma-separated list of IP
 or `IP:port` endpoints) when set, otherwise they use `/etc/resolv.conf`.
 
@@ -73,6 +107,17 @@ answers owned by `example.com`; 300 seconds is the TTL cap. It may coexist
 with the apex SOA, NS, MX, and TXT records, but not with A, AAAA, or CNAME at
 the same owner. ANAME resolution uses `DNSCACHEIP` or `/etc/resolv.conf`.
 
+ANAME directives survive AXFR between rgbdns peers through an explicitly
+negotiated private extension. `axfr-get` requests it automatically; ordinary
+AXFR clients receive only standard DNS records and no private metadata.
+
+The standards-track proposal in
+[`ietf/draft-khrabrov-dnsop-aname-axfr-00.xml`](ietf/draft-khrabrov-dnsop-aname-axfr-00.xml)
+defines a portable ANAME RR, native AXFR/IXFR behavior, capability signaling,
+DNSSEC and failure handling, and migration from rgbdns's experimental
+encoding. Render it with `make -C ietf`; see [`ietf/README.md`](ietf/README.md)
+for review and submission guidance.
+
 The `*-conf` commands generate djbdns-style service directories. They reference
 rgbdns's own `setuidgid` and `multilog` binaries by absolute path, so
 daemontools is not a runtime dependency. `multilog t ./main` writes TAI64N
@@ -81,22 +126,93 @@ the rotation threshold and retained-file count. Daemons continue to write
 diagnostics to stderr, allowing the same binaries to work under daemontools,
 systemd, containers, or another supervisor.
 
-## Debian and systemd
+`tinydns` also writes one original-compatible request record to stderr by
+default. The raw record deliberately has no timestamp, so systemd-journald or
+`multilog t` can timestamp and rotate the same stream. Set `QUERY_LOG=0`, or
+pass `rgbdns-setup --query-log 0`, only when per-request logging is
+intentionally disabled.
 
-The repository includes native Debian packaging, hardened systemd services, and
+`rgbdns-log-report` aggregates that stream by authoritative zone, including
+subdomain queries, and reports total queries plus distinct client/resolver IP
+addresses in descending-total order. Packages include an opt-in daily systemd
+timer that reads the preceding local day from journald and delivers the report
+through a sendmail-compatible mail transport. DNS query counts are not HTTP
+pageviews or unique people.
+
+## Linux packages and systemd
+
+The repository includes native Debian and openSUSE RPM packaging, hardened systemd services, and
 an idempotent `rgbdns-setup` command for primary and secondary authoritative
 servers. See [`docs/DEBIAN.md`](docs/DEBIAN.md) for package builds, account and
 directory layout, tinydns data-file setup, firewalls, AXFR allow-lists, timed
 secondary refresh, verification, upgrades, and troubleshooting. It includes a
-complete `cron.sh` deployment with `52.10.53.234` as the primary address and
-BuddyNS as the secondary network.
+complete example based on the cron.sh deployment topology. Live zone state is
+kept in the private `alexy/cronsh` repository.
+
+Primaries watch `rgbdns.data`, and secondaries watch a canonical
+one-zone-per-line `/var/lib/rgbdns/incoming/rgbdns.zones` in managed state.
+Publish either file through a `.new` name followed by a remote rename. rgbdns
+validates and compiles primary data before activation, and validates secondary
+lists before starting AXFR refresh.
+
+## ACME DNS-01 updates
+
+rgbdns 0.4.0 accepts TCP RFC 2136 UPDATE messages authenticated with
+HMAC-SHA256 TSIG for narrowly scoped ACME DNS-01 TXT records. Updates are
+disabled by default. A key can modify only `_acme-challenge` owners in its
+configured primary zone; accepted values are durable, immediately visible to
+queries, assigned a monotonic SOA serial, and included in standard AXFR.
+
+Create a 32-byte secret and configure a policy:
+
+```sh
+openssl rand -base64 32
+sudoedit /etc/rgbdns/acme-update.conf
+```
+
+```text
+certbot-chiefscientist. hmac-sha256. BASE64_SECRET chiefscientist.org. _acme-challenge. 60
+```
+
+Enable it while configuring the primary:
+
+```sh
+sudo rgbdns-setup primary --data rgbdns.data \
+  --acme-update-config /etc/rgbdns/acme-update.conf
+```
+
+Certbot's RFC 2136 credentials use the same server, key name, secret, and
+HMAC-SHA256 algorithm. `rgbdns-acme present` and `cleanup` provide a local
+manual-hook interface; cleanup removes only its specified value so overlapping
+wildcard and ordinary validations remain safe. See [`RGBDNS_LETS.md`](RGBDNS_LETS.md)
+for the protocol, state, policy, security, and test design.
+
+For the complete production-shaped `fieldnotes.es` example using
+`a.ns.cron.sh`, `b.ns.cron.sh`, BuddyNS, primary data pickup, and secondary
+zone-list pickup, follow
+[`docs/RGBDNS_SETUP.md`](docs/RGBDNS_SETUP.md).
+
+For the current openSUSE Leap 16.0 x86_64 AWS Marketplace AMI, see
+[`docs/OPENSUSE.md`](docs/OPENSUSE.md). It covers launch, RPM build and install,
+firewalld, the complete `cron.sh` primary, integrated AXFR, BuddyNS delegation,
+systemd persistence, upgrades, removal, and troubleshooting.
 
 On Debian or Ubuntu, build the package with:
 
 ```sh
 sudo apt install build-essential cargo debhelper rustc
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.1.1_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.6.5_$(dpkg --print-architecture).deb
+```
+
+On openSUSE Leap 16.0, build the RPM with:
+
+```sh
+sudo zypper --non-interactive install \
+  git cargo rust python3 rpm-build systemd-rpm-macros
+packaging/build-rpm.sh
+sudo zypper --non-interactive --no-gpg-checks install \
+  dist/rpmbuild/RPMS/x86_64/rgbdns-0.6.5-1.x86_64.rpm
 ```
 
 ## Book
@@ -109,8 +225,8 @@ runit, s6/s6-rc, OpenRC, and container-native replacements for
 
 The committed [Obsidian reader vault](obsidian-vault/RGBDNS%20Book%20Vault)
 adds a codebase-exploration part, collocates the full text/code surface, and
-bundles a reader plugin for chapter navigation and prose-to-code fragment
-jumps. See [the vault guide](docs/OBSIDIAN-VAULT.md) to rebuild and validate it.
+bundles FirstPair Reader 2 for chapter navigation and fragment cards that show
+or open the referenced code lines. See [the vault guide](docs/OBSIDIAN-VAULT.md) to rebuild and validate it.
 
 Build the FirstPair package with Pandoc and Typst:
 
@@ -131,4 +247,4 @@ cargo test --test rfc_conformance
 cargo test --test wire_security
 cargo bench --bench dns_core
 ```
-```
+````

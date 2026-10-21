@@ -19,7 +19,7 @@ end_line: 89
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-02993ea955ac", "codeNote": "DNS from First Principles/Code/tests/cdb_golden.rs.source", "heading": "rgbdns-frag-02993ea955ac: fn pickdns_entries_match_original_c_golden", "sourcePath": "tests/cdb_golden.rs", "startLine": 80, "endLine": 89}
+{"id": "rgbdns-frag-02993ea955ac", "codeNote": "DNS from First Principles/Code/tests/cdb_golden.rs.source", "sourcePath": "tests/cdb_golden.rs", "startLine": 80, "endLine": 89}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 22
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5292cc2a0403", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-5292cc2a0403: fn rfc1035_response_identity_flags_and_question_are_coherent", "sourcePath": "tests/rfc_conformance.rs", "startLine": 7, "endLine": 22}
+{"id": "rgbdns-frag-5292cc2a0403", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 7, "endLine": 22}
 ```
 
 ## Excerpt

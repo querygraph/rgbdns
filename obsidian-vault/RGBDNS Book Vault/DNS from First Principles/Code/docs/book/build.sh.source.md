@@ -5,7 +5,7 @@ language: "bash"
 subsystem: "Documentation"
 line_count: 13
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/book/build.sh

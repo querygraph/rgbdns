@@ -19,7 +19,7 @@ end_line: 62
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e75608ea3a7a", "codeNote": "DNS from First Principles/Code/tests/drill_interop.rs.source", "heading": "rgbdns-frag-e75608ea3a7a: fn start_server", "sourcePath": "tests/drill_interop.rs", "startLine": 32, "endLine": 62}
+{"id": "rgbdns-frag-e75608ea3a7a", "codeNote": "DNS from First Principles/Code/tests/drill_interop.rs.source", "sourcePath": "tests/drill_interop.rs", "startLine": 32, "endLine": 62}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 452
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-657b5ba34ebd", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-657b5ba34ebd: heading Authority and nameserver address", "sourcePath": "docs/book/rgbdns.md", "startLine": 450, "endLine": 452}
+{"id": "rgbdns-frag-657b5ba34ebd", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 450, "endLine": 452}
 ```
 
 ## Excerpt

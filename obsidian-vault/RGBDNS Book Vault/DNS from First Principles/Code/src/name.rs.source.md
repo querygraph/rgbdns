@@ -4,9 +4,9 @@ source_path: "src/name.rs"
 language: "rust"
 subsystem: "DNS data model and wire codec"
 crate: "rgbdns"
-line_count: 232
+line_count: 250
 fragment_count: 33
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/name.rs
@@ -14,7 +14,7 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/DNS data model and wire codec|DNS data model and wire codec]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/name.rs`
-- Lines: 232
+- Lines: 250
 - Summary: Validated DNS name.
 
 ## Extracted Fragments
@@ -34,24 +34,24 @@ rgbdns_commit: "79502939"
 - [[DNS from First Principles/Fragments/rgbdns-frag-c46204f4378e|labels]]: lines 69-71
 - [[DNS from First Principles/Fragments/rgbdns-frag-7c89404221eb|is_root]]: lines 72-74
 - [[DNS from First Principles/Fragments/rgbdns-frag-874de4715a3a|parent]]: lines 75-77
-- [[DNS from First Principles/Fragments/rgbdns-frag-376a41ca433a|is_subdomain_of]]: lines 78-80
-- [[DNS from First Principles/Fragments/rgbdns-frag-ea6bdb9d177f|wildcard]]: lines 81-85
-- [[DNS from First Principles/Fragments/rgbdns-frag-251e91c22dde|from_labels]]: lines 86-89
-- [[DNS from First Principles/Fragments/rgbdns-frag-fc5933f616d0|wire_len]]: lines 90-92
-- [[DNS from First Principles/Fragments/rgbdns-frag-cf52568bbe9c|suffix]]: lines 93-95
-- [[DNS from First Principles/Fragments/rgbdns-frag-7ff5ba1eb6d3|to_wire]]: lines 96-104
-- [[DNS from First Principles/Fragments/rgbdns-frag-4e4194bd150f|without_wildcard]]: lines 105-110
-- [[DNS from First Principles/Fragments/rgbdns-frag-f35c6a0bda91|with_wildcard]]: lines 111-115
-- [[DNS from First Principles/Fragments/rgbdns-frag-0475cb5e016a|validate]]: lines 116-128
-- [[DNS from First Principles/Fragments/rgbdns-frag-59a9863704cd|FromStr]]: lines 129-129
-- [[DNS from First Principles/Fragments/rgbdns-frag-225ef29fe2d8|Err]]: lines 130-130
-- [[DNS from First Principles/Fragments/rgbdns-frag-3c37e742efce|from_str]]: lines 131-181
-- [[DNS from First Principles/Fragments/rgbdns-frag-079cc75086ce|fmt]]: lines 182-182
-- [[DNS from First Principles/Fragments/rgbdns-frag-d144d713375b|fmt]]: lines 183-203
-- [[DNS from First Principles/Fragments/rgbdns-frag-6ca5ada6f5d6|tests]]: lines 204-206
-- [[DNS from First Principles/Fragments/rgbdns-frag-4d4637ac8ae2|root_and_case]]: lines 207-218
-- [[DNS from First Principles/Fragments/rgbdns-frag-7b0faac5f0ab|escapes]]: lines 219-226
-- [[DNS from First Principles/Fragments/rgbdns-frag-178e4f13b310|limits]]: lines 227-232
+- [[DNS from First Principles/Fragments/rgbdns-frag-d43022c23aa8|is_subdomain_of]]: lines 78-92
+- [[DNS from First Principles/Fragments/rgbdns-frag-4e2018a99a96|wildcard]]: lines 93-97
+- [[DNS from First Principles/Fragments/rgbdns-frag-9a4884d9edd2|from_labels]]: lines 98-101
+- [[DNS from First Principles/Fragments/rgbdns-frag-bb1fd64a4514|wire_len]]: lines 102-104
+- [[DNS from First Principles/Fragments/rgbdns-frag-3736c8d8aac5|suffix]]: lines 105-107
+- [[DNS from First Principles/Fragments/rgbdns-frag-aa983a03bcc1|to_wire]]: lines 108-116
+- [[DNS from First Principles/Fragments/rgbdns-frag-3ce4c6e253d7|without_wildcard]]: lines 117-122
+- [[DNS from First Principles/Fragments/rgbdns-frag-b7c53377ea2d|with_wildcard]]: lines 123-127
+- [[DNS from First Principles/Fragments/rgbdns-frag-c7f726a96454|validate]]: lines 128-140
+- [[DNS from First Principles/Fragments/rgbdns-frag-1778a1a30575|FromStr]]: lines 141-141
+- [[DNS from First Principles/Fragments/rgbdns-frag-8961d425e88c|Err]]: lines 142-142
+- [[DNS from First Principles/Fragments/rgbdns-frag-a9f1ae579e37|from_str]]: lines 143-193
+- [[DNS from First Principles/Fragments/rgbdns-frag-11e2c8b8b069|fmt]]: lines 194-194
+- [[DNS from First Principles/Fragments/rgbdns-frag-2671eb38d646|fmt]]: lines 195-215
+- [[DNS from First Principles/Fragments/rgbdns-frag-b756d5bb3c25|tests]]: lines 216-218
+- [[DNS from First Principles/Fragments/rgbdns-frag-d9ef6352cee6|root_and_case]]: lines 219-236
+- [[DNS from First Principles/Fragments/rgbdns-frag-b1201af3a743|escapes]]: lines 237-244
+- [[DNS from First Principles/Fragments/rgbdns-frag-b384fa6572b4|limits]]: lines 245-250
 
 ## Full Source
 
@@ -134,7 +134,19 @@ impl Name {
         (!self.0.is_empty()).then(|| Self(self.0[1..].to_vec()))
     }
     pub fn is_subdomain_of(&self, other: &Self) -> bool {
-        self.0.len() >= other.0.len() && self.0[self.0.len() - other.0.len()..] == other.0
+        if self.0.len() < other.0.len() {
+            return false;
+        }
+        self.0[self.0.len() - other.0.len()..]
+            .iter()
+            .zip(&other.0)
+            .all(|(left, right)| {
+                left.len() == right.len()
+                    && left
+                        .iter()
+                        .zip(right)
+                        .all(|(a, b)| a.eq_ignore_ascii_case(b))
+            })
     }
     pub fn wildcard(&self) -> Self {
         let mut labels = self.0.clone();
@@ -272,6 +284,12 @@ mod tests {
             "www.example".parse::<Name>().unwrap()
         );
         assert_eq!(".".parse::<Name>().unwrap(), Name::root());
+        assert!(
+            "MiSsInG.Bitcoin.Science"
+                .parse::<Name>()
+                .unwrap()
+                .is_subdomain_of(&"bitcoin.science".parse().unwrap())
+        );
     }
     #[test]
     fn escapes() {

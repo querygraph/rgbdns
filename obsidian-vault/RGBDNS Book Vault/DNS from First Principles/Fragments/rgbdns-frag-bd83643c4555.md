@@ -21,7 +21,7 @@ end_line: 295
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-bd83643c4555", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "heading": "rgbdns-frag-bd83643c4555: fn rotates_atomically_and_enforces_retention", "sourcePath": "src/multilog.rs", "startLine": 271, "endLine": 295}
+{"id": "rgbdns-frag-bd83643c4555", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "sourcePath": "src/multilog.rs", "startLine": 271, "endLine": 295}
 ```
 
 ## Excerpt

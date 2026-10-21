@@ -36,54 +36,87 @@ form, writes a temporary output, and atomically installs the completed file.
 The temporary/final path pair prevents a failed transfer from replacing usable
 data with a partial zone.
 
+## One request, one portable log record
+
+The original tinydns wrote one compact record for every request. rgbdns keeps
+that operational contract. An IPv4 record has this shape:
+
+```text
+7f000001:e214:0018 + 0001 fieldnotes.es
+```
+
+The client address, source port, DNS ID, and query type are hexadecimal. The
+result marker distinguishes an attempted answer (`+`), refused authority or
+AXFR (`-`), an unimplemented request (`I`), an unsupported class (`C`), and a
+malformed request (`/`). IPv6 uses the same format with a 32-hex-digit address.
+Query names are escaped so packet data cannot inject additional log lines.
+
+The record goes to stderr without a timestamp. The packaged systemd service
+therefore sends it to journald, while a daemontools service can send the exact
+same stream through `multilog t` for TAI64N timestamps and file rotation.
+`QUERY_LOG=1` is the default. `QUERY_LOG=0` is an explicit opt-out for an
+installation whose traffic, retention, or privacy policy forbids full query
+logging.
+
+`rgbdns-log-report` turns a bounded daily slice of that stream into an
+operational summary. It maps each accepted query name to the longest matching
+configured authoritative zone, so `www.wishful.ly` contributes to
+`wishful.ly` rather than becoming a separate domain. For each zone it reports
+the total query count and the number of distinct client addresses, then sorts
+by total descending. A packaged opt-in timer reads the preceding local day
+from journald and submits the text through a sendmail-compatible transport.
+Distinct addresses usually identify recursive resolvers, not individual
+people, and DNS queries are not HTTP pageviews. The timer belongs on one
+authority only when duplicate reports are unwanted.
+
 ## Generated Code Fragment Index
 
-These generated links open the collocated rgbdns codebase notes.
+Each card names an rgbdns fragment. In FirstPair Reader, Show code lists its numbered lines and Open file opens the collocated code note with those lines marked.
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ad1ed1e4cb84", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-ad1ed1e4cb84: const MAX_TCP_MESSAGE", "sourcePath": "src/axfr.rs", "startLine": 15, "endLine": 15}
+{"id": "rgbdns-frag-ad1ed1e4cb84", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 15, "endLine": 15}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-169fc0dbbb4a", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-169fc0dbbb4a: const MAX_TRANSFER_RECORDS", "sourcePath": "src/axfr.rs", "startLine": 16, "endLine": 16}
+{"id": "rgbdns-frag-169fc0dbbb4a", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 16, "endLine": 16}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-704dd44da912", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-704dd44da912: const MAX_TRANSFER_MESSAGES", "sourcePath": "src/axfr.rs", "startLine": 17, "endLine": 17}
+{"id": "rgbdns-frag-704dd44da912", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 17, "endLine": 17}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-aee4934c3db3", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-aee4934c3db3: const MAX_TRANSFER_BYTES", "sourcePath": "src/axfr.rs", "startLine": 18, "endLine": 19}
+{"id": "rgbdns-frag-2c15fff4d0a4", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 18, "endLine": 18}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-884813b3737c", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-884813b3737c: fn serve", "sourcePath": "src/axfr.rs", "startLine": 20, "endLine": 27}
+{"id": "rgbdns-frag-f0f0f96758df", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 19, "endLine": 19}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-9a2021bd9440", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-9a2021bd9440: fn serve_listener", "sourcePath": "src/axfr.rs", "startLine": 28, "endLine": 61}
+{"id": "rgbdns-frag-cafa2f19c1e6", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 20, "endLine": 20}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-4d44b9b57c53", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-4d44b9b57c53: fn serve_connection", "sourcePath": "src/axfr.rs", "startLine": 62, "endLine": 70}
+{"id": "rgbdns-frag-8f7dc0cc0d16", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 21, "endLine": 22}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c4eddbb40457", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-c4eddbb40457: fn response_wires", "sourcePath": "src/axfr.rs", "startLine": 71, "endLine": 151}
+{"id": "rgbdns-frag-f2ef2cf7d6dd", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 23, "endLine": 30}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ca8414b505a4", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-ca8414b505a4: fn response_wire", "sourcePath": "src/axfr.rs", "startLine": 156, "endLine": 171}
+{"id": "rgbdns-frag-d01b28bcef19", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 31, "endLine": 64}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-678d90c8e377", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-678d90c8e377: fn read_message", "sourcePath": "src/axfr.rs", "startLine": 172, "endLine": 179}
+{"id": "rgbdns-frag-0b662b17240e", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 65, "endLine": 73}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-83eeb011f0b6", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-83eeb011f0b6: fn fetch", "sourcePath": "src/axfr.rs", "startLine": 180, "endLine": 246}
+{"id": "rgbdns-frag-d76d0819e64d", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 74, "endLine": 154}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-35c24cd23185", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-35c24cd23185: fn validate_axfr_message", "sourcePath": "src/axfr.rs", "startLine": 247, "endLine": 272}
+{"id": "rgbdns-frag-6e33bc878cc9", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 177, "endLine": 198}
 ```

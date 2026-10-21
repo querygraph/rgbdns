@@ -4,9 +4,9 @@ source_path: "src/packet.rs"
 language: "rust"
 subsystem: "DNS data model and wire codec"
 crate: "rgbdns"
-line_count: 766
-fragment_count: 41
-rgbdns_commit: "79502939"
+line_count: 963
+fragment_count: 46
+rgbdns_commit: "5ae24772"
 ---
 
 # src/packet.rs
@@ -14,7 +14,7 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/DNS data model and wire codec|DNS data model and wire codec]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/packet.rs`
-- Lines: 766
+- Lines: 963
 - Summary: Source file in the DNS data model and wire codec subsystem.
 
 ## Extracted Fragments
@@ -30,36 +30,41 @@ rgbdns_commit: "79502939"
 - [[DNS from First Principles/Fragments/rgbdns-frag-8a53d16528c4|Record]]: lines 124-128
 - [[DNS from First Principles/Fragments/rgbdns-frag-3474979ebcab|Record]]: lines 129-129
 - [[DNS from First Principles/Fragments/rgbdns-frag-1a1d0297797e|rr_type]]: lines 130-135
-- [[DNS from First Principles/Fragments/rgbdns-frag-edc236285edc|RData]]: lines 136-170
-- [[DNS from First Principles/Fragments/rgbdns-frag-69c930612c2c|RData]]: lines 171-171
-- [[DNS from First Principles/Fragments/rgbdns-frag-8e8684a46cf0|rr_type]]: lines 172-188
-- [[DNS from First Principles/Fragments/rgbdns-frag-f8e2f24b275d|Message]]: lines 189-197
-- [[DNS from First Principles/Fragments/rgbdns-frag-4e7a403d313a|Reader]]: lines 198-202
-- [[DNS from First Principles/Fragments/rgbdns-frag-15f97978e254|impl]]: lines 203-203
-- [[DNS from First Principles/Fragments/rgbdns-frag-e1d3b03b1b53|u8]]: lines 204-211
-- [[DNS from First Principles/Fragments/rgbdns-frag-c8980ffb1624|u16]]: lines 212-214
-- [[DNS from First Principles/Fragments/rgbdns-frag-6f81d0442a73|u32]]: lines 215-222
-- [[DNS from First Principles/Fragments/rgbdns-frag-f26143011b10|name]]: lines 223-275
-- [[DNS from First Principles/Fragments/rgbdns-frag-0abc057e0964|record]]: lines 276-356
-- [[DNS from First Principles/Fragments/rgbdns-frag-f2bbdc5532d8|validate_edns_options]]: lines 382-393
-- [[DNS from First Principles/Fragments/rgbdns-frag-005152c879fb|Message]]: lines 394-394
-- [[DNS from First Principles/Fragments/rgbdns-frag-264ff394342c|decode]]: lines 395-439
-- [[DNS from First Principles/Fragments/rgbdns-frag-22f8472ec7a5|encode]]: lines 440-464
-- [[DNS from First Principles/Fragments/rgbdns-frag-56f5b3167168|Writer]]: lines 465-465
-- [[DNS from First Principles/Fragments/rgbdns-frag-cb7b09fc7456|Writer]]: lines 466-466
-- [[DNS from First Principles/Fragments/rgbdns-frag-4aadcae32320|u8]]: lines 467-469
-- [[DNS from First Principles/Fragments/rgbdns-frag-0f2374ca15a3|u16]]: lines 470-472
-- [[DNS from First Principles/Fragments/rgbdns-frag-4dd62ba91963|u32]]: lines 473-475
-- [[DNS from First Principles/Fragments/rgbdns-frag-d6c443bd48a0|name]]: lines 476-516
-- [[DNS from First Principles/Fragments/rgbdns-frag-3013c3b46f39|record]]: lines 517-597
-- [[DNS from First Principles/Fragments/rgbdns-frag-100de01750c5|tests]]: lines 610-612
-- [[DNS from First Principles/Fragments/rgbdns-frag-d0bed6e50fa1|query_roundtrip]]: lines 613-626
-- [[DNS from First Principles/Fragments/rgbdns-frag-418690238dbc|rejects_pointer_loop]]: lines 627-633
-- [[DNS from First Principles/Fragments/rgbdns-frag-c608c25b9171|rejects_trailing_packet_data_and_forward_compression]]: lines 634-653
-- [[DNS from First Principles/Fragments/rgbdns-frag-7f35d0a0682b|structured_records_and_edns_roundtrip]]: lines 654-701
-- [[DNS from First Principles/Fragments/rgbdns-frag-1d93654dc774|encoder_compresses_repeated_names_and_suffixes]]: lines 702-731
-- [[DNS from First Principles/Fragments/rgbdns-frag-a34838047302|rejects_malformed_edns_options_and_address_length]]: lines 732-742
-- [[DNS from First Principles/Fragments/rgbdns-frag-eb96cae774df|parses_standard_and_generic_record_type_names]]: lines 743-766
+- [[DNS from First Principles/Fragments/rgbdns-frag-28b3275124d8|RData]]: lines 136-172
+- [[DNS from First Principles/Fragments/rgbdns-frag-5a61743691fb|DnssecRData]]: lines 173-202
+- [[DNS from First Principles/Fragments/rgbdns-frag-7a3ab09cefda|RData]]: lines 203-203
+- [[DNS from First Principles/Fragments/rgbdns-frag-c56938c18836|rr_type]]: lines 204-218
+- [[DNS from First Principles/Fragments/rgbdns-frag-17d606c73a93|dnssec]]: lines 219-286
+- [[DNS from First Principles/Fragments/rgbdns-frag-4792f972416c|uncompressed_name]]: lines 287-310
+- [[DNS from First Principles/Fragments/rgbdns-frag-a2043173b4ff|type_bitmap]]: lines 311-342
+- [[DNS from First Principles/Fragments/rgbdns-frag-cc626067a0e6|Message]]: lines 343-351
+- [[DNS from First Principles/Fragments/rgbdns-frag-0112dc40f9af|Reader]]: lines 352-356
+- [[DNS from First Principles/Fragments/rgbdns-frag-ed4862481d32|impl]]: lines 357-357
+- [[DNS from First Principles/Fragments/rgbdns-frag-fdf99e5a5810|u8]]: lines 358-365
+- [[DNS from First Principles/Fragments/rgbdns-frag-d719f2575c0e|u16]]: lines 366-368
+- [[DNS from First Principles/Fragments/rgbdns-frag-6d4a90bdc7ba|u32]]: lines 369-376
+- [[DNS from First Principles/Fragments/rgbdns-frag-9092069ef21a|name]]: lines 377-429
+- [[DNS from First Principles/Fragments/rgbdns-frag-1064cffcda42|record]]: lines 430-510
+- [[DNS from First Principles/Fragments/rgbdns-frag-1b00fed6845f|validate_edns_options]]: lines 538-549
+- [[DNS from First Principles/Fragments/rgbdns-frag-2e39e1a8e64f|Message]]: lines 550-550
+- [[DNS from First Principles/Fragments/rgbdns-frag-f636d6426963|decode]]: lines 551-595
+- [[DNS from First Principles/Fragments/rgbdns-frag-e8814cf1c23a|encode]]: lines 596-620
+- [[DNS from First Principles/Fragments/rgbdns-frag-89a40ae21437|Writer]]: lines 621-621
+- [[DNS from First Principles/Fragments/rgbdns-frag-8cf21ce77fdd|Writer]]: lines 622-622
+- [[DNS from First Principles/Fragments/rgbdns-frag-b85d37b06c18|u8]]: lines 623-625
+- [[DNS from First Principles/Fragments/rgbdns-frag-01dbb78ac2b6|u16]]: lines 626-628
+- [[DNS from First Principles/Fragments/rgbdns-frag-cbfe54d03f50|u32]]: lines 629-631
+- [[DNS from First Principles/Fragments/rgbdns-frag-9616a4067319|name]]: lines 632-672
+- [[DNS from First Principles/Fragments/rgbdns-frag-653a09a03722|record]]: lines 673-753
+- [[DNS from First Principles/Fragments/rgbdns-frag-81ad03d13556|tests]]: lines 766-768
+- [[DNS from First Principles/Fragments/rgbdns-frag-06d5d397166e|query_roundtrip]]: lines 769-782
+- [[DNS from First Principles/Fragments/rgbdns-frag-c72b2eae2da1|rejects_pointer_loop]]: lines 783-789
+- [[DNS from First Principles/Fragments/rgbdns-frag-922c604bcaa2|rejects_trailing_packet_data_and_forward_compression]]: lines 790-809
+- [[DNS from First Principles/Fragments/rgbdns-frag-b5c42adc662d|structured_records_and_edns_roundtrip]]: lines 810-857
+- [[DNS from First Principles/Fragments/rgbdns-frag-bf9ff37de005|dnssec_rdata_is_typed_and_malformed_values_are_rejected]]: lines 858-898
+- [[DNS from First Principles/Fragments/rgbdns-frag-93781626d174|encoder_compresses_repeated_names_and_suffixes]]: lines 899-928
+- [[DNS from First Principles/Fragments/rgbdns-frag-b697f5dfc9a1|rejects_malformed_edns_options_and_address_length]]: lines 929-939
+- [[DNS from First Principles/Fragments/rgbdns-frag-43b39e25852d|parses_standard_and_generic_record_type_names]]: lines 940-963
 
 ## Full Source
 
@@ -70,7 +75,7 @@ use std::{
     net::{Ipv4Addr, Ipv6Addr},
 };
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum RecordType {
     A,
     Ns,
@@ -234,6 +239,38 @@ pub enum RData {
     },
     Opaque(RecordType, Vec<u8>),
 }
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum DnssecRData {
+    Ds {
+        key_tag: u16,
+        algorithm: u8,
+        digest_type: u8,
+        digest: Vec<u8>,
+    },
+    Rrsig {
+        type_covered: RecordType,
+        algorithm: u8,
+        labels: u8,
+        original_ttl: u32,
+        expiration: u32,
+        inception: u32,
+        key_tag: u16,
+        signer: Name,
+        signature: Vec<u8>,
+    },
+    Nsec {
+        next: Name,
+        types: Vec<RecordType>,
+    },
+    Dnskey {
+        flags: u16,
+        protocol: u8,
+        algorithm: u8,
+        public_key: Vec<u8>,
+    },
+}
+
 impl RData {
     pub fn rr_type(&self) -> RecordType {
         match self {
@@ -249,6 +286,128 @@ impl RData {
             Self::Opaque(t, _) => *t,
         }
     }
+
+    pub fn dnssec(&self) -> Result<Option<DnssecRData>> {
+        let Self::Opaque(record_type, bytes) = self else {
+            return Ok(None);
+        };
+        Ok(Some(match record_type {
+            RecordType::Ds => {
+                if bytes.len() < 5 {
+                    return Err(Error::Format("short DS RDATA"));
+                }
+                DnssecRData::Ds {
+                    key_tag: u16::from_be_bytes([bytes[0], bytes[1]]),
+                    algorithm: bytes[2],
+                    digest_type: bytes[3],
+                    digest: bytes[4..].to_vec(),
+                }
+            }
+            RecordType::Dnskey => {
+                if bytes.len() < 5 {
+                    return Err(Error::Format("short DNSKEY RDATA"));
+                }
+                if bytes[2] != 3 {
+                    return Err(Error::Format("DNSKEY protocol is not 3"));
+                }
+                DnssecRData::Dnskey {
+                    flags: u16::from_be_bytes([bytes[0], bytes[1]]),
+                    protocol: bytes[2],
+                    algorithm: bytes[3],
+                    public_key: bytes[4..].to_vec(),
+                }
+            }
+            RecordType::Rrsig => {
+                if bytes.len() < 19 {
+                    return Err(Error::Format("short RRSIG RDATA"));
+                }
+                let (signer, consumed) = uncompressed_name(&bytes[18..])?;
+                let signature = bytes
+                    .get(18 + consumed..)
+                    .filter(|signature| !signature.is_empty())
+                    .ok_or(Error::Format("RRSIG has no signature"))?
+                    .to_vec();
+                DnssecRData::Rrsig {
+                    type_covered: RecordType::from_code(u16::from_be_bytes([bytes[0], bytes[1]])),
+                    algorithm: bytes[2],
+                    labels: bytes[3],
+                    original_ttl: u32::from_be_bytes(bytes[4..8].try_into().unwrap()),
+                    expiration: u32::from_be_bytes(bytes[8..12].try_into().unwrap()),
+                    inception: u32::from_be_bytes(bytes[12..16].try_into().unwrap()),
+                    key_tag: u16::from_be_bytes([bytes[16], bytes[17]]),
+                    signer,
+                    signature,
+                }
+            }
+            RecordType::Nsec => {
+                let (next, consumed) = uncompressed_name(bytes)?;
+                let bitmap = bytes
+                    .get(consumed..)
+                    .filter(|bitmap| !bitmap.is_empty())
+                    .ok_or(Error::Format("NSEC has no type bitmap"))?;
+                DnssecRData::Nsec {
+                    next,
+                    types: type_bitmap(bitmap)?,
+                }
+            }
+            _ => return Ok(None),
+        }))
+    }
+}
+
+fn uncompressed_name(bytes: &[u8]) -> Result<(Name, usize)> {
+    let mut labels = Vec::new();
+    let mut position = 0;
+    loop {
+        let length = usize::from(
+            *bytes
+                .get(position)
+                .ok_or(Error::Format("truncated DNSSEC name"))?,
+        );
+        position += 1;
+        if length == 0 {
+            return Ok((Name::from_labels(labels)?, position));
+        }
+        if length > 63 || length & 0xc0 != 0 {
+            return Err(Error::Format("compressed or invalid DNSSEC name"));
+        }
+        let label = bytes
+            .get(position..position + length)
+            .ok_or(Error::Format("truncated DNSSEC label"))?;
+        labels.push(label.to_vec());
+        position += length;
+    }
+}
+
+fn type_bitmap(mut bytes: &[u8]) -> Result<Vec<RecordType>> {
+    let mut types = Vec::new();
+    let mut previous = None;
+    while !bytes.is_empty() {
+        if bytes.len() < 3 {
+            return Err(Error::Format("truncated NSEC type bitmap"));
+        }
+        let window = bytes[0];
+        let length = usize::from(bytes[1]);
+        if !(1..=32).contains(&length)
+            || bytes.len() < 2 + length
+            || previous.is_some_and(|value| window <= value)
+            || bytes[1 + length] == 0
+        {
+            return Err(Error::Format("invalid NSEC type bitmap"));
+        }
+        for (octet, bits) in bytes[2..2 + length].iter().enumerate() {
+            for bit in 0..8 {
+                if bits & (0x80 >> bit) != 0 {
+                    types.push(RecordType::from_code(
+                        u16::from(window) * 256 + (octet * 8 + bit) as u16,
+                    ));
+                }
+            }
+        }
+        previous = Some(window);
+        bytes = &bytes[2 + length..];
+    }
+    Ok(types)
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -431,7 +590,9 @@ impl<'a> Reader<'a> {
             _ => {
                 let v = self.b[self.p..end].to_vec();
                 self.p = end;
-                RData::Opaque(typ, v)
+                let data = RData::Opaque(typ, v);
+                data.dnssec()?;
+                data
             }
         };
         if self.p != end {
@@ -761,6 +922,47 @@ mod tests {
         assert_eq!(
             Message::decode(&message.encode().unwrap()).unwrap(),
             message
+        );
+    }
+
+    #[test]
+    fn dnssec_rdata_is_typed_and_malformed_values_are_rejected() {
+        assert!(
+            RData::Opaque(RecordType::Dnskey, vec![1, 0, 2, 13, 1])
+                .dnssec()
+                .is_err()
+        );
+        assert!(RData::Opaque(RecordType::Ds, vec![0; 4]).dnssec().is_err());
+        assert!(
+            RData::Opaque(RecordType::Rrsig, vec![0; 18])
+                .dnssec()
+                .is_err()
+        );
+        assert!(
+            RData::Opaque(RecordType::Nsec, vec![0, 0, 1, 0])
+                .dnssec()
+                .is_err()
+        );
+
+        assert_eq!(
+            RData::Opaque(RecordType::Dnskey, vec![1, 1, 3, 13, 7])
+                .dnssec()
+                .unwrap(),
+            Some(DnssecRData::Dnskey {
+                flags: 257,
+                protocol: 3,
+                algorithm: 13,
+                public_key: vec![7],
+            })
+        );
+        assert_eq!(
+            RData::Opaque(RecordType::Nsec, vec![0, 0, 1, 0x40])
+                .dnssec()
+                .unwrap(),
+            Some(DnssecRData::Nsec {
+                next: Name::root(),
+                types: vec![RecordType::A],
+            })
         );
     }
 

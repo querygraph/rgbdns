@@ -19,7 +19,7 @@ end_line: 55
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-338839f8fb49", "codeNote": "DNS from First Principles/Code/book.build.json.source", "heading": "rgbdns-frag-338839f8fb49: file book.build.json", "sourcePath": "book.build.json", "startLine": 1, "endLine": 55}
+{"id": "rgbdns-frag-338839f8fb49", "codeNote": "DNS from First Principles/Code/book.build.json.source", "sourcePath": "book.build.json", "startLine": 1, "endLine": 55}
 ```
 
 ## Excerpt

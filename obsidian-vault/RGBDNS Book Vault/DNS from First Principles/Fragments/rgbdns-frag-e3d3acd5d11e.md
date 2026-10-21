@@ -21,7 +21,7 @@ end_line: 28
 - Component: [[DNS from First Principles/Components/dnstxt|dnstxt]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e3d3acd5d11e", "codeNote": "DNS from First Principles/Code/src/bin/dnstxt.rs.source", "heading": "rgbdns-frag-e3d3acd5d11e: fn run", "sourcePath": "src/bin/dnstxt.rs", "startLine": 11, "endLine": 28}
+{"id": "rgbdns-frag-e3d3acd5d11e", "codeNote": "DNS from First Principles/Code/src/bin/dnstxt.rs.source", "sourcePath": "src/bin/dnstxt.rs", "startLine": 11, "endLine": 28}
 ```
 
 ## Excerpt

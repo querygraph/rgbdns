@@ -19,7 +19,7 @@ end_line: 169
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0663f957b0bd", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-0663f957b0bd: fn rfc6891_badvers_uses_the_extended_response_code", "sourcePath": "tests/rfc_conformance.rs", "startLine": 161, "endLine": 169}
+{"id": "rgbdns-frag-0663f957b0bd", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 161, "endLine": 169}
 ```
 
 ## Excerpt

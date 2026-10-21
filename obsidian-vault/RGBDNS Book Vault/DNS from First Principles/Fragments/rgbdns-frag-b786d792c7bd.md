@@ -21,7 +21,7 @@ end_line: 111
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b786d792c7bd", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-b786d792c7bd: fn forward_zones_from_environment", "sourcePath": "src/dnscache_config.rs", "startLine": 105, "endLine": 111}
+{"id": "rgbdns-frag-b786d792c7bd", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 105, "endLine": 111}
 ```
 
 ## Excerpt

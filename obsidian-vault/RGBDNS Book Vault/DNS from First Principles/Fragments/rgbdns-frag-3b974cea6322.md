@@ -19,7 +19,7 @@ end_line: 313
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-3b974cea6322", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-3b974cea6322: fn rfc2181_cname_cannot_coexist_with_other_data_or_multiple_targets", "sourcePath": "tests/rfc_conformance.rs", "startLine": 296, "endLine": 313}
+{"id": "rgbdns-frag-3b974cea6322", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 296, "endLine": 313}
 ```
 
 ## Excerpt

@@ -21,7 +21,7 @@ end_line: 33
 - Component: [[DNS from First Principles/Components/tinydns-edit|tinydns-edit]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ae456975540f", "codeNote": "DNS from First Principles/Code/src/bin/tinydns-edit.rs.source", "heading": "rgbdns-frag-ae456975540f: fn run", "sourcePath": "src/bin/tinydns-edit.rs", "startLine": 14, "endLine": 33}
+{"id": "rgbdns-frag-ae456975540f", "codeNote": "DNS from First Principles/Code/src/bin/tinydns-edit.rs.source", "sourcePath": "src/bin/tinydns-edit.rs", "startLine": 14, "endLine": 33}
 ```
 
 ## Excerpt

@@ -21,7 +21,7 @@ end_line: 95
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-f39b8ab849b2", "codeNote": "DNS from First Principles/Code/src/wall.rs.source", "heading": "rgbdns-frag-f39b8ab849b2: fn direct_and_reverse_wall_mappings", "sourcePath": "src/wall.rs", "startLine": 83, "endLine": 95}
+{"id": "rgbdns-frag-f39b8ab849b2", "codeNote": "DNS from First Principles/Code/src/wall.rs.source", "sourcePath": "src/wall.rs", "startLine": 83, "endLine": 95}
 ```
 
 ## Excerpt

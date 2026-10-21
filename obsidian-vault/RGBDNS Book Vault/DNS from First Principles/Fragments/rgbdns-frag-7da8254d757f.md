@@ -19,7 +19,7 @@ end_line: 99
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-7da8254d757f", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-7da8254d757f: fn rfc1035_unsupported_query_class_gets_notimp", "sourcePath": "tests/rfc_conformance.rs", "startLine": 92, "endLine": 99}
+{"id": "rgbdns-frag-7da8254d757f", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 92, "endLine": 99}
 ```
 
 ## Excerpt

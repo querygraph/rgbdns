@@ -21,7 +21,7 @@ end_line: 12
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-6acd0c6e28f0", "codeNote": "DNS from First Principles/Code/src/transport.rs.source", "heading": "rgbdns-frag-6acd0c6e28f0: type Handler", "sourcePath": "src/transport.rs", "startLine": 12, "endLine": 12}
+{"id": "rgbdns-frag-6acd0c6e28f0", "codeNote": "DNS from First Principles/Code/src/transport.rs.source", "sourcePath": "src/transport.rs", "startLine": 12, "endLine": 12}
 ```
 
 ## Excerpt
@@ -30,5 +30,5 @@ end_line: 12
 ### rgbdns-frag-6acd0c6e28f0: type Handler
 
 ```rust
-pub(crate) type Handler = dyn Fn(&[u8], usize, IpAddr) -> Result<Vec<u8>> + Send + Sync;
+pub(crate) type Handler = dyn Fn(&[u8], usize, SocketAddr) -> Result<Vec<u8>> + Send + Sync;
 ```

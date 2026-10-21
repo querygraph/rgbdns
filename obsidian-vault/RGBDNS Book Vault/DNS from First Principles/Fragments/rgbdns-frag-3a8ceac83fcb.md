@@ -21,7 +21,7 @@ end_line: 239
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-3a8ceac83fcb", "codeNote": "DNS from First Principles/Code/src/tai64.rs.source", "heading": "rgbdns-frag-3a8ceac83fcb: fn rejects_malformed_and_out_of_range_labels", "sourcePath": "src/tai64.rs", "startLine": 234, "endLine": 239}
+{"id": "rgbdns-frag-3a8ceac83fcb", "codeNote": "DNS from First Principles/Code/src/tai64.rs.source", "sourcePath": "src/tai64.rs", "startLine": 234, "endLine": 239}
 ```
 
 ## Excerpt

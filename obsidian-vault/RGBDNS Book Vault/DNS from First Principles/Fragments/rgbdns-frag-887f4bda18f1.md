@@ -19,7 +19,7 @@ end_line: 106
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-887f4bda18f1", "codeNote": "DNS from First Principles/Code/tests/drill_interop.rs.source", "heading": "rgbdns-frag-887f4bda18f1: fn ldns_drill_interoperates_over_udp_tcp_edns_and_unknown_types", "sourcePath": "tests/drill_interop.rs", "startLine": 85, "endLine": 106}
+{"id": "rgbdns-frag-887f4bda18f1", "codeNote": "DNS from First Principles/Code/tests/drill_interop.rs.source", "sourcePath": "tests/drill_interop.rs", "startLine": 85, "endLine": 106}
 ```
 
 ## Excerpt

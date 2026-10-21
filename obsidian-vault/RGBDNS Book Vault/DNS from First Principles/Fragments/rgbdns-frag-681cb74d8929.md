@@ -21,7 +21,7 @@ end_line: 207
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-681cb74d8929", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-681cb74d8929: fn truncated_udp_response_falls_back_to_tcp", "sourcePath": "src/client.rs", "startLine": 154, "endLine": 207}
+{"id": "rgbdns-frag-681cb74d8929", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 154, "endLine": 207}
 ```
 
 ## Excerpt

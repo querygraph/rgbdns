@@ -21,7 +21,7 @@ end_line: 151
 - Component: [[DNS from First Principles/Components/dnscache|dnscache]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c4c75c363342", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "heading": "rgbdns-frag-c4c75c363342: fn bounded_env_usize", "sourcePath": "src/bin/dnscache.rs", "startLine": 143, "endLine": 151}
+{"id": "rgbdns-frag-c4c75c363342", "codeNote": "DNS from First Principles/Code/src/bin/dnscache.rs.source", "sourcePath": "src/bin/dnscache.rs", "startLine": 143, "endLine": 151}
 ```
 
 ## Excerpt

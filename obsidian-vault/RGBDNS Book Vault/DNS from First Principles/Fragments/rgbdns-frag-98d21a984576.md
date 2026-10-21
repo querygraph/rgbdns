@@ -19,7 +19,7 @@ end_line: 239
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-98d21a984576", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-98d21a984576: fn rfc3597_unknown_rdata_roundtrips_losslessly", "sourcePath": "tests/rfc_conformance.rs", "startLine": 223, "endLine": 239}
+{"id": "rgbdns-frag-98d21a984576", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 223, "endLine": 239}
 ```
 
 ## Excerpt

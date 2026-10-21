@@ -19,7 +19,7 @@ end_line: 203
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-04e910bc5479", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-04e910bc5479: fn rfc6891_duplicate_or_misplaced_opt_is_formerr", "sourcePath": "tests/rfc_conformance.rs", "startLine": 188, "endLine": 203}
+{"id": "rgbdns-frag-04e910bc5479", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 188, "endLine": 203}
 ```
 
 ## Excerpt

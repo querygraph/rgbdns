@@ -4,6 +4,8 @@ type: "index"
 
 # Components
 
+- [[DNS from First Principles/Components/acme-materialize|acme-materialize]]
+- [[DNS from First Principles/Components/aname-materialize|aname-materialize]]
 - [[DNS from First Principles/Components/axfr-get|axfr-get]]
 - [[DNS from First Principles/Components/axfrdns|axfrdns]]
 - [[DNS from First Principles/Components/axfrdns-conf|axfrdns-conf]]
@@ -29,6 +31,13 @@ type: "index"
 - [[DNS from First Principles/Components/rbldns-conf|rbldns-conf]]
 - [[DNS from First Principles/Components/rbldns-data|rbldns-data]]
 - [[DNS from First Principles/Components/rgbdns|rgbdns]]
+- [[DNS from First Principles/Components/rgbdns-acme|rgbdns-acme]]
+- [[DNS from First Principles/Components/rgbdns-log-report|rgbdns-log-report]]
+- [[DNS from First Principles/Components/rgbsec-check|rgbsec-check]]
+- [[DNS from First Principles/Components/rgbsec-data|rgbsec-data]]
+- [[DNS from First Principles/Components/rgbsec-ds|rgbsec-ds]]
+- [[DNS from First Principles/Components/rgbsec-keygen|rgbsec-keygen]]
+- [[DNS from First Principles/Components/rgbsec-sign|rgbsec-sign]]
 - [[DNS from First Principles/Components/setuidgid|setuidgid]]
 - [[DNS from First Principles/Components/tai64n|tai64n]]
 - [[DNS from First Principles/Components/tai64nlocal|tai64nlocal]]

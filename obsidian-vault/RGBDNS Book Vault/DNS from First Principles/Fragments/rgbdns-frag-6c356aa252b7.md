@@ -19,7 +19,7 @@ end_line: 55
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-6c356aa252b7", "codeNote": "DNS from First Principles/Code/docs/performance.md.source", "heading": "rgbdns-frag-6c356aa252b7: heading Optimization checkpoint", "sourcePath": "docs/performance.md", "startLine": 34, "endLine": 55}
+{"id": "rgbdns-frag-6c356aa252b7", "codeNote": "DNS from First Principles/Code/docs/performance.md.source", "sourcePath": "docs/performance.md", "startLine": 34, "endLine": 55}
 ```
 
 ## Excerpt

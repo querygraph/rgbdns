@@ -21,7 +21,7 @@ end_line: 12
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d8a776f4a8ff", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "heading": "rgbdns-frag-d8a776f4a8ff: const TIMEOUT", "sourcePath": "src/client.rs", "startLine": 11, "endLine": 12}
+{"id": "rgbdns-frag-d8a776f4a8ff", "codeNote": "DNS from First Principles/Code/src/client.rs.source", "sourcePath": "src/client.rs", "startLine": 11, "endLine": 12}
 ```
 
 ## Excerpt

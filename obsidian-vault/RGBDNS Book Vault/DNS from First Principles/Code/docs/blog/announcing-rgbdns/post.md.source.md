@@ -5,7 +5,7 @@ language: "markdown"
 subsystem: "Documentation"
 line_count: 176
 fragment_count: 8
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/blog/announcing-rgbdns/post.md

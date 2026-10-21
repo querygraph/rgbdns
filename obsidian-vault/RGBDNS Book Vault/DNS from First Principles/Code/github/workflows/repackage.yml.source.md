@@ -1,0 +1,141 @@
+---
+type: "code-file"
+source_path: ".github/workflows/repackage.yml"
+language: "yaml"
+subsystem: "Project automation"
+line_count: 116
+fragment_count: 1
+rgbdns_commit: "5ae24772"
+---
+
+# .github/workflows/repackage.yml
+
+- Subsystem: [[DNS from First Principles/Subsystems/Project automation|Project automation]]
+- Source path: `.github/workflows/repackage.yml`
+- Lines: 116
+- Summary: Source file in the Project automation subsystem.
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-91f686dca9db|repackage.yml]]: lines 1-81
+
+## Full Source
+
+```yaml
+name: Fast repackage
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_run_id:
+        description: Successful full package-build run whose binaries should be reused
+        required: true
+        type: string
+      package:
+        description: Package format to rebuild
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - deb
+          - rpm
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  deb:
+    if: inputs.package == 'both' || inputs.package == 'deb'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download binaries from the full Debian build
+        uses: actions/download-artifact@v5
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.base_run_id }}
+          name: rgbdns-debian-amd64
+          path: base-package
+
+      - name: Install Debian packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes debhelper
+
+      - name: Reuse packaged binaries
+        run: |
+          mkdir -p target/release
+          dpkg-deb --extract base-package/*.deb base-package/extracted
+          cp base-package/extracted/usr/bin/* target/release/
+          chmod 0755 target/release/*
+
+      - name: Build package without Rust
+        run: |
+          RGBDNS_SKIP_RUST_BUILD=1 packaging/build-deb.sh -d
+
+      - name: Test daily query reporting
+        run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
+
+      - name: Collect package
+        run: |
+          mkdir -p dist
+          cp ../rgbdns_*_amd64.deb dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rgbdns-debian-amd64-fast
+          path: dist/rgbdns_*_amd64.deb
+          if-no-files-found: error
+
+  rpm:
+    if: inputs.package == 'both' || inputs.package == 'rpm'
+    runs-on: ubuntu-24.04
+    container: opensuse/leap:16.0
+    timeout-minutes: 15
+    steps:
+      - name: Install checkout prerequisites
+        run: zypper --non-interactive install git gzip tar
+
+      - uses: actions/checkout@v5
+
+      - name: Download binaries from the full RPM build
+        uses: actions/download-artifact@v5
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.base_run_id }}
+          name: rgbdns-opensuse-leap16-x86_64
+          path: base-package
+
+      - name: Install RPM packaging tools
+        run: |
+          zypper --non-interactive install \
+            cargo cpio python3 rpm-build systemd-rpm-macros
+
+      - name: Reuse packaged binaries
+        run: |
+          mkdir -p target/release extracted
+          rpm2cpio base-package/RPMS/x86_64/rgbdns-[0-9]*.x86_64.rpm |
+            cpio -idm -D extracted
+          cp extracted/usr/bin/* target/release/
+          chmod 0755 target/release/*
+
+      - name: Build package without Rust
+        run: |
+          RGBDNS_SKIP_RUST_BUILD=1 packaging/build-rpm.sh \
+            --define 'rgbdns_skip_rust_build 1'
+
+      - name: Test daily query reporting
+        run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rgbdns-opensuse-leap16-x86_64-fast
+          path: |
+            dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+            dist/rpmbuild/SRPMS/rgbdns-*.src.rpm
+          if-no-files-found: error
+```

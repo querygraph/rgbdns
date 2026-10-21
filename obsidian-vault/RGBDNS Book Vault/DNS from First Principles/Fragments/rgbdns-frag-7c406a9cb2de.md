@@ -19,7 +19,7 @@ end_line: 90
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-7c406a9cb2de", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "heading": "rgbdns-frag-7c406a9cb2de: heading Conformance is a test matrix", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 61, "endLine": 90}
+{"id": "rgbdns-frag-7c406a9cb2de", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 61, "endLine": 90}
 ```
 
 ## Excerpt

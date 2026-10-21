@@ -3,21 +3,21 @@ type: "code-file"
 source_path: ".github/workflows/build-deb.yml"
 language: "yaml"
 subsystem: "Project automation"
-line_count: 80
+line_count: 91
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # .github/workflows/build-deb.yml
 
 - Subsystem: [[DNS from First Principles/Subsystems/Project automation|Project automation]]
 - Source path: `.github/workflows/build-deb.yml`
-- Lines: 80
+- Lines: 91
 - Summary: Source file in the Project automation subsystem.
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-e7de0cb9814b|build-deb.yml]]: lines 1-80
+- [[DNS from First Principles/Fragments/rgbdns-frag-4f07827d15f9|build-deb.yml]]: lines 1-81
 
 ## Full Source
 
@@ -61,6 +61,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Test secondary synchronization
+        run: |
+          packaging/tests/test-secondary-sync.sh
+          packaging/tests/test-import-zones.sh
+          packaging/tests/test-migrate-zones.sh
+          packaging/tests/test-import-data.sh
+          packaging/tests/test-restore-role-units.sh
+
       - uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@v2
@@ -72,6 +80,9 @@ jobs:
 
       - name: Build package
         run: packaging/build-deb.sh -d
+
+      - name: Test daily query reporting
+        run: packaging/tests/test-daily-query-report.sh target/release/rgbdns-log-report
 
       - name: Collect and inspect package
         run: |

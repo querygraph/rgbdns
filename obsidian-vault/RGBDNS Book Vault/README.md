@@ -5,11 +5,11 @@ It packages the complete book together with the complete text/code surface of rg
 
 ## Contents
 
-- Book chapters: 31
-- rgbdns code-file notes: 96
-- Generated code fragments: 696
-- rgbdns source commit: `79502939`
-- Book source commit: `79502939`
+- Book chapters: 32
+- rgbdns code-file notes: 139
+- Generated code fragments: 1097
+- rgbdns source commit: `5ae24772`
+- Book source commit: `5ae24772`
 
 ## Start Here
 
@@ -20,10 +20,12 @@ It packages the complete book together with the complete text/code surface of rg
 
 ## Fragment Navigation
 
-The vault includes a local Obsidian plugin named `rgbdns-reader`.
-When enabled, generated `rgbdns-fragment` cards can open the related code-file note
-and highlight the selected fragment. The plugin is bundled inside `.obsidian/plugins/`
-and does not require a build step.
+The vault bundles FirstPair Reader (`firstpair-reader`) in `.obsidian/plugins/`.
+Enable it under Settings -> Community plugins; it needs no build step and makes
+no network requests. It opens the chapters with a rail (Previous, Up, Back, Top,
+TOC, Next) and turns each generated `rgbdns-fragment` block into a card:
+Show code lists the fragment's numbered lines, and Open file opens the code note
+with those lines marked. Without the plugin the notes remain a complete book.
 
 ## Data Ledgers
 

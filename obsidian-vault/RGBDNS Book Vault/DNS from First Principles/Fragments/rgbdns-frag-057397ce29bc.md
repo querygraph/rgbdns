@@ -19,7 +19,7 @@ end_line: 433
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-057397ce29bc", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-057397ce29bc: heading tinydns data as a source language", "sourcePath": "docs/book/rgbdns.md", "startLine": 394, "endLine": 433}
+{"id": "rgbdns-frag-057397ce29bc", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 394, "endLine": 433}
 ```
 
 ## Excerpt

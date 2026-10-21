@@ -21,7 +21,7 @@ end_line: 12
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-3790fed38817", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-3790fed38817: const MAX_ROOTS_FILE", "sourcePath": "src/dnscache_config.rs", "startLine": 12, "endLine": 12}
+{"id": "rgbdns-frag-3790fed38817", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 12, "endLine": 12}
 ```
 
 ## Excerpt

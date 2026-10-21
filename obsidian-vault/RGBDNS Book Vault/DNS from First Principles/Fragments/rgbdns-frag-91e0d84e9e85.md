@@ -21,7 +21,7 @@ end_line: 9
 - Component: [[DNS from First Principles/Components/dnsip6|dnsip6]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-91e0d84e9e85", "codeNote": "DNS from First Principles/Code/src/bin/dnsip6.rs.source", "heading": "rgbdns-frag-91e0d84e9e85: fn main", "sourcePath": "src/bin/dnsip6.rs", "startLine": 3, "endLine": 9}
+{"id": "rgbdns-frag-91e0d84e9e85", "codeNote": "DNS from First Principles/Code/src/bin/dnsip6.rs.source", "sourcePath": "src/bin/dnsip6.rs", "startLine": 3, "endLine": 9}
 ```
 
 ## Excerpt

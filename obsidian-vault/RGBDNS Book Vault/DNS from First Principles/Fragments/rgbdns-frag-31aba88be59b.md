@@ -21,7 +21,7 @@ end_line: 9
 - Component: [[DNS from First Principles/Components/dnsmx|dnsmx]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-31aba88be59b", "codeNote": "DNS from First Principles/Code/src/bin/dnsmx.rs.source", "heading": "rgbdns-frag-31aba88be59b: fn main", "sourcePath": "src/bin/dnsmx.rs", "startLine": 3, "endLine": 9}
+{"id": "rgbdns-frag-31aba88be59b", "codeNote": "DNS from First Principles/Code/src/bin/dnsmx.rs.source", "sourcePath": "src/bin/dnsmx.rs", "startLine": 3, "endLine": 9}
 ```
 
 ## Excerpt

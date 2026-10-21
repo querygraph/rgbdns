@@ -19,7 +19,7 @@ end_line: 449
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-425f4904b6d4", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-425f4904b6d4: heading ANAME and apex address flattening", "sourcePath": "docs/book/rgbdns.md", "startLine": 434, "endLine": 449}
+{"id": "rgbdns-frag-425f4904b6d4", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 434, "endLine": 449}
 ```
 
 ## Excerpt
@@ -27,7 +27,7 @@ end_line: 449
 <span id="rgbdns-frag-425f4904b6d4" class="rgbdns-fragment-target"></span>
 ### rgbdns-frag-425f4904b6d4: heading ANAME and apex address flattening
 
-```markdown
+````markdown
 ## ANAME and apex address flattening
 
 A zone apex necessarily owns SOA and NS data. A CNAME owner, by contrast,
@@ -44,4 +44,4 @@ under the configured owner.
 rgbdns calls this feature **ANAME** and uses the private `A` source marker:
 
 ```text
-```
+````

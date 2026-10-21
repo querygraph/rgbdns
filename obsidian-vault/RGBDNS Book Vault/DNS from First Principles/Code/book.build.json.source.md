@@ -5,7 +5,7 @@ language: "json"
 subsystem: "Repository and build"
 line_count: 55
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # book.build.json

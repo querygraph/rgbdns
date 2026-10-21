@@ -19,7 +19,7 @@ end_line: 222
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-bd13b0414c83", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-bd13b0414c83: fn rfc6891_advertised_udp_limit_is_honored_with_parseable_truncation", "sourcePath": "tests/rfc_conformance.rs", "startLine": 204, "endLine": 222}
+{"id": "rgbdns-frag-bd13b0414c83", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 204, "endLine": 222}
 ```
 
 ## Excerpt

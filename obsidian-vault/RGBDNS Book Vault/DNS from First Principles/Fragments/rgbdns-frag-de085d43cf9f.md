@@ -19,7 +19,7 @@ end_line: 164
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-de085d43cf9f", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-de085d43cf9f: heading Resource records typed facts with lifetimes", "sourcePath": "docs/book/rgbdns.md", "startLine": 163, "endLine": 164}
+{"id": "rgbdns-frag-de085d43cf9f", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 163, "endLine": 164}
 ```
 
 ## Excerpt

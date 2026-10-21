@@ -21,7 +21,7 @@ end_line: 13
 - Component: [[DNS from First Principles/Components/tai64nlocal|tai64nlocal]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-565a1c08ae2b", "codeNote": "DNS from First Principles/Code/src/bin/tai64nlocal.rs.source", "heading": "rgbdns-frag-565a1c08ae2b: fn main", "sourcePath": "src/bin/tai64nlocal.rs", "startLine": 3, "endLine": 13}
+{"id": "rgbdns-frag-565a1c08ae2b", "codeNote": "DNS from First Principles/Code/src/bin/tai64nlocal.rs.source", "sourcePath": "src/bin/tai64nlocal.rs", "startLine": 3, "endLine": 13}
 ```
 
 ## Excerpt

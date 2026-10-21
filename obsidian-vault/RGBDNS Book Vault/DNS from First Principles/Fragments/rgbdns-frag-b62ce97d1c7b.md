@@ -19,7 +19,7 @@ end_line: 536
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b62ce97d1c7b", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-b62ce97d1c7b: heading Other apex data remains independent", "sourcePath": "docs/book/rgbdns.md", "startLine": 456, "endLine": 536}
+{"id": "rgbdns-frag-b62ce97d1c7b", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 456, "endLine": 536}
 ```
 
 ## Excerpt
@@ -27,7 +27,7 @@ end_line: 536
 <span id="rgbdns-frag-b62ce97d1c7b" class="rgbdns-fragment-target"></span>
 ### rgbdns-frag-b62ce97d1c7b: heading Other apex data remains independent
 
-```markdown
+````markdown
 # Other apex data remains independent.
 @example.com::mail.example.com:10:3600
 'example.com:v=spf1 -all:3600
@@ -52,6 +52,19 @@ SOA, NS, MX, TXT, CAA, and other non-address data. Zone validation rejects:
 - an owner that targets itself;
 - different ANAME targets at one owner;
 - a zero TTL.
+
+ANAME is private configuration rather than a standard DNS RR type, so a plain
+AXFR cannot represent it. rgbdns peers negotiate preservation explicitly:
+`axfr-get` places private EDNS option 65001 with the `RGA1` version token in
+the AXFR request. An rgbdns primary then inserts private-use TYPE65401 records
+whose TTL is the ANAME cap and whose payload is the token followed by the
+target's uncompressed wire name. The receiving rgbdns validates that payload
+and reconstructs the `Aowner:target:ttl` directive before compilation.
+
+An ordinary AXFR request does not receive TYPE65401. This keeps standard
+secondaries free of private metadata, but it also means they do not reproduce
+ANAME behavior. Delegate an ANAME-backed zone only to upgraded rgbdns peers,
+or use standard address records when non-rgbdns secondaries must serve it.
 
 The server only applies ANAME to A and AAAA questions. SOA, NS, MX, TXT, CAA,
 and all other questions continue through normal authoritative lookup. ANAME
@@ -91,22 +104,9 @@ Positive entries expire with the upstream chain’s shortest relevant TTL.
 Negative results use the authority SOA’s negative TTL when available and 60
 seconds otherwise. The configured ANAME ceiling is applied when constructing
 each response, so two owners may safely share a target while using different
-TTL policies.
-
-Resolution is bounded in the same spirit as the rest of rgbdns:
-
-- CNAME chains stop after 16 links;
-- visited names detect cycles;
-- no more than 64 terminal addresses are accepted;
-- conflicting CNAME targets are rejected;
-- upstream SERVFAIL and other resolver errors become authoritative SERVFAIL,
-  not false NODATA;
-- A and AAAA are cached independently.
-
-`DNSCACHEIP` selects one or more recursive endpoints, separated by commas.
-Each endpoint may be an IP address using port 53 or an explicit socket address.
-Without it, rgbdns reads `/etc/resolv.conf`. A local validating `dnscache` is
-the preferred upstream when operators want DNSSEC validation and a cache shared
-with other local DNS work:
-
-```
+TTL policies. Concurrent misses for one target and address family are
+coalesced into one upstream query. A failed lookup is retained for five
+seconds, during which matching requests fail without starting another
+recursive chain. This short circuit limits retry storms and cross-provider
+ANAME loop amplification without turning a transient failure into long-lived
+````

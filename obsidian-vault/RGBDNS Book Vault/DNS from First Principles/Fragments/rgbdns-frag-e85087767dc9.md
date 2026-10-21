@@ -19,7 +19,7 @@ end_line: 248
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e85087767dc9", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-e85087767dc9: heading Messages on the wire", "sourcePath": "docs/book/rgbdns.md", "startLine": 247, "endLine": 248}
+{"id": "rgbdns-frag-e85087767dc9", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 247, "endLine": 248}
 ```
 
 ## Excerpt

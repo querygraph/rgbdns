@@ -19,7 +19,7 @@ end_line: 246
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d62bb10ff90c", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-d62bb10ff90c: heading Additional data is an optimization", "sourcePath": "docs/book/rgbdns.md", "startLine": 236, "endLine": 246}
+{"id": "rgbdns-frag-d62bb10ff90c", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 236, "endLine": 246}
 ```
 
 ## Excerpt

@@ -1,0 +1,774 @@
+---
+type: "code-file"
+source_path: "RESEND_SENDMAIL.md"
+language: "markdown"
+subsystem: "Repository and build"
+line_count: 738
+fragment_count: 12
+rgbdns_commit: "5ae24772"
+---
+
+# RESEND_SENDMAIL.md
+
+- Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
+- Source path: `RESEND_SENDMAIL.md`
+- Lines: 738
+- Summary: Resend mail delivery for rgbdns reports
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-a371baac0606|Resend mail delivery for rgbdns reports]]: lines 1-14
+- [[DNS from First Principles/Fragments/rgbdns-frag-d122606b190c|etc rgbdns query-report.env]]: lines 15-23
+- [[DNS from First Principles/Fragments/rgbdns-frag-c72a1830d4c0|Resend prerequisites]]: lines 24-57
+- [[DNS from First Principles/Fragments/rgbdns-frag-5018c865ac81|Configure the rgbdns report]]: lines 58-90
+- [[DNS from First Principles/Fragments/rgbdns-frag-2b2eb12647f4|Option A msmtp]]: lines 91-171
+- [[DNS from First Principles/Fragments/rgbdns-frag-6e1c1fc6a697|Option B native Sendmail]]: lines 225-305
+- [[DNS from First Principles/Fragments/rgbdns-frag-354524679e77|Forwarding `dick@hurz.net` with your own server]]: lines 390-456
+- [[DNS from First Principles/Fragments/rgbdns-frag-54ed3c2fae49|home bitnami rgbdns.data]]: lines 457-460
+- [[DNS from First Principles/Fragments/rgbdns-frag-d064f0956c76|etc mail local-host-names]]: lines 461-464
+- [[DNS from First Principles/Fragments/rgbdns-frag-ce4850ac1142|etc aliases]]: lines 465-545
+- [[DNS from First Principles/Fragments/rgbdns-frag-8b6ce215d317|Choosing between the two]]: lines 684-706
+- [[DNS from First Principles/Fragments/rgbdns-frag-e5b7ff67ea64|Delivery troubleshooting checklist]]: lines 707-738
+
+## Full Source
+
+````markdown
+# Resend mail delivery for rgbdns reports
+
+This runbook configures the daily `rgbdns-query-report.service` to deliver
+through [Resend SMTP](https://resend.com/docs/send-with-smtp). It covers two
+sendmail-compatible transports:
+
+1. `msmtp`, a small SMTP client; and
+2. Sendmail itself, configured as an authenticated Resend smarthost.
+
+The report script does not speak Resend's HTTP API directly. It writes a
+complete message to the executable named by `REPORT_SENDMAIL` and invokes it
+with `-t`:
+
+```text
+# /etc/rgbdns/query-report.env
+REPORT_TO=deliverable@gmail.com
+REPORT_FROM=rgbdns@hurz.net
+REPORT_SENDMAIL=/usr/sbin/sendmail
+```
+
+`REPORT_FROM` must use a domain verified in Resend. The hostname of the DNS
+server, such as `a.ns.cron.sh`, does not need to be the mail sender domain.
+
+## Resend prerequisites
+
+In Resend:
+
+1. Add and verify the sender domain, for example `hurz.net`.
+2. Publish every DNS record Resend provides. The DKIM record commonly has the
+   name `resend._domainkey` under the domain.
+3. Create a sending API key. Treat it as a password and never commit it.
+
+The Resend SMTP settings are:
+
+```text
+Host:     smtp.resend.com
+Port:     587
+Security: STARTTLS
+Username: resend
+Password: the Resend API key
+```
+
+Resend also documents ports 465/2465 for implicit TLS and 25/2587 for
+STARTTLS. Port 587 is used in the examples below.
+
+Verify the DKIM record from the server or any machine with `dig`:
+
+```sh
+dig +short CNAME resend._domainkey.hurz.net
+dig @1.1.1.1 +short CNAME resend._domainkey.hurz.net
+dig @8.8.8.8 +short CNAME resend._domainkey.hurz.net
+```
+
+The returned CNAME target must exactly match the value shown in the Resend
+dashboard. A DKIM record alone does not authorize a different `From:` domain;
+the message sender must still use the verified domain.
+
+## Configure the rgbdns report
+
+On the primary only, edit the report configuration:
+
+```sh
+sudo vi /etc/rgbdns/query-report.env
+```
+
+Use a verified sender address:
+
+```text
+REPORT_TO=deliverable@gmail.com
+REPORT_FROM=rgbdns@hurz.net
+```
+
+The report timer is intentionally opt-in and should normally run only on the
+primary, not on the secondary:
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable --now rgbdns-query-report.timer
+systemctl list-timers --all rgbdns-query-report.timer
+```
+
+The timer is not the mail transport. It only starts the report service. A
+manual run sends the preceding local calendar day's report immediately:
+
+```sh
+sudo systemctl reset-failed rgbdns-query-report.service
+sudo systemctl start rgbdns-query-report.service
+sudo systemctl status rgbdns-query-report.service --no-pager
+```
+
+## Option A: msmtp
+
+### Why use msmtp
+
+Use `msmtp` when the host only needs to submit outbound messages through a
+smarthost. It is small, has a direct SMTP configuration, and avoids managing a
+full MTA queue, daemon, hostname identity, and Sendmail macro configuration.
+This is generally the simplest choice for one daily report.
+
+### Install and configure
+
+Install the client on Debian/Ubuntu:
+
+```sh
+sudo apt-get update
+sudo apt-get install msmtp
+```
+
+Create the system configuration:
+
+```sh
+sudo vi /etc/msmtprc
+```
+
+Use the actual Resend API key in place of the placeholder:
+
+```text
+defaults
+auth on
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+account resend
+host smtp.resend.com
+port 587
+user resend
+password re_YOUR_RESEND_API_KEY
+from rgbdns@hurz.net
+
+account default : resend
+```
+
+Protect the key:
+
+```sh
+sudo chmod 600 /etc/msmtprc
+```
+
+Point the report at `msmtp`:
+
+```sh
+sudo vi /etc/rgbdns/query-report.env
+```
+
+```text
+REPORT_SENDMAIL=/usr/bin/msmtp
+REPORT_FROM=rgbdns@hurz.net
+```
+
+The report already supplies `To:`, `From:`, `Subject:`, and the message body,
+so `msmtp -t` can read the complete message from standard input.
+
+### Test msmtp
+
+Send a small test message without putting the API key on the command line:
+
+```sh
+printf 'From: rgbdns@hurz.net\nTo: deliverable@gmail.com\nSubject: Resend test\n\nSMTP test\n' |
+  sudo /usr/bin/msmtp -t -v
+```
+
+Then run the report service:
+
+```sh
+sudo systemctl reset-failed rgbdns-query-report.service
+sudo systemctl start rgbdns-query-report.service
+sudo journalctl -u rgbdns-query-report.service -n 50 --no-pager
+```
+
+An authentication failure normally means the API key is wrong, revoked, or
+was left as a placeholder. A `550` domain error means the `From:` domain is
+not the verified Resend domain.
+
+### Use Gmail instead of Resend with msmtp
+
+`msmtp` can submit through Gmail directly. Gmail's SMTP submission endpoint is
+`smtp.gmail.com` on port 587 with STARTTLS and authentication. Use a Google App
+Password, not the normal account password. App Passwords require 2-Step
+Verification and may be unavailable for some managed accounts. See Google's
+[SMTP settings](https://support.google.com/mail/answer/7104828) and
+[App Password guidance](https://support.google.com/accounts/answer/185833).
+
+Create an App Password for the Gmail account that will send the report, then
+edit:
+
+```sh
+sudo vi /etc/msmtprc
+```
+
+```text
+defaults
+auth on
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+account gmail
+host smtp.gmail.com
+port 587
+user deliverable@gmail.com
+password YOUR_16_DIGIT_APP_PASSWORD
+from deliverable@gmail.com
+
+account default : gmail
+```
+
+Protect the file and select `msmtp` for the report:
+
+```sh
+sudo chmod 600 /etc/msmtprc
+sudo vi /etc/rgbdns/query-report.env
+```
+
+```text
+REPORT_SENDMAIL=/usr/bin/msmtp
+REPORT_FROM=deliverable@gmail.com
+```
+
+Test through Gmail:
+
+```sh
+printf 'From: deliverable@gmail.com\nTo: deliverable@gmail.com\nSubject: Gmail SMTP test\n\nSMTP test\n' |
+  sudo /usr/bin/msmtp -t -v
+```
+
+## Option B: native Sendmail
+
+### Why use Sendmail
+
+Use native Sendmail when the host already depends on it, other local services
+submit mail through `/usr/sbin/sendmail`, or you need a conventional MTA queue
+and daemon. It can relay through Resend, but its configuration is more involved:
+SASL support, an auth database, Sendmail macros, TLS trust, daemon reloads, and
+hostname identity all matter.
+
+Installing Sendmail alone is not enough. Without a smarthost, Sendmail tries
+to deliver directly to the recipient's MX. Gmail commonly rejects that direct
+mail with:
+
+```text
+550 5.7.26 Your email has been blocked because the sender is unauthenticated
+```
+
+### Install SASL support
+
+On Debian/Ubuntu:
+
+```sh
+sudo apt-get update
+sudo apt-get install sasl2-bin libsasl2-modules
+sudo /usr/share/sendmail/update_auth
+```
+
+### Create the Resend auth map
+
+Edit the source auth file:
+
+```sh
+sudo vi /etc/mail/authinfo
+```
+
+Add one line with the real API key:
+
+```text
+AuthInfo:smtp.resend.com "U:resend" "P:re_YOUR_RESEND_API_KEY" "M:PLAIN"
+```
+
+Protect and compile it. The `sh -c` is important because shell redirection
+happens before `sudo` when written directly as `sudo makemap ... < file`:
+
+```sh
+sudo chmod 600 /etc/mail/authinfo
+sudo sh -c 'makemap hash /etc/mail/authinfo < /etc/mail/authinfo'
+```
+
+Verify both files exist:
+
+```sh
+sudo ls -l /etc/mail/authinfo /etc/mail/authinfo.db
+```
+
+### Configure the Sendmail smarthost
+
+Edit the macro configuration:
+
+```sh
+sudo vi /etc/mail/sendmail.mc
+```
+
+Add these definitions before the `MAILER` lines:
+
+```m4
+define(`SMART_HOST', `smtp.resend.com')dnl
+define(`RELAY_MAILER_ARGS', `TCP $h 587')dnl
+define(`ESMTP_MAILER_ARGS', `TCP $h 587')dnl
+FEATURE(`authinfo', `hash -o /etc/mail/authinfo.db')dnl
+define(`confAUTH_MECHANISMS', `PLAIN LOGIN')dnl
+define(`confCACERT', `/etc/ssl/certs/ca-certificates.crt')dnl
+```
+
+Rebuild and restart Sendmail:
+
+```sh
+sudo make -C /etc/mail
+sudo systemctl restart sendmail
+```
+
+The generated configuration must contain the smarthost:
+
+```sh
+sudo grep '^DS' /etc/mail/sendmail.cf
+```
+
+Expected output:
+
+```text
+DSsmtp.resend.com
+```
+
+If it still says `DS` with no host, or the delivery logs show
+`gmail-smtp-in.google.com`, Sendmail is still delivering directly and the
+smarthost configuration was not applied.
+
+### Ensure Sendmail has a resolvable hostname
+
+Sendmail may warn about an unqualified AWS hostname. Set the primary's local
+hostname and map it locally:
+
+```sh
+sudo hostnamectl set-hostname a.ns.cron.sh
+sudo vi /etc/hosts
+```
+
+Ensure this line exists:
+
+```text
+172.31.60.189 a.ns.cron.sh a
+```
+
+Verify:
+
+```sh
+hostname --fqdn
+getent hosts a.ns.cron.sh
+```
+
+The hostname warning is separate from Resend authentication, but fixing it
+gives Sendmail a stable local identity.
+
+Point rgbdns back to native Sendmail:
+
+```sh
+sudo vi /etc/rgbdns/query-report.env
+```
+
+```text
+REPORT_SENDMAIL=/usr/sbin/sendmail
+REPORT_FROM=rgbdns@hurz.net
+```
+
+### Test native Sendmail
+
+```sh
+printf 'From: rgbdns@hurz.net\nTo: deliverable@gmail.com\nSubject: Resend test\n\nSMTP test\n' |
+  sudo /usr/sbin/sendmail -t
+```
+
+Then run the report and inspect the MTA logs:
+
+```sh
+sudo systemctl reset-failed rgbdns-query-report.service
+sudo systemctl start rgbdns-query-report.service
+sudo journalctl -u sendmail --since "5 minutes ago" --no-pager
+sudo mailq
+```
+
+Successful Sendmail delivery should include:
+
+```text
+relay=smtp.resend.com
+dsn=2.0.0
+stat=Sent
+```
+
+The queue should be empty after successful delivery. If the log instead shows
+`relay=gmail-smtp-in.google.com`, Sendmail is bypassing Resend. If it shows
+`535 Authentication credentials invalid`, check the API key and auth map. If
+it shows `550 ... domain is not verified`, use a verified domain in both
+`REPORT_FROM` and the Sendmail/msmtp sender configuration.
+
+## Forwarding `dick@hurz.net` with your own server
+
+rgbdns can publish the DNS records needed for inbound mail, but rgbdns is not
+an SMTP receiver or forwarding service. A self-hosted setup would look like:
+
+```text
+dick@hurz.net
+       │ MX
+       ▼
+mail.hurz.net
+       │ inbound SMTP
+       ▼
+Postfix or Sendmail
+       │ forwarding with SRS
+       ▼
+deliverable@gmail.com
+```
+
+### DNS records
+
+The `hurz.net` zone needs an MX record pointing to a mail host and an address
+record for that host. In tinydns-compatible source syntax, the records are
+equivalent to:
+
+```text
+@hurz.net::mail.hurz.net:10:3600
++mail.hurz.net:SERVER_PUBLIC_IP:3600
+```
+
+The mail host must have a stable public address and a matching reverse-DNS
+name. Publish the MX and address records only after the mail service is ready
+to accept connections.
+
+### Mail-server requirements
+
+A self-hosted forwarder must:
+
+- accept inbound TCP port 25 from the Internet;
+- configure `hurz.net` as a local/accepted domain;
+- create an alias from `dick` to `deliverable@gmail.com`;
+- forward through an authenticated relay such as Resend or Gmail;
+- use Sender Rewriting Scheme (SRS) when forwarding, so SPF checks survive;
+- preserve useful `From:`, `To:`, `Message-ID`, and `Received:` headers;
+- provide queueing, retry, TLS, logging, spam controls, and abuse protection;
+- publish appropriate SPF, DKIM, and DMARC records for the sending path.
+
+An alias that blindly pipes incoming mail to Gmail is not sufficient. The
+forwarded message's original SPF identity will usually fail at Gmail, and
+DMARC alignment may fail without SRS or an equivalent forwarding service.
+AWS also commonly restricts or reputation-limits direct SMTP delivery, so the
+server should use the authenticated Resend/Gmail relay for outbound forwarding
+rather than delivering directly to Gmail MX servers.
+
+### The working `hurz.net` deployment
+
+The tested primary deployment uses `a.ns.cron.sh` (`52.10.53.234`) and the
+following arrangement:
+
+```text
+hurz.net MX 10 mail.hurz.net
+mail.hurz.net A 52.10.53.234
+dick@hurz.net → deliverable@gmail.com
+```
+
+The production changes are:
+
+```text
+# /home/bitnami/rgbdns.data
+@hurz.net::mail.hurz.net:10:3600
++mail.hurz.net:52.10.53.234:3600
+
+# /etc/mail/local-host-names
+hurz.net
+mail.hurz.net
+
+# /etc/aliases
+dick: deliverable@gmail.com
+```
+
+After editing `/etc/aliases`, compile the aliases and reload the services:
+
+```sh
+sudo newaliases
+sudo make -C /etc/mail
+sudo systemctl restart sendmail
+sudo systemctl start rgbdns-data-import.service
+```
+
+The Sendmail listener must be reachable on TCP port 25. Confirm locally with
+`ss -ltnp`; the listener should include `0.0.0.0:25`. Also allow inbound TCP
+25 in the AWS security group. A local forwarding test only proves alias
+expansion and outbound relay; it does not prove that an external sender can
+reach the server.
+
+Verify DNS from both the authoritative server and public resolvers:
+
+```sh
+dig @a.ns.cron.sh MX hurz.net +short
+dig @1.1.1.1 MX hurz.net +short
+dig @a.ns.cron.sh A mail.hurz.net +short
+```
+
+Public resolvers may continue returning the previous MX until its TTL expires.
+
+Test the alias without verbose SMTP output:
+
+```sh
+printf 'From: test@hurz.net\nTo: dick@hurz.net\nSubject: forwarding test\n\nTest.\n' |
+  sudo /usr/sbin/sendmail -t
+sudo journalctl -u sendmail --since "5 minutes ago" -l --no-pager
+sudo mailq
+```
+
+The successful Gmail-relay result observed in production was `relay=smtp.gmail.com`,
+`dsn=2.0.0`, `stat=Sent`, followed by an empty Sendmail queue. The successful
+TLS result was `verify=OK` with TLS 1.3 and an AES-256 cipher.
+
+### Operational tradeoff
+
+Self-hosting is appropriate when you already operate an MTA and want complete
+control over inbound mail. For one forwarding address, Cloudflare Email
+Routing is usually safer and simpler: it receives mail for `hurz.net`, verifies
+`deliverable@gmail.com` as the destination, and manages the forwarding path.
+It requires Cloudflare DNS and changes the domain's MX records, so it must not
+be enabled alongside another inbound mail provider.
+
+### Use Gmail instead of Resend with native Sendmail
+
+Native Sendmail can use Gmail as its authenticated smarthost. Create a Google
+App Password first; do not put the normal Gmail password in the auth map.
+
+Edit the auth source:
+
+```sh
+sudo vi /etc/mail/authinfo
+```
+
+```text
+AuthInfo:smtp.gmail.com "U:deliverable@gmail.com" "P:YOUR_16_DIGIT_APP_PASSWORD" "M:PLAIN"
+```
+
+Compile it:
+
+```sh
+sudo chmod 600 /etc/mail/authinfo
+sudo sh -c 'makemap hash /etc/mail/authinfo < /etc/mail/authinfo'
+```
+
+Edit the Sendmail macros:
+
+```sh
+sudo vi /etc/mail/sendmail.mc
+```
+
+Use Gmail instead of the Resend definitions:
+
+```m4
+define(`SMART_HOST', `smtp.gmail.com')dnl
+define(`RELAY_MAILER_ARGS', `TCP $h 587')dnl
+define(`ESMTP_MAILER_ARGS', `TCP $h 587')dnl
+FEATURE(`authinfo', `hash -o /etc/mail/authinfo.db')dnl
+define(`confAUTH_MECHANISMS', `PLAIN LOGIN')dnl
+define(`confCACERT', `/etc/ssl/certs/ca-certificates.crt')dnl
+```
+
+Rebuild and restart:
+
+```sh
+sudo make -C /etc/mail
+sudo systemctl restart sendmail
+```
+
+Use the Gmail account as the report sender:
+
+```sh
+sudo vi /etc/rgbdns/query-report.env
+```
+
+```text
+REPORT_SENDMAIL=/usr/sbin/sendmail
+REPORT_FROM=deliverable@gmail.com
+```
+
+Verify and test:
+
+```sh
+sudo grep '^DS' /etc/mail/sendmail.cf
+printf 'From: deliverable@gmail.com\nTo: deliverable@gmail.com\nSubject: Gmail SMTP test\n\nSMTP test\n' |
+  sudo /usr/sbin/sendmail -t
+```
+
+The Sendmail log should show `relay=smtp.gmail.com` and a successful `dsn=2.0.0`.
+
+### Gmail App Passwords
+
+Create the credential in the Google account that will submit the mail:
+
+1. Enable 2-Step Verification at <https://myaccount.google.com/signinoptions/two-step-verification>.
+2. Open <https://myaccount.google.com/apppasswords>.
+3. Create an app password named, for example, `Sendmail hurz.net`.
+4. Put the generated 16-character value in `/etc/mail/authinfo`, without
+   spaces, as the `P:` value.
+
+Use the app password rather than the normal Google account password. Google
+may not expose App Passwords for some managed accounts, Advanced Protection
+accounts, or accounts configured with security keys only. Revoke the app
+password when this relay is retired.
+
+### Verify Gmail's TLS certificate
+
+Sendmail must have the system CA bundle configured for outbound TLS. These
+definitions belong in `/etc/mail/sendmail.mc`:
+
+```m4
+define(`confCACERT_PATH', `/etc/ssl/certs')dnl
+define(`confCACERT', `/etc/ssl/certs/ca-certificates.crt')dnl
+```
+
+Refresh the CA bundle and regenerate Sendmail's configuration:
+
+```sh
+sudo update-ca-certificates
+sudo make -C /etc/mail
+sudo systemctl restart sendmail
+```
+
+Test the same Gmail endpoint independently:
+
+```sh
+openssl s_client \
+  -connect smtp.gmail.com:587 \
+  -starttls smtp \
+  -servername smtp.gmail.com \
+  -CAfile /etc/ssl/certs/ca-certificates.crt \
+  -verify_return_error </dev/null
+```
+
+The expected result is `Verify return code: 0 (ok)`. A Sendmail delivery log
+should then contain `STARTTLS=client`, `verify=OK`, and a TLS 1.2 or TLS 1.3
+cipher. `verify=FAIL` means Sendmail did not validate the peer certificate,
+even if the message was accepted; check the CA macros and rebuild.
+
+Do not add `confTLS_SRV_OPTIONS` for this purpose. `SRV` controls Sendmail
+when it accepts inbound SMTP; the report relay is an outbound client.
+
+### Direct Gmail MX delivery versus Gmail SMTP submission
+
+Commenting out `SMART_HOST`, the port-587 mailer arguments, and `authinfo`
+makes Sendmail deliver directly to each recipient's MX on port 25. For Gmail,
+that commonly produces:
+
+```text
+550 5.7.26 Your email has been blocked because the sender is unauthenticated
+```
+
+Direct MX delivery requires a properly authenticated sending domain, stable
+reverse DNS, SPF, DKIM, and suitable reputation. It is especially unreliable
+for forwarding arbitrary messages because forwarding can break the original
+sender's SPF and DMARC alignment. Gmail SMTP submission through
+`smtp.gmail.com:587` with an App Password is the practical Resend-free choice
+for this host.
+
+When changing from Resend to Gmail, comment out all Resend-specific lines in
+`/etc/mail/sendmail.mc`; leaving `RELAY_MAILER_ARGS` or
+`ESMTP_MAILER_ARGS` pointed at port 587 while removing the smarthost creates a
+misleading direct-delivery configuration:
+
+```m4
+dnl define(`SMART_HOST', `smtp.resend.com')dnl
+dnl define(`RELAY_MAILER_ARGS', `TCP $h 587')dnl
+dnl define(`ESMTP_MAILER_ARGS', `TCP $h 587')dnl
+dnl FEATURE(`authinfo', `hash -o /etc/mail/authinfo.db')dnl
+dnl define(`confAUTH_MECHANISMS', `PLAIN LOGIN')dnl
+```
+
+Then use the Gmail definitions in the previous section, run `sudo make -C
+/etc/mail`, and restart Sendmail. Confirm the active route with:
+
+```sh
+sudo grep '^DS' /etc/mail/sendmail.cf
+sudo journalctl -u sendmail --since "5 minutes ago" -l --no-pager
+```
+
+The route should be `smtp.gmail.com`, not a `gmail-smtp-in` MX host.
+
+### Forwarded-message headers
+
+Sendmail aliases change the SMTP envelope recipient but normally preserve the
+original `To:` header. Therefore a message sent to `dick@hurz.net` and
+forwarded to `deliverable@gmail.com` may appear in Gmail as `to dick, bcc: me`.
+That is Gmail explaining that the account received the message as the actual
+envelope recipient even though the visible `To:` header names the original
+address; it does not indicate that Sendmail added a real Bcc header.
+
+## Choosing between the two
+
+| Situation | Recommended transport |
+|---|---|
+| Only rgbdns needs outbound SMTP submission | `msmtp` |
+| Existing services already use `/usr/sbin/sendmail` | Native Sendmail |
+| You want the smallest configuration and no MTA daemon | `msmtp` |
+| You need a local mail queue and conventional MTA behavior | Native Sendmail |
+| You want the shortest troubleshooting path | `msmtp` |
+| You already operate Sendmail and understand its macros/SASL | Native Sendmail |
+
+Do not configure both transports for the report at once. The active transport
+is determined solely by `REPORT_SENDMAIL`:
+
+```sh
+sudo grep '^REPORT_SENDMAIL=' /etc/rgbdns/query-report.env
+sudo readlink -f "$(sudo awk -F= '/^REPORT_SENDMAIL=/{print $2}' /etc/rgbdns/query-report.env)"
+```
+
+`/usr/bin/msmtp` means the report uses msmtp. `/usr/sbin/sendmail` resolving
+to the Sendmail executable and logs containing `sm-mta` mean it uses native
+Sendmail.
+
+## Delivery troubleshooting checklist
+
+Run these commands on the primary:
+
+```sh
+sudo systemctl status rgbdns-query-report.service --no-pager
+sudo journalctl -u rgbdns-query-report.service -n 50 --no-pager
+sudo journalctl -u sendmail --since "15 minutes ago" --no-pager
+sudo mailq
+```
+
+Interpret the results:
+
+- `status=0/SUCCESS` means the report transport accepted the message. It does
+  not by itself prove Gmail delivered it.
+- `dsn=2.0.0` and `stat=Sent` for the Resend relay indicate successful handoff
+  to Resend.
+- `535 Authentication credentials invalid` means the Resend SMTP credentials
+  are wrong or the auth map was not rebuilt.
+- `550 ... domain is not verified` means the visible sender domain is not
+  verified in Resend.
+- `550 5.7.26 ... unauthenticated` together with a `gmail-smtp-in` relay means
+  direct MX delivery reached Gmail but failed sender authentication. Use the
+  authenticated Gmail smarthost or configure full direct-mail authentication.
+- An empty queue after a permanent failure is expected; Sendmail rejected the
+  message rather than retaining it for retry.
+
+Check the recipient's Spam folder only after the relay log shows successful
+handoff to Resend or Gmail. Avoid `sendmail -v` when an auth map is configured:
+verbose SMTP output can expose the Base64-encoded SMTP credential. If that
+happens, revoke the exposed Resend key or Gmail App Password and replace it in
+`/etc/mail/authinfo` before testing again.
+````

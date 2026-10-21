@@ -3,27 +3,27 @@ type: "code-file"
 source_path: "FIRSTPAIR.md"
 language: "markdown"
 subsystem: "Repository and build"
-line_count: 33
+line_count: 45
 fragment_count: 3
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # FIRSTPAIR.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 - Source path: `FIRSTPAIR.md`
-- Lines: 33
+- Lines: 45
 - Summary: FirstPair Library Contract
 
 ## Extracted Fragments
 
 - [[DNS from First Principles/Fragments/rgbdns-frag-d7b7baba4e7b|FirstPair Library Contract]]: lines 1-12
 - [[DNS from First Principles/Fragments/rgbdns-frag-9a8be337a30f|Build]]: lines 13-27
-- [[DNS from First Principles/Fragments/rgbdns-frag-2de0fe93a2a6|Obsidian vault]]: lines 28-33
+- [[DNS from First Principles/Fragments/rgbdns-frag-d18c30b0a6e1|Obsidian vault]]: lines 28-45
 
 ## Full Source
 
-```markdown
+````markdown
 # FirstPair Library Contract
 
 slug: rgbdns
@@ -57,4 +57,16 @@ Before running `scripts/build-obsidian-vault.py`, editing files under
 `obsidian-vault/`, zipping the vault, or otherwise touching it programmatically,
 ask the user to close the vault in Obsidian and wait for confirmation. After
 regeneration, run `scripts/check-obsidian-vault.py` before delivery.
-```
+
+The vault bundles FirstPair's standard reader, FirstPair Reader 2
+(`firstpair-reader`), copied as its four release files from
+`$FIRSTPAIR_ROOT/publishing/vault/plugin/firstpair-reader/`. It reads the book
+as a code book (`DNS from First Principles/_data/fragments.json` beside
+`Chapters/`). The retired `rgbdns-reader` source stays under `obsidian-plugin/`
+for reference only. See `docs/OBSIDIAN-VAULT.md`.
+
+`vault.build.json` drives the same builder and validator through FirstPair's
+transactional candidate, complete-guide, privacy, comparison, and deterministic
+archive gates. The candidate is generated beside the tracked vault and never
+replaces it during migration QA.
+````

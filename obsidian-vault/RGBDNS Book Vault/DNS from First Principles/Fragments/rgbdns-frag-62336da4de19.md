@@ -19,7 +19,7 @@ end_line: 99
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-62336da4de19", "codeNote": "DNS from First Principles/Code/tests/daemontools.rs.source", "heading": "rgbdns-frag-62336da4de19: fn tai64_filters_roundtrip_a_published_timestamp", "sourcePath": "tests/daemontools.rs", "startLine": 68, "endLine": 99}
+{"id": "rgbdns-frag-62336da4de19", "codeNote": "DNS from First Principles/Code/tests/daemontools.rs.source", "sourcePath": "tests/daemontools.rs", "startLine": 68, "endLine": 99}
 ```
 
 ## Excerpt

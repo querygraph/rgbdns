@@ -19,7 +19,7 @@ end_line: 51
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e4b1690ff7a3", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-e4b1690ff7a3: fn rfc8906_unknown_opcode_is_notimp_even_when_its_body_is_unknown", "sourcePath": "tests/rfc_conformance.rs", "startLine": 38, "endLine": 51}
+{"id": "rgbdns-frag-e4b1690ff7a3", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 38, "endLine": 51}
 ```
 
 ## Excerpt

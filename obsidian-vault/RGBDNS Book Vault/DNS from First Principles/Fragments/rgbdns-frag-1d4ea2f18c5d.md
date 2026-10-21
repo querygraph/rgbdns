@@ -19,7 +19,7 @@ end_line: 145
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1d4ea2f18c5d", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-1d4ea2f18c5d: fn rfc6891_edns_is_acknowledged_and_do_is_copied", "sourcePath": "tests/rfc_conformance.rs", "startLine": 125, "endLine": 145}
+{"id": "rgbdns-frag-1d4ea2f18c5d", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 125, "endLine": 145}
 ```
 
 ## Excerpt

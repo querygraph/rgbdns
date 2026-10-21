@@ -4,9 +4,9 @@ source_path: "src/transport.rs"
 language: "rust"
 subsystem: "Transport and zone transfer"
 crate: "rgbdns"
-line_count: 114
+line_count: 115
 fragment_count: 8
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/transport.rs
@@ -14,19 +14,19 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/Transport and zone transfer|Transport and zone transfer]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/transport.rs`
-- Lines: 114
+- Lines: 115
 - Summary: Shared bounded UDP and persistent DNS-over-TCP serving.
 
 ## Extracted Fragments
 
 - [[DNS from First Principles/Fragments/rgbdns-frag-6acd0c6e28f0|Handler]]: lines 12-12
-- [[DNS from First Principles/Fragments/rgbdns-frag-7a901ddd4a4d|StreamHandler]]: lines 13-14
-- [[DNS from First Principles/Fragments/rgbdns-frag-30b85bbe7549|TCP_WORKERS]]: lines 15-15
-- [[DNS from First Principles/Fragments/rgbdns-frag-b702cb6d3dcf|TCP_TIMEOUT]]: lines 16-17
-- [[DNS from First Principles/Fragments/rgbdns-frag-b6fb71c6843c|serve]]: lines 18-30
-- [[DNS from First Principles/Fragments/rgbdns-frag-0e863fd80bd5|serve_sockets]]: lines 31-65
-- [[DNS from First Principles/Fragments/rgbdns-frag-a0394db83dec|serve_udp]]: lines 66-76
-- [[DNS from First Principles/Fragments/rgbdns-frag-fac10ff0d148|serve_tcp_connection]]: lines 77-114
+- [[DNS from First Principles/Fragments/rgbdns-frag-558ceafaba3c|StreamHandler]]: lines 13-15
+- [[DNS from First Principles/Fragments/rgbdns-frag-20e496fde804|TCP_WORKERS]]: lines 16-16
+- [[DNS from First Principles/Fragments/rgbdns-frag-257f816a441c|TCP_TIMEOUT]]: lines 17-18
+- [[DNS from First Principles/Fragments/rgbdns-frag-7aee695735c0|serve]]: lines 19-31
+- [[DNS from First Principles/Fragments/rgbdns-frag-9d766db758c2|serve_sockets]]: lines 32-66
+- [[DNS from First Principles/Fragments/rgbdns-frag-a20c06228073|serve_udp]]: lines 67-77
+- [[DNS from First Principles/Fragments/rgbdns-frag-f3b5b28573f6|serve_tcp_connection]]: lines 78-115
 
 ## Full Source
 
@@ -36,14 +36,15 @@ rgbdns_commit: "79502939"
 use crate::Result;
 use std::{
     io::{Read, Write},
-    net::{IpAddr, TcpListener, TcpStream, UdpSocket},
+    net::{SocketAddr, TcpListener, TcpStream, UdpSocket},
     sync::Arc,
     thread,
     time::Duration,
 };
 
-pub(crate) type Handler = dyn Fn(&[u8], usize, IpAddr) -> Result<Vec<u8>> + Send + Sync;
-pub(crate) type StreamHandler = dyn Fn(&[u8], IpAddr) -> Result<Option<Vec<Vec<u8>>>> + Send + Sync;
+pub(crate) type Handler = dyn Fn(&[u8], usize, SocketAddr) -> Result<Vec<u8>> + Send + Sync;
+pub(crate) type StreamHandler =
+    dyn Fn(&[u8], SocketAddr) -> Result<Option<Vec<Vec<u8>>>> + Send + Sync;
 
 const TCP_WORKERS: usize = 32;
 const TCP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -81,7 +82,7 @@ pub(crate) fn serve_sockets(
                     continue;
                 };
                 let client = match stream.peer_addr() {
-                    Ok(peer) => peer.ip(),
+                    Ok(peer) => peer,
                     Err(_) => continue,
                 };
                 let _ = stream.set_read_timeout(Some(TCP_TIMEOUT));
@@ -100,7 +101,7 @@ fn serve_udp(socket: UdpSocket, handler: &Arc<Handler>) {
     let mut packet = [0; u16::MAX as usize];
     loop {
         if let Ok((length, peer)) = socket.recv_from(&mut packet)
-            && let Ok(response) = handler(&packet[..length], 4096, peer.ip())
+            && let Ok(response) = handler(&packet[..length], 4096, peer)
         {
             let _ = socket.send_to(&response, peer);
         }
@@ -109,7 +110,7 @@ fn serve_udp(socket: UdpSocket, handler: &Arc<Handler>) {
 
 fn serve_tcp_connection(
     stream: &mut TcpStream,
-    client: IpAddr,
+    client: SocketAddr,
     handler: &Arc<Handler>,
     stream_handler: Option<&Arc<StreamHandler>>,
 ) {

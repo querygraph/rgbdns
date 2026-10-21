@@ -19,7 +19,7 @@ end_line: 295
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-89725a937c01", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-89725a937c01: fn rfc2181_rrset_ttls_are_equalized_and_duplicate_records_suppressed", "sourcePath": "tests/rfc_conformance.rs", "startLine": 280, "endLine": 295}
+{"id": "rgbdns-frag-89725a937c01", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 280, "endLine": 295}
 ```
 
 ## Excerpt

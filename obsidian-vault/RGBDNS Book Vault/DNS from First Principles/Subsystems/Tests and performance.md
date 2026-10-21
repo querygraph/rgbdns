@@ -1,7 +1,7 @@
 ---
 type: "subsystem"
 subsystem: "Tests and performance"
-file_count: 10
+file_count: 11
 ---
 
 # Tests and performance
@@ -11,6 +11,7 @@ file_count: 10
 - [[DNS from First Principles/Code/tests/cdb_golden.rs.source|tests/cdb_golden.rs]]
 - [[DNS from First Principles/Code/tests/daemontools.rs.source|tests/daemontools.rs]]
 - [[DNS from First Principles/Code/tests/dnscache_network.rs.source|tests/dnscache_network.rs]]
+- [[DNS from First Principles/Code/tests/dnssec_tools.rs.source|tests/dnssec_tools.rs]]
 - [[DNS from First Principles/Code/tests/drill_interop.rs.source|tests/drill_interop.rs]]
 - [[DNS from First Principles/Code/tests/packet_properties.rs.source|tests/packet_properties.rs]]
 - [[DNS from First Principles/Code/tests/rfc_conformance.rs.source|tests/rfc_conformance.rs]]

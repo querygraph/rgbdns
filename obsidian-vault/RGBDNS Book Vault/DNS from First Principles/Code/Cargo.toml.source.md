@@ -3,16 +3,16 @@ type: "code-file"
 source_path: "Cargo.toml"
 language: "toml"
 subsystem: "Repository and build"
-line_count: 204
+line_count: 255
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # Cargo.toml
 
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 - Source path: `Cargo.toml`
-- Lines: 204
+- Lines: 255
 - Summary: Cargo manifest for Repository and build.
 
 ## Extracted Fragments
@@ -24,18 +24,24 @@ rgbdns_commit: "79502939"
 ```toml
 [package]
 name = "rgbdns"
-version = "0.1.1"
+version = "0.6.5"
 edition = "2024"
 license = "Unlicense"
 description = "A safe, faithful Rust reimplementation of the djbdns suite"
 
 [dependencies]
+async-trait = "0.1"
+base64 = "0.22"
 cdb = "0.6"
 chrono = "0.4"
+fs2 = "0.4"
 getrandom = "0.3"
+hmac = "0.12"
 hickory-server = { version = "0.26.1", default-features = false, features = ["dnssec-ring", "recursor", "resolver"] }
 ipnet = "2"
 nix = { version = "0.31.3", features = ["process", "user"] }
+rustls-pki-types = "1"
+sha2 = "0.10"
 tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
@@ -62,8 +68,53 @@ path = "src/bin/tinydns.rs"
 bench = false
 
 [[bin]]
+name = "rgbdns-acme"
+path = "src/bin/rgbdns-acme.rs"
+bench = false
+
+[[bin]]
+name = "rgbdns-log-report"
+path = "src/bin/rgbdns-log-report.rs"
+bench = false
+
+[[bin]]
 name = "tinydns-data"
 path = "src/bin/tinydns-data.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-keygen"
+path = "src/bin/rgbsec-keygen.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-sign"
+path = "src/bin/rgbsec-sign.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-data"
+path = "src/bin/rgbsec-data.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-ds"
+path = "src/bin/rgbsec-ds.rs"
+bench = false
+
+[[bin]]
+name = "rgbsec-check"
+path = "src/bin/rgbsec-check.rs"
+bench = false
+
+[[bin]]
+name = "aname-materialize"
+path = "src/bin/aname-materialize.rs"
+bench = false
+
+[[bin]]
+name = "acme-materialize"
+path = "src/bin/acme-materialize.rs"
 bench = false
 
 [[bin]]

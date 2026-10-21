@@ -19,7 +19,7 @@ end_line: 265
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ca2394e2c026", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-ca2394e2c026: fn rfc4592_closest_encloser_blocks_a_higher_wildcard", "sourcePath": "tests/rfc_conformance.rs", "startLine": 250, "endLine": 265}
+{"id": "rgbdns-frag-ca2394e2c026", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 250, "endLine": 265}
 ```
 
 ## Excerpt

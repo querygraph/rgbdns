@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "dnsfilter"
 line_count: 119
 fragment_count: 5
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/bin/dnsfilter.rs

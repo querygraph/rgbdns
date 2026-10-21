@@ -19,7 +19,7 @@ end_line: 355
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e78faa9dfca9", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-e78faa9dfca9: heading Truncation must preserve a valid message", "sourcePath": "docs/book/rgbdns.md", "startLine": 340, "endLine": 355}
+{"id": "rgbdns-frag-e78faa9dfca9", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 340, "endLine": 355}
 ```
 
 ## Excerpt

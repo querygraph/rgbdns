@@ -21,7 +21,7 @@ end_line: 234
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e0c3c03feb8d", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "heading": "rgbdns-frag-e0c3c03feb8d: fn parses_supported_daemontools_options", "sourcePath": "src/multilog.rs", "startLine": 224, "endLine": 234}
+{"id": "rgbdns-frag-e0c3c03feb8d", "codeNote": "DNS from First Principles/Code/src/multilog.rs.source", "sourcePath": "src/multilog.rs", "startLine": 224, "endLine": 234}
 ```
 
 ## Excerpt

@@ -5,7 +5,7 @@ language: "markdown"
 subsystem: "Documentation"
 line_count: 19
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/book/README.md
@@ -21,7 +21,7 @@ rgbdns_commit: "79502939"
 
 ## Full Source
 
-```markdown
+````markdown
 # Book source
 
 Build the complete book from the repository root:
@@ -41,4 +41,4 @@ Validate the generated package with:
 ```sh
 docs/book/validate.sh
 ```
-```
+````

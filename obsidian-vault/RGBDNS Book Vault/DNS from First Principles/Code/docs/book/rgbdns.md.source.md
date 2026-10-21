@@ -3,16 +3,16 @@ type: "code-file"
 source_path: "docs/book/rgbdns.md"
 language: "markdown"
 subsystem: "Documentation"
-line_count: 1844
-fragment_count: 79
-rgbdns_commit: "79502939"
+line_count: 3712
+fragment_count: 80
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/book/rgbdns.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 - Source path: `docs/book/rgbdns.md`
-- Lines: 1844
+- Lines: 3712
 - Summary: Preface {-}
 
 ## Extracted Fragments
@@ -44,62 +44,63 @@ rgbdns_commit: "79502939"
 - [[DNS from First Principles/Fragments/rgbdns-frag-657b5ba34ebd|Authority and nameserver address]]: lines 450-452
 - [[DNS from First Principles/Fragments/rgbdns-frag-1a6bc17026f7|ANAME owner target maximum-ttl]]: lines 453-455
 - [[DNS from First Principles/Fragments/rgbdns-frag-b62ce97d1c7b|Other apex data remains independent]]: lines 456-536
-- [[DNS from First Principles/Fragments/rgbdns-frag-883d5fd2b4b9|CDB compile once, read predictably]]: lines 553-572
-- [[DNS from First Principles/Fragments/rgbdns-frag-e96d9749679a|Recursion discovering an answer]]: lines 573-574
-- [[DNS from First Principles/Fragments/rgbdns-frag-c4a749071fe5|Iteration from the root]]: lines 575-595
-- [[DNS from First Principles/Fragments/rgbdns-frag-f84889822c05|The cache is part of correctness]]: lines 596-622
-- [[DNS from First Principles/Fragments/rgbdns-frag-d9dbd7c4df58|Forward zones and djbdns roots]]: lines 623-641
-- [[DNS from First Principles/Fragments/rgbdns-frag-c6c1e361c52f|DNSSEC authenticating the chain]]: lines 642-643
-- [[DNS from First Principles/Fragments/rgbdns-frag-c9531cad5a02|What ordinary DNS cannot prove]]: lines 644-670
-- [[DNS from First Principles/Fragments/rgbdns-frag-6f7da27b85d9|rgbdns validation policy]]: lines 671-683
-- [[DNS from First Principles/Fragments/rgbdns-frag-e73e14b2ae1a|Zone transfer and secondary service]]: lines 684-685
-- [[DNS from First Principles/Fragments/rgbdns-frag-fe771d38cd6b|AXFR is a stream, not a giant datagram]]: lines 686-716
-- [[DNS from First Principles/Fragments/rgbdns-frag-68aa9ff6d6fa|The rgbdns program family]]: lines 717-718
-- [[DNS from First Principles/Fragments/rgbdns-frag-8468b7292533|One suite, small purposes]]: lines 719-740
-- [[DNS from First Principles/Fragments/rgbdns-frag-03b2cc53a1c8|Specialized responders]]: lines 741-762
-- [[DNS from First Principles/Fragments/rgbdns-frag-264e7fe31095|Client behavior and diagnostics]]: lines 763-764
-- [[DNS from First Principles/Fragments/rgbdns-frag-ad9aa9b9f6be|A query is more than sending bytes]]: lines 765-794
-- [[DNS from First Principles/Fragments/rgbdns-frag-b40033089bdf|Practical checks]]: lines 795-810
-- [[DNS from First Principles/Fragments/rgbdns-frag-d86cf51f5e30|Security engineering in rgbdns]]: lines 811-812
-- [[DNS from First Principles/Fragments/rgbdns-frag-675a90298dbe|The packet is hostile]]: lines 813-840
-- [[DNS from First Principles/Fragments/rgbdns-frag-bca8456c1e8a|Least privilege and filesystem boundaries]]: lines 841-857
-- [[DNS from First Principles/Fragments/rgbdns-frag-63b6be0b3b83|Time and logs TAI64N]]: lines 858-859
-- [[DNS from First Principles/Fragments/rgbdns-frag-941f4c95493f|Why a DNS suite contains time tools]]: lines 860-889
-- [[DNS from First Principles/Fragments/rgbdns-frag-fa6ee034cfed|Running rgbdns under supervision]]: lines 890-891
-- [[DNS from First Principles/Fragments/rgbdns-frag-5af9939eacfc|The service contract]]: lines 892-912
-- [[DNS from First Principles/Fragments/rgbdns-frag-e80a21df7fe1|Recommendations]]: lines 913-993
-- [[DNS from First Principles/Fragments/rgbdns-frag-4b2d88be347b|A practical selection rule]]: lines 1026-1040
-- [[DNS from First Principles/Fragments/rgbdns-frag-51aa994381a6|Operating an authoritative service]]: lines 1041-1042
-- [[DNS from First Principles/Fragments/rgbdns-frag-5b84d150797c|Build, stage, verify, replace]]: lines 1043-1079
-- [[DNS from First Principles/Fragments/rgbdns-frag-604b6ff56e55|Case study cron.sh primary and BuddyNS secondaries]]: lines 1080-1141
-- [[DNS from First Principles/Fragments/rgbdns-frag-1568b60975fb|Append every remaining 32 from BuddyNS's current list]]: lines 1142-1194
-- [[DNS from First Principles/Fragments/rgbdns-frag-1c12785a949f|Observe the right signals]]: lines 1195-1219
-- [[DNS from First Principles/Fragments/rgbdns-frag-a76d9160643d|Testing DNS software]]: lines 1220-1221
-- [[DNS from First Principles/Fragments/rgbdns-frag-db65ba809c6a|Layers of evidence]]: lines 1222-1243
-- [[DNS from First Principles/Fragments/rgbdns-frag-44f080bc9086|Adversarial cases worth keeping]]: lines 1244-1267
-- [[DNS from First Principles/Fragments/rgbdns-frag-adc4310d7e3c|Conformance as an executable specification]]: lines 1268-1323
-- [[DNS from First Principles/Fragments/rgbdns-frag-618eb0363b2b|Hardening found by conformance work]]: lines 1324-1353
-- [[DNS from First Principles/Fragments/rgbdns-frag-6271b6cb7110|Benchmarks and evidence-driven optimization]]: lines 1354-1409
-- [[DNS from First Principles/Fragments/rgbdns-frag-887b285da96f|Reading the rgbdns source]]: lines 1410-1411
-- [[DNS from First Principles/Fragments/rgbdns-frag-ad53076dfbcd|A path through the code]]: lines 1412-1433
-- [[DNS from First Principles/Fragments/rgbdns-frag-a31a615a1d14|Design patterns to carry elsewhere]]: lines 1434-1459
-- [[DNS from First Principles/Fragments/rgbdns-frag-26b28417cd3e|Part II Codebase exploration {-}]]: lines 1460-1468
-- [[DNS from First Principles/Fragments/rgbdns-frag-599f16ab274c|Rust as a protocol-design tool]]: lines 1469-1514
-- [[DNS from First Principles/Fragments/rgbdns-frag-a772e04cdd1d|Valid names instead of hopeful strings]]: lines 1515-1552
-- [[DNS from First Principles/Fragments/rgbdns-frag-832fd18340b5|A bounded wire codec]]: lines 1553-1590
-- [[DNS from First Principles/Fragments/rgbdns-frag-cb6afbfd2103|Zone data as an indexed semantic model]]: lines 1591-1631
-- [[DNS from First Principles/Fragments/rgbdns-frag-5d2c2249fe7a|From query bytes to an authoritative answer]]: lines 1632-1660
-- [[DNS from First Principles/Fragments/rgbdns-frag-827441da6822|CDB compatibility without trusting the file]]: lines 1661-1687
-- [[DNS from First Principles/Fragments/rgbdns-frag-5d932c6cd4d6|Recursion by composition]]: lines 1688-1713
-- [[DNS from First Principles/Fragments/rgbdns-frag-251d4b52fa84|Tests as executable protocol commentary]]: lines 1714-1749
-- [[DNS from First Principles/Fragments/rgbdns-frag-8fac7ccb8910|Abstractions and performance ledger]]: lines 1750-1778
-- [[DNS from First Principles/Fragments/rgbdns-frag-dc8850828d5c|Where DNS ends]]: lines 1779-1800
-- [[DNS from First Principles/Fragments/rgbdns-frag-20532ab9b198|Appendix A Configuration quick reference]]: lines 1801-1820
-- [[DNS from First Principles/Fragments/rgbdns-frag-384670652192|Appendix B Further reading]]: lines 1821-1844
+- [[DNS from First Principles/Fragments/rgbdns-frag-a3ceab28df56|CDB compile once, read predictably]]: lines 575-594
+- [[DNS from First Principles/Fragments/rgbdns-frag-7288e40b1764|Recursion discovering an answer]]: lines 595-596
+- [[DNS from First Principles/Fragments/rgbdns-frag-103e08233087|Iteration from the root]]: lines 597-617
+- [[DNS from First Principles/Fragments/rgbdns-frag-00c9cec94fc1|The cache is part of correctness]]: lines 618-644
+- [[DNS from First Principles/Fragments/rgbdns-frag-d109a0ebbebb|Forward zones and djbdns roots]]: lines 645-663
+- [[DNS from First Principles/Fragments/rgbdns-frag-b42c220ecc83|DNSSEC authenticating the chain]]: lines 664-665
+- [[DNS from First Principles/Fragments/rgbdns-frag-98de015a4841|What ordinary DNS cannot prove]]: lines 666-692
+- [[DNS from First Principles/Fragments/rgbdns-frag-3430245aee37|Two distinct DNSSEC roles]]: lines 693-711
+- [[DNS from First Principles/Fragments/rgbdns-frag-633a8aedbb00|DNSSEC in the tinydns posture]]: lines 712-734
+- [[DNS from First Principles/Fragments/rgbdns-frag-91568089c9f1|One line per zone]]: lines 735-762
+- [[DNS from First Principles/Fragments/rgbdns-frag-297bb68d9312|Minimal signed primary]]: lines 763-830
+- [[DNS from First Principles/Fragments/rgbdns-frag-0a327f2fc532|Mixed zones and a keyless secondary]]: lines 831-881
+- [[DNS from First Principles/Fragments/rgbdns-frag-8ed37c45996e|ANAME and ACME boundaries]]: lines 882-914
+- [[DNS from First Principles/Fragments/rgbdns-frag-e1ba4ca4478c|Activating the parent DS]]: lines 915-957
+- [[DNS from First Principles/Fragments/rgbdns-frag-9ba03b400fbd|Lifecycle and safe rollback]]: lines 958-984
+- [[DNS from First Principles/Fragments/rgbdns-frag-ea7a9ea44d24|Constraints are part of the design]]: lines 985-997
+- [[DNS from First Principles/Fragments/rgbdns-frag-f940c3994f15|Zone transfer and secondary service]]: lines 998-999
+- [[DNS from First Principles/Fragments/rgbdns-frag-711adf448d52|AXFR is a stream, not a giant datagram]]: lines 1000-1030
+- [[DNS from First Principles/Fragments/rgbdns-frag-45acb30c31bd|One request, one portable log record]]: lines 1031-1063
+- [[DNS from First Principles/Fragments/rgbdns-frag-2d62e9987b0d|The rgbdns program family]]: lines 1064-1065
+- [[DNS from First Principles/Fragments/rgbdns-frag-1112e57d9d27|One suite, small purposes]]: lines 1066-1088
+- [[DNS from First Principles/Fragments/rgbdns-frag-0a8786e333b5|Specialized responders]]: lines 1089-1110
+- [[DNS from First Principles/Fragments/rgbdns-frag-aad4f589e0f2|Client behavior and diagnostics]]: lines 1111-1112
+- [[DNS from First Principles/Fragments/rgbdns-frag-8101ad6b7581|A query is more than sending bytes]]: lines 1113-1142
+- [[DNS from First Principles/Fragments/rgbdns-frag-87fd41a135c5|Practical checks]]: lines 1143-1158
+- [[DNS from First Principles/Fragments/rgbdns-frag-d67ef4332413|Security engineering in rgbdns]]: lines 1159-1160
+- [[DNS from First Principles/Fragments/rgbdns-frag-04d4627e955a|The packet is hostile]]: lines 1161-1188
+- [[DNS from First Principles/Fragments/rgbdns-frag-65c3c4c7926d|Least privilege and filesystem boundaries]]: lines 1189-1205
+- [[DNS from First Principles/Fragments/rgbdns-frag-a0f0e2337541|Time and logs TAI64N]]: lines 1206-1207
+- [[DNS from First Principles/Fragments/rgbdns-frag-62c2636a5e79|Why a DNS suite contains time tools]]: lines 1208-1237
+- [[DNS from First Principles/Fragments/rgbdns-frag-fb6c04435f52|Running rgbdns under supervision]]: lines 1238-1239
+- [[DNS from First Principles/Fragments/rgbdns-frag-653181f19f07|The service contract]]: lines 1240-1260
+- [[DNS from First Principles/Fragments/rgbdns-frag-9d92e8b001e2|Recommendations]]: lines 1261-1341
+- [[DNS from First Principles/Fragments/rgbdns-frag-8020d371d034|A practical selection rule]]: lines 1374-1388
+- [[DNS from First Principles/Fragments/rgbdns-frag-5d1e184c4c77|Operating an authoritative service]]: lines 1389-1390
+- [[DNS from First Principles/Fragments/rgbdns-frag-cf080d48dca3|Build, stage, verify, replace]]: lines 1391-1427
+- [[DNS from First Principles/Fragments/rgbdns-frag-f04ed1b15301|Full deployment walkthrough three authoritative topologies]]: lines 1428-1501
+- [[DNS from First Principles/Fragments/rgbdns-frag-12873997656c|cron.sh infrastructure zone]]: lines 1502-1509
+- [[DNS from First Principles/Fragments/rgbdns-frag-6f9fbeadf051|fieldnotes.es application zone]]: lines 1510-1590
+- [[DNS from First Principles/Fragments/rgbdns-frag-34479d4b7847|a + BuddyNS]]: lines 1795-1797
+- [[DNS from First Principles/Fragments/rgbdns-frag-86a6868fb213|a + b + BuddyNS]]: lines 1798-1800
+- [[DNS from First Principles/Fragments/rgbdns-frag-f7fa5ba4da86|a + b]]: lines 1801-1881
+- [[DNS from First Principles/Fragments/rgbdns-frag-99ca5e832e9e|Observe the right signals]]: lines 2127-2151
+- [[DNS from First Principles/Fragments/rgbdns-frag-f38509b7a1c8|Testing DNS software]]: lines 2152-2153
+- [[DNS from First Principles/Fragments/rgbdns-frag-cbe359e3a58e|Layers of evidence]]: lines 2154-2175
+- [[DNS from First Principles/Fragments/rgbdns-frag-d75c80787c14|Adversarial cases worth keeping]]: lines 2176-2199
+- [[DNS from First Principles/Fragments/rgbdns-frag-4bde47ac1c68|Conformance as an executable specification]]: lines 2200-2255
+- [[DNS from First Principles/Fragments/rgbdns-frag-c6f5a3dcb94a|Hardening found by conformance work]]: lines 2256-2285
+- [[DNS from First Principles/Fragments/rgbdns-frag-f5cafb957f38|Benchmarks and evidence-driven optimization]]: lines 2286-2341
+- [[DNS from First Principles/Fragments/rgbdns-frag-3facac1b6dc3|Reading the rgbdns source]]: lines 2342-2343
+- [[DNS from First Principles/Fragments/rgbdns-frag-0acc455fd41e|A path through the code]]: lines 2344-2365
+- [[DNS from First Principles/Fragments/rgbdns-frag-5d18ed94bc24|Design patterns to carry elsewhere]]: lines 2366-2391
+- [[DNS from First Principles/Fragments/rgbdns-frag-49bb59cdfea5|Part II Codebase exploration {-}]]: lines 2392-2400
 
 ## Full Source
 
-```markdown
+````markdown
 # Preface {-}
 
 DNS is often introduced as “the Internet’s phone book.” That metaphor is
@@ -119,7 +120,7 @@ they do: immutable compiled data for authority, a separate recursive cache,
 small diagnostic clients, foreground daemons, and stream-oriented logging.
 
 The code is the final authority for rgbdns behavior. This book describes
-version 0.1.0 as built on 2026-07-23.
+rgbdns 0.6.3 and book version 0.4.0 as built on 2026-08-21.
 
 # The problem DNS solves
 
@@ -580,6 +581,19 @@ SOA, NS, MX, TXT, CAA, and other non-address data. Zone validation rejects:
 - different ANAME targets at one owner;
 - a zero TTL.
 
+ANAME is private configuration rather than a standard DNS RR type, so a plain
+AXFR cannot represent it. rgbdns peers negotiate preservation explicitly:
+`axfr-get` places private EDNS option 65001 with the `RGA1` version token in
+the AXFR request. An rgbdns primary then inserts private-use TYPE65401 records
+whose TTL is the ANAME cap and whose payload is the token followed by the
+target's uncompressed wire name. The receiving rgbdns validates that payload
+and reconstructs the `Aowner:target:ttl` directive before compilation.
+
+An ordinary AXFR request does not receive TYPE65401. This keeps standard
+secondaries free of private metadata, but it also means they do not reproduce
+ANAME behavior. Delegate an ANAME-backed zone only to upgraded rgbdns peers,
+or use standard address records when non-rgbdns secondaries must serve it.
+
 The server only applies ANAME to A and AAAA questions. SOA, NS, MX, TXT, CAA,
 and all other questions continue through normal authoritative lookup. ANAME
 also does not override a delegation cut: a name beneath a delegated child
@@ -618,7 +632,12 @@ Positive entries expire with the upstream chain’s shortest relevant TTL.
 Negative results use the authority SOA’s negative TTL when available and 60
 seconds otherwise. The configured ANAME ceiling is applied when constructing
 each response, so two owners may safely share a target while using different
-TTL policies.
+TTL policies. Concurrent misses for one target and address family are
+coalesced into one upstream query. A failed lookup is retained for five
+seconds, during which matching requests fail without starting another
+recursive chain. This short circuit limits retry storms and cross-provider
+ANAME loop amplification without turning a transient failure into long-lived
+negative DNS data.
 
 Resolution is bounded in the same spirit as the rest of rgbdns:
 
@@ -628,6 +647,7 @@ Resolution is bounded in the same spirit as the rest of rgbdns:
 - conflicting CNAME targets are rejected;
 - upstream SERVFAIL and other resolver errors become authoritative SERVFAIL,
   not false NODATA;
+- concurrent misses share one lookup and failures suppress immediate retries;
 - A and AAAA are cached independently.
 
 `DNSCACHEIP` selects one or more recursive endpoints, separated by commas.
@@ -646,11 +666,14 @@ semantics across text and CDB operation without teaching ordinary DNS clients
 about a private wire format.
 
 Standard AXFR has no interoperable way to describe this private policy.
-rgbdns therefore does not emit ANAME metadata in AXFR. An independently
-configured secondary needs the same ANAME source directive, while a
-conventional secondary can only serve address snapshots supplied through an
-external materialization workflow. Operators should account for that
-difference before treating ANAME zones as ordinary transferable zones.
+rgbdns therefore emits no ANAME metadata to an ordinary AXFR client. Upgraded
+rgbdns peers can explicitly negotiate the experimental `RGA1` extension: the
+requester sends EDNS option 65001 and the primary returns validated
+private-use TYPE65401 records only for that transfer. The receiver restores
+the source directive and resolves the target independently. A conventional
+secondary still receives only standard DNS records and cannot reproduce
+ANAME behavior. Operators must delegate an ANAME-backed zone only to upgraded
+rgbdns peers unless they materialize standard A and AAAA records instead.
 
 ## CDB: compile once, read predictably
 
@@ -770,18 +793,310 @@ A resolver must not turn bogus data into a normal answer merely to improve
 availability. Clock correctness also becomes a dependency because signatures
 have inception and expiration times.
 
-## rgbdns validation policy
+## Two distinct DNSSEC roles
 
-rgbdns configures the recursive handler with a static root trust anchor and
-DNSSEC validation enabled. Validation and NSEC3 work receive bounded caches and
-iteration policies. A failed validation surfaces as resolution failure rather
-than an unchecked answer.
+DNSSEC has a consumer side and a producer side. A validating recursive
+resolver follows DS and DNSKEY records from a trust anchor and rejects bogus
+answers. An authoritative operator creates keys, signs each stable RRset,
+publishes proofs of nonexistence, and arranges for the parent to publish the
+matching DS.
 
-The authoritative rgbdns data path focuses on the djbdns record surface; the
-recursive path is where DNSSEC validation is currently integrated. This is an
-example of honest component boundaries: “the suite supports validating
-recursion” does not imply that every authoritative signing workflow has been
-recreated.
+rgbdns implements both roles, but deliberately keeps them separate. `dnscache`
+uses a static root trust anchor and DNSSEC validation. Validation and NSEC3 work
+receive bounded caches and iteration policies. A failed validation becomes a
+resolution failure rather than an unchecked answer.
+
+Authoritative signing is an offline publication pipeline. `tinydns` never
+opens a private key and never signs in response to a packet. It serves DNSKEY,
+RRSIG, NSEC, and DS records already present in its CDB. This is the same
+compile-then-serve division used by ordinary tinydns data, extended to signed
+snapshots.
+
+## DNSSEC in the tinydns posture
+
+The design goal is not a control plane. It is a set of small programs and
+visible files:
+
+| Program | One bounded job |
+|---|---|
+| `rgbsec-keygen` | create one ECDSA P-256 key and print its policy line |
+| `rgbsec-sign` | turn tinydns text into inspectable signed tinydns text |
+| `rgbsec-data` | sign and compile directly to a CDB |
+| `rgbsec-ds` | derive the parent DS record from one policy line |
+| `rgbsec-check` | verify RRsets, signatures, NSEC cycles, and remaining lifetime |
+
+There is no signing daemon, key database, online RPC service, or implicit key
+generation in the authority. Each transformation writes beside its destination
+and renames only after success. A failed materialization, signature, compile,
+reload, or verification leaves the last-known-good CDB active.
+
+The feature is optional. Without a DNSSEC policy and
+`/etc/rgbdns/dnssec.env`, `tinydns-data`, `tinydns`, ACME, ANAME, AXFR, and
+secondary synchronization retain the djbdns-compatible path. Enabling signing
+for one zone does not force every zone in the same CDB to become signed.
+
+## One line per zone
+
+The policy file is intentionally close to tinydns data: comments, blank lines,
+and exactly one disposition line for every authoritative zone. `K` means sign;
+`U` means explicitly unsigned:
+
+```text
+Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600
+Ulegacy.example.
+```
+
+The signed line has this shape:
+
+```text
+Kzone:keyfile:algorithm:validity:refresh:inception-skew
+```
+
+Algorithm 13 is ECDSA P-256 with SHA-256. The example signs for fourteen days,
+requires at least one day of remaining lifetime, and moves inception one hour
+into the past to tolerate modest clock skew. The key path is absolute. Missing,
+duplicate, or conflicting dispositions stop publication; omission never means
+“probably unsigned.” A `U` zone is also checked for stale DNSKEY, RRSIG, NSEC,
+or NSEC3 records.
+
+This fail-closed coverage rule is what makes mixed snapshots understandable.
+The policy is not merely a list of zones that happened to be signed today. It
+is the security disposition of the complete authoritative source.
+
+## Minimal signed primary
+
+Begin with ordinary tinydns source. The signer preserves the SOA serial, so the
+source producer must increment it when the signed publication first becomes
+visible:
+
+```text
+Zexample.com:a.ns.example.com:hostmaster.example.com:2026082101:16384:2048:1048576:2560:3600
+&example.com:192.0.2.53:a.ns.example.com:3600
++example.com:192.0.2.80:3600
++www.example.com:192.0.2.80:3600
+```
+
+Create the key only on the primary. The command refuses to overwrite an
+existing file and creates the PKCS#8 key with mode 0600:
+
+```sh
+sudo install -d -o root -g root -m 0700 /etc/rgbdns/keys
+sudo rgbsec-keygen example.com \
+  /etc/rgbdns/keys/example.com.pk8 \
+  | sudo tee /etc/rgbdns/dnssec
+sudo chown root:rgbdns /etc/rgbdns/dnssec
+sudo chmod 0640 /etc/rgbdns/dnssec
+```
+
+Keep an encrypted, recoverable copy of the key outside the server. The public
+policy may be readable by the checker, but the key directory remains
+root-only. The authority process and the secondary never need access.
+
+Configure the packaged primary with the complete existing role options plus
+the policy:
+
+```sh
+sudo rgbdns-setup primary \
+  --data /srv/dns/rgbdns.data \
+  --data-drop /srv/dns/rgbdns.data \
+  --data-drop-owner dns-publisher \
+  --listen-ip 0.0.0.0 \
+  --allow-nets 10.0.2.10/32 \
+  --dnssec-policy /etc/rgbdns/dnssec
+```
+
+Setup performs the first privileged publication and enables two supervised
+jobs. `rgbdns-dnssec-publish.timer` refreshes materialized data and signatures
+every twelve hours. `rgbdns-dnssec-check.timer` checks the active CDB hourly.
+The root publisher can read the key; the checker runs as `rgbdns` and verifies
+only public state.
+
+The same stages can be inspected manually in a scratch directory:
+
+```sh
+ln -s /etc/rgbdns/dnssec dnssec
+rgbsec-sign data data.signed
+rgbsec-data data data.cdb
+rgbsec-check data.cdb /etc/rgbdns/dnssec
+rgbsec-ds 'Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600'
+```
+
+`rgbsec-check` emits one tab-separated line per `K` zone:
+
+```text
+example.com.  2026082101  53856  20260904023527  1204490  ok
+```
+
+The exact times and key tag vary. The important operational contract is the
+exit status and final `ok`: every authoritative RRset verifies, the NSEC cycle
+is complete, and the earliest signature remains outside the refresh window.
+
+## Mixed zones and a keyless secondary
+
+One CDB can serve a stable signed zone beside a zone that must remain unsigned:
+
+```text
+Kexample.com.:/etc/rgbdns/keys/example.com.pk8:13:1209600:86400:3600
+Uacme-live.example.
+```
+
+The source contains both SOAs and both NS sets. `rgbsec-data` signs only
+`example.com`; it preserves ordinary records, qualified records, cutoffs, and
+ANAME directives in the `U` zone. This behavior is explicit rather than
+inferred from the absence of a key.
+
+A secondary needs neither the policy nor the private key. Configure it in the
+ordinary way:
+
+```sh
+sudo rgbdns-setup secondary \
+  --zone example.com \
+  --zone acme-live.example \
+  --primary 10.0.1.10 \
+  --listen-ip 0.0.0.0
+```
+
+AXFR carries DNSKEY, RRSIG, NSEC, and DS as standard resource records. The
+secondary validates the transfer framing, compiles the received snapshot, and
+serves the same finished signatures. A transfer failure retains the last good
+zone. This is a useful security boundary: compromise of a serving secondary
+does not disclose the signing key.
+
+Before touching the parent, query every delegated authority over UDP and TCP:
+
+```sh
+for server in a.ns.example.com b.ns.example.com; do
+  dig +dnssec +norecurse @"$server" example.com DNSKEY
+  dig +dnssec +norecurse @"$server" example.com A
+  dig +dnssec +norecurse @"$server" \
+    "MiXeD-$(date +%s).example.com" A
+  dig +tcp +dnssec +norecurse @"$server" \
+    "tcp-$(date +%s).example.com" A
+done
+```
+
+Require matching SOA serials and DNSKEYs. Positive answers need the data RRset
+and its RRSIG. A nonexistent mixed-case name must return NXDOMAIN with NSEC and
+RRSIG. The mixed case is deliberate: validating resolvers use DNS 0x20 case
+randomization, and authoritative suffix matching must remain ASCII
+case-insensitive. A query for an absent type at an existing name tests signed
+NODATA separately from NXDOMAIN.
+
+## ANAME and ACME boundaries
+
+A signed answer cannot be synthesized after signing. The publication graph is
+therefore visible:
+
+```text
+source -> ACME overlay -> selected ANAME materialization
+       -> rgbsec-data -> rgbsec-check -> atomic activation
+```
+
+For an ANAME in a `K` zone, `aname-materialize` resolves the target before
+signing and writes ordinary A and AAAA RRsets under the configured TTL ceiling.
+The secondary receives those addresses and signatures; it does not resolve the
+target independently for that signed snapshot. ANAME directives in `U` zones
+retain the ordinary runtime behavior.
+
+ACME is a privilege-boundary question, not only a record-format question. An
+ACME-managed `U` zone can keep using the unprivileged live overlay even while
+another zone in the same CDB is signed. Inline updates to a `K` zone would need
+an explicitly designed privileged publisher that acknowledges an update only
+after a new signed CDB is durable. `rgbdns-setup` does not invent that
+escalation. Without such a hook, a signed ACME policy fails closed.
+
+The simplest arrangement is often a small unsigned validation child:
+
+```text
+_acme-challenge.example.com.  NS  ns1.validation.example.
+```
+
+The production lesson is conservative: choose the first DNSSEC pilot from a
+stable zone with ordinary A or AAAA data, no live ACME overlay, and no ANAME.
+Move dynamic zones only after their signed publication boundary is explicit.
+
+## Activating the parent DS
+
+Signing the child does not complete the chain. The parent must publish a DS
+that matches the active child DNSKEY. Derive it from the installed policy
+rather than transcribing public-key material by hand:
+
+```sh
+sudo rgbsec-ds "$(
+  sudo grep '^Kexample[.]com[.]:' /etc/rgbdns/dnssec
+)"
+```
+
+The output is a presentation-format record:
+
+```text
+example.com. IN DS <key-tag> 13 2 <64-hex-sha256-digest>
+```
+
+That line is illustrative; use the output for the actual key. Registrar forms
+usually ask for four fields: key tag, algorithm 13, digest type 2, and the
+SHA-256 digest. Publish it only after every nameserver in the parent delegation
+serves the matching signed snapshot. A stale third-party secondary is enough
+to make validation intermittent.
+
+Check the parent directly, then use several independent validating resolvers:
+
+```sh
+dig +short +nosplit example.com DS
+
+for resolver in 1.1.1.1 9.9.9.9 8.8.8.8; do
+  dig +dnssec @"$resolver" example.com A
+  dig +dnssec @"$resolver" \
+    "MiXeD-$(date +%s).example.com" A
+done
+```
+
+A secure positive response is `NOERROR` with the AD flag. A secure negative
+response is NXDOMAIN with AD. Querying a fresh name avoids mistaking an old
+negative cache entry for current behavior. The parent DS, child DNSKEY, and
+signatures can be correct while a resolver still exposes a transport,
+delegation, case-handling, or denial-proof defect; end-to-end testing is what
+turns a collection of records into evidence.
+
+## Lifecycle and safe rollback
+
+DNSSEC adds time to the authority contract. Monitor the publisher and checker,
+the earliest RRSIG expiration, key tag, parent DS, primary/secondary serials,
+and both positive and negative validation. Restart each authority during the
+pilot and prove that the last signed CDB remains available. Before the first
+signature window closes, observe an automatic refresh and verify the new
+inception and expiration on both authorities.
+
+Version 0.6.3 deliberately supports one active combined signing key per zone.
+It does not pretend that replacing a key file is a rollover protocol. A future
+multi-key release must represent publication, DS overlap, retirement, and
+recovery as explicit states.
+
+Rollback order is asymmetric. Before DS activation, the operator may return to
+the unsigned path because no validator expects signatures. After DS activation:
+
+1. remove the DS at the parent;
+2. wait through the parent DS TTL, negative caches, and relevant resolver
+   caches;
+3. confirm that independent resolvers no longer observe the DS; and only then
+4. disable signing and publish unsigned data.
+
+Removing signatures while the DS remains visible converts the zone from secure
+to bogus. Keep the retired private key backed up until the DS removal and cache
+window are conclusively complete.
+
+## Constraints are part of the design
+
+rgbdns uses NSEC rather than NSEC3 for authoritative signing. NSEC is smaller,
+simpler, and avoids iteration and opt-out machinery; it also makes zone names
+enumerable. Location-dependent and time-qualified data cannot be signed because
+one owner and type must identify one stable RRset. Pre-existing DNSKEY, RRSIG,
+NSEC, and NSEC3 input is rejected. ANAME must be materialized before signing.
+
+These are not footnotes hidden behind a “DNSSEC enabled” switch. They are the
+conditions under which an offline immutable snapshot can honestly claim to be
+the zone. The small-tool approach makes each condition visible, testable, and
+replaceable without putting private keys in the packet-serving process.
 
 # Zone transfer and secondary service
 
@@ -816,6 +1131,39 @@ form, writes a temporary output, and atomically installs the completed file.
 The temporary/final path pair prevents a failed transfer from replacing usable
 data with a partial zone.
 
+## One request, one portable log record
+
+The original tinydns wrote one compact record for every request. rgbdns keeps
+that operational contract. An IPv4 record has this shape:
+
+```text
+7f000001:e214:0018 + 0001 fieldnotes.es
+```
+
+The client address, source port, DNS ID, and query type are hexadecimal. The
+result marker distinguishes an attempted answer (`+`), refused authority or
+AXFR (`-`), an unimplemented request (`I`), an unsupported class (`C`), and a
+malformed request (`/`). IPv6 uses the same format with a 32-hex-digit address.
+Query names are escaped so packet data cannot inject additional log lines.
+
+The record goes to stderr without a timestamp. The packaged systemd service
+therefore sends it to journald, while a daemontools service can send the exact
+same stream through `multilog t` for TAI64N timestamps and file rotation.
+`QUERY_LOG=1` is the default. `QUERY_LOG=0` is an explicit opt-out for an
+installation whose traffic, retention, or privacy policy forbids full query
+logging.
+
+`rgbdns-log-report` turns a bounded daily slice of that stream into an
+operational summary. It maps each accepted query name to the longest matching
+configured authoritative zone, so `www.wishful.ly` contributes to
+`wishful.ly` rather than becoming a separate domain. For each zone it reports
+the total query count and the number of distinct client addresses, then sorts
+by total descending. A packaged opt-in timer reads the preceding local day
+from journald and submits the text through a sendmail-compatible transport.
+Distinct addresses usually identify recursive resolvers, not individual
+people, and DNS queries are not HTTP pageviews. The timer belongs on one
+authority only when duplicate reports are unwanted.
+
 # The rgbdns program family
 
 ## One suite, small purposes
@@ -832,6 +1180,7 @@ rgbdns deliberately exposes separate commands:
 | `walldns` | synthetic address/reverse answers |
 | `dnsq`, `dnsqr`, `dnsip*`, `dnsname`, `dnsmx`, `dnstxt` | queries and diagnostics |
 | `dnsfilter`, `dnstrace`, `random-ip` | stream lookup, delegation tracing, testing |
+| `rgbdns-log-report` | daily per-zone query and distinct-client aggregation |
 | `*-conf` | service-directory generation |
 | `setuidgid`, `multilog`, `tai64n`, `tai64nlocal` | process and logging support |
 
@@ -1179,120 +1528,704 @@ default `ALLOW_NETS` is loopback only because an open resolver can be abused
 for amplification and can consume local capacity. Likewise, expand AXFR
 allowlists only for intended secondaries.
 
-## Case study: cron.sh primary and BuddyNS secondaries
+## Full deployment walkthrough: three authoritative topologies
 
-Consider a Debian EC2 instance behind Elastic IP `52.10.53.234`. It is the
-editable primary for `cron.sh`, published as `a.ns.cron.sh`, while BuddyNS
-copies and serves the zone as a secondary. This arrangement illustrates the
-whole operational chain: package installation, zone authority, glue,
-single-address AXFR, delegation, supervision, and updates.
+This walkthrough installs one editable rgbdns primary and, when selected, one
+rgbdns secondary and/or BuddyNS. It deliberately shares one preparation,
+publication, and verification path among three useful topologies:
 
-At the network boundary, allow public UDP and TCP port 53. UDP carries most
-queries; TCP is required both for ordinary retry behavior and for AXFR. Do not
-restrict all TCP DNS to the secondary provider. The server distinguishes AXFR
-questions on the shared stream and applies a narrow source allow-list only to
-those transfers. On EC2 the guest usually sees a private address rather than
-the Elastic IP, so listening on `0.0.0.0:53` lets AWS translate traffic for the
-public address.
+| Topology | Published authorities | AXFR readers of `a` | AXFR readers of `b` |
+|---|---|---|---|
+| `a + BuddyNS` | `a` and the assigned BuddyNS names | BuddyNS | not applicable |
+| `a + b + BuddyNS` | `a`, `b`, and BuddyNS | `b` and BuddyNS | BuddyNS, if configured as an alternate master |
+| `a + b` | `a` and `b` | `b` | none |
 
-Build the native package on a Debian or Ubuntu machine of the same
-architecture, copy it to the server, and install it:
+The common path is intentionally longer than any topology-specific branch.
+Choose the topology once, construct the corresponding NS and AXFR lists, then
+reuse the same installation and verification commands.
 
-```sh
-sudo apt update
-sudo apt install -y build-essential cargo debhelper rustc git
-git clone https://github.com/querygraph/rgbdns.git
-cd rgbdns
-packaging/build-deb.sh
-scp ../rgbdns_0.1.1_amd64.deb admin@52.10.53.234:/tmp/
-ssh admin@52.10.53.234
-sudo apt install -y /tmp/rgbdns_0.1.1_amd64.deb
-```
+### Names, addresses, and the security boundary
 
-Installation creates the non-login `rgbdns` account, the protected
-configuration and state directories, and the hardened systemd units. It does
-not start a nameserver. That separation prevents package installation from
-publishing placeholder data.
-
-The primary source includes the SOA, the in-bailiwick primary and its glue, and
-the account-assigned BuddyNS names. In schematic form:
+The examples use one service zone with in-bailiwick nameservers:
 
 ```text
-Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026072601:16384:2048:1048576:2560:3600
-&cron.sh:52.10.53.234:a.ns.cron.sh:3600
-&cron.sh::<BuddyNS name 1>:3600
-&cron.sh::<BuddyNS name 2>:3600
-&cron.sh::<BuddyNS name 3>:3600
-+a.ns.cron.sh:52.10.53.234:3600
+ZONES="example.net example.org"
+PRIMARY_NS=a.ns.example.net
+SECONDARY_NS=b.ns.example.net
+PRIMARY_PUBLIC_IP=192.0.2.53
+SECONDARY_PUBLIC_IP=198.51.100.53
+PRIMARY_PRIVATE_IP=10.0.1.10
+SECONDARY_PRIVATE_IP=10.0.2.10
 ```
 
-Replace the placeholders with the names shown in BuddyBoard. The complete,
-directly compilable source is in the Debian deployment guide. Store it as
-`/root/cron.sh.data`, add the application records, and increment the SOA serial
-on every publication. The empty address fields on the BuddyNS NS lines are
-intentional: glue for those names belongs to BuddyNS, not `cron.sh`.
+Replace every documentation address and name. On AWS, bind each daemon to
+`0.0.0.0:53`; the guest normally sees its private interface while the Internet
+gateway maps its Elastic IP. Use private addresses for AXFR between instances
+in the same VPC. Give both instances stable public addresses before publishing
+delegation.
 
-BuddyNS publishes the addresses from which its cluster initiates transfers.
-Its current documentation says every published source must be allowed. For an
-IPv4-only primary, express the published IPv4 addresses as exact `/32`
-networks:
+Permit public UDP 53 and public TCP 53 in the cloud security group and host
+firewall. Ordinary DNS needs both transports, so do not limit all TCP 53 to
+secondaries. rgbdns applies `ALLOW_NETS` only to AXFR questions. Separately
+allow TCP 53 from the secondary's private address or, preferably on AWS, its
+security group.
+
+The examples place `a.ns.example.net` and `b.ns.example.net` inside the served
+zone, so the parent needs glue for both. Some deployments use names from a
+separate infrastructure zone. For example, `fieldnotes.es` can use
+`a.ns.cron.sh` and `b.ns.cron.sh`. In that case:
+
+- put empty address fields on the `fieldnotes.es` NS lines;
+- publish the `a.ns.cron.sh` and `b.ns.cron.sh` A records in the `cron.sh`
+  zone, not in `fieldnotes.es`;
+- create glue at the parent of `cron.sh` when those names are in-bailiwick
+  nameservers for `cron.sh`; and
+- one packaged secondary instance can synchronize many zones from the same
+  primary endpoint.
+
+Consequently, advertise `b` only for zones included in `/var/lib/rgbdns/tinydns/zones`. Add
+both `fieldnotes.es` and `cron.sh` when `b` should be authoritative for both;
+otherwise retain other working authorities for the omitted infrastructure
+zone.
+
+### Worked deployment: `fieldnotes.es` on `a.ns.cron.sh` and `b.ns.cron.sh`
+
+The concrete deployment uses:
+
+| Role | Name | Public address | VPC address |
+|---|---|---:|---:|
+| Debian primary | `a.ns.cron.sh` | `52.10.53.234` | `172.31.60.189` |
+| openSUSE secondary | `b.ns.cron.sh` | `52.38.177.160` | `172.31.0.125` |
+
+The primary serves two zones from one source. `cron.sh` supplies the
+nameserver addresses, while `fieldnotes.es` delegates to those names plus the
+three assigned BuddyNS authorities:
+
+```text
+# cron.sh infrastructure zone
+Zcron.sh:a.ns.cron.sh:hostmaster.cron.sh:2026073001:16384:2048:1048576:2560:3600
+&cron.sh:52.10.53.234:a.ns.cron.sh:3600
+&cron.sh:52.38.177.160:b.ns.cron.sh:3600
+&cron.sh::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
+&cron.sh::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
+&cron.sh::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600
+
+# fieldnotes.es application zone
+Zfieldnotes.es:a.ns.cron.sh:hostmaster.cron.sh:2026073001:16384:2048:1048576:2560:3600
+&fieldnotes.es::a.ns.cron.sh:3600
+&fieldnotes.es::b.ns.cron.sh:3600
+&fieldnotes.es::uz5x6wcwzfbjs8fkmkuchydn9339lf7xbxdmnp038cmyjlgg9sprr2.free.ns.buddyns.com:3600
+&fieldnotes.es::uz5dkwpjfvfwb9rh1qj93mtup0gw65s6j7vqqumch0r9gzlu8qxx39.free.ns.buddyns.com:3600
+&fieldnotes.es::uz56xw8h7fw656bpfv84pctjbl9rbzbqrw4rpzdhtvzyltpjdmx0zq.free.ns.buddyns.com:3600
+```
+
+Increment the affected SOA serial whenever the source changes. Obtain the
+current BuddyNS transfer-source CIDRs from BuddyNS and store them in the login
+account's protected `buddyns-axfr.env`; provider networks are operational
+input, not constants to copy forever from a book.
+
+From the normal `bitnami` shell on the primary, configure the role and its
+watched `rgbdns.data` path:
 
 ```sh
-BUDDYNS_AXFR_V4='108.61.224.67/32,116.203.6.3/32'
-BUDDYNS_AXFR_V4="$BUDDYNS_AXFR_V4,107.191.99.111/32"
-BUDDYNS_AXFR_V4="$BUDDYNS_AXFR_V4,193.109.120.66/32"
-# Append every remaining /32 from BuddyNS's current list.
+. "$HOME/buddyns-axfr.env"
+PRIMARY_AXFR_NETS="172.31.0.125/32,$BUDDYNS_AXFR_V4"
+
 sudo rgbdns-setup primary \
-  --data /root/cron.sh.data \
+  --data "$HOME/rgbdns.data" \
+  --data-drop "$HOME/rgbdns.data" \
+  --data-drop-owner "$(id -un)" \
   --listen-ip 0.0.0.0 --port 53 \
+  --allow-nets "$PRIMARY_AXFR_NETS" \
+  --query-log 1
+```
+
+The secondary transfers both zones because it is advertised for both:
+
+```text
+cron.sh
+fieldnotes.es
+```
+
+From the normal openSUSE login shell:
+
+```sh
+. "$HOME/buddyns-axfr.env"
+
+sudo rgbdns-setup secondary \
+  --zones "cron.sh fieldnotes.es" \
+  --primary 172.31.60.189 \
+  --zones-drop "$HOME/rgbdns.zones" \
+  --zones-drop-owner "$(id -un)" \
+  --listen-ip 0.0.0.0 --port 53 \
+  --allow-nets "$BUDDYNS_AXFR_V4" \
+  --query-log 1
+```
+
+Use the private primary address for VPC AXFR while retaining the public
+addresses in delegation. Later, publish complete primary data and the desired
+secondary list through temporary names and atomic renames:
+
+```sh
+scp rgbdns.data bitnami@52.10.53.234:rgbdns.data.new
+ssh bitnami@52.10.53.234 'mv rgbdns.data.new rgbdns.data'
+
+scp rgbdns.zones "$SUSE_USER"@52.38.177.160:rgbdns.zones.new
+ssh "$SUSE_USER"@52.38.177.160 'mv rgbdns.zones.new rgbdns.zones'
+```
+
+The primary importer compiles a private staged copy and leaves the live CDB
+unchanged on failure. The secondary importer validates, normalizes, and
+atomically installs the list before starting AXFR. Inspect both boundaries:
+
+```sh
+sudo journalctl -u rgbdns-data-import.service \
+  -u rgbdns-zones-import.service \
+  -u rgbdns-secondary-sync.service -n 100 --no-pager
+```
+
+The standalone
+[`RGBDNS_SETUP.md`](https://github.com/querygraph/rgbdns/blob/master/docs/RGBDNS_SETUP.md)
+walkthrough contains package download and installation, AWS rules, BuddyNS,
+delegation, upgrades, complete verification, and troubleshooting commands for
+this exact deployment.
+
+For a deployment-level ANAME transfer proof, add an undelegated reserved test
+zone to the primary source:
+
+```text
+Zaname-axfr.test:a.ns.cron.sh:hostmaster.cron.sh:2026073101:16384:2048:1048576:2560:3600
+&aname-axfr.test::a.ns.cron.sh:3600
+&aname-axfr.test::b.ns.cron.sh:3600
+Aaname-axfr.test:publication.ghost.io:300
+```
+
+Publish the complete primary data atomically, add `aname-axfr.test` to the
+complete secondary drop list, and publish that list atomically. On the
+secondary, this line proves negotiated metadata survived AXFR:
+
+```sh
+sudo grep '^Aaname-axfr\.test' \
+  /var/lib/rgbdns/tinydns/secondary-zones/aname-axfr.test.data
+```
+
+Normal queries to each public authority must return standard authoritative A
+or AAAA answers with no CNAME and a TTL no greater than 300. Run the standard
+AXFR privacy check from the secondary or another authorized VPC host:
+
+```sh
+dig @172.31.60.189 aname-axfr.test AXFR |
+  grep -E 'TYPE65401|RGA1|publication\.ghost\.io'
+```
+
+No output is expected. The private `172.31.60.189` address is not reachable
+from an ordinary workstation outside AWS, and the public AXFR endpoint should
+remain limited to explicitly authorized source addresses.
+
+### Obtain and install the packages
+
+The GitHub Actions workflows publish architecture-specific artifacts. They are
+not APT or Zypper repositories. Install GitHub CLI and authenticate on a
+machine allowed to retrieve the artifacts:
+
+```sh
+gh auth login
+```
+
+Select the newest successful Debian build without depending on the
+version-specific `--status` option found only in newer GitHub CLI releases:
+
+```sh
+DEB_RUN_ID=$(
+  gh run list -R querygraph/rgbdns \
+    -w build-deb.yml -b master -L 50 \
+    --json databaseId,conclusion \
+    --jq '.[] | select(.conclusion == "success") | .databaseId' |
+  head -n 1
+)
+mkdir -p "$HOME/rgbdns-deb"
+gh run download "$DEB_RUN_ID" \
+  -R querygraph/rgbdns \
+  -n rgbdns-debian-amd64 \
+  -D "$HOME/rgbdns-deb"
+```
+
+On the Debian or Ubuntu primary, install the downloaded package:
+
+```sh
+sudo apt install "$HOME"/rgbdns-deb/rgbdns_*_amd64.deb
+sudo dpkg --audit
+dpkg-query -W -f='${Status} ${Version}\n' rgbdns
+```
+
+The package intentionally replaces Debian's djbdns and daemontools command
+packages because both suites own paths such as `/usr/bin/tinydns-get` and
+`/usr/bin/multilog`. Review APT's removal plan before confirming on a host
+that already runs those services. Never use `dpkg --force-overwrite`.
+
+For a selected topology containing `b`, download the newest successful
+openSUSE RPM artifact on the Leap 16 secondary:
+
+```sh
+RPM_RUN_ID=$(
+  gh run list -R querygraph/rgbdns \
+    -w build-rpm.yml -b master -L 50 \
+    --json databaseId,conclusion \
+    --jq '.[] | select(.conclusion == "success") | .databaseId' |
+  head -n 1
+)
+mkdir -p "$HOME/rgbdns-rpm"
+gh run download "$RPM_RUN_ID" \
+  -R querygraph/rgbdns \
+  -n rgbdns-opensuse-leap16-x86_64 \
+  -D "$HOME/rgbdns-rpm"
+RPM=$(find "$HOME/rgbdns-rpm/RPMS/x86_64" \
+  -maxdepth 1 -name 'rgbdns-[0-9]*.x86_64.rpm' -print -quit)
+rpm -K "$RPM"
+sudo zypper --non-interactive --no-gpg-checks install "$RPM"
+sudo rpm -V rgbdns
+```
+
+The artifact retains its `RPMS/x86_64` and `SRPMS` directories. Install the
+binary package under `RPMS/x86_64`; `SRPMS` contains the source RPM. The
+development package is payload-verified but not repository-signed, hence the
+explicit `--no-gpg-checks`. The RPM obsoletes and conflicts with RPM packages
+named `djbdns` and `daemontools`; inspect Zypper's transaction if either is
+installed.
+
+Both packages create the non-login `rgbdns` user and group, protected
+configuration under `/etc/rgbdns`, state under
+`/var/lib/rgbdns/tinydns`, and hardened systemd units. Installation does not
+publish placeholder DNS data or enable authority.
+
+Verify the installed account and units:
+
+```sh
+getent passwd rgbdns
+getent group rgbdns
+systemctl list-unit-files 'rgbdns-*'
+```
+
+### Build one primary source file
+
+Start with common application records and one SOA serial. A sortable
+`YYYYMMDDNN` serial is convenient; increment it before every publication.
+Construct the authoritative NS portion from exactly one topology block below.
+
+Common records:
+
+```text
+Zexample.net:a.ns.example.net:hostmaster.example.net:2026072901:16384:2048:1048576:2560:3600
++example.net:192.0.2.80:3600
+C*.example.net:example.net:3600
+```
+
+For `a + BuddyNS`:
+
+```text
+&example.net:192.0.2.53:a.ns.example.net:3600
+&example.net::<BuddyNS name 1>:3600
+&example.net::<BuddyNS name 2>:3600
+&example.net::<BuddyNS name 3>:3600
+```
+
+For `a + b + BuddyNS`:
+
+```text
+&example.net:192.0.2.53:a.ns.example.net:3600
+&example.net:198.51.100.53:b.ns.example.net:3600
+&example.net::<BuddyNS name 1>:3600
+&example.net::<BuddyNS name 2>:3600
+&example.net::<BuddyNS name 3>:3600
+```
+
+For `a + b`:
+
+```text
+&example.net:192.0.2.53:a.ns.example.net:3600
+&example.net:198.51.100.53:b.ns.example.net:3600
+```
+
+An `&` line with an address creates the NS record and its address/glue. The
+empty address fields on BuddyNS lines are intentional: those names belong to
+BuddyNS. Replace the account-specific placeholders with the exact names shown
+in BuddyBoard.
+
+Store the assembled source as `/root/rgbdns.data` on the primary. Protect and
+compile a disposable copy before changing the service:
+
+```sh
+sudo install -o root -g root -m 0600 rgbdns.data /root/rgbdns.data
+check_dir=$(mktemp -d)
+sudo install -o "$(id -u)" -g "$(id -g)" -m 0600 \
+  /root/rgbdns.data "$check_dir/data"
+(cd "$check_dir" && tinydns-data)
+ls -lh "$check_dir/data.cdb"
+rm -r "$check_dir"
+```
+
+Compilation proves syntax and semantic consistency, not that the chosen
+addresses, delegation, mail policy, or application records are correct.
+Compare the new source with the old zone before cutover. AXFR from an existing
+authority is the best inventory when allowed; otherwise query all known record
+types and names from configuration management.
+
+### Construct the AXFR allow-list once
+
+For a topology containing BuddyNS, copy BuddyBoard's current published
+transfer-source addresses into a protected, sourceable file. Express
+individual IPv4 sources as `/32` networks:
+
+```sh
+sudo install -o root -g root -m 0600 \
+  buddyns-axfr.env /etc/rgbdns/buddyns-axfr.env
+. /etc/rgbdns/buddyns-axfr.env
+```
+
+The file has this form:
+
+```sh
+BUDDYNS_AXFR_V4='203.0.113.10/32,203.0.113.11/32'
+```
+
+Treat the addresses as provider-maintained data, not constants copied forever
+from a book. Reconcile the file with BuddyBoard before a deployment and after
+provider network changes.
+
+Choose the primary allow-list:
+
+```sh
+# a + BuddyNS
+PRIMARY_ALLOW_NETS=$BUDDYNS_AXFR_V4
+
+# a + b + BuddyNS
+PRIMARY_ALLOW_NETS="$SECONDARY_PRIVATE_IP/32,$BUDDYNS_AXFR_V4"
+
+# a + b
+PRIMARY_ALLOW_NETS="$SECONDARY_PRIVATE_IP/32"
+```
+
+Run only the assignment for the selected topology. Never allow the entire VPC
+when one stable secondary address or security-group path is sufficient.
+
+### Configure and cut over the primary
+
+First stage configuration without claiming port 53:
+
+```sh
+sudo rgbdns-setup primary \
+  --data /root/rgbdns.data \
+  --listen-ip 0.0.0.0 \
+  --port 53 \
+  --allow-nets "$PRIMARY_ALLOW_NETS" \
+  --no-start
+sudo -u rgbdns /usr/lib/rgbdns/compile-zone
+sudo systemd-analyze verify \
+  /lib/systemd/system/rgbdns-tinydns.service 2>/dev/null ||
+sudo systemd-analyze verify \
+  /usr/lib/systemd/system/rgbdns-tinydns.service
+sudo ls -lah /var/lib/rgbdns/tinydns
+sudo cat /etc/rgbdns/tinydns.env
+```
+
+Setup watches `rgbdns.data` in the invoking sudo user's home directory. After
+editing the complete source locally, publish it atomically:
+
+```sh
+scp rgbdns.data a.ns.example.net:rgbdns.data.new
+ssh a.ns.example.net 'mv rgbdns.data.new rgbdns.data'
+```
+
+`rgbdns-data.path` verifies ownership, compiles a private staged copy, and
+replaces the live source and CDB only after successful compilation. Invalid,
+partial, or symlinked uploads leave the currently served database unchanged.
+Use `--data-drop FILE` and `--data-drop-owner USER` when another destination is
+required.
+
+The two unit paths cover Debian-family and openSUSE layouts. An unrelated
+legacy-unit warning from `systemd-analyze` does not invalidate a successful
+rgbdns unit check.
+
+On a migration host, identify the existing owner of port 53:
+
+```sh
+sudo ss -lntup '( sport = :53 )'
+```
+
+Stop only the old authoritative services. Do not stop an entire `runsvdir`
+tree on a host where it also owns unrelated applications. For a classic
+djbdns layout:
+
+```sh
+sudo sv down /etc/axfrdns /etc/axfrdns/log
+sudo sv down /etc/tinydns /etc/tinydns/log
+sudo ss -lntup '( sport = :53 )'
+```
+
+Then enable rgbdns:
+
+```sh
+sudo systemctl enable --now rgbdns-tinydns.service
+sudo systemctl status rgbdns-tinydns.service --no-pager --full
+sudo ss -lntup '( sport = :53 )'
+```
+
+The authoritative daemon serves normal UDP, normal TCP, and allowed AXFR on
+the same port. Do not start the separately packaged `axfrdns` compatibility
+command on port 53.
+
+Verify the primary locally and publicly before configuring delegation:
+
+```sh
+dig @127.0.0.1 example.net SOA +norecurse
+dig @127.0.0.1 example.net NS +norecurse
+dig @127.0.0.1 example.net A +norecurse
+dig +tcp @127.0.0.1 example.net SOA +norecurse
+
+dig @192.0.2.53 example.net SOA +norecurse
+dig @192.0.2.53 example.net NS +norecurse
+dig +tcp @192.0.2.53 example.net SOA +norecurse
+```
+
+Require `status: NOERROR`, the `aa` flag, the intended serial, the complete NS
+set, and correct address records.
+
+### Configure `b` when the topology includes it
+
+The primary must allow the secondary's source address, and the network path
+must permit TCP 53, before this step. On the openSUSE secondary:
+
+```sh
+sudo ss -lntup '( sport = :53 )'
+sudo rgbdns-setup secondary \
+  --zone example.net \
+  --zone example.org \
+  --primary 10.0.1.10 \
+  --listen-ip 0.0.0.0
+```
+
+For `a + b + BuddyNS`, BuddyNS may read from `b` as an alternate master. In
+that case load the same current provider list and pass it to the secondary:
+
+```sh
+. /etc/rgbdns/buddyns-axfr.env
+sudo rgbdns-setup secondary \
+  --zones "example.net example.org" \
+  --primary 10.0.1.10 \
+  --listen-ip 0.0.0.0 \
   --allow-nets "$BUDDYNS_AXFR_V4"
 ```
 
-Recheck BuddyNS's source list before deployment and after provider network
-changes. The provider's nameserver names are account-assigned as well; use
-BuddyBoard rather than treating the names in this example as global
-constants.
+Choose one of those two setup commands. `--zone` is repeatable; `--zones`
+accepts a whitespace- or comma-separated list. Setup performs a complete AXFR
+for each zone, validates every response and its SOA bookends, and requires one
+valid snapshot per zone before initially starting authority. On later runs, a
+failed refresh retains that zone's last-known-good snapshot while successful
+zones advance. The snapshots are compiled together and the combined CDB is
+installed atomically. The randomized five-minute timer does not use NOTIFY or
+IXFR.
 
-`rgbdns-setup` validates and copies the source, compiles `data.cdb`, writes the
-service environment, enables the service at boot, and starts or restarts
-`rgbdns-tinydns.service`. There is no separate packaged AXFR service in this
-topology. Although the `axfrdns` compatibility command remains installed, a
-second process cannot share `52.10.53.234:53`; the authoritative process
-dispatches allowed AXFR questions to the same bounded AXFR engine.
-
-Before changing delegation, verify ordinary UDP and TCP service:
+Setup stores the canonical one-zone-per-line list in `/var/lib/rgbdns/tinydns/zones` and
+watches `rgbdns.zones` in the invoking sudo user's home. Manage later changes
+as a file and publish them with an atomic rename:
 
 ```sh
-dig @52.10.53.234 cron.sh SOA +norecurse
-dig @52.10.53.234 cron.sh NS +norecurse
-dig @52.10.53.234 a.ns.cron.sh A +norecurse
-dig @52.10.53.234 cron.sh SOA +tcp +norecurse
-systemctl is-enabled rgbdns-tinydns
-systemctl is-active rgbdns-tinydns
+scp rgbdns.zones b.ns.example.net:rgbdns.zones.new
+ssh b.ns.example.net 'mv rgbdns.zones.new rgbdns.zones'
 ```
 
-In BuddyBoard, add `cron.sh`, set `52.10.53.234:53` as its primary, and require
-the transfer test to succeed. Configure the primary zone's NS RRset and the
-registrar delegation with the same BuddyNS names. Because `a.ns.cron.sh` lies
-inside the delegated zone, the `.sh` registrar also needs the child-host glue
-`a.ns.cron.sh = 52.10.53.234`. Transfer success should precede delegation;
-otherwise the new secondaries may be authoritative but empty or stale.
+`rgbdns-zones.path` validates ownership and contents before replacing the
+canonical list and starting synchronization. Invalid, empty, symlinked, or
+partially uploaded lists leave the active configuration unchanged. Use
+`--zones-drop FILE` and `--zones-drop-owner USER` during setup when the
+default home-directory destination is not appropriate.
 
-After propagation, query every delegated authority and compare SOA serials.
-For subsequent changes, edit `/root/cron.sh.data`, increment the serial, and
-rerun the same `rgbdns-setup primary` command with the complete allow-list.
-Compilation precedes restart, and the new process loads one zone snapshot for
-both normal answers and transfers.
+Check the one-shot synchronization result:
 
-Systemd keeps the foreground process alive with `Restart=on-failure` and starts
-the enabled unit after reboot. Operations should monitor unit state, public UDP
-and TCP answers, serial convergence at BuddyNS, transfer failures, and disk
-space. The editable source still needs its own protected backup: secondary DNS
-is availability infrastructure, not configuration backup.
+```sh
+systemctl show rgbdns-secondary-sync.service \
+  -p Result -p ExecMainStatus -p ActiveState -p SubState
+```
 
-The full allow-list, command-by-command deployment, AWS rules, BuddyBoard
-sequence, delegation checks, and troubleshooting procedure live in the
-[`docs/DEBIAN.md` deployment guide](https://github.com/querygraph/rgbdns/blob/master/docs/DEBIAN.md).
+A successful completed run reads:
+
+```text
+Result=success
+ExecMainStatus=0
+ActiveState=inactive
+SubState=dead
+```
+
+`inactive/dead` is correct for a finished `Type=oneshot` service. The
+`/run/rgbdns` runtime directory and its lock exist only while synchronization
+runs; systemd removes and recreates them for each invocation.
+
+Verify service, timer, and answers:
+
+```sh
+sudo systemctl enable --now rgbdns-tinydns.service
+sudo systemctl enable --now rgbdns-secondary-sync.timer
+sudo systemctl enable --now rgbdns-zones.path
+systemctl list-timers rgbdns-secondary-sync.timer
+systemctl status rgbdns-zones.path
+sudo ss -lntup '( sport = :53 )'
+dig @127.0.0.1 example.net SOA +norecurse
+dig @198.51.100.53 example.net SOA +norecurse
+dig +tcp @198.51.100.53 example.net SOA +norecurse
+```
+
+Every secondary serial must match its primary counterpart. To force a refresh
+after a publication:
+
+```sh
+sudo systemctl start rgbdns-secondary-sync.service
+sudo journalctl -u rgbdns-secondary-sync.service -n 50 --no-pager
+```
+
+### Configure BuddyNS when the topology includes it
+
+In BuddyBoard:
+
+1. add the zone;
+2. configure `192.0.2.53:53` as a transfer master;
+3. for `a + b + BuddyNS`, optionally add `198.51.100.53:53` as another master;
+4. require the provider's transfer test to succeed; and
+5. record the exact assigned BuddyNS names and transfer-source addresses.
+
+The source zone's BuddyNS NS records, BuddyBoard's assigned names, and the
+eventual parent delegation must agree exactly. A provider transfer test should
+succeed before any registrar change.
+
+From an allowed transfer source, or with a controlled temporary test address
+added to `ALLOW_NETS`, verify:
+
+```sh
+dig +tcp AXFR example.net @192.0.2.53
+dig +tcp AXFR example.net @198.51.100.53  # when b permits BuddyNS
+```
+
+An unlisted client should receive `REFUSED`. Do not broaden the allow-list
+merely to make an arbitrary workstation AXFR test succeed.
+
+### Publish glue and delegation last
+
+Create or verify registrar host objects before adding in-bailiwick
+nameservers:
+
+```text
+a.ns.example.net = 192.0.2.53
+b.ns.example.net = 198.51.100.53   # topologies containing b
+```
+
+Then publish the parent delegation matching the selected topology:
+
+- `a + BuddyNS`: `a` plus the assigned BuddyNS names;
+- `a + b + BuddyNS`: `a`, `b`, plus the assigned BuddyNS names;
+- `a + b`: `a` and `b`.
+
+Do not advertise `b` before it answers the current serial publicly. During a
+migration, keep old working secondaries in both the child NS RRset and parent
+delegation until new authorities pass UDP, TCP, SOA, and negative-answer
+tests. Remove old secondaries in a later serial change after parent updates
+have propagated.
+
+Trace the parent and query every authority:
+
+```sh
+dig +trace +nodnssec example.net NS
+dig @192.0.2.53 example.net SOA +norecurse
+dig @198.51.100.53 example.net SOA +norecurse
+```
+
+Query each BuddyNS hostname as well when selected. Compare serials, NS RRsets,
+and authoritative flags. Also test a known name, a nonexistent name, UDP, and
+TCP:
+
+```sh
+dig @192.0.2.53 www.example.net A +norecurse
+dig @192.0.2.53 does-not-exist.example.net A +norecurse
+dig +tcp @192.0.2.53 www.example.net A +norecurse
+```
+
+### Publish changes, upgrade, and recover
+
+For each zone change:
+
+1. edit the protected canonical source;
+2. increment the affected SOA serial;
+3. compile a disposable copy;
+4. rerun `rgbdns-setup primary` with the complete allow-list;
+5. query the primary;
+6. force or await secondary refresh; and
+7. compare every authority's serial.
+
+Package upgrades preserve configuration and state. Upgrade a downloaded
+Debian package with `apt install /path/package.deb` and an RPM with:
+
+```sh
+sudo zypper --non-interactive --no-gpg-checks install \
+  /path/to/rgbdns-VERSION-RELEASE.x86_64.rpm
+sudo rpm -V rgbdns
+```
+
+A fresh package installation deliberately starts no role-specific automation.
+Run `rgbdns-setup primary` or `rgbdns-setup secondary` once. Beginning with
+0.3.3, upgrades inspect the role already recorded under `/etc/rgbdns`:
+
+- a primary with `data-drop.env` has authority and `rgbdns-data.path`
+  restored;
+- a secondary has authority and `rgbdns-secondary-sync.timer` restored and,
+  when `zones-drop.env` exists, `rgbdns-zones.path` restored; and
+- an unconfigured installation remains inactive.
+
+Verify after an upgrade that `rgbdns-tinydns` is active and that a primary
+picker is `active (waiting)`, or that both the secondary timer and zone picker
+are `active (waiting)`.
+
+To repurpose a host, prepare the complete input for the destination role and
+run the opposite `rgbdns-setup` command. A primary-to-secondary conversion
+requires a valid zone list and successful initial AXFR. A
+secondary-to-primary conversion requires a complete, validated data file.
+The setup command removes the old role configuration, disables its picker and
+timer, and activates only the new role. Do not convert roles by manually
+enabling both sets of units.
+
+If secondary setup fails, it deliberately leaves authority stopped until the
+first valid transfer completes. Diagnose in this order:
+
+```sh
+sudo systemctl status rgbdns-secondary-sync.service --no-pager --full
+sudo journalctl -u rgbdns-secondary-sync.service -n 100 --no-pager
+dig +tcp @10.0.1.10 example.net SOA +norecurse
+sudo cat /etc/rgbdns/secondary.env
+sudo cat /var/lib/rgbdns/tinydns/zones
+sudo cat /etc/rgbdns/tinydns.env
+```
+
+A connection timeout points toward routes, security groups, or firewalls.
+`REFUSED` points toward `ALLOW_NETS` or an unexpected NAT source address. A
+validation error points toward the transferred zone. A successful one-shot
+with a refused local query means `rgbdns-tinydns.service` is not yet active.
+
+After every reboot or upgrade, verify:
+
+```sh
+systemctl is-enabled rgbdns-tinydns.service
+systemctl is-active rgbdns-tinydns.service
+systemctl list-timers rgbdns-secondary-sync.timer
+sudo ss -lntup '( sport = :53 )'
+```
+
+Monitor public UDP and TCP answers, unit restarts, timer failures, SOA
+convergence, transfer failures, and disk space. Keep the editable primary
+source in protected configuration management or backup. Secondary DNS
+improves serving availability; it is not a backup of the canonical source.
+
+The distribution-specific deployment guides contain additional AWS,
+firewall, SELinux, and troubleshooting detail:
+[`docs/DEBIAN.md`](https://github.com/querygraph/rgbdns/blob/master/docs/DEBIAN.md)
+and
+[`docs/OPENSUSE.md`](https://github.com/querygraph/rgbdns/blob/master/docs/OPENSUSE.md).
 
 ## Observe the right signals
 
@@ -1916,6 +2849,17 @@ Common daemon variables include:
 | `RECURSION_LIMIT` | ordinary recursion depth |
 | `NS_RECURSION_LIMIT` | nameserver-resolution recursion depth |
 | `ROOT` | djbdns-compatible resolver configuration root |
+| `DNSSEC_POLICY` | path to the one-line-per-zone `K`/`U` signing policy |
+
+The authoritative DNSSEC utilities compose without a manager process:
+
+```text
+rgbsec-keygen zone keyfile
+rgbsec-sign [data [data.signed]]
+rgbsec-data [data [data.cdb]]
+rgbsec-ds 'Kzone:keyfile:13:validity:refresh:skew'
+rgbsec-check [data.cdb [dnssec-policy]]
+```
 
 Use the command’s `*-conf` generator as a starting point, then adapt the
 foreground `run` contract to the chosen native supervisor.
@@ -1944,4 +2888,929 @@ Implementation and operational references:
 - runit benefits: <https://smarden.org/runit/benefits.html>
 - systemd project documentation: <https://systemd.io/>
 - Hickory DNS: <https://hickory-dns.org/>
-```
+
+# Appendix C: Submitted Internet-Draft: ANAME and Zone Transfer
+
+The following is the complete publication text of
+`draft-khrabrov-dnsop-aname-axfr-00`, submitted on 30 July 2026. The live
+Datatracker record is
+<https://datatracker.ietf.org/doc/draft-khrabrov-dnsop-aname-axfr/>. It is an
+active individual Internet-Draft—a work in progress—not an approved RFC or an
+IETF endorsement. Pagination form-feed characters from the submitted text
+artifact have been rendered as blank lines; the words and page furniture are
+otherwise reproduced in full.
+
+~~~~ text
+
+
+
+
+Domain Name System Operations                                A. Khrabrov
+Internet-Draft                                                QueryGraph
+Intended status: Standards Track                            30 July 2026
+Expires: 31 January 2027
+
+
+         Address-specific DNS Aliases (ANAME) and Zone Transfer
+                   draft-khrabrov-dnsop-aname-axfr-00
+
+Abstract
+
+   This document defines the ANAME DNS resource record.  ANAME provides
+   name-to-name indirection for address queries while allowing other
+   resource record types to exist at the same owner name.  It is
+   therefore usable at a zone apex.
+
+   This document also defines authoritative processing, TTL and failure
+   behavior, DNSSEC considerations, and interoperable transport of ANAME
+   records in full and incremental zone transfers.  In particular, each
+   ANAME-capable authoritative server resolves the transferred target
+   independently.  This avoids treating transient, synthesized address
+   records as the portable source of zone data.
+
+Discussion Venue
+
+   This note is to be removed before publishing as an RFC.
+
+   Source for this draft and an issue tracker are available at
+   https://github.com/querygraph/rgbdns/tree/master/ietf.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 31 January 2027.
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 1]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Requirements Language . . . . . . . . . . . . . . . . . . . .   3
+   3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   4
+   4.  The ANAME Resource Record . . . . . . . . . . . . . . . . . .   4
+     4.1.  Presentation and Wire Format  . . . . . . . . . . . . . .   4
+     4.2.  Cardinality and Coexistence . . . . . . . . . . . . . . .   5
+   5.  Target Resolution and Address Synthesis . . . . . . . . . . .   5
+     5.1.  Resolution Timing and Caching . . . . . . . . . . . . . .   6
+     5.2.  Negative Answers and Failure  . . . . . . . . . . . . . .   6
+   6.  Query Processing  . . . . . . . . . . . . . . . . . . . . . .   6
+     6.1.  A and AAAA Queries  . . . . . . . . . . . . . . . . . . .   6
+     6.2.  ANAME Queries . . . . . . . . . . . . . . . . . . . . . .   7
+     6.3.  Other Query Types and Delegations . . . . . . . . . . . .   7
+   7.  Zone Transfer . . . . . . . . . . . . . . . . . . . . . . . .   7
+     7.1.  Native AXFR . . . . . . . . . . . . . . . . . . . . . . .   7
+     7.2.  Native IXFR . . . . . . . . . . . . . . . . . . . . . . .   8
+     7.3.  Capability Signaling  . . . . . . . . . . . . . . . . . .   8
+     7.4.  Transition with ANAME-oblivious Secondaries . . . . . . .   8
+     7.5.  Transfer Authentication . . . . . . . . . . . . . . . . .   9
+   8.  Examples  . . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     8.1.  Native Primary and Secondary  . . . . . . . . . . . . . .   9
+     8.2.  Changing the Target . . . . . . . . . . . . . . . . . . .  10
+     8.3.  Legacy Materialization  . . . . . . . . . . . . . . . . .  10
+   9.  DNSSEC  . . . . . . . . . . . . . . . . . . . . . . . . . . .  10
+   10. Operational Considerations  . . . . . . . . . . . . . . . . .  11
+     10.1.  Multi-provider Consistency . . . . . . . . . . . . . . .  11
+     10.2.  Monitoring . . . . . . . . . . . . . . . . . . . . . . .  11
+   11. Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   12. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+   13. Implementation and Deployment Experience  . . . . . . . . . .  13
+   14. Changes from draft-ietf-dnsop-aname-04  . . . . . . . . . . .  13
+   15. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  14
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 2]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   16. Normative References  . . . . . . . . . . . . . . . . . . . .  14
+   17. Informative References  . . . . . . . . . . . . . . . . . . .  15
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  16
+
+1.  Introduction
+
+   A CNAME record redirects all queries at its owner name and, with
+   limited DNSSEC exceptions, cannot coexist with other data.  A zone
+   apex necessarily has SOA and NS records, so a CNAME cannot provide
+   portable apex indirection.  Static A and AAAA records do not solve
+   the operational problem when a hosting or content-delivery provider
+   controls a dynamic set of addresses.
+
+   DNS hosting systems have independently deployed solutions called
+   ALIAS, ANAME, apex alias, Route 53 alias, and CNAME flattening.
+   Their common behavior is to resolve a configured target and answer
+   the owner's A and AAAA queries using the target's addresses.  Their
+   control data, transfer behavior, failure behavior, and TTL policies
+   differ.
+
+   Cloudflare describes CNAME flattening as following a CNAME chain and
+   returning the final addresses rather than the CNAME
+   [CLOUDFLARE-FLATTENING].  DNSimple describes its ALIAS as a dynamic
+   A/AAAA lookup performed by its authoritative service
+   [DNSIMPLE-ALIAS].  Amazon Route 53 alias records can be placed at an
+   apex but are restricted to selected AWS resources and records
+   [ROUTE53-ALIAS].  IBM NS1 documents an authoritative ALIAS pseudo-
+   record that is not included in outgoing zone transfers [NS1-ALIAS].
+   PowerDNS can either transfer its private ALIAS representation or
+   expand it to addresses, with explicit warnings about refresh and
+   serial-number behavior [POWERDNS-ALIAS].
+
+   This specification replaces those non-portable control-plane
+   differences with one RR type and defines its zone-transfer behavior.
+   It builds on the expired DNSOP ANAME proposal [I-D.ietf-dnsop-aname].
+   The principal change is that the ANAME RR itself is the portable zone
+   data: it is carried by AXFR and IXFR, and every capable authoritative
+   server resolves it.  Synthesized address RRsets are derived state,
+   not a substitute for transferring the ANAME.
+
+2.  Requirements Language
+
+   The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD,
+   SHOULD NOT, RECOMMENDED, NOT RECOMMENDED, MAY, and OPTIONAL in this
+   document are to be interpreted as described in BCP 14 [RFC2119]
+   [RFC8174] when, and only when, they appear in all capitals, as shown
+   here.
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 3]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+3.  Terminology
+
+   This document uses DNS terminology from [RFC9499].
+
+   Address RRset:  An RRset of type A or AAAA.
+
+   ANAME owner:  The owner name of an ANAME RR.
+
+   ANAME target:  The domain name carried in ANAME RDATA.
+
+   Sibling address RRset:  An A or AAAA RRset at the ANAME owner.
+
+   Target address RRset:  The terminal A or AAAA RRset obtained after
+      resolving the ANAME target and following permitted CNAME or ANAME
+      links.
+
+   Flattening:  Producing an address RRset at the ANAME owner from a
+      target address RRset.
+
+   Native secondary:  An authoritative secondary that understands ANAME,
+      receives it in zone transfer, and performs flattening
+      independently.
+
+   Materializing secondary:  An ANAME-oblivious secondary that serves
+      address RRsets generated by the primary.  This is a transition
+      arrangement and has additional consistency requirements.
+
+4.  The ANAME Resource Record
+
+   ANAME has RR TYPE value TBD1.  Its mnemonic is ANAME.
+
+4.1.  Presentation and Wire Format
+
+   The presentation format is:
+
+   owner.example.  300  IN  ANAME  target.example.net.
+
+   The RDATA consists of exactly one domain name, the ANAME target.  Its
+   wire encoding is the DNS name wire format from [RFC1035].  Name
+   compression MUST NOT be used within ANAME RDATA, consistent with
+   [RFC3597].  Relative names in a master file are resolved by the
+   master-file parser in the same manner as CNAME targets.
+
+
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 4]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+4.2.  Cardinality and Coexistence
+
+   An ANAME RRset MUST contain exactly one record.  An ANAME MUST NOT
+   coexist at the same owner with CNAME or another RR type whose own
+   rules prohibit coexistence.  ANAME MAY coexist with SOA, NS, MX, TXT,
+   CAA, and other ordinary types.
+
+   Authoritative zone configuration MUST NOT contain administrator-
+   managed sibling A or AAAA RRsets at an ANAME owner.  Address RRsets
+   generated by the procedures in this document are derived state and
+   are not independent zone content.
+
+   Wildcard ANAME records are permitted only if an implementation
+   applies the wildcard rules of [RFC4592] before flattening.
+   Implementations that cannot preserve those rules MUST reject wildcard
+   ANAME configuration.
+
+5.  Target Resolution and Address Synthesis
+
+   An ANAME-capable authoritative server performs the following
+   procedure independently for A and AAAA:
+
+   1.  Resolve the ANAME target using a recursive resolver that is not
+       dependent on the authoritative server for the ANAME owner.  The
+       implementation MUST prevent recursion back into the same
+       unresolved ANAME dependency.
+
+   2.  Follow CNAME and ANAME links to a terminal address RRset.  The
+       implementation MUST detect loops and MUST impose configurable
+       bounds on chain depth, response size, and resolution time.
+
+   3.  Validate the response according to local DNSSEC policy.  The
+       security status of the target is discussed in Section 11.
+
+   4.  Replace the terminal RRset's owner with the ANAME owner and
+       remove signatures belonging to the target zone.
+
+   5.  Set each synthesized TTL to no more than the minimum of the ANAME
+       TTL, every followed alias TTL, and the remaining terminal address
+       TTL.
+
+   The resulting owner and RDATA form the synthesized address RRset.  An
+   implementation MUST NOT combine addresses obtained from different
+   generations of a target RRset.
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 5]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+5.1.  Resolution Timing and Caching
+
+   A server MAY flatten when a query arrives, refresh in advance, or use
+   a shared cache.  It SHOULD refresh before the cached target expires
+   and SHOULD coalesce concurrent lookups for the same target and
+   address type.
+
+   A server MUST NOT serve a synthesized positive TTL greater than the
+   remaining lifetime of the data from which it was derived.  This
+   prevents TTL extension at the authoritative boundary.  A configured
+   ANAME TTL acts as an upper bound, not permission to extend the target
+   TTL.
+
+5.2.  Negative Answers and Failure
+
+   Authenticated NXDOMAIN or NODATA for the target produces NODATA for
+   the corresponding address type at the ANAME owner.  A timeout,
+   SERVFAIL, validation failure, or malformed target response is a
+   resolution failure, not NODATA.
+
+   On resolution failure, a server SHOULD return SERVFAIL unless it has
+   previously validated target data eligible for bounded stale serving
+   under [RFC8767].  Stale use MUST be bounded by local policy and MUST
+   NOT change the target's DNSSEC security status.  A server MUST NOT
+   convert a transient failure into an indefinite empty answer.
+
+6.  Query Processing
+
+6.1.  A and AAAA Queries
+
+   For an A or AAAA query at an ANAME owner, an authoritative server
+   MUST answer from the synthesized address RRset produced by Section 5.
+   The response is authoritative for the ANAME owner.  It MUST NOT
+   contain a CNAME synthesized from the ANAME.
+
+   An ANAME-capable authoritative server SHOULD also place the ANAME
+   RRset in the Answer section.  ANAME-oblivious resolvers ignore the
+   unknown RR type while using the A or AAAA RRset as usual.  An
+   implementation MAY omit ANAME from an address response when response-
+   size or compatibility policy requires it; this does not alter the
+   address answer.
+
+
+
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 6]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+6.2.  ANAME Queries
+
+   A query for type ANAME is processed as an ordinary authoritative
+   query.  If the ANAME exists, the Answer section MUST contain it.  The
+   server SHOULD add currently available synthesized A and AAAA RRsets
+   to the Additional section.  Their absence does not mean the target
+   lacks addresses.
+
+6.3.  Other Query Types and Delegations
+
+   ANAME has no effect on query types other than A, AAAA, ANAME, and
+   ANY.  It does not redirect MX, TXT, HTTPS, SVCB, CAA, or any other
+   data.  It MUST NOT override a zone cut.  The authoritative server
+   applies normal delegation and wildcard processing before applying
+   ANAME synthesis.
+
+7.  Zone Transfer
+
+   The lack of common transfer semantics is a material interoperability
+   problem in deployed flattening systems.  Omitting proprietary control
+   data prevents a secondary from reproducing behavior.  Expanding only
+   to A and AAAA records captures a transient observation and does not
+   cause a transfer when the external target changes.
+
+7.1.  Native AXFR
+
+   In an AXFR response conforming to [RFC5936], the primary MUST include
+   each ANAME RR in zone scope exactly as it includes any other
+   authoritative RR.  The primary MUST NOT suppress ANAME merely because
+   the requester did not advertise support for it.  Unknown-RR handling
+   in [RFC3597] permits transfer and storage by software that does not
+   yet understand its semantics.
+
+   A native secondary MUST store the received ANAME RR and perform
+   Section 5 using its own resolver and cache.  It MUST NOT assume that
+   an address RRset materialized at the primary remains current.
+   Consequently, changes to external target addresses do not require the
+   zone serial to change and do not require another transfer when all
+   authoritative servers are native.
+
+   A primary SHOULD NOT include derived sibling A or AAAA RRsets in
+   native AXFR.  If it does include them for transition, a native
+   secondary MUST treat them as replaceable cache seeds, bounded by
+   their TTL, rather than administrator-managed zone data.
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 7]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+7.2.  Native IXFR
+
+   IXFR [RFC1995] adds, deletes, or replaces the ANAME RR like any other
+   RR.  An ANAME target change is a zone-content change and MUST be
+   accompanied by an SOA serial change.  Refresh of addresses beneath an
+   unchanged external target is derived state and MUST NOT by itself
+   require an IXFR delta.
+
+7.3.  Capability Signaling
+
+   Operators need to know whether every authoritative server will
+   synthesize addresses.  This document defines the ANAME-CAPABLE EDNS
+   option, using the option format defined by [RFC6891], with code TBD2
+   for AXFR and IXFR requests.
+
+   The option is encoded as follows:
+
+           +----------------------+----------------------+
+           | OPTION-CODE = TBD2   | OPTION-LENGTH = 0    |
+           +----------------------+----------------------+
+                16 bits                 16 bits
+
+   OPTION-CODE is the two-octet network-order value TBD2 and OPTION-
+   LENGTH is the two-octet value zero.  The option contains no OPTION-
+   DATA in this version.  A receiver MUST ignore an ANAME-CAPABLE option
+   whose length is not zero.
+
+   A native secondary SHOULD include ANAME-CAPABLE in its transfer
+   request.  A primary that recognizes it SHOULD include the same empty
+   option in the first transfer response.  The option is an assertion of
+   processing capability, not authorization, and does not alter which
+   authoritative RRs are transferred.
+
+   Absence of ANAME-CAPABLE does not permit omission of ANAME from a
+   standards-conforming transfer.  It tells the operator that the
+   secondary might only store the unknown RR and might not answer
+   address queries correctly.  A primary SHOULD expose this condition
+   through logging or management telemetry.
+
+7.4.  Transition with ANAME-oblivious Secondaries
+
+   A zone using ANAME SHOULD NOT be delegated to an authoritative server
+   that cannot synthesize it.  During transition, an operator may
+   configure the primary to materialize A and AAAA RRsets for such a
+   secondary.  This is an operational compatibility mode, not native
+   ANAME transfer.
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 8]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   In compatibility mode, the primary MUST refresh the target, commit
+   changed sibling addresses as zone changes, increment the SOA serial,
+   and use DNS NOTIFY [RFC1996] or an equivalently prompt transfer
+   mechanism.  Merely expanding addresses during occasional AXFR while
+   leaving the serial unchanged is NOT RECOMMENDED, because the
+   secondary has no signal that the external target changed.
+
+   DNSSEC signing of materialized data occurs after flattening and
+   before transfer.  The operator is responsible for ensuring that all
+   authoritative servers present a coherent signed zone.
+
+7.5.  Transfer Authentication
+
+   ANAME does not change AXFR authorization requirements.  Zone
+   transfers commonly disclose the complete namespace and SHOULD be
+   restricted and authenticated using TSIG [RFC8945], SIG(0), mutually
+   authenticated transport, or an equivalent mechanism.  ANAME-CAPABLE
+   is not an authentication mechanism.
+
+8.  Examples
+
+8.1.  Native Primary and Secondary
+
+   The operator configures the following authoritative data:
+
+   example.  3600  IN  SOA    ns1.example. hostmaster.example. (
+                                2026073001 3600 900 1209600 300 )
+   example.  3600  IN  NS     ns1.example.
+   example.  3600  IN  NS     ns2.example.
+   example.   300  IN  ANAME  service.example.net.
+   example.  3600  IN  MX 10  mail.example.
+
+   The AXFR contains the SOA bookends, NS, MX, and ANAME records.  It
+   does not need to contain synthesized A or AAAA records.  The native
+   secondary advertises ANAME-CAPABLE and stores the ANAME.  Each
+   authoritative server independently resolves service.example.net..
+
+   If the target's A RRset has TTL 120 and contains 192.0.2.10, an A
+   query can receive:
+
+   example.  120  IN  A      192.0.2.10
+   example.  300  IN  ANAME  service.example.net.
+
+   The synthesized A TTL is 120, the smaller of the remaining target TTL
+   and the configured ANAME ceiling.  The ANAME retains its own TTL.
+   The MX record and all other owner data remain unaffected.
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027                [Page 9]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   If the target later changes to 192.0.2.20 without any change to the
+   example. zone, both native servers refresh independently.  The SOA
+   serial need not change and no transfer is required.
+
+8.2.  Changing the Target
+
+   If the administrator changes the target itself to new-
+   service.example.net., the ANAME is authoritative zone content.  The
+   primary increments the SOA serial and transfers this deletion and
+   addition through IXFR, or sends the complete new ANAME through AXFR.
+   This differs from an address change beneath an unchanged target.
+
+8.3.  Legacy Materialization
+
+   Suppose ns2.example. does not synthesize ANAME.  If the operator
+   temporarily uses compatibility mode, the primary commits the current
+   192.0.2.10 A record as derived zone data for that transfer.  When the
+   target changes to 192.0.2.20, the primary must refresh, replace the
+   committed A RRset, increment the serial, notify the secondary, and
+   transfer the change.  Expanding only when an unrelated AXFR happens
+   can leave ns2.example. stale indefinitely.
+
+9.  DNSSEC
+
+   This section uses the DNSSEC protocol and terminology defined by
+   [RFC4033], [RFC4034], and [RFC4035].
+
+   The ANAME RRset is authoritative zone data and MUST be signed when
+   the zone is signed.  Synthesized address RRsets are authoritative
+   statements by the ANAME owner's zone; signatures from the target zone
+   cannot be copied because the owner name differs.
+
+   A server using online synthesis needs online signing if it returns
+   signed synthesized address RRsets.  A server using offline signing
+   MUST materialize, sign, and publish address changes before their
+   previous signatures or operational validity expire.  A signed ANAME
+   with no validly signed synthesized address response can cause
+   validating clients to treat an answer as bogus.
+
+   Signing synthesized addresses asserts that the ANAME owner's
+   authority chose those addresses; it does not preserve the target
+   zone's chain of trust.  Implementations SHOULD validate the target
+   before synthesizing signed data and MUST provide a policy for
+   insecure, bogus, and indeterminate targets.
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 10]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+10.  Operational Considerations
+
+10.1.  Multi-provider Consistency
+
+   Native authoritative servers resolve from different network locations
+   and caches.  A target using geographic, latency, load, or EDNS Client
+   Subnet policy can therefore yield different, individually valid
+   address RRsets.  Exact address equality among authorities is not
+   required.  Operators SHOULD test that every result is valid for
+   clients and that TTL and failure policies are compatible.
+
+   Authoritative flatteners SHOULD NOT forward a client's EDNS Client
+   Subnet value by default.  If they do, they MUST follow [RFC7871] and
+   account for the resulting cache variance and privacy exposure.
+
+10.2.  Monitoring
+
+   Implementations SHOULD expose target resolution latency, cache age,
+   refresh failure, DNSSEC status, stale-answer use, chain depth,
+   synthesized TTL, and transfer capability.  Operators SHOULD query A
+   and AAAA independently at every authoritative server.
+
+11.  Security Considerations
+
+   ANAME makes authoritative serving depend on recursive resolution.
+   Implementations MUST isolate that resolver from authoritative query
+   processing sufficiently to prevent deadlock and unbounded resource
+   consumption.  They MUST bound target chain length, response size,
+   address count, lookup concurrency, retry rate, and total lookup time.
+
+   A target controlled by another party can redirect an ANAME owner to
+   arbitrary addresses.  This is the intended delegation of address
+   control, but it has security consequences similar to granting that
+   party permission to edit A and AAAA records.  Zone administrators
+   SHOULD verify target ownership and lifecycle, and remove ANAME
+   records before relinquishing a target name.
+
+   Resolvers used for flattening MUST defend against cache poisoning and
+   bailiwick violations.  DNSSEC validation SHOULD be enabled.  An
+   implementation MUST NOT silently promote a bogus target into signed
+   synthesized data.
+
+
+
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 11]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   Self-reference and multi-name loops can cross zone boundaries.
+   Implementations MUST detect loops within one resolution operation.
+   They SHOULD coalesce concurrent lookups for the same target and
+   retain short-lived failure state to suppress repeated cyclic work.
+   On loop detection they MUST terminate the active chain and return
+   SERVFAIL; they MUST NOT start a fresh recursive lookup that discards
+   the known chain context.  These requirements limit geometric query
+   amplification when a loop crosses multiple authoritative providers.
+
+   ANAME targets may resolve to private, loopback, link-local, or other
+   special-use addresses.  DNS itself permits such answers, so filtering
+   is a deployment policy.  Implementations SHOULD offer policy controls
+   and clear diagnostics, especially where resolver traffic crosses
+   trust boundaries.
+
+   The transfer capability option is unauthenticated and can be removed
+   or forged by an on-path attacker.  It MUST NOT be used to authorize
+   transfer or as the sole basis for a security decision.  Authenticated
+   transfer protects both the ANAME target and other zone contents.
+
+12.  IANA Considerations
+
+   IANA is requested to assign a value from the "Resource Record (RR)
+   TYPEs" subregistry of the "Domain Name System (DNS) Parameters"
+   registry as follows:
+
+      +=======+=======+============================+===============+
+      | Type  | Value | Meaning                    | Reference     |
+      +=======+=======+============================+===============+
+      | ANAME | TBD1  | Address-specific DNS alias | This document |
+      +-------+-------+----------------------------+---------------+
+
+                                 Table 1
+
+   IANA is requested to assign a value from the "DNS EDNS0 Option Codes
+   (OPT)" registry as follows:
+
+           +===============+=======+==========+===============+
+           | Name          | Value | Status   | Reference     |
+           +===============+=======+==========+===============+
+           | ANAME-CAPABLE | TBD2  | Standard | This document |
+           +---------------+-------+----------+---------------+
+
+                                 Table 2
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 12]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+13.  Implementation and Deployment Experience
+
+   This section is to be removed before publication as an RFC.
+
+   rgbdns 0.2.3 implements on-demand authoritative flattening, bounded
+   caching, concurrent-miss coalescing, short-lived failure suppression,
+   TTL capping, CNAME-chain and loop handling, per-zone native transfer,
+   and independent target resolution by its secondary.  Before IANA
+   assignment, it uses an explicitly negotiated experimental protocol:
+   EDNS option 65001 containing the four octets RGA1, and private-use
+   TYPE65401 whose RDATA is RGA1 followed by the uncompressed target DNS
+   name.  The private RR TTL carries the configured ANAME TTL ceiling.
+
+   A standard AXFR client does not receive rgbdns's experimental record.
+   This behavior prevents private metadata from being mistaken for an
+   assigned RR, but it is not the final behavior specified in
+   Section 7.1.  An implementation of this document will use TBD1
+   directly and transfer it to all AXFR clients.  During migration,
+   rgbdns can accept both its versioned private encoding and the
+   assigned ANAME RR, but MUST NOT emit TYPE65401 as if it were the
+   assigned standard.
+
+   PowerDNS also uses private-use TYPE65401 for ALIAS, but its RDATA is
+   an unprefixed DNS name [POWERDNS-ALIAS].  The two encodings are not
+   interoperable despite sharing a private-use value.  This collision
+   demonstrates why a private-use RR value cannot establish a cross-
+   vendor standard and why receivers must not infer semantics from
+   TYPE65401 without out-of-band agreement.
+
+14.  Changes from draft-ietf-dnsop-aname-04
+
+   This section is to be removed before publishing as an RFC.
+
+   *  Makes the ANAME RR, rather than synthesized sibling addresses, the
+      portable source data for native AXFR and IXFR.
+
+   *  Requires each native authoritative server to resolve the target,
+      eliminating transfer-driven refresh for external address changes.
+
+   *  Adds ANAME-CAPABLE signaling for operational detection without
+      making transfer contents depend on negotiation.
+
+   *  Separates native transfer from a serial-changing materialization
+      mode for legacy secondaries.
+
+   *  Specifies failure, stale-answer, bounds, monitoring, multi-
+      provider, and migration behavior informed by deployed services.
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 13]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   *  Adds end-to-end examples distinguishing a changed ANAME target
+      from changed addresses beneath an unchanged target.
+
+   *  Documents the rgbdns implementation and the TYPE65401 collision
+      with PowerDNS.
+
+15.  Acknowledgments
+
+   This document builds on draft-ietf-dnsop-aname by Tony Finch, Evan
+   Hunt, Peter van Dijk, Anthony Eden, and Willem Mekking.  Their work
+   and the DNSOP discussions established the ANAME model, terminology,
+   and much of the analysis of TTLs, DNSSEC, and alias chains.
+
+   Deployment documentation from Cloudflare, DNSimple, Amazon Web
+   Services, IBM NS1, and PowerDNS supplied concrete evidence about
+   flattening behavior and zone-transfer interoperability.
+
+16.  Normative References
+
+   [RFC1035]  Mockapetris, P., "Domain names - implementation and
+              specification", STD 13, RFC 1035, DOI 10.17487/RFC1035,
+              November 1987, <https://www.rfc-editor.org/info/rfc1035>.
+
+   [RFC1995]  Ohta, M., "Incremental Zone Transfer in DNS", RFC 1995,
+              DOI 10.17487/RFC1995, August 1996,
+              <https://www.rfc-editor.org/info/rfc1995>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC3597]  Gustafsson, A., "Handling of Unknown DNS Resource Record
+              (RR) Types", RFC 3597, DOI 10.17487/RFC3597, September
+              2003, <https://www.rfc-editor.org/info/rfc3597>.
+
+   [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "DNS Security Introduction and Requirements",
+              RFC 4033, DOI 10.17487/RFC4033, March 2005,
+              <https://www.rfc-editor.org/info/rfc4033>.
+
+   [RFC4034]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "Resource Records for the DNS Security Extensions",
+              RFC 4034, DOI 10.17487/RFC4034, March 2005,
+              <https://www.rfc-editor.org/info/rfc4034>.
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 14]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   [RFC4035]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "Protocol Modifications for the DNS Security
+              Extensions", RFC 4035, DOI 10.17487/RFC4035, March 2005,
+              <https://www.rfc-editor.org/info/rfc4035>.
+
+   [RFC4592]  Lewis, E., "The Role of Wildcards in the Domain Name
+              System", RFC 4592, DOI 10.17487/RFC4592, July 2006,
+              <https://www.rfc-editor.org/info/rfc4592>.
+
+   [RFC5936]  Lewis, E. and A. Hoenes, "DNS Zone Transfer Protocol
+              (AXFR)", RFC 5936, DOI 10.17487/RFC5936, June 2010,
+              <https://www.rfc-editor.org/info/rfc5936>.
+
+   [RFC6891]  Damas, J., Graff, M., and P. Vixie, "Extension Mechanisms
+              for DNS (EDNS(0))", STD 75, RFC 6891,
+              DOI 10.17487/RFC6891, April 2013,
+              <https://www.rfc-editor.org/info/rfc6891>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8945]  Dupont, F., Morris, S., Vixie, P., Eastlake, D., and O.
+              Gudmundsson, "Secret Key Transaction Authentication for
+              DNS (TSIG)", RFC 8945, DOI 10.17487/RFC8945, November
+              2020, <https://www.rfc-editor.org/info/rfc8945>.
+
+   [RFC9499]  Hoffman, P. and K. Fujiwara, "DNS Terminology", BCP 219,
+              RFC 9499, DOI 10.17487/RFC9499, March 2024,
+              <https://www.rfc-editor.org/info/rfc9499>.
+
+17.  Informative References
+
+   [CLOUDFLARE-FLATTENING]
+              Cloudflare, "CNAME flattening", Cloudflare DNS
+              documentation, 24 June 2026,
+              <https://developers.cloudflare.com/dns/cname-flattening/>.
+
+   [DNSIMPLE-ALIAS]
+              DNSimple, "What Is an ALIAS Record?", DNSimple Help, 2026,
+              <https://support.dnsimple.com/articles/alias-record/>.
+
+   [I-D.ietf-dnsop-aname]
+              Finch, T., Hunt, E., van Dijk, P., Eden, A., and W.
+              Mekking, "Address-specific DNS aliases (ANAME)", Work in
+              Progress, Internet-Draft, draft-ietf-dnsop-aname-04, 8
+              July 2019, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-dnsop-aname-04>.
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 15]
+
+
+Internet-Draft           ANAME and Zone Transfer               July 2026
+
+
+   [NS1-ALIAS]
+              IBM, "Comparing CNAME, ALIAS, and linked records", IBM NS1
+              Connect documentation, 2026, <https://www.ibm.com/docs/en/
+              ns1-connect?topic=answers-comparing-cname-alias-linked-
+              records>.
+
+   [POWERDNS-ALIAS]
+              PowerDNS.COM BV, "Using ALIAS records", PowerDNS
+              Authoritative Server documentation, 2026,
+              <https://doc.powerdns.com/authoritative/guides/
+              alias.html>.
+
+   [RFC1996]  Vixie, P., "A Mechanism for Prompt Notification of Zone
+              Changes (DNS NOTIFY)", RFC 1996, DOI 10.17487/RFC1996,
+              August 1996, <https://www.rfc-editor.org/info/rfc1996>.
+
+   [RFC7871]  Contavalli, C., van der Gaast, W., Lawrence, D., and W.
+              Kumari, "Client Subnet in DNS Queries", RFC 7871,
+              DOI 10.17487/RFC7871, May 2016,
+              <https://www.rfc-editor.org/info/rfc7871>.
+
+   [RFC8767]  Lawrence, D., Kumari, W., and P. Sood, "Serving Stale Data
+              to Improve DNS Resiliency", RFC 8767,
+              DOI 10.17487/RFC8767, March 2020,
+              <https://www.rfc-editor.org/info/rfc8767>.
+
+   [ROUTE53-ALIAS]
+              Amazon Web Services, "Choosing between alias and non-alias
+              records", Amazon Route 53 Developer Guide, 2026,
+              <https://docs.aws.amazon.com/Route53/latest/
+              DeveloperGuide/resource-record-sets-choosing-alias-non-
+              alias.html>.
+
+Author's Address
+
+   Alexy Khrabrov
+   QueryGraph
+   Email: deliverable@gmail.com
+   URI:   https://github.com/querygraph/rgbdns
+
+
+
+
+
+
+
+
+
+
+
+
+Khrabrov                 Expires 31 January 2027               [Page 16]
+~~~~
+````

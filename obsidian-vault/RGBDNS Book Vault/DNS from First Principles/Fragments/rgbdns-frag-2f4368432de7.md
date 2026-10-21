@@ -19,7 +19,7 @@ end_line: 48
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-2f4368432de7", "codeNote": "DNS from First Principles/Code/obsidian-plugin/rgbdns-reader/styles.css.source", "heading": "rgbdns-frag-2f4368432de7: file styles.css", "sourcePath": "obsidian-plugin/rgbdns-reader/styles.css", "startLine": 1, "endLine": 48}
+{"id": "rgbdns-frag-2f4368432de7", "codeNote": "DNS from First Principles/Code/obsidian-plugin/rgbdns-reader/styles.css.source", "sourcePath": "obsidian-plugin/rgbdns-reader/styles.css", "startLine": 1, "endLine": 48}
 ```
 
 ## Excerpt

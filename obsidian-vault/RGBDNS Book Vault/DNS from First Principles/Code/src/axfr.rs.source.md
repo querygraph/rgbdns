@@ -4,9 +4,9 @@ source_path: "src/axfr.rs"
 language: "rust"
 subsystem: "Transport and zone transfer"
 crate: "rgbdns"
-line_count: 474
-fragment_count: 21
-rgbdns_commit: "79502939"
+line_count: 725
+fragment_count: 31
+rgbdns_commit: "5ae24772"
 ---
 
 # src/axfr.rs
@@ -14,7 +14,7 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/Transport and zone transfer|Transport and zone transfer]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/axfr.rs`
-- Lines: 474
+- Lines: 725
 - Summary: Bounded DNS-over-TCP full-zone transfers.
 
 ## Extracted Fragments
@@ -22,24 +22,34 @@ rgbdns_commit: "79502939"
 - [[DNS from First Principles/Fragments/rgbdns-frag-ad1ed1e4cb84|MAX_TCP_MESSAGE]]: lines 15-15
 - [[DNS from First Principles/Fragments/rgbdns-frag-169fc0dbbb4a|MAX_TRANSFER_RECORDS]]: lines 16-16
 - [[DNS from First Principles/Fragments/rgbdns-frag-704dd44da912|MAX_TRANSFER_MESSAGES]]: lines 17-17
-- [[DNS from First Principles/Fragments/rgbdns-frag-aee4934c3db3|MAX_TRANSFER_BYTES]]: lines 18-19
-- [[DNS from First Principles/Fragments/rgbdns-frag-884813b3737c|serve]]: lines 20-27
-- [[DNS from First Principles/Fragments/rgbdns-frag-9a2021bd9440|serve_listener]]: lines 28-61
-- [[DNS from First Principles/Fragments/rgbdns-frag-4d44b9b57c53|serve_connection]]: lines 62-70
-- [[DNS from First Principles/Fragments/rgbdns-frag-c4eddbb40457|response_wires]]: lines 71-151
-- [[DNS from First Principles/Fragments/rgbdns-frag-ca8414b505a4|response_wire]]: lines 156-171
-- [[DNS from First Principles/Fragments/rgbdns-frag-678d90c8e377|read_message]]: lines 172-179
-- [[DNS from First Principles/Fragments/rgbdns-frag-83eeb011f0b6|fetch]]: lines 180-246
-- [[DNS from First Principles/Fragments/rgbdns-frag-35c24cd23185|validate_axfr_message]]: lines 247-272
-- [[DNS from First Principles/Fragments/rgbdns-frag-3875bb7b1985|random_id]]: lines 273-279
-- [[DNS from First Principles/Fragments/rgbdns-frag-2ff6549bf9ff|write_tinydns]]: lines 280-304
-- [[DNS from First Principles/Fragments/rgbdns-frag-d0d89aa0192c|tinydns_line]]: lines 305-356
-- [[DNS from First Principles/Fragments/rgbdns-frag-a716ad34eead|escape]]: lines 357-369
-- [[DNS from First Principles/Fragments/rgbdns-frag-7486a2a93364|tests]]: lines 370-374
-- [[DNS from First Principles/Fragments/rgbdns-frag-ba79974c4829|temp_path]]: lines 375-386
-- [[DNS from First Principles/Fragments/rgbdns-frag-5d9c78436686|live_transfer_has_matching_soa_bookends]]: lines 387-414
-- [[DNS from First Principles/Fragments/rgbdns-frag-747c9f2e6a62|exported_tinydns_text_roundtrips]]: lines 415-439
-- [[DNS from First Principles/Fragments/rgbdns-frag-481ffa0043ef|axfr_client_rejects_spoofable_or_structurally_invalid_messages]]: lines 440-474
+- [[DNS from First Principles/Fragments/rgbdns-frag-2c15fff4d0a4|MAX_TRANSFER_BYTES]]: lines 18-18
+- [[DNS from First Principles/Fragments/rgbdns-frag-f0f0f96758df|RGBDNS_ANAME_OPTION]]: lines 19-19
+- [[DNS from First Principles/Fragments/rgbdns-frag-cafa2f19c1e6|RGBDNS_ANAME_RECORD]]: lines 20-20
+- [[DNS from First Principles/Fragments/rgbdns-frag-8f7dc0cc0d16|RGBDNS_ANAME_MAGIC]]: lines 21-22
+- [[DNS from First Principles/Fragments/rgbdns-frag-f2ef2cf7d6dd|serve]]: lines 23-30
+- [[DNS from First Principles/Fragments/rgbdns-frag-d01b28bcef19|serve_listener]]: lines 31-64
+- [[DNS from First Principles/Fragments/rgbdns-frag-0b662b17240e|serve_connection]]: lines 65-73
+- [[DNS from First Principles/Fragments/rgbdns-frag-d76d0819e64d|response_wires]]: lines 74-154
+- [[DNS from First Principles/Fragments/rgbdns-frag-6e33bc878cc9|requests_aname_extension]]: lines 177-198
+- [[DNS from First Principles/Fragments/rgbdns-frag-a83b1bcbc267|response_wire]]: lines 199-214
+- [[DNS from First Principles/Fragments/rgbdns-frag-9a91e7f7f94d|read_message]]: lines 215-222
+- [[DNS from First Principles/Fragments/rgbdns-frag-db6b72fc23f8|fetch]]: lines 223-303
+- [[DNS from First Principles/Fragments/rgbdns-frag-7162262f5133|validate_axfr_message]]: lines 306-331
+- [[DNS from First Principles/Fragments/rgbdns-frag-9db3d9c1df10|random_id]]: lines 332-338
+- [[DNS from First Principles/Fragments/rgbdns-frag-57a825cf3083|write_tinydns]]: lines 339-363
+- [[DNS from First Principles/Fragments/rgbdns-frag-e4ca5c3227a3|write_zone]]: lines 364-395
+- [[DNS from First Principles/Fragments/rgbdns-frag-af3fc732d6a3|tinydns_line]]: lines 396-451
+- [[DNS from First Principles/Fragments/rgbdns-frag-4833f3be1c4e|decode_aname_target]]: lines 452-472
+- [[DNS from First Principles/Fragments/rgbdns-frag-15e1eb096b47|tinydns_name]]: lines 473-492
+- [[DNS from First Principles/Fragments/rgbdns-frag-10d416f92f30|escape]]: lines 493-505
+- [[DNS from First Principles/Fragments/rgbdns-frag-b2afa3491e16|tests]]: lines 506-510
+- [[DNS from First Principles/Fragments/rgbdns-frag-5af93fc96e2d|temp_path]]: lines 511-522
+- [[DNS from First Principles/Fragments/rgbdns-frag-14249bf54c46|live_transfer_has_matching_soa_bookends]]: lines 523-568
+- [[DNS from First Principles/Fragments/rgbdns-frag-15a341490f0d|standard_axfr_does_not_expose_private_aname_metadata]]: lines 569-601
+- [[DNS from First Principles/Fragments/rgbdns-frag-02e9817d0edc|standard_axfr_preserves_a_finished_signed_zone]]: lines 602-649
+- [[DNS from First Principles/Fragments/rgbdns-frag-00f605f8c2d3|exported_tinydns_text_roundtrips]]: lines 650-674
+- [[DNS from First Principles/Fragments/rgbdns-frag-19e36617d117|malformed_negotiated_aname_is_not_installed]]: lines 675-690
+- [[DNS from First Principles/Fragments/rgbdns-frag-af05f32a91bb|axfr_client_rejects_spoofable_or_structurally_invalid_messages]]: lines 691-725
 
 ## Full Source
 
@@ -62,6 +72,9 @@ const MAX_TCP_MESSAGE: usize = u16::MAX as usize;
 const MAX_TRANSFER_RECORDS: usize = 1_000_000;
 const MAX_TRANSFER_MESSAGES: usize = 1_000_000;
 const MAX_TRANSFER_BYTES: usize = 1 << 30;
+const RGBDNS_ANAME_OPTION: u16 = 65001;
+const RGBDNS_ANAME_RECORD: u16 = 65401;
+const RGBDNS_ANAME_MAGIC: &[u8] = b"RGA1";
 
 pub fn serve(zone: Zone, address: &str, allowed: Vec<IpNet>) -> Result<()> {
     serve_listener(
@@ -154,7 +167,7 @@ pub(crate) fn response_wires(zone: &Zone, query: Message) -> Result<Vec<Vec<u8>>
             Vec::new(),
         )?]);
     }
-    let Some(records) = zone.transfer(&question.name) else {
+    let Some(mut records) = zone.transfer(&question.name) else {
         return Ok(vec![response_wire(
             query.id,
             Some(question),
@@ -162,6 +175,24 @@ pub(crate) fn response_wires(zone: &Zone, query: Message) -> Result<Vec<Vec<u8>>
             Vec::new(),
         )?]);
     };
+    if requests_aname_extension(&query) {
+        let closing_soa = records
+            .pop()
+            .ok_or(Error::Format("AXFR transfer has no closing SOA"))?;
+        for (owner, aname) in zone
+            .transfer_anames(&question.name)
+            .ok_or(Error::Format("AXFR zone has no ANAME scope"))?
+        {
+            let mut payload = RGBDNS_ANAME_MAGIC.to_vec();
+            payload.extend(aname.target.to_wire());
+            records.push(Record {
+                name: owner,
+                ttl: aname.ttl,
+                data: RData::Opaque(RecordType::Unknown(RGBDNS_ANAME_RECORD), payload),
+            });
+        }
+        records.push(closing_soa);
+    }
     let mut responses = Vec::new();
     let mut first = true;
     let mut batch = Vec::new();
@@ -197,6 +228,28 @@ pub(crate) fn response_wires(zone: &Zone, query: Message) -> Result<Vec<Vec<u8>>
         )?);
     }
     Ok(responses)
+}
+
+fn requests_aname_extension(query: &Message) -> bool {
+    query.additionals.iter().any(|record| {
+        let RData::Opt { options, .. } = &record.data else {
+            return false;
+        };
+        let mut remaining = options.as_slice();
+        while remaining.len() >= 4 {
+            let code = u16::from_be_bytes([remaining[0], remaining[1]]);
+            let length = u16::from_be_bytes([remaining[2], remaining[3]]) as usize;
+            remaining = &remaining[4..];
+            if remaining.len() < length {
+                return false;
+            }
+            if code == RGBDNS_ANAME_OPTION && remaining[..length] == *RGBDNS_ANAME_MAGIC {
+                return true;
+            }
+            remaining = &remaining[length..];
+        }
+        false
+    })
 }
 
 fn response_wire(
@@ -236,6 +289,22 @@ pub fn fetch(server: SocketAddr, zone: Name) -> Result<Vec<Record>> {
     let wire = Message {
         id,
         questions: vec![question.clone()],
+        additionals: vec![Record {
+            name: Name::root(),
+            ttl: 0,
+            data: RData::Opt {
+                udp_payload: 1232,
+                extended_rcode: 0,
+                version: 0,
+                flags: 0,
+                options: [
+                    RGBDNS_ANAME_OPTION.to_be_bytes().as_slice(),
+                    (RGBDNS_ANAME_MAGIC.len() as u16).to_be_bytes().as_slice(),
+                    RGBDNS_ANAME_MAGIC,
+                ]
+                .concat(),
+            },
+        }],
         ..Default::default()
     }
     .encode()?;
@@ -348,6 +417,38 @@ pub fn write_tinydns(records: &[Record], output: &Path, temporary: &Path) -> Res
     Ok(())
 }
 
+pub fn write_zone(zone: &Zone, output: &Path, temporary: &Path) -> Result<()> {
+    if output == temporary {
+        return Err(Error::Format("zone output and temporary paths must differ"));
+    }
+    let (records, anames) = zone.materialization_input()?;
+    let mut file = File::create(temporary)?;
+    let write_result: Result<()> = (|| {
+        for record in &records {
+            writeln!(file, "{}", tinydns_line(record)?)?;
+        }
+        for (owner, aname) in anames {
+            writeln!(
+                file,
+                "A{}:{}:{}",
+                tinydns_name(&owner),
+                tinydns_name(&aname.target),
+                aname.ttl
+            )?;
+        }
+        file.sync_all()?;
+        Ok(())
+    })();
+    if let Err(error) = write_result {
+        drop(file);
+        let _ = fs::remove_file(temporary);
+        return Err(error);
+    }
+    drop(file);
+    fs::rename(temporary, output)?;
+    Ok(())
+}
+
 fn tinydns_line(record: &Record) -> Result<String> {
     let owner = record.name.to_string();
     let ttl = record.ttl;
@@ -392,12 +493,57 @@ fn tinydns_line(record: &Record) -> Result<String> {
             data.extend(value);
             format!(":{owner}:257:{}:{ttl}", escape(&data))
         }
-        RData::Opaque(typ, bytes) => {
-            format!(":{owner}:{}:{}:{ttl}", typ.code(), escape(bytes))
+        RData::Opaque(RecordType::Unknown(RGBDNS_ANAME_RECORD), bytes)
+            if bytes.starts_with(RGBDNS_ANAME_MAGIC) =>
+        {
+            let target = decode_aname_target(&bytes[RGBDNS_ANAME_MAGIC.len()..])?;
+            format!("A{owner}:{}:{ttl}", tinydns_name(&target))
         }
+        RData::Opaque(typ, bytes) => format!(":{owner}:{}:{}:{ttl}", typ.code(), escape(bytes)),
         RData::Opt { .. } => return Err(Error::Format("OPT is invalid in AXFR zone data")),
         RData::Name(_, _) => return Err(Error::Format("invalid name-bearing RDATA type")),
     })
+}
+
+fn decode_aname_target(mut wire: &[u8]) -> Result<Name> {
+    let mut labels = Vec::new();
+    loop {
+        let Some((&length, rest)) = wire.split_first() else {
+            return Err(Error::Format("truncated rgbdns ANAME target"));
+        };
+        wire = rest;
+        if length == 0 {
+            if !wire.is_empty() {
+                return Err(Error::Format("trailing rgbdns ANAME target data"));
+            }
+            return Name::from_labels(labels);
+        }
+        if length > 63 || wire.len() < length as usize {
+            return Err(Error::Format("invalid rgbdns ANAME target"));
+        }
+        labels.push(wire[..length as usize].to_vec());
+        wire = &wire[length as usize..];
+    }
+}
+
+fn tinydns_name(name: &Name) -> String {
+    if name.is_root() {
+        return ".".into();
+    }
+    let mut output = String::new();
+    for (index, label) in name.labels().enumerate() {
+        if index != 0 {
+            output.push('.');
+        }
+        for byte in label {
+            if (b'!'..=b'~').contains(byte) && !matches!(byte, b'.' | b':' | b'\\') {
+                output.push(char::from(*byte));
+            } else {
+                output.push_str(&format!("\\{byte:03o}"));
+            }
+        }
+    }
+    output
 }
 
 fn escape(bytes: &[u8]) -> String {
@@ -415,7 +561,7 @@ fn escape(bytes: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::zone::Lookup;
+    use crate::{dnssec, zone::Lookup};
     use std::{net::Ipv4Addr, time::SystemTime};
 
     fn temp_path(label: &str) -> std::path::PathBuf {
@@ -434,6 +580,7 @@ mod tests {
         let zone = Zone::parse(
             "Zexample:ns.example:hostmaster.example:7:8:9:10:11:12\n\
              &example:192.0.2.53:ns.example:300\n\
+             Aexample:publication.ghost.io:120\n\
              +www.example:192.0.2.1:60\n",
         )
         .unwrap();
@@ -455,6 +602,104 @@ mod tests {
             record.name == "www.example".parse().unwrap()
                 && record.data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
         }));
+        assert!(records.iter().any(|record| {
+            record.name == "example".parse().unwrap()
+                && matches!(
+                    &record.data,
+                    RData::Opaque(RecordType::Unknown(RGBDNS_ANAME_RECORD), payload)
+                        if payload.starts_with(RGBDNS_ANAME_MAGIC)
+                )
+        }));
+
+        let output = temp_path("axfr-aname-data");
+        let temporary = temp_path("axfr-aname-data-tmp");
+        write_tinydns(&records, &output, &temporary).unwrap();
+        let imported = Zone::from_file(&output).unwrap();
+        fs::remove_file(output).unwrap();
+        let aname = imported.aname(&"example".parse().unwrap()).unwrap();
+        assert_eq!(aname.target, "publication.ghost.io".parse().unwrap());
+        assert_eq!(aname.ttl, 120);
+    }
+
+    #[test]
+    fn standard_axfr_does_not_expose_private_aname_metadata() {
+        let zone = Zone::parse(
+            "Zexample:ns.example:hostmaster.example:7:8:9:10:11:12\n\
+             &example:192.0.2.53:ns.example:300\n\
+             Aexample:publication.ghost.io:120\n",
+        )
+        .unwrap();
+        let query = Message {
+            id: 9,
+            questions: vec![Question {
+                name: "example".parse().unwrap(),
+                qtype: RecordType::Axfr,
+                qclass: 1,
+            }],
+            ..Default::default()
+        };
+        let responses = response_wires(&zone, query).unwrap();
+        let records = responses
+            .iter()
+            .flat_map(|wire| Message::decode(wire).unwrap().answers)
+            .collect::<Vec<_>>();
+        assert!(
+            !records
+                .iter()
+                .any(|record| { record.rr_type() == RecordType::Unknown(RGBDNS_ANAME_RECORD) })
+        );
+        assert!(!records.iter().any(|record| {
+            record.name == "example".parse().unwrap()
+                && matches!(record.rr_type(), RecordType::A | RecordType::Aaaa)
+        }));
+    }
+
+    #[test]
+    fn standard_axfr_preserves_a_finished_signed_zone() {
+        let directory = temp_path("signed-axfr");
+        fs::create_dir(&directory).unwrap();
+        let key = directory.join("example.pk8");
+        let apex: Name = "example".parse().unwrap();
+        let policy = dnssec::generate_key(&apex, &key).unwrap();
+        let source = Zone::parse(
+            "Zexample:ns.example:hostmaster.example:7:3600:600:86400:300:300\n\
+             &example:192.0.2.53:ns.example:300\n\
+             +www.example:192.0.2.1:300\n",
+        )
+        .unwrap();
+        let signed = Zone::from_compiled_records(
+            dnssec::sign_zone(&source, &policy)
+                .unwrap()
+                .into_iter()
+                .map(|record| (record, crate::zone::RecordMetadata::default()))
+                .collect(),
+            Vec::new(),
+            Vec::new(),
+        );
+        let query = Message {
+            id: 10,
+            questions: vec![Question {
+                name: apex.clone(),
+                qtype: RecordType::Axfr,
+                qclass: 1,
+            }],
+            ..Default::default()
+        };
+        let records = response_wires(&signed, query)
+            .unwrap()
+            .iter()
+            .flat_map(|wire| Message::decode(wire).unwrap().answers)
+            .collect::<Vec<_>>();
+        assert_eq!(records.first(), records.last());
+        for record_type in [RecordType::Dnskey, RecordType::Rrsig, RecordType::Nsec] {
+            assert!(records.iter().any(|record| record.rr_type() == record_type));
+        }
+
+        let output = directory.join("data");
+        write_tinydns(&records, &output, &directory.join("data.tmp")).unwrap();
+        let transferred = Zone::from_file(&output).unwrap();
+        dnssec::check_zone(&transferred, &policy).unwrap();
+        fs::remove_dir_all(directory).unwrap();
     }
 
     #[test]
@@ -480,6 +725,22 @@ mod tests {
             imported.lookup(&"example".parse().unwrap(), RecordType::Txt),
             Lookup::Answer(_)
         ));
+    }
+
+    #[test]
+    fn malformed_negotiated_aname_is_not_installed() {
+        let output = temp_path("bad-aname-data");
+        let temporary = temp_path("bad-aname-data-tmp");
+        let mut payload = RGBDNS_ANAME_MAGIC.to_vec();
+        payload.extend([10, b'x']);
+        let records = vec![Record {
+            name: "example".parse().unwrap(),
+            ttl: 300,
+            data: RData::Opaque(RecordType::Unknown(RGBDNS_ANAME_RECORD), payload),
+        }];
+        assert!(write_tinydns(&records, &output, &temporary).is_err());
+        assert!(!temporary.exists());
+        assert!(!output.exists());
     }
 
     #[test]

@@ -19,7 +19,7 @@ end_line: 9
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d523e32e6d92", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-d523e32e6d92: fn dns_name", "sourcePath": "tests/packet_properties.rs", "startLine": 5, "endLine": 9}
+{"id": "rgbdns-frag-d523e32e6d92", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 5, "endLine": 9}
 ```
 
 ## Excerpt

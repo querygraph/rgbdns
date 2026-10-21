@@ -1,0 +1,100 @@
+---
+type: "code-file"
+source_path: ".github/workflows/build-rpm.yml"
+language: "yaml"
+subsystem: "Project automation"
+line_count: 75
+fragment_count: 1
+rgbdns_commit: "5ae24772"
+---
+
+# .github/workflows/build-rpm.yml
+
+- Subsystem: [[DNS from First Principles/Subsystems/Project automation|Project automation]]
+- Source path: `.github/workflows/build-rpm.yml`
+- Lines: 75
+- Summary: Source file in the Project automation subsystem.
+
+## Extracted Fragments
+
+- [[DNS from First Principles/Fragments/rgbdns-frag-0b30948e402e|build-rpm.yml]]: lines 1-75
+
+## Full Source
+
+```yaml
+name: Build openSUSE RPM
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - packaging/**
+      - docs/OPENSUSE.md
+      - .github/workflows/build-rpm.yml
+  push:
+    branches:
+      - master
+    paths:
+      - Cargo.lock
+      - Cargo.toml
+      - src/**
+      - packaging/**
+      - docs/OPENSUSE.md
+      - .github/workflows/build-rpm.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opensuse-rpm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  x86_64:
+    runs-on: ubuntu-24.04
+    container: opensuse/leap:16.0
+    timeout-minutes: 40
+    steps:
+      - name: Install checkout prerequisites
+        run: zypper --non-interactive install git gzip tar
+
+      - uses: actions/checkout@v5
+
+      - name: Test secondary synchronization
+        run: |
+          packaging/tests/test-secondary-sync.sh
+          packaging/tests/test-import-zones.sh
+          packaging/tests/test-migrate-zones.sh
+          packaging/tests/test-import-data.sh
+          packaging/tests/test-restore-role-units.sh
+
+      - name: Install RPM build dependencies
+        run: |
+          zypper --non-interactive install \
+            cargo man python3 rpm-build rust systemd-rpm-macros
+
+      - name: Build source and binary RPMs
+        run: packaging/build-rpm.sh
+
+      - name: Inspect package
+        run: |
+          rpm -qip dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+          rpm -qlp dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+
+      - name: Verify installed package
+        run: packaging/verify-rpm.sh dist/rpmbuild/RPMS/x86_64/rgbdns-[0-9]*.x86_64.rpm
+
+      - name: Test daily query reporting
+        run: packaging/tests/test-daily-query-report.sh /usr/bin/rgbdns-log-report
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rgbdns-opensuse-leap16-x86_64
+          path: |
+            dist/rpmbuild/RPMS/x86_64/rgbdns-*.x86_64.rpm
+            dist/rpmbuild/SRPMS/rgbdns-*.src.rpm
+          if-no-files-found: error
+```

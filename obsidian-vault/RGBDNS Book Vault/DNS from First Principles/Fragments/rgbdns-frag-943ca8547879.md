@@ -19,7 +19,7 @@ end_line: 71
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-943ca8547879", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-943ca8547879: fn accepted_packets_are_stably_reparseable", "sourcePath": "tests/packet_properties.rs", "startLine": 63, "endLine": 71}
+{"id": "rgbdns-frag-943ca8547879", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 63, "endLine": 71}
 ```
 
 ## Excerpt

@@ -21,7 +21,7 @@ end_line: 244
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-4372b73cba03", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-4372b73cba03: fn preserves_master_files_and_rejects_mixed_input", "sourcePath": "src/dnscache_config.rs", "startLine": 225, "endLine": 244}
+{"id": "rgbdns-frag-4372b73cba03", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 225, "endLine": 244}
 ```
 
 ## Excerpt

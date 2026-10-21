@@ -19,7 +19,7 @@ end_line: 51
 - Subsystem: [[DNS from First Principles/Subsystems/Project automation|Project automation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5470b504fc32", "codeNote": "DNS from First Principles/Code/github/workflows/build-book.yml.source", "heading": "rgbdns-frag-5470b504fc32: file build-book.yml", "sourcePath": ".github/workflows/build-book.yml", "startLine": 1, "endLine": 51}
+{"id": "rgbdns-frag-5470b504fc32", "codeNote": "DNS from First Principles/Code/github/workflows/build-book.yml.source", "sourcePath": ".github/workflows/build-book.yml", "startLine": 1, "endLine": 51}
 ```
 
 ## Excerpt

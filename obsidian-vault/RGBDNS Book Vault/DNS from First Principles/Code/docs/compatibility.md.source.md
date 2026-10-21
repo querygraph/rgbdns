@@ -3,21 +3,21 @@ type: "code-file"
 source_path: "docs/compatibility.md"
 language: "markdown"
 subsystem: "Documentation"
-line_count: 74
+line_count: 79
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/compatibility.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 - Source path: `docs/compatibility.md`
-- Lines: 74
+- Lines: 79
 - Summary: Compatibility and research ledger
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-c1bcd98d6c46|Compatibility and research ledger]]: lines 1-74
+- [[DNS from First Principles/Fragments/rgbdns-frag-42d61b89ea7c|Compatibility and research ledger]]: lines 1-79
 
 ## Full Source
 
@@ -33,6 +33,8 @@ Implemented:
   selection and query-time TAI64 activation/expiration
 - private `A` ANAME marker for apex-safe, cached A/AAAA flattening without
   emitting a wire CNAME
+- negotiated rgbdns-to-rgbdns AXFR preservation of private ANAME targets and
+  TTL caps without exposing private metadata to standard AXFR clients
 - atomic djbdns-compatible `data.cdb` compilation and bounded, validating CDB
   loading; a 19-entry fixture including location, timestamp, SRV, and patched
   IPv6 qualifiers was differentially verified as identical
@@ -43,6 +45,9 @@ Implemented:
 - wildcard synthesis, NXDOMAIN/NODATA SOA authority, REFUSED outside zones
 - referrals with in-bailiwick glue and correct authoritative-bit behavior
 - EDNS(0), BADVERS, DO-bit echo, whole-record UDP truncation, and DNS over TCP
+- opt-in offline authoritative DNSSEC using ECDSA P-256, DNSKEY/RRSIG/NSEC,
+  signed positive and negative answers, DS delegation behavior, and keyless
+  standard AXFR of finished signed snapshots
 - pointer-loop, section-count, label/name, RDLENGTH, and TXT bounds checks
 - randomized property tests and live UDP/TCP integration tests
 - iterative DNSSEC-validating `dnscache`, verified live against signed

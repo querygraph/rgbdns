@@ -195,52 +195,52 @@ not hide them behind one favorable number.
 
 ## Generated Code Fragment Index
 
-These generated links open the collocated rgbdns codebase notes.
+Each card names an rgbdns fragment. In FirstPair Reader, Show code lists its numbered lines and Open file opens the collocated code note with those lines marked.
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d523e32e6d92", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-d523e32e6d92: fn dns_name", "sourcePath": "tests/packet_properties.rs", "startLine": 5, "endLine": 9}
+{"id": "rgbdns-frag-d523e32e6d92", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 5, "endLine": 9}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-ebda46b4d11b", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-ebda46b4d11b: fn record", "sourcePath": "tests/packet_properties.rs", "startLine": 10, "endLine": 25}
+{"id": "rgbdns-frag-ebda46b4d11b", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 10, "endLine": 25}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d74635b61765", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-d74635b61765: fn structured_message", "sourcePath": "tests/packet_properties.rs", "startLine": 26, "endLine": 57}
+{"id": "rgbdns-frag-d74635b61765", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 26, "endLine": 57}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-3533f4b0fcb7", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-3533f4b0fcb7: fn arbitrary_packets_never_panic", "sourcePath": "tests/packet_properties.rs", "startLine": 58, "endLine": 62}
+{"id": "rgbdns-frag-3533f4b0fcb7", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 58, "endLine": 62}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-943ca8547879", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-943ca8547879: fn accepted_packets_are_stably_reparseable", "sourcePath": "tests/packet_properties.rs", "startLine": 63, "endLine": 71}
+{"id": "rgbdns-frag-943ca8547879", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 63, "endLine": 71}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-50dd1f4e2ab3", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-50dd1f4e2ab3: fn structured_messages_roundtrip_without_semantic_loss", "sourcePath": "tests/packet_properties.rs", "startLine": 72, "endLine": 78}
+{"id": "rgbdns-frag-50dd1f4e2ab3", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 72, "endLine": 78}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d899ad878877", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "heading": "rgbdns-frag-d899ad878877: fn ascii_case_changes_do_not_change_name_identity", "sourcePath": "tests/packet_properties.rs", "startLine": 79, "endLine": 103}
+{"id": "rgbdns-frag-d899ad878877", "codeNote": "DNS from First Principles/Code/tests/packet_properties.rs.source", "sourcePath": "tests/packet_properties.rs", "startLine": 79, "endLine": 103}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-69e831b1a28c", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-69e831b1a28c: mod support", "sourcePath": "tests/rfc_conformance.rs", "startLine": 1, "endLine": 6}
+{"id": "rgbdns-frag-69e831b1a28c", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 1, "endLine": 6}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5292cc2a0403", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-5292cc2a0403: fn rfc1035_response_identity_flags_and_question_are_coherent", "sourcePath": "tests/rfc_conformance.rs", "startLine": 7, "endLine": 22}
+{"id": "rgbdns-frag-5292cc2a0403", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 7, "endLine": 22}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-114e43800a7f", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-114e43800a7f: fn rfc9619_standard_queries_require_exactly_one_question", "sourcePath": "tests/rfc_conformance.rs", "startLine": 23, "endLine": 37}
+{"id": "rgbdns-frag-114e43800a7f", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 23, "endLine": 37}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e4b1690ff7a3", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-e4b1690ff7a3: fn rfc8906_unknown_opcode_is_notimp_even_when_its_body_is_unknown", "sourcePath": "tests/rfc_conformance.rs", "startLine": 38, "endLine": 51}
+{"id": "rgbdns-frag-e4b1690ff7a3", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 38, "endLine": 51}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-6a8de18b800c", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-6a8de18b800c: fn rfc8906_all_unimplemented_opcodes_get_notimp_without_flag_reflection", "sourcePath": "tests/rfc_conformance.rs", "startLine": 52, "endLine": 65}
+{"id": "rgbdns-frag-6a8de18b800c", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 52, "endLine": 65}
 ```

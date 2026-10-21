@@ -21,7 +21,7 @@ end_line: 52
 - Component: [[DNS from First Principles/Components/dnsfilter|dnsfilter]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-8d3f2bd5f0c8", "codeNote": "DNS from First Principles/Code/src/bin/dnsfilter.rs.source", "heading": "rgbdns-frag-8d3f2bd5f0c8: fn options", "sourcePath": "src/bin/dnsfilter.rs", "startLine": 36, "endLine": 52}
+{"id": "rgbdns-frag-8d3f2bd5f0c8", "codeNote": "DNS from First Principles/Code/src/bin/dnsfilter.rs.source", "sourcePath": "src/bin/dnsfilter.rs", "startLine": 36, "endLine": 52}
 ```
 
 ## Excerpt

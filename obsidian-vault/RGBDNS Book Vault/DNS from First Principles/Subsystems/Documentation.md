@@ -1,14 +1,20 @@
 ---
 type: "subsystem"
 subsystem: "Documentation"
-file_count: 14
+file_count: 21
 ---
 
 # Documentation
 
 - [[DNS from First Principles/Code/docs/DEBIAN.md.source|docs/DEBIAN.md]]
+- [[DNS from First Principles/Code/docs/DNSSEC-DESIGN.md.source|docs/DNSSEC-DESIGN.md]]
+- [[DNS from First Principles/Code/docs/DNSSEC.md.source|docs/DNSSEC.md]]
 - [[DNS from First Principles/Code/docs/OBSIDIAN-VAULT.md.source|docs/OBSIDIAN-VAULT.md]]
+- [[DNS from First Principles/Code/docs/OPENSUSE.md.source|docs/OPENSUSE.md]]
+- [[DNS from First Principles/Code/docs/RGBDNS_SETUP.md.source|docs/RGBDNS_SETUP.md]]
 - [[DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source|docs/blog/announcing-rgbdns/post.md]]
+- [[DNS from First Principles/Code/docs/blog/operationalizing-rgbdns/post.md.source|docs/blog/operationalizing-rgbdns/post.md]]
+- [[DNS from First Principles/Code/docs/blog/rgbdns-dnssec/post.md.source|docs/blog/rgbdns-dnssec/post.md]]
 - [[DNS from First Principles/Code/docs/book/README.md.source|docs/book/README.md]]
 - [[DNS from First Principles/Code/docs/book/build-local.sh.source|docs/book/build-local.sh]]
 - [[DNS from First Principles/Code/docs/book/build.sh.source|docs/book/build.sh]]
@@ -20,3 +26,4 @@ file_count: 14
 - [[DNS from First Principles/Code/docs/compatibility.md.source|docs/compatibility.md]]
 - [[DNS from First Principles/Code/docs/conformance.md.source|docs/conformance.md]]
 - [[DNS from First Principles/Code/docs/performance.md.source|docs/performance.md]]
+- [[DNS from First Principles/Code/docs/work-review-1.md.source|docs/work-review-1.md]]

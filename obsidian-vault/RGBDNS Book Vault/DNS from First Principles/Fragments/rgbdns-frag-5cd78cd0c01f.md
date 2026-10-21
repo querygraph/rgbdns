@@ -21,7 +21,7 @@ end_line: 7
 - Component: [[DNS from First Principles/Components/axfrdns-conf|axfrdns-conf]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-5cd78cd0c01f", "codeNote": "DNS from First Principles/Code/src/bin/axfrdns-conf.rs.source", "heading": "rgbdns-frag-5cd78cd0c01f: fn main", "sourcePath": "src/bin/axfrdns-conf.rs", "startLine": 1, "endLine": 7}
+{"id": "rgbdns-frag-5cd78cd0c01f", "codeNote": "DNS from First Principles/Code/src/bin/axfrdns-conf.rs.source", "sourcePath": "src/bin/axfrdns-conf.rs", "startLine": 1, "endLine": 7}
 ```
 
 ## Excerpt

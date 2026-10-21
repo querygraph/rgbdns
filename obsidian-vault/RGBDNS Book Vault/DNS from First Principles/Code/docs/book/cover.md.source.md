@@ -5,7 +5,7 @@ language: "markdown"
 subsystem: "Documentation"
 line_count: 11
 fragment_count: 2
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/book/cover.md
@@ -29,7 +29,7 @@ rgbdns_commit: "79502939"
 
 Alexy Khrabrov
 
-Version 0.1.1 · 2026-07-23
+Version 0.4.0 · 2026-08-21
 
 Released into the public domain under the Unlicense.
 

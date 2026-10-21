@@ -19,7 +19,7 @@ end_line: 97
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0446b5c1d2ef", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-0446b5c1d2ef: heading Names form a delegated tree", "sourcePath": "docs/book/rgbdns.md", "startLine": 96, "endLine": 97}
+{"id": "rgbdns-frag-0446b5c1d2ef", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 96, "endLine": 97}
 ```
 
 ## Excerpt

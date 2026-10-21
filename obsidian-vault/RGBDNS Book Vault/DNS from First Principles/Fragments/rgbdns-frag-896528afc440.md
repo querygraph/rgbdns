@@ -21,7 +21,7 @@ end_line: 224
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-896528afc440", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-896528afc440: fn converts_legacy_ipv4_and_ipv6_server_lines", "sourcePath": "src/dnscache_config.rs", "startLine": 210, "endLine": 224}
+{"id": "rgbdns-frag-896528afc440", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 210, "endLine": 224}
 ```
 
 ## Excerpt

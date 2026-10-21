@@ -19,7 +19,7 @@ end_line: 23
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-8087eb39852c", "codeNote": "DNS from First Principles/Code/tests/daemontools.rs.source", "heading": "rgbdns-frag-8087eb39852c: fn directory", "sourcePath": "tests/daemontools.rs", "startLine": 12, "endLine": 23}
+{"id": "rgbdns-frag-8087eb39852c", "codeNote": "DNS from First Principles/Code/tests/daemontools.rs.source", "sourcePath": "tests/daemontools.rs", "startLine": 12, "endLine": 23}
 ```
 
 ## Excerpt

@@ -21,7 +21,7 @@ end_line: 300
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d2d519f43a8b", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "heading": "rgbdns-frag-d2d519f43a8b: fn host_mode_rejects_duplicate_owner_or_address", "sourcePath": "src/tinydns_edit.rs", "startLine": 274, "endLine": 300}
+{"id": "rgbdns-frag-d2d519f43a8b", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "sourcePath": "src/tinydns_edit.rs", "startLine": 274, "endLine": 300}
 ```
 
 ## Excerpt

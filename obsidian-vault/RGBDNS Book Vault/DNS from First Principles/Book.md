@@ -1,10 +1,10 @@
 ---
 type: "book"
-rgbdns_commit: "79502939"
-book_commit: "79502939"
-chapter_count: 31
-code_file_count: 96
-fragment_count: 696
+rgbdns_commit: "5ae24772"
+book_commit: "5ae24772"
+chapter_count: 32
+code_file_count: 139
+fragment_count: 1097
 ---
 
 # DNS from First Principles
@@ -42,6 +42,7 @@ fragment_count: 696
 - [[DNS from First Principles/Chapters/29-Where-DNS-ends|Where DNS ends]]
 - [[DNS from First Principles/Chapters/30-Appendix-A-Configuration-quick-reference|Appendix A: Configuration quick reference]]
 - [[DNS from First Principles/Chapters/31-Appendix-B-Further-reading|Appendix B: Further reading]]
+- [[DNS from First Principles/Chapters/32-Appendix-C-Submitted-Internet-Draft-ANAME-and-Zone-Transfer|Appendix C: Submitted Internet-Draft: ANAME and Zone Transfer]]
 
 ## Codebase
 

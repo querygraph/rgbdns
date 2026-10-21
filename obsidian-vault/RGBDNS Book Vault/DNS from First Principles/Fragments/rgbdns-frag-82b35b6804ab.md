@@ -21,7 +21,7 @@ end_line: 12
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-82b35b6804ab", "codeNote": "DNS from First Principles/Code/src/aname.rs.source", "heading": "rgbdns-frag-82b35b6804ab: const NEGATIVE_TTL", "sourcePath": "src/aname.rs", "startLine": 12, "endLine": 12}
+{"id": "rgbdns-frag-82b35b6804ab", "codeNote": "DNS from First Principles/Code/src/aname.rs.source", "sourcePath": "src/aname.rs", "startLine": 12, "endLine": 12}
 ```
 
 ## Excerpt

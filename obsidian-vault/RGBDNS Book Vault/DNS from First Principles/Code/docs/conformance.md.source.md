@@ -3,28 +3,28 @@ type: "code-file"
 source_path: "docs/conformance.md"
 language: "markdown"
 subsystem: "Documentation"
-line_count: 79
+line_count: 89
 fragment_count: 4
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/conformance.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 - Source path: `docs/conformance.md`
-- Lines: 79
+- Lines: 89
 - Summary: DNS conformance and security matrix
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-2ac95f597019|DNS conformance and security matrix]]: lines 1-28
-- [[DNS from First Principles/Fragments/rgbdns-frag-aad7154a298a|Independent and ecosystem sources]]: lines 29-50
-- [[DNS from First Principles/Fragments/rgbdns-frag-6b9de5d06379|Deliberate scope boundaries]]: lines 51-65
-- [[DNS from First Principles/Fragments/rgbdns-frag-0d9f2165b008|Running the matrix]]: lines 66-79
+- [[DNS from First Principles/Fragments/rgbdns-frag-2d37e4940116|DNS conformance and security matrix]]: lines 1-30
+- [[DNS from First Principles/Fragments/rgbdns-frag-120c7a4bdbe5|Independent and ecosystem sources]]: lines 31-52
+- [[DNS from First Principles/Fragments/rgbdns-frag-118a8526682d|Deliberate scope boundaries]]: lines 53-75
+- [[DNS from First Principles/Fragments/rgbdns-frag-97e6e776df91|Running the matrix]]: lines 76-89
 
 ## Full Source
 
-```markdown
+````markdown
 # DNS conformance and security matrix
 
 This matrix makes rgbdns's test claims traceable. It covers the protocol surface
@@ -47,6 +47,8 @@ and independent ldns interoperability in `tests/drill_interop.rs`.
 | [RFC 4343](https://www.rfc-editor.org/rfc/rfc4343.html) | ASCII-case-insensitive identity with query-case preservation | `rfc4343_*`, generated case properties |
 | [RFC 4592](https://www.rfc-editor.org/rfc/rfc4592.html) | Closest encloser, empty non-terminals, wildcard blocking and synthesis | `rfc4592_*`, zone wildcard tests |
 | [RFC 5936](https://www.rfc-editor.org/rfc/rfc5936.html) | AXFR framing, question and flag validation, SOA bookends, zone boundaries | AXFR unit and live-transfer tests |
+| [RFC 2136](https://www.rfc-editor.org/rfc/rfc2136.html) | TCP UPDATE, TXT add and value/RRset deletion, prerequisites, atomic application and update response codes | ACME update unit and live interoperability tests |
+| [RFC 2845](https://www.rfc-editor.org/rfc/rfc2845.html) | HMAC-SHA256 TSIG request authentication, time bounds, replay rejection and signed responses | ACME TSIG tests and `nsupdate` interoperability |
 | [RFC 6891](https://www.rfc-editor.org/rfc/rfc6891.html) | One root-owned OPT in additional, payload limit, BADVERS, DO, ignored unknown flags/options, OPT retained on truncation | `rfc6891_*`, `rfc8906_badvers_*` |
 | [RFC 7766](https://www.rfc-editor.org/rfc/rfc7766.html) | TCP support, framing, connection reuse, pipelined queries, no UDP-size limit on TCP | live server TCP tests |
 | [RFC 8482](https://www.rfc-editor.org/rfc/rfc8482.html) | Full ANY answers remain a permitted server policy | zone `RecordType::Any` tests |
@@ -77,10 +79,11 @@ normative RFC that supplies each oracle.
 
 ## Deliberate scope boundaries
 
-The following are not claimed as implemented by rgbdns 0.1.1:
+The following are not claimed as implemented by rgbdns 0.6.5:
 
-- dynamic UPDATE, NOTIFY, IXFR, DSO, DNS Cookies, or TSIG/SIG(0);
-- authoritative DNSSEC signing and denial-of-existence generation;
+- general-purpose dynamic UPDATE, NOTIFY, IXFR, DSO, DNS Cookies, or SIG(0);
+- TSIG algorithms other than the ACME update profile's HMAC-SHA256;
+- automated multi-key DNSSEC rollover, NSEC3, CDS, or CDNSKEY;
 - DNS over TLS, HTTPS, or QUIC;
 - a general RFC 1035 master-file parser (rgbdns uses tinydns source and CDB);
 - recursive protocol internals supplied by Hickory beyond rgbdns's
@@ -89,6 +92,13 @@ The following are not claimed as implemented by rgbdns 0.1.1:
 Unknown EDNS options are parsed structurally and ignored as RFC 6891 requires.
 Unknown ordinary RR types use opaque RDATA as RFC 3597 requires. An unsupported
 opcode receives NOTIMP rather than being silently dropped.
+
+The rgbdns ANAME AXFR extension is explicitly private and negotiated. Tests
+prove that an opted-in rgbdns peer round-trips the target and TTL, a standard
+AXFR request receives no private record, and malformed private payloads are
+rejected before zone activation. ANAME resolver tests also prove that
+concurrent misses are coalesced and that a failed target is briefly suppressed
+instead of immediately starting another recursive chain.
 
 ## Running the matrix
 
@@ -104,4 +114,4 @@ The public-hierarchy DNSSEC test is intentionally opt-in:
 ```sh
 cargo test --test dnscache_network -- --ignored
 ```
-```
+````

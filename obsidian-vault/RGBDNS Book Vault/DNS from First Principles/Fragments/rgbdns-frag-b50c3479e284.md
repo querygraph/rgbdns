@@ -21,7 +21,7 @@ end_line: 12
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b50c3479e284", "codeNote": "DNS from First Principles/Code/src/tai64.rs.source", "heading": "rgbdns-frag-b50c3479e284: const INITIAL_TAI_UTC_OFFSET", "sourcePath": "src/tai64.rs", "startLine": 10, "endLine": 12}
+{"id": "rgbdns-frag-b50c3479e284", "codeNote": "DNS from First Principles/Code/src/tai64.rs.source", "sourcePath": "src/tai64.rs", "startLine": 10, "endLine": 12}
 ```
 
 ## Excerpt

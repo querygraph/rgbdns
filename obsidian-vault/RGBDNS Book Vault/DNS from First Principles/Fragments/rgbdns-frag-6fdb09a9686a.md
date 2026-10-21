@@ -21,7 +21,7 @@ end_line: 223
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-6fdb09a9686a", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "heading": "rgbdns-frag-6fdb09a9686a: fn split_fields", "sourcePath": "src/tinydns_edit.rs", "startLine": 209, "endLine": 223}
+{"id": "rgbdns-frag-6fdb09a9686a", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "sourcePath": "src/tinydns_edit.rs", "startLine": 209, "endLine": 223}
 ```
 
 ## Excerpt

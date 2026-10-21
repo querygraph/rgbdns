@@ -19,7 +19,7 @@ end_line: 154
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-6ce528da9068", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "heading": "rgbdns-frag-6ce528da9068: heading Running without `supervise`", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 137, "endLine": 154}
+{"id": "rgbdns-frag-6ce528da9068", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 137, "endLine": 154}
 ```
 
 ## Excerpt

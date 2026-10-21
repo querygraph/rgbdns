@@ -34,28 +34,28 @@ combination makes rgbdns easier to change without making DNS easier to fool.
 
 ## Generated Code Fragment Index
 
-These generated links open the collocated rgbdns codebase notes.
+Each card names an rgbdns fragment. In FirstPair Reader, Show code lists its numbered lines and Open file opens the collocated code note with those lines marked.
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b143870e07fb", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "heading": "rgbdns-frag-b143870e07fb: const DEFAULT_ITERATIONS", "sourcePath": "benches/dns_core.rs", "startLine": 8, "endLine": 13}
+{"id": "rgbdns-frag-b143870e07fb", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "sourcePath": "benches/dns_core.rs", "startLine": 8, "endLine": 13}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-113e32eecd5c", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "heading": "rgbdns-frag-113e32eecd5c: fn measure", "sourcePath": "benches/dns_core.rs", "startLine": 14, "endLine": 28}
+{"id": "rgbdns-frag-113e32eecd5c", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "sourcePath": "benches/dns_core.rs", "startLine": 14, "endLine": 28}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0591f6d10783", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "heading": "rgbdns-frag-0591f6d10783: fn report", "sourcePath": "benches/dns_core.rs", "startLine": 29, "endLine": 32}
+{"id": "rgbdns-frag-0591f6d10783", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "sourcePath": "benches/dns_core.rs", "startLine": 29, "endLine": 32}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b5f853019841", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "heading": "rgbdns-frag-b5f853019841: fn main", "sourcePath": "benches/dns_core.rs", "startLine": 33, "endLine": 113}
+{"id": "rgbdns-frag-b5f853019841", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "sourcePath": "benches/dns_core.rs", "startLine": 33, "endLine": 113}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-9d0d58ec4f3e", "codeNote": "DNS from First Principles/Code/docs/performance.md.source", "heading": "rgbdns-frag-9d0d58ec4f3e: heading Performance methodology", "sourcePath": "docs/performance.md", "startLine": 1, "endLine": 33}
+{"id": "rgbdns-frag-9d0d58ec4f3e", "codeNote": "DNS from First Principles/Code/docs/performance.md.source", "sourcePath": "docs/performance.md", "startLine": 1, "endLine": 33}
 ```
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-6c356aa252b7", "codeNote": "DNS from First Principles/Code/docs/performance.md.source", "heading": "rgbdns-frag-6c356aa252b7: heading Optimization checkpoint", "sourcePath": "docs/performance.md", "startLine": 34, "endLine": 55}
+{"id": "rgbdns-frag-6c356aa252b7", "codeNote": "DNS from First Principles/Code/docs/performance.md.source", "sourcePath": "docs/performance.md", "startLine": 34, "endLine": 55}
 ```

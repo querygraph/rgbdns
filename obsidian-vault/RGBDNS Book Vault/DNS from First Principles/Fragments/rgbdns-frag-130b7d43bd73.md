@@ -19,7 +19,7 @@ end_line: 14
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-130b7d43bd73", "codeNote": "DNS from First Principles/Code/tests/drill_interop.rs.source", "heading": "rgbdns-frag-130b7d43bd73: struct Server", "sourcePath": "tests/drill_interop.rs", "startLine": 10, "endLine": 14}
+{"id": "rgbdns-frag-130b7d43bd73", "codeNote": "DNS from First Principles/Code/tests/drill_interop.rs.source", "sourcePath": "tests/drill_interop.rs", "startLine": 10, "endLine": 14}
 ```
 
 ## Excerpt

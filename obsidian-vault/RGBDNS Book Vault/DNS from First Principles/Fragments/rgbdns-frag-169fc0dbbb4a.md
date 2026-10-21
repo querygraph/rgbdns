@@ -21,7 +21,7 @@ end_line: 16
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-169fc0dbbb4a", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "heading": "rgbdns-frag-169fc0dbbb4a: const MAX_TRANSFER_RECORDS", "sourcePath": "src/axfr.rs", "startLine": 16, "endLine": 16}
+{"id": "rgbdns-frag-169fc0dbbb4a", "codeNote": "DNS from First Principles/Code/src/axfr.rs.source", "sourcePath": "src/axfr.rs", "startLine": 16, "endLine": 16}
 ```
 
 ## Excerpt

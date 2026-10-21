@@ -21,7 +21,7 @@ end_line: 159
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-90910fbcda6b", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-90910fbcda6b: impl Drop", "sourcePath": "src/dnscache_config.rs", "startLine": 159, "endLine": 159}
+{"id": "rgbdns-frag-90910fbcda6b", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 159, "endLine": 159}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 187
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-63702d1be377", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-63702d1be377: fn rfc8906_badvers_survives_unknown_edns_flags_and_options", "sourcePath": "tests/rfc_conformance.rs", "startLine": 170, "endLine": 187}
+{"id": "rgbdns-frag-63702d1be377", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 170, "endLine": 187}
 ```
 
 ## Excerpt

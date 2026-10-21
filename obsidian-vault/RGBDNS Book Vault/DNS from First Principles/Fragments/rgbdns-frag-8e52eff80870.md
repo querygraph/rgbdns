@@ -19,7 +19,7 @@ end_line: 87
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-8e52eff80870", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "heading": "rgbdns-frag-8e52eff80870: fn compression_pointer_must_target_a_previous_name_boundary", "sourcePath": "tests/wire_security.rs", "startLine": 71, "endLine": 87}
+{"id": "rgbdns-frag-8e52eff80870", "codeNote": "DNS from First Principles/Code/tests/wire_security.rs.source", "sourcePath": "tests/wire_security.rs", "startLine": 71, "endLine": 87}
 ```
 
 ## Excerpt

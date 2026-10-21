@@ -6,7 +6,7 @@ subsystem: "Authoritative service"
 crate: "rgbdns"
 line_count: 371
 fragment_count: 12
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/cdb.rs

@@ -4,9 +4,9 @@ source_path: "src/zone.rs"
 language: "rust"
 subsystem: "Authoritative service"
 crate: "rgbdns"
-line_count: 1052
-fragment_count: 49
-rgbdns_commit: "79502939"
+line_count: 1348
+fragment_count: 66
+rgbdns_commit: "5ae24772"
 ---
 
 # src/zone.rs
@@ -14,60 +14,77 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/Authoritative service|Authoritative service]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/zone.rs`
-- Lines: 1052
-- Summary: Source file in the Authoritative service subsystem.
+- Lines: 1348
+- Summary: The later of two SOA serials in RFC 1982 serial-number order.
 
 ## Extracted Fragments
 
 - [[DNS from First Principles/Fragments/rgbdns-frag-ebf4f59215f2|Zone]]: lines 11-24
 - [[DNS from First Principles/Fragments/rgbdns-frag-e1d80abe1755|Aname]]: lines 25-30
 - [[DNS from First Principles/Fragments/rgbdns-frag-5c488af2e254|RecordMetadata]]: lines 31-34
-- [[DNS from First Principles/Fragments/rgbdns-frag-6e8fb6392f7c|Zone]]: lines 35-35
-- [[DNS from First Principles/Fragments/rgbdns-frag-4c56545e9677|from_file]]: lines 36-48
-- [[DNS from First Principles/Fragments/rgbdns-frag-a7aa463839ef|parse]]: lines 49-51
-- [[DNS from First Principles/Fragments/rgbdns-frag-647126fbe1a0|parse_with_serial]]: lines 52-67
-- [[DNS from First Principles/Fragments/rgbdns-frag-f4af87c101c0|validate_aliases]]: lines 68-115
-- [[DNS from First Principles/Fragments/rgbdns-frag-1711d6afe285|add]]: lines 116-130
-- [[DNS from First Principles/Fragments/rgbdns-frag-3696486a4c17|record_entries]]: lines 131-141
-- [[DNS from First Principles/Fragments/rgbdns-frag-6d6177059c97|location_entries]]: lines 142-146
-- [[DNS from First Principles/Fragments/rgbdns-frag-0a5708d8a33e|aname_entries]]: lines 147-149
-- [[DNS from First Principles/Fragments/rgbdns-frag-03c0b885e743|aname]]: lines 150-152
-- [[DNS from First Principles/Fragments/rgbdns-frag-eeabfb747faa|has_anames]]: lines 153-155
-- [[DNS from First Principles/Fragments/rgbdns-frag-5071faf9bdcf|transfer]]: lines 156-179
-- [[DNS from First Principles/Fragments/rgbdns-frag-18ca4be2b107|from_compiled_records]]: lines 180-218
-- [[DNS from First Principles/Fragments/rgbdns-frag-2080b97a017a|add_line]]: lines 219-299
-- [[DNS from First Principles/Fragments/rgbdns-frag-d8c4e0aee989|lookup]]: lines 529-531
-- [[DNS from First Principles/Fragments/rgbdns-frag-948bf6e5feb7|lookup_from]]: lines 532-534
-- [[DNS from First Principles/Fragments/rgbdns-frag-1c0a72894bbe|lookup_for]]: lines 535-615
-- [[DNS from First Principles/Fragments/rgbdns-frag-5e582526ed53|soa]]: lines 622-626
-- [[DNS from First Principles/Fragments/rgbdns-frag-f88b0dcce53a|visible_records]]: lines 627-652
-- [[DNS from First Principles/Fragments/rgbdns-frag-6df7a8cc5d4f|client_location]]: lines 653-670
-- [[DNS from First Principles/Fragments/rgbdns-frag-ed0bf3adfed0|name_exists]]: lines 671-683
-- [[DNS from First Principles/Fragments/rgbdns-frag-7f213f06d1f1|unix_now]]: lines 684-689
-- [[DNS from First Principles/Fragments/rgbdns-frag-ce4d21a9257e|Lookup]]: lines 690-699
-- [[DNS from First Principles/Fragments/rgbdns-frag-66afd2f4765a|split_fields]]: lines 700-712
-- [[DNS from First Principles/Fragments/rgbdns-frag-1dcae386e987|field]]: lines 713-717
-- [[DNS from First Principles/Fragments/rgbdns-frag-bbbc1b59c145|field_opt]]: lines 718-720
-- [[DNS from First Principles/Fragments/rgbdns-frag-e7d0187f26d5|number_or]]: lines 721-726
-- [[DNS from First Principles/Fragments/rgbdns-frag-fce321309f41|expanded_target]]: lines 727-734
-- [[DNS from First Principles/Fragments/rgbdns-frag-b85693859c2a|record_metadata]]: lines 735-752
-- [[DNS from First Principles/Fragments/rgbdns-frag-72f85a565c18|location_code]]: lines 753-759
-- [[DNS from First Principles/Fragments/rgbdns-frag-8019a4049ec2|unescape]]: lines 760-794
-- [[DNS from First Principles/Fragments/rgbdns-frag-fefef3c64e8e|tests]]: lines 795-797
-- [[DNS from First Principles/Fragments/rgbdns-frag-d484f0dd4859|common_markers]]: lines 798-812
-- [[DNS from First Principles/Fragments/rgbdns-frag-9e00c4c01f81|wildcard]]: lines 813-820
-- [[DNS from First Principles/Fragments/rgbdns-frag-c624c9699d4f|escaped_colon]]: lines 821-824
-- [[DNS from First Principles/Fragments/rgbdns-frag-a0256b2e6482|patched_srv_marker_and_glue]]: lines 825-844
-- [[DNS from First Principles/Fragments/rgbdns-frag-b62c04c16359|original_ns_and_mx_field_positions_and_expansion]]: lines 845-877
-- [[DNS from First Principles/Fragments/rgbdns-frag-30f3da1f3cc7|explicit_soa_uses_ttl_field_nine]]: lines 878-895
-- [[DNS from First Principles/Fragments/rgbdns-frag-61b0c4c70016|text_escapes_use_one_to_three_octal_digits]]: lines 896-900
-- [[DNS from First Principles/Fragments/rgbdns-frag-67422069cdc9|tai64_activation_and_expiration_are_evaluated_at_lookup]]: lines 901-901
-- [[DNS from First Principles/Fragments/rgbdns-frag-474931ff0bc3|TAI_EPOCH]]: lines 902-930
-- [[DNS from First Principles/Fragments/rgbdns-frag-e6cf835581fe|longest_client_prefix_selects_location_records]]: lines 931-964
-- [[DNS from First Principles/Fragments/rgbdns-frag-f9ed7fd4df7e|implicit_soa_uses_source_serial_and_generic_types_are_restricted]]: lines 965-977
-- [[DNS from First Principles/Fragments/rgbdns-frag-857a1ab82fb7|empty_nonterminals_and_closest_encloser_block_higher_wildcards]]: lines 978-1000
-- [[DNS from First Principles/Fragments/rgbdns-frag-970bdea3e765|aname_coexists_with_apex_authority_but_not_address_or_cname_data]]: lines 1001-1028
-- [[DNS from First Principles/Fragments/rgbdns-frag-863520344cf9|patched_ipv6_flat_format_has_unambiguous_ttl_and_reverse_trees]]: lines 1029-1052
+- [[DNS from First Principles/Fragments/rgbdns-frag-d3d879f22833|MaterializationInput]]: lines 35-36
+- [[DNS from First Principles/Fragments/rgbdns-frag-79ea8b5692b8|newer_serial]]: lines 37-44
+- [[DNS from First Principles/Fragments/rgbdns-frag-37e0a52d0465|Zone]]: lines 45-47
+- [[DNS from First Principles/Fragments/rgbdns-frag-2a770356b45a|with_acme_overlay]]: lines 48-99
+- [[DNS from First Principles/Fragments/rgbdns-frag-fc2281affe0c|soa_serial]]: lines 100-109
+- [[DNS from First Principles/Fragments/rgbdns-frag-3b7d91408492|is_authoritative]]: lines 110-112
+- [[DNS from First Principles/Fragments/rgbdns-frag-636ad5773610|is_dnssec_signed]]: lines 113-119
+- [[DNS from First Principles/Fragments/rgbdns-frag-8607097cd461|from_file]]: lines 120-132
+- [[DNS from First Principles/Fragments/rgbdns-frag-c3fab1f9f5c9|parse]]: lines 133-135
+- [[DNS from First Principles/Fragments/rgbdns-frag-a8c938b0a480|parse_with_serial]]: lines 136-151
+- [[DNS from First Principles/Fragments/rgbdns-frag-2d6178010e02|validate_aliases]]: lines 152-199
+- [[DNS from First Principles/Fragments/rgbdns-frag-230fef373ce0|add]]: lines 200-214
+- [[DNS from First Principles/Fragments/rgbdns-frag-0495392f2c71|record_entries]]: lines 215-225
+- [[DNS from First Principles/Fragments/rgbdns-frag-373e095ef9a2|location_entries]]: lines 226-230
+- [[DNS from First Principles/Fragments/rgbdns-frag-8865b8fe1f9d|aname_entries]]: lines 231-233
+- [[DNS from First Principles/Fragments/rgbdns-frag-ca3600304ff7|transfer_anames]]: lines 234-252
+- [[DNS from First Principles/Fragments/rgbdns-frag-defe520b4c5c|aname]]: lines 253-255
+- [[DNS from First Principles/Fragments/rgbdns-frag-1dc9d0701169|has_anames]]: lines 256-258
+- [[DNS from First Principles/Fragments/rgbdns-frag-faeef6810168|has_aname_in_zone]]: lines 259-262
+- [[DNS from First Principles/Fragments/rgbdns-frag-ddb2ef73889a|has_qualified_data_in_zone]]: lines 263-274
+- [[DNS from First Principles/Fragments/rgbdns-frag-d16edb4202b0|authoritative_names]]: lines 275-277
+- [[DNS from First Principles/Fragments/rgbdns-frag-cd7a8aca66f3|records_outside]]: lines 278-287
+- [[DNS from First Principles/Fragments/rgbdns-frag-7f94160c210b|materialization_input]]: lines 288-306
+- [[DNS from First Principles/Fragments/rgbdns-frag-053279bf2ac4|transfer]]: lines 307-330
+- [[DNS from First Principles/Fragments/rgbdns-frag-890deacdeaf9|from_compiled_records]]: lines 331-369
+- [[DNS from First Principles/Fragments/rgbdns-frag-32b94254ea9e|add_line]]: lines 370-450
+- [[DNS from First Principles/Fragments/rgbdns-frag-d145f8bfd76e|lookup]]: lines 682-684
+- [[DNS from First Principles/Fragments/rgbdns-frag-d1f5895a12fa|lookup_from]]: lines 685-687
+- [[DNS from First Principles/Fragments/rgbdns-frag-58007b39d528|lookup_for]]: lines 688-768
+- [[DNS from First Principles/Fragments/rgbdns-frag-a4e8a21459c7|soa]]: lines 793-797
+- [[DNS from First Principles/Fragments/rgbdns-frag-354e5009ee9b|visible_records]]: lines 798-823
+- [[DNS from First Principles/Fragments/rgbdns-frag-b66581e6e555|client_location]]: lines 824-841
+- [[DNS from First Principles/Fragments/rgbdns-frag-c0bdf4828d47|name_exists]]: lines 842-853
+- [[DNS from First Principles/Fragments/rgbdns-frag-155bc7530752|dnssec_signatures]]: lines 854-890
+- [[DNS from First Principles/Fragments/rgbdns-frag-6e877f2c2a4e|dnssec_nsec_at]]: lines 891-908
+- [[DNS from First Principles/Fragments/rgbdns-frag-11a440e2eae5|dnssec_nsec_zone]]: lines 909-944
+- [[DNS from First Principles/Fragments/rgbdns-frag-73e9ad084753|rrsig_covered]]: lines 945-951
+- [[DNS from First Principles/Fragments/rgbdns-frag-c9c29728a270|unix_now]]: lines 952-957
+- [[DNS from First Principles/Fragments/rgbdns-frag-183dcd88cb73|Lookup]]: lines 958-967
+- [[DNS from First Principles/Fragments/rgbdns-frag-0b5f9172900d|split_fields]]: lines 968-980
+- [[DNS from First Principles/Fragments/rgbdns-frag-f66d8fab58dd|field]]: lines 981-985
+- [[DNS from First Principles/Fragments/rgbdns-frag-3eaad9f2e40f|field_opt]]: lines 986-988
+- [[DNS from First Principles/Fragments/rgbdns-frag-3c4c118d61de|number_or]]: lines 989-994
+- [[DNS from First Principles/Fragments/rgbdns-frag-ca60714f58c2|expanded_target]]: lines 995-1002
+- [[DNS from First Principles/Fragments/rgbdns-frag-1110882373cf|record_metadata]]: lines 1003-1020
+- [[DNS from First Principles/Fragments/rgbdns-frag-1a679f85ce82|location_code]]: lines 1021-1027
+- [[DNS from First Principles/Fragments/rgbdns-frag-062272b70988|unescape]]: lines 1028-1062
+- [[DNS from First Principles/Fragments/rgbdns-frag-46263ecb4c90|tests]]: lines 1063-1065
+- [[DNS from First Principles/Fragments/rgbdns-frag-4edddab661cf|common_markers]]: lines 1066-1080
+- [[DNS from First Principles/Fragments/rgbdns-frag-807960c521fe|wildcard]]: lines 1081-1088
+- [[DNS from First Principles/Fragments/rgbdns-frag-7b48fc998842|escaped_colon]]: lines 1089-1092
+- [[DNS from First Principles/Fragments/rgbdns-frag-9c946d82538d|patched_srv_marker_and_glue]]: lines 1093-1112
+- [[DNS from First Principles/Fragments/rgbdns-frag-7d9b00ff3ed7|original_ns_and_mx_field_positions_and_expansion]]: lines 1113-1145
+- [[DNS from First Principles/Fragments/rgbdns-frag-3a4596180b49|explicit_soa_uses_ttl_field_nine]]: lines 1146-1163
+- [[DNS from First Principles/Fragments/rgbdns-frag-477ba6f85fdb|text_escapes_use_one_to_three_octal_digits]]: lines 1164-1168
+- [[DNS from First Principles/Fragments/rgbdns-frag-7e54e39e318f|tai64_activation_and_expiration_are_evaluated_at_lookup]]: lines 1169-1169
+- [[DNS from First Principles/Fragments/rgbdns-frag-3c26d97aaee7|TAI_EPOCH]]: lines 1170-1198
+- [[DNS from First Principles/Fragments/rgbdns-frag-79f59c5b2fab|longest_client_prefix_selects_location_records]]: lines 1199-1232
+- [[DNS from First Principles/Fragments/rgbdns-frag-1649bad1a34b|acme_overlay_publishes_the_newer_of_source_and_stored_serials]]: lines 1233-1260
+- [[DNS from First Principles/Fragments/rgbdns-frag-809b1f24c9a9|implicit_soa_uses_source_serial_and_generic_types_are_restricted]]: lines 1261-1273
+- [[DNS from First Principles/Fragments/rgbdns-frag-8ffe7b4e1a09|empty_nonterminals_and_closest_encloser_block_higher_wildcards]]: lines 1274-1296
+- [[DNS from First Principles/Fragments/rgbdns-frag-23d05c9e12ba|aname_coexists_with_apex_authority_but_not_address_or_cname_data]]: lines 1297-1324
+- [[DNS from First Principles/Fragments/rgbdns-frag-e4475fcf308b|patched_ipv6_flat_format_has_unambiguous_ttl_and_reverse_trees]]: lines 1325-1348
 
 ## Full Source
 
@@ -106,7 +123,91 @@ pub(crate) struct RecordMetadata {
     pub cutoff: u64,
     pub location: Option<[u8; 2]>,
 }
+pub(crate) type MaterializationInput = (Vec<Record>, Vec<(Name, Aname)>);
+/// The later of two SOA serials in RFC 1982 serial-number order.
+pub(crate) fn newer_serial(a: u32, b: u32) -> u32 {
+    if b != a && b.wrapping_sub(a) < (1 << 31) {
+        b
+    } else {
+        a
+    }
+}
+
 impl Zone {
+    /// Returns a validated snapshot with the supplied ACME TXT overlay and SOA
+    /// serial overrides. The source zone is not modified.
+    pub(crate) fn with_acme_overlay(
+        &self,
+        records: &[(Name, Vec<u8>, u32)],
+        serials: &BTreeMap<Name, u32>,
+    ) -> Result<Self> {
+        let mut zone = self.clone();
+        for (owner, value, ttl) in records {
+            if zone.records.get(owner).is_some_and(|existing| {
+                existing
+                    .iter()
+                    .any(|record| record.rr_type() != RecordType::Txt)
+            }) || zone.anames.contains_key(owner)
+            {
+                return Err(Error::InvalidRecord(format!(
+                    "ACME TXT at {owner} conflicts with alias data"
+                )));
+            }
+            zone.current_metadata = RecordMetadata::default();
+            zone.add(Record {
+                name: owner.clone(),
+                ttl: *ttl,
+                data: RData::Txt(value.chunks(255).map(<[u8]>::to_vec).collect()),
+            });
+        }
+        for (name, serial) in serials {
+            let Some(zone_records) = zone.records.get_mut(name) else {
+                return Err(Error::InvalidRecord(format!(
+                    "ACME policy zone {name} is not authoritative"
+                )));
+            };
+            let Some(soa) = zone_records
+                .iter_mut()
+                .find(|record| record.rr_type() == RecordType::Soa)
+            else {
+                return Err(Error::InvalidRecord(format!(
+                    "ACME policy zone {name} has no SOA"
+                )));
+            };
+            if let RData::Soa {
+                serial: current, ..
+            } = &mut soa.data
+            {
+                // The stored ACME serial only moves forward from updates; a newer
+                // source serial (an operator's edit) must still publish, or
+                // secondaries never see the change.
+                *current = newer_serial(*current, *serial);
+            }
+        }
+        zone.validate_aliases()?;
+        Ok(zone)
+    }
+
+    pub(crate) fn soa_serial(&self, zone: &Name) -> Option<u32> {
+        self.records.get(zone)?.iter().find_map(|record| {
+            if let RData::Soa { serial, .. } = record.data {
+                Some(serial)
+            } else {
+                None
+            }
+        })
+    }
+
+    pub(crate) fn is_authoritative(&self, zone: &Name) -> bool {
+        self.authoritative.contains(zone)
+    }
+    pub(crate) fn is_dnssec_signed(&self, zone: &Name) -> bool {
+        self.records.get(zone).is_some_and(|records| {
+            [RecordType::Dnskey, RecordType::Nsec, RecordType::Rrsig]
+                .iter()
+                .all(|typ| records.iter().any(|record| record.rr_type() == *typ))
+        })
+    }
     pub fn from_file(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref();
         if path.extension().is_some_and(|extension| extension == "cdb") {
@@ -221,11 +322,78 @@ impl Zone {
     pub(crate) fn aname_entries(&self) -> impl Iterator<Item = (&Name, &Aname)> {
         self.anames.iter()
     }
+    pub(crate) fn transfer_anames(&self, name: &Name) -> Option<Vec<(Name, Aname)>> {
+        if !self.authoritative.contains(name) {
+            return None;
+        }
+        Some(
+            self.anames
+                .iter()
+                .filter(|(owner, _)| {
+                    owner.is_subdomain_of(name)
+                        && !self.authoritative.iter().any(|child| {
+                            child != name
+                                && child.is_subdomain_of(name)
+                                && owner.is_subdomain_of(child)
+                        })
+                })
+                .map(|(owner, aname)| (owner.clone(), aname.clone()))
+                .collect(),
+        )
+    }
     pub(crate) fn aname(&self, owner: &Name) -> Option<&Aname> {
         self.anames.get(owner)
     }
     pub(crate) fn has_anames(&self) -> bool {
         !self.anames.is_empty()
+    }
+    pub(crate) fn has_aname_in_zone(&self, name: &Name) -> bool {
+        self.transfer_anames(name)
+            .is_some_and(|anames| !anames.is_empty())
+    }
+    pub(crate) fn has_qualified_data_in_zone(&self, name: &Name) -> bool {
+        self.records.iter().any(|(owner, records)| {
+            owner.is_subdomain_of(name)
+                && !self.authoritative.iter().any(|child| {
+                    child != name && child.is_subdomain_of(name) && owner.is_subdomain_of(child)
+                })
+                && records.iter().enumerate().any(|(index, _)| {
+                    let metadata = self.metadata[owner][index];
+                    metadata.location.is_some() || metadata.cutoff != 0
+                })
+        })
+    }
+    pub(crate) fn authoritative_names(&self) -> BTreeSet<Name> {
+        self.authoritative.clone()
+    }
+    pub(crate) fn records_outside(&self, zones: &BTreeSet<Name>) -> Vec<Record> {
+        self.record_entries()
+            .filter(|(record, metadata)| {
+                metadata.location.is_none()
+                    && metadata.cutoff == 0
+                    && !zones.iter().any(|zone| record.name.is_subdomain_of(zone))
+            })
+            .map(|(record, _)| record.clone())
+            .collect()
+    }
+    pub(crate) fn materialization_input(&self) -> Result<MaterializationInput> {
+        if self
+            .record_entries()
+            .any(|(_, metadata)| metadata.location.is_some() || metadata.cutoff != 0)
+        {
+            return Err(Error::InvalidRecord(
+                "ANAME materialization does not accept location-dependent or expiring data".into(),
+            ));
+        }
+        Ok((
+            self.record_entries()
+                .map(|(record, _)| record.clone())
+                .collect(),
+            self.anames
+                .iter()
+                .map(|(owner, aname)| (owner.clone(), aname.clone()))
+                .collect(),
+        ))
     }
     pub fn transfer(&self, name: &Name) -> Option<Vec<Record>> {
         if !self.authoritative.contains(name) {
@@ -514,12 +682,14 @@ impl Zone {
                         "record type is prohibited for the generic marker".into(),
                     ));
                 }
+                let data = RData::Opaque(typ, unescape(field(&f, 2)?)?);
+                data.dnssec()?;
                 self.add(Record {
                     name,
                     ttl: field_opt(&f, 3)
                         .and_then(|x| x.parse().ok())
                         .unwrap_or(86400),
-                    data: RData::Opaque(typ, unescape(field(&f, 2)?)?),
+                    data,
                 })
             }
             b'&' | b'.' => {
@@ -621,6 +791,24 @@ impl Zone {
             .filter(|owner| name.is_subdomain_of(owner))
             .max_by_key(|owner| owner.labels().count())
         {
+            if typ == RecordType::Ds && name == delegation {
+                let parent = self
+                    .authoritative
+                    .iter()
+                    .filter(|zone| delegation.is_subdomain_of(zone))
+                    .max_by_key(|zone| zone.labels().count());
+                if parent.is_some_and(|zone| self.is_dnssec_signed(zone)) {
+                    let answer = self
+                        .visible_records(delegation, location, now)
+                        .into_iter()
+                        .filter(|record| record.rr_type() == RecordType::Ds)
+                        .collect::<Vec<_>>();
+                    if !answer.is_empty() {
+                        return Lookup::Answer(answer);
+                    }
+                    return Lookup::NoData(parent.and_then(|zone| self.soa(zone, location, now)));
+                }
+            }
             let authorities = self
                 .visible_records(delegation, location, now)
                 .into_iter()
@@ -752,6 +940,103 @@ impl Zone {
         self.records.keys().any(|owner| {
             owner.is_subdomain_of(name) && !self.visible_records(owner, location, now).is_empty()
         })
+    }
+
+    pub(crate) fn dnssec_signatures(
+        &self,
+        name: &Name,
+        covered: &BTreeSet<RecordType>,
+        client: Option<IpAddr>,
+    ) -> Vec<Record> {
+        let location = self.client_location(client);
+        let now = 4_611_686_018_427_387_914u64.saturating_add(unix_now());
+        let mut owner = name.clone();
+        let mut signatures = self.visible_records(&owner, location, now);
+        if !signatures
+            .iter()
+            .any(|record| record.rr_type() == RecordType::Rrsig)
+        {
+            let mut parent = name.parent();
+            while let Some(candidate) = parent {
+                if self.name_exists(&candidate, location, now) {
+                    owner = candidate.wildcard();
+                    signatures = self.visible_records(&owner, location, now);
+                    break;
+                }
+                parent = candidate.parent();
+            }
+        }
+        signatures
+            .into_iter()
+            .filter(|record| {
+                record.rr_type() == RecordType::Rrsig
+                    && rrsig_covered(&record.data).is_some_and(|typ| covered.contains(&typ))
+            })
+            .map(|mut record| {
+                record.name = name.clone();
+                record
+            })
+            .collect()
+    }
+
+    pub(crate) fn dnssec_nsec_at(&self, name: &Name, client: Option<IpAddr>) -> Vec<Record> {
+        let location = self.client_location(client);
+        let now = 4_611_686_018_427_387_914u64.saturating_add(unix_now());
+        let mut records = self
+            .visible_records(name, location, now)
+            .into_iter()
+            .filter(|record| record.rr_type() == RecordType::Nsec)
+            .collect::<Vec<_>>();
+        if !records.is_empty() {
+            records.extend(self.dnssec_signatures(
+                name,
+                &BTreeSet::from([RecordType::Nsec]),
+                client,
+            ));
+        }
+        records
+    }
+
+    pub(crate) fn dnssec_nsec_zone(&self, name: &Name, client: Option<IpAddr>) -> Vec<Record> {
+        let location = self.client_location(client);
+        let now = 4_611_686_018_427_387_914u64.saturating_add(unix_now());
+        let Some(zone) = self
+            .authoritative
+            .iter()
+            .filter(|zone| name.is_subdomain_of(zone))
+            .max_by_key(|zone| zone.labels().count())
+        else {
+            return Vec::new();
+        };
+        let mut output = Vec::new();
+        for owner in self.records.keys().filter(|owner| {
+            owner.is_subdomain_of(zone)
+                && !self.authoritative.iter().any(|child| {
+                    child != zone && child.is_subdomain_of(zone) && owner.is_subdomain_of(child)
+                })
+        }) {
+            let nsec = self
+                .visible_records(owner, location, now)
+                .into_iter()
+                .filter(|record| record.rr_type() == RecordType::Nsec)
+                .collect::<Vec<_>>();
+            if !nsec.is_empty() {
+                output.extend(nsec);
+                output.extend(self.dnssec_signatures(
+                    owner,
+                    &BTreeSet::from([RecordType::Nsec]),
+                    client,
+                ));
+            }
+        }
+        output
+    }
+}
+
+fn rrsig_covered(data: &RData) -> Option<RecordType> {
+    match data.dnssec().ok().flatten()? {
+        crate::DnssecRData::Rrsig { type_covered, .. } => Some(type_covered),
+        _ => None,
     }
 }
 
@@ -1033,6 +1318,34 @@ mod tests {
             Lookup::Answer(records)
                 if records[0].data == RData::A(Ipv4Addr::new(192, 0, 2, 1))
         ));
+    }
+
+    #[test]
+    fn acme_overlay_publishes_the_newer_of_source_and_stored_serials() {
+        let zone: Name = "example".parse().unwrap();
+        let soa = |base: u32| {
+            Zone::parse(&format!(
+                "Zexample:ns.example:hostmaster.example:{base}:16384:2048:1048576:2560:3600\n"
+            ))
+            .unwrap()
+        };
+        let published = |base: u32, stored: u32| {
+            let serials = BTreeMap::from([(zone.clone(), stored)]);
+            soa(base)
+                .with_acme_overlay(&[], &serials)
+                .unwrap()
+                .soa_serial(&zone)
+                .unwrap()
+        };
+        // an operator's edit after the last ACME update must still publish
+        assert_eq!(published(2_026_091_201, 2_026_081_503), 2_026_091_201);
+        // ACME updates since the last edit keep their higher serial
+        assert_eq!(published(2_026_081_501, 2_026_081_503), 2_026_081_503);
+        assert_eq!(published(7, 7), 7);
+        // RFC 1982 order across the wrap
+        assert_eq!(published(2, u32::MAX), 2);
+        assert_eq!(newer_serial(u32::MAX, 2), 2);
+        assert_eq!(newer_serial(2, u32::MAX), 2);
     }
 
     #[test]

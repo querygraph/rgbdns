@@ -4,9 +4,9 @@ source_path: "src/pick.rs"
 language: "rust"
 subsystem: "Specialized responders"
 crate: "rgbdns"
-line_count: 297
+line_count: 299
 fragment_count: 16
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/pick.rs
@@ -14,7 +14,7 @@ rgbdns_commit: "79502939"
 - Subsystem: [[DNS from First Principles/Subsystems/Specialized responders|Specialized responders]]
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 - Source path: `src/pick.rs`
-- Lines: 297
+- Lines: 299
 - Summary: Location-aware short-TTL address selection compatible with `pickdns`.
 
 ## Extracted Fragments
@@ -23,18 +23,18 @@ rgbdns_commit: "79502939"
 - [[DNS from First Principles/Fragments/rgbdns-frag-e2c022b911ff|Database]]: lines 17-17
 - [[DNS from First Principles/Fragments/rgbdns-frag-03429c180371|parse]]: lines 18-55
 - [[DNS from First Principles/Fragments/rgbdns-frag-4654b35f1e96|from_file]]: lines 56-64
-- [[DNS from First Principles/Fragments/rgbdns-frag-7e2ec0ce150f|from_cdb]]: lines 65-93
-- [[DNS from First Principles/Fragments/rgbdns-frag-a8321a31e961|respond]]: lines 94-137
-- [[DNS from First Principles/Fragments/rgbdns-frag-3c61cf5d38fb|client_location]]: lines 138-154
-- [[DNS from First Principles/Fragments/rgbdns-frag-deb03863c999|compile]]: lines 155-182
-- [[DNS from First Principles/Fragments/rgbdns-frag-fe2c63956fd1|location]]: lines 183-190
-- [[DNS from First Principles/Fragments/rgbdns-frag-54d931389249|ip_prefix]]: lines 191-203
-- [[DNS from First Principles/Fragments/rgbdns-frag-6167238493b1|bad_line]]: lines 204-207
-- [[DNS from First Principles/Fragments/rgbdns-frag-9a829bc67682|shuffle]]: lines 208-226
-- [[DNS from First Principles/Fragments/rgbdns-frag-4e101ed10af5|tests]]: lines 227-231
-- [[DNS from First Principles/Fragments/rgbdns-frag-226221718a5a|query]]: lines 232-246
-- [[DNS from First Principles/Fragments/rgbdns-frag-1955196044fa|location_selection_falls_back_and_caps_answers]]: lines 247-278
-- [[DNS from First Principles/Fragments/rgbdns-frag-5d0053e15d86|cdb_roundtrip_preserves_locations_and_addresses]]: lines 279-297
+- [[DNS from First Principles/Fragments/rgbdns-frag-7954c7e948b9|from_cdb]]: lines 65-95
+- [[DNS from First Principles/Fragments/rgbdns-frag-23e65a489524|respond]]: lines 96-139
+- [[DNS from First Principles/Fragments/rgbdns-frag-98155cbf52db|client_location]]: lines 140-156
+- [[DNS from First Principles/Fragments/rgbdns-frag-b06ef1bbad8b|compile]]: lines 157-184
+- [[DNS from First Principles/Fragments/rgbdns-frag-32342a205812|location]]: lines 185-192
+- [[DNS from First Principles/Fragments/rgbdns-frag-2ddb13686975|ip_prefix]]: lines 193-205
+- [[DNS from First Principles/Fragments/rgbdns-frag-958e100b629b|bad_line]]: lines 206-209
+- [[DNS from First Principles/Fragments/rgbdns-frag-1d589745c838|shuffle]]: lines 210-228
+- [[DNS from First Principles/Fragments/rgbdns-frag-3582ae11fd21|tests]]: lines 229-233
+- [[DNS from First Principles/Fragments/rgbdns-frag-f618d3cd6667|query]]: lines 234-248
+- [[DNS from First Principles/Fragments/rgbdns-frag-409b5cf9a89a|location_selection_falls_back_and_caps_answers]]: lines 249-280
+- [[DNS from First Principles/Fragments/rgbdns-frag-82601e4fc200|cdb_roundtrip_preserves_locations_and_addresses]]: lines 281-299
 
 ## Full Source
 
@@ -119,7 +119,9 @@ impl Database {
                 }
                 let name = crate::cdb::decode_name(&key[3..])?;
                 let addresses = value
-                    .chunks_exact(4)
+                    .as_chunks::<4>()
+                    .0
+                    .iter()
                     .map(|bytes| Ipv4Addr::new(bytes[0], bytes[1], bytes[2], bytes[3]))
                     .collect();
                 database

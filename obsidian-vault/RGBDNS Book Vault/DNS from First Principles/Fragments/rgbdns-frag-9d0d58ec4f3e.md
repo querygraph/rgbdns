@@ -19,7 +19,7 @@ end_line: 33
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-9d0d58ec4f3e", "codeNote": "DNS from First Principles/Code/docs/performance.md.source", "heading": "rgbdns-frag-9d0d58ec4f3e: heading Performance methodology", "sourcePath": "docs/performance.md", "startLine": 1, "endLine": 33}
+{"id": "rgbdns-frag-9d0d58ec4f3e", "codeNote": "DNS from First Principles/Code/docs/performance.md.source", "sourcePath": "docs/performance.md", "startLine": 1, "endLine": 33}
 ```
 
 ## Excerpt
@@ -27,7 +27,7 @@ end_line: 33
 <span id="rgbdns-frag-9d0d58ec4f3e" class="rgbdns-fragment-target"></span>
 ### rgbdns-frag-9d0d58ec4f3e: heading Performance methodology
 
-```markdown
+````markdown
 # Performance methodology
 
 `benches/dns_core.rs` is a dependency-free, stable-Rust microbenchmark for the
@@ -61,4 +61,4 @@ Optimization changes must preserve the RFC, property, interoperability, and
 security suites. Wire size is reported beside timings because DNS compression
 can improve network efficiency even when it adds local CPU work.
 
-```
+````

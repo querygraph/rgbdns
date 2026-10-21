@@ -3,21 +3,21 @@ type: "code-file"
 source_path: "packaging/verify-deb.sh"
 language: "bash"
 subsystem: "Repository and build"
-line_count: 43
+line_count: 106
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # packaging/verify-deb.sh
 
 - Subsystem: [[DNS from First Principles/Subsystems/Repository and build|Repository and build]]
 - Source path: `packaging/verify-deb.sh`
-- Lines: 43
+- Lines: 106
 - Summary: Source file in the Repository and build subsystem.
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-79b8154f3b7b|verify-deb.sh]]: lines 1-43
+- [[DNS from First Principles/Fragments/rgbdns-frag-879e3e511e3a|verify-deb.sh]]: lines 1-81
 
 ## Full Source
 
@@ -29,7 +29,7 @@ package=$1
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install --yes "$package" python3
+apt-get install --yes --no-install-recommends "$package" python3
 
 dpkg-query --show --showformat='${Status}\n' rgbdns |
     grep -qx 'install ok installed'
@@ -46,6 +46,25 @@ dpkg-deb --fsys-tarfile "$package" |
 dpkg-deb --control "$package" /tmp/rgbdns-control
 test -s /tmp/rgbdns-control/control
 
+for field in Conflicts Replaces; do
+    relations=$(dpkg-deb --field "$package" "$field")
+    for superseded in \
+        axfrdns \
+        daemontools \
+        djbdns-conf \
+        djbdns-utils \
+        dnscache \
+        rbldns \
+        tinydns \
+        walldns
+    do
+        printf '%s\n' "$relations" |
+            tr ',' '\n' |
+            sed 's/^[[:space:]]*//; s/[[:space:]]*$//' |
+            grep -qx "$superseded"
+    done
+done
+
 while IFS= read -r binary; do
     test -x "/usr/bin/$binary"
 done <"$installed_bins"
@@ -53,7 +72,13 @@ done <"$installed_bins"
 for unit in \
     rgbdns-tinydns.service \
     rgbdns-secondary-sync.service \
-    rgbdns-secondary-sync.timer
+    rgbdns-secondary-sync.timer \
+    rgbdns-zones-import.service \
+    rgbdns-zones.path \
+    rgbdns-data-import.service \
+    rgbdns-data.path \
+    rgbdns-query-report.service \
+    rgbdns-query-report.timer
 do
     test -f "/lib/systemd/system/$unit"
 done
@@ -61,8 +86,46 @@ done
 for helper in \
     /usr/lib/rgbdns/compile-zone \
     /usr/lib/rgbdns/secondary-sync \
+    /usr/lib/rgbdns/import-zones \
+    /usr/lib/rgbdns/import-data \
+    /usr/lib/rgbdns/migrate-zones \
+    /usr/lib/rgbdns/migrate-zone-drop \
+    /usr/lib/rgbdns/migrate-zone-state \
+    /usr/lib/rgbdns/restore-role-units \
+    /usr/lib/rgbdns/daily-query-report \
     /usr/sbin/rgbdns-setup
 do
     test -x "$helper"
 done
+
+grep -q 'state_dir/zones' /usr/lib/rgbdns/secondary-sync
+rgbdns-setup --help | grep -q -- '--zones'
+rgbdns-setup --help | grep -q -- '--zones-drop'
+rgbdns-setup --help | grep -q -- '--data-drop'
+rgbdns-setup --help | grep -q -- '--query-log'
+rgbdns-setup --help | grep -q -- '--acme-update-config'
+test -x /usr/bin/rgbdns-acme
+test -x /usr/bin/rgbdns-log-report
+dpkg-deb --fsys-tarfile "$package" |
+    tar -tf - |
+    grep -qx './usr/share/man/man1/rgbdns-acme.1.gz'
+dpkg-deb --fsys-tarfile "$package" |
+    tar -tf - |
+    grep -qx './usr/share/man/man1/rgbdns-log-report.1.gz'
+grep -qx 'QUERY_LOG=1' /etc/rgbdns/tinydns.env
+test "$(stat -c %U:%G /etc/rgbdns)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns)" = 750
+test "$(stat -c %U:%G /etc/rgbdns/tinydns.env)" = root:rgbdns
+test "$(stat -c %U:%G /etc/rgbdns/acme-update.conf)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns/acme-update.conf)" = 640
+test "$(stat -c %U:%G /etc/rgbdns/query-report.env)" = root:rgbdns
+test "$(stat -c %a /etc/rgbdns/query-report.env)" = 640
+grep -q 'enable --now rgbdns-data.path' \
+    /usr/lib/rgbdns/restore-role-units
+grep -q 'enable --now rgbdns-secondary-sync.timer' \
+    /usr/lib/rgbdns/restore-role-units
+grep -q 'enable --now rgbdns-tinydns.service' \
+    /usr/lib/rgbdns/restore-role-units
+! grep -Fq ': >"$stage"' /usr/lib/rgbdns/import-zones
+! grep -Fq '>>"$stage"' /usr/lib/rgbdns/import-zones
 ```

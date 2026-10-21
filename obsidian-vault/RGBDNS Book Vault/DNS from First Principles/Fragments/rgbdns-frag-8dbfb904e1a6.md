@@ -19,7 +19,7 @@ end_line: 95
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-8dbfb904e1a6", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-8dbfb904e1a6: heading Roles, not just \u201cDNS servers\u201d", "sourcePath": "docs/book/rgbdns.md", "startLine": 73, "endLine": 95}
+{"id": "rgbdns-frag-8dbfb904e1a6", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 73, "endLine": 95}
 ```
 
 ## Excerpt

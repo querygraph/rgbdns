@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "rbldns"
 line_count: 24
 fragment_count: 2
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/bin/rbldns.rs

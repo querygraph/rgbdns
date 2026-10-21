@@ -19,7 +19,7 @@ end_line: 160
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-d45c57d47515", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-d45c57d47515: fn rfc6891_unknown_well_formed_options_are_ignored", "sourcePath": "tests/rfc_conformance.rs", "startLine": 146, "endLine": 160}
+{"id": "rgbdns-frag-d45c57d47515", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 146, "endLine": 160}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 67
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-1bd53b40fae4", "codeNote": "DNS from First Principles/Code/tests/daemontools.rs.source", "heading": "rgbdns-frag-1bd53b40fae4: fn setuidgid_replaces_itself_and_preserves_child_status", "sourcePath": "tests/daemontools.rs", "startLine": 57, "endLine": 67}
+{"id": "rgbdns-frag-1bd53b40fae4", "codeNote": "DNS from First Principles/Code/tests/daemontools.rs.source", "sourcePath": "tests/daemontools.rs", "startLine": 57, "endLine": 67}
 ```
 
 ## Excerpt

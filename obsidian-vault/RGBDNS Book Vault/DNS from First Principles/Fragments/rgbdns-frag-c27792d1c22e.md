@@ -19,7 +19,7 @@ end_line: 110
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c27792d1c22e", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "heading": "rgbdns-frag-c27792d1c22e: heading Hardening that came from the tests", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 91, "endLine": 110}
+{"id": "rgbdns-frag-c27792d1c22e", "codeNote": "DNS from First Principles/Code/docs/blog/announcing-rgbdns/post.md.source", "sourcePath": "docs/blog/announcing-rgbdns/post.md", "startLine": 91, "endLine": 110}
 ```
 
 ## Excerpt

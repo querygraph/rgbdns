@@ -19,7 +19,7 @@ end_line: 320
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0d0e813e38f5", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-0d0e813e38f5: heading Errors are protocol results", "sourcePath": "docs/book/rgbdns.md", "startLine": 300, "endLine": 320}
+{"id": "rgbdns-frag-0d0e813e38f5", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 300, "endLine": 320}
 ```
 
 ## Excerpt

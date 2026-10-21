@@ -19,7 +19,7 @@ end_line: 32
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0591f6d10783", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "heading": "rgbdns-frag-0591f6d10783: fn report", "sourcePath": "benches/dns_core.rs", "startLine": 29, "endLine": 32}
+{"id": "rgbdns-frag-0591f6d10783", "codeNote": "DNS from First Principles/Code/benches/dns_core.rs.source", "sourcePath": "benches/dns_core.rs", "startLine": 29, "endLine": 32}
 ```
 
 ## Excerpt

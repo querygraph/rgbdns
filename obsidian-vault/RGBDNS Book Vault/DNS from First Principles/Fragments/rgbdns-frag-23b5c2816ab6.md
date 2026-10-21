@@ -19,7 +19,7 @@ end_line: 185
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-23b5c2816ab6", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-23b5c2816ab6: heading The common envelope", "sourcePath": "docs/book/rgbdns.md", "startLine": 165, "endLine": 185}
+{"id": "rgbdns-frag-23b5c2816ab6", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 165, "endLine": 185}
 ```
 
 ## Excerpt

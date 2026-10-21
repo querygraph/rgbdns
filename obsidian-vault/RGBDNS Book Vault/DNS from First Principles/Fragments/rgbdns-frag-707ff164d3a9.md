@@ -19,7 +19,7 @@ end_line: 8
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-707ff164d3a9", "codeNote": "DNS from First Principles/Code/tests/dnscache_network.rs.source", "heading": "rgbdns-frag-707ff164d3a9: struct CacheProcess", "sourcePath": "tests/dnscache_network.rs", "startLine": 8, "endLine": 8}
+{"id": "rgbdns-frag-707ff164d3a9", "codeNote": "DNS from First Principles/Code/tests/dnscache_network.rs.source", "sourcePath": "tests/dnscache_network.rs", "startLine": 8, "endLine": 8}
 ```
 
 ## Excerpt

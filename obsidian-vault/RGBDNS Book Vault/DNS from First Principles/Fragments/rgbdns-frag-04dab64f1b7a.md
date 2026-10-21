@@ -21,7 +21,7 @@ end_line: 72
 - Component: [[DNS from First Principles/Components/random-ip|random-ip]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-04dab64f1b7a", "codeNote": "DNS from First Principles/Code/src/bin/random-ip.rs.source", "heading": "rgbdns-frag-04dab64f1b7a: fn uniform", "sourcePath": "src/bin/random-ip.rs", "startLine": 62, "endLine": 72}
+{"id": "rgbdns-frag-04dab64f1b7a", "codeNote": "DNS from First Principles/Code/src/bin/random-ip.rs.source", "sourcePath": "src/bin/random-ip.rs", "startLine": 62, "endLine": 72}
 ```
 
 ## Excerpt

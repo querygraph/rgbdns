@@ -21,7 +21,7 @@ end_line: 20
 - Component: [[DNS from First Principles/Components/dnsqr|dnsqr]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-4b69648afa22", "codeNote": "DNS from First Principles/Code/src/bin/dnsqr.rs.source", "heading": "rgbdns-frag-4b69648afa22: fn run", "sourcePath": "src/bin/dnsqr.rs", "startLine": 10, "endLine": 20}
+{"id": "rgbdns-frag-4b69648afa22", "codeNote": "DNS from First Principles/Code/src/bin/dnsqr.rs.source", "sourcePath": "src/bin/dnsqr.rs", "startLine": 10, "endLine": 20}
 ```
 
 ## Excerpt

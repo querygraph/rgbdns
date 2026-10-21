@@ -19,7 +19,7 @@ end_line: 67
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b5367143d717", "codeNote": "DNS from First Principles/Code/tests/cdb_golden.rs.source", "heading": "rgbdns-frag-b5367143d717: fn tinydns_entries_match_patched_c_golden", "sourcePath": "tests/cdb_golden.rs", "startLine": 56, "endLine": 67}
+{"id": "rgbdns-frag-b5367143d717", "codeNote": "DNS from First Principles/Code/tests/cdb_golden.rs.source", "sourcePath": "tests/cdb_golden.rs", "startLine": 56, "endLine": 67}
 ```
 
 ## Excerpt

@@ -21,7 +21,7 @@ end_line: 176
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-e4f33cd6b642", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "heading": "rgbdns-frag-e4f33cd6b642: fn parse_flat_ipv6", "sourcePath": "src/tinydns_edit.rs", "startLine": 168, "endLine": 176}
+{"id": "rgbdns-frag-e4f33cd6b642", "codeNote": "DNS from First Principles/Code/src/tinydns_edit.rs.source", "sourcePath": "src/tinydns_edit.rs", "startLine": 168, "endLine": 176}
 ```
 
 ## Excerpt

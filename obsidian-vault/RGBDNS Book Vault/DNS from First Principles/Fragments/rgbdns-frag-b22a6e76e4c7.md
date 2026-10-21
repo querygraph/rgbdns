@@ -19,7 +19,7 @@ end_line: 393
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-b22a6e76e4c7", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-b22a6e76e4c7: heading Finding the closest relevant authority", "sourcePath": "docs/book/rgbdns.md", "startLine": 358, "endLine": 393}
+{"id": "rgbdns-frag-b22a6e76e4c7", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 358, "endLine": 393}
 ```
 
 ## Excerpt

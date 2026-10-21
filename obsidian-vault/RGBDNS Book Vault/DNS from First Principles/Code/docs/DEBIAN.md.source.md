@@ -3,38 +3,43 @@ type: "code-file"
 source_path: "docs/DEBIAN.md"
 language: "markdown"
 subsystem: "Documentation"
-line_count: 561
-fragment_count: 11
-rgbdns_commit: "79502939"
+line_count: 711
+fragment_count: 12
+rgbdns_commit: "5ae24772"
 ---
 
 # docs/DEBIAN.md
 
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 - Source path: `docs/DEBIAN.md`
-- Lines: 561
+- Lines: 711
 - Summary: Installing rgbdns on Debian with systemd
 
 ## Extracted Fragments
 
-- [[DNS from First Principles/Fragments/rgbdns-frag-81df593d6869|Installing rgbdns on Debian with systemd]]: lines 1-7
-- [[DNS from First Principles/Fragments/rgbdns-frag-144c116f58ed|Build and install the package]]: lines 8-30
-- [[DNS from First Principles/Fragments/rgbdns-frag-50a9a26b8c55|Cloud package build and verification]]: lines 31-77
-- [[DNS from First Principles/Fragments/rgbdns-frag-005744bec3e6|Prepare a primary nameserver]]: lines 78-132
-- [[DNS from First Principles/Fragments/rgbdns-frag-1091bd4c7132|Serve AXFR to secondary nameservers]]: lines 133-177
-- [[DNS from First Principles/Fragments/rgbdns-frag-7c93e1160231|or]]: lines 178-183
-- [[DNS from First Principles/Fragments/rgbdns-frag-533b9c153533|Complete deployment cron.sh primary with BuddyNS secondaries]]: lines 184-264
-- [[DNS from First Principles/Fragments/rgbdns-frag-b4a5eea5ec0c|reconnect after boot]]: lines 444-454
-- [[DNS from First Principles/Fragments/rgbdns-frag-d39318b29e35|Configure a secondary nameserver]]: lines 455-517
-- [[DNS from First Principles/Fragments/rgbdns-frag-c5ffd76a5d56|Verify service behavior]]: lines 518-539
-- [[DNS from First Principles/Fragments/rgbdns-frag-fcd83bef23f0|Upgrades, removal, and troubleshooting]]: lines 540-561
+- [[DNS from First Principles/Fragments/rgbdns-frag-7a90161adfc6|Installing rgbdns on Debian with systemd]]: lines 1-11
+- [[DNS from First Principles/Fragments/rgbdns-frag-52a28b5ef1cb|Build and install the package]]: lines 12-34
+- [[DNS from First Principles/Fragments/rgbdns-frag-e5453ffc85f2|Cloud package build and verification]]: lines 35-81
+- [[DNS from First Principles/Fragments/rgbdns-frag-9e6e14619fe1|Prepare a primary nameserver]]: lines 82-159
+- [[DNS from First Principles/Fragments/rgbdns-frag-b6a5ba3fafdb|Serve AXFR to secondary nameservers]]: lines 160-204
+- [[DNS from First Principles/Fragments/rgbdns-frag-6e90dfef751e|or]]: lines 205-210
+- [[DNS from First Principles/Fragments/rgbdns-frag-767ee9d3aaa3|Complete deployment cron.sh primary with BuddyNS secondaries]]: lines 211-291
+- [[DNS from First Principles/Fragments/rgbdns-frag-ba22dbc9d1cd|etc rgbdns query-report.env]]: lines 415-495
+- [[DNS from First Principles/Fragments/rgbdns-frag-09c36a3ee069|reconnect after boot]]: lines 537-547
+- [[DNS from First Principles/Fragments/rgbdns-frag-e3ee440024e4|Configure a secondary nameserver]]: lines 548-628
+- [[DNS from First Principles/Fragments/rgbdns-frag-09ce255aa624|Verify service behavior]]: lines 656-677
+- [[DNS from First Principles/Fragments/rgbdns-frag-0fe0668fee89|Upgrades, removal, and troubleshooting]]: lines 678-711
 
 ## Full Source
 
-```markdown
+````markdown
 # Installing rgbdns on Debian with systemd
 
-The Debian package installs the complete rgbdns command suite, three systemd
+For the complete two-host `fieldnotes.es` example, including the openSUSE
+secondary and atomic `rgbdns.data`/`rgbdns.zones` pickup, see
+[`RGBDNS_SETUP.md`](RGBDNS_SETUP.md).
+
+The Debian package installs the complete rgbdns command suite, hardened systemd
 units, a dedicated unprivileged account, and `rgbdns-setup`. Installation alone
 does not publish a DNS service. The administrator must choose a primary or
 secondary role and provide the corresponding data.
@@ -50,7 +55,7 @@ sudo apt install build-essential cargo debhelper rustc
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-sudo apt install ../rgbdns_0.1.1_$(dpkg --print-architecture).deb
+sudo apt install ../rgbdns_0.6.5_$(dpkg --print-architecture).deb
 ```
 
 `packaging/build-deb.sh` calls `dpkg-buildpackage --build=binary --no-sign`.
@@ -147,6 +152,29 @@ The setup command creates the account if necessary, installs the source as
 `data.cdb` as the service user, reloads systemd, and enables
 `rgbdns-tinydns.service`. Re-running the command safely replaces the managed
 configuration.
+
+Setup also watches `rgbdns.data` in the invoking sudo user's home directory.
+Override the destination with `--data-drop FILE` and
+`--data-drop-owner USER`. Publish edits atomically:
+
+```sh
+scp rgbdns.data primary.example:rgbdns.data.new
+ssh primary.example 'mv rgbdns.data.new rgbdns.data'
+```
+
+`rgbdns-data.path` verifies the file owner, compiles a private staged copy, and
+replaces the live `data` and `data.cdb` only after compilation succeeds. It
+then restarts tinydns. A malformed, partial, or symlinked upload leaves the
+currently served database unchanged.
+
+On a DNSSEC primary the import validates the upload with the plain
+`tinydns-data` compiler, replaces only `data`, and leaves `data.cdb` to
+`rgbdns-dnssec-publish.service`, which signs, verifies and publishes it.
+
+A primary whose data is deployed into `/var/lib/rgbdns/tinydns` directly, for
+example by a CI workflow, can turn the import off with
+`--data-drop-import disabled`, or by adding `DATA_DROP_IMPORT=disabled` to
+`/etc/rgbdns/data-drop.env`. Uploads are then skipped, not failed.
 
 To validate before starting anything, add `--no-start`, then inspect:
 
@@ -274,16 +302,16 @@ sudo apt install -y build-essential cargo debhelper rustc git
 git clone https://github.com/querygraph/rgbdns.git
 cd rgbdns
 packaging/build-deb.sh
-dpkg-deb --info ../rgbdns_0.1.1_amd64.deb
+dpkg-deb --info ../rgbdns_0.6.5_amd64.deb
 ```
 
 Copy the package to the EC2 host, then install it there:
 
 ```sh
-scp ../rgbdns_0.1.1_amd64.deb admin@52.10.53.234:/tmp/
+scp ../rgbdns_0.6.5_amd64.deb admin@52.10.53.234:/tmp/
 ssh admin@52.10.53.234
 sudo apt update
-sudo apt install -y /tmp/rgbdns_0.1.1_amd64.deb
+sudo apt install -y /tmp/rgbdns_0.6.5_amd64.deb
 dpkg-query -W rgbdns
 ```
 
@@ -376,6 +404,72 @@ sudo systemctl --no-pager --full status rgbdns-tinydns.service
 sudo journalctl -u rgbdns-tinydns.service -b --no-pager
 sudo ss -lntup '( sport = :53 )'
 ```
+
+### Request logs
+
+`tinydns` logs every UDP, TCP, malformed, refused, and AXFR request by default.
+The raw stderr format is compatible with the original tinydns stream:
+
+```text
+7f000001:e214:0018 + 0001 fieldnotes.es
+```
+
+The address, source port, DNS ID, and query type are hexadecimal. Result
+markers are `+` for an attempted answer, `-` for refused authority or AXFR,
+`I` for an unimplemented request, `C` for an unsupported class, and `/` for a
+malformed request. Names are escaped and each request is one line. rgbdns does
+not add a timestamp.
+
+Under the packaged service, systemd captures stderr:
+
+```sh
+sudo journalctl -fu rgbdns-tinydns.service
+```
+
+The same stream can be directed to `multilog t` in a daemontools service,
+which adds TAI64N timestamps and rotates files. Use only one logging sink for
+a service. To disable request logs deliberately, pass `--query-log 0` to
+`rgbdns-setup`, or set `QUERY_LOG=0` in `/etc/rgbdns/tinydns.env` and restart
+the service. Full query logs contain client addresses and requested names;
+size retention for traffic volume and protect them as sensitive operational
+data.
+
+### Daily per-domain query email
+
+The package includes `rgbdns-log-report` and an opt-in
+`rgbdns-query-report.timer`. The report maps every accepted query to the
+longest configured authoritative zone, counts total queries and distinct
+client/resolver IP addresses, and sorts domains by total descending. These are
+DNS measurements, not HTTP visits or unique people.
+
+Install and configure a sendmail-compatible transport appropriate for the
+host. For example, `msmtp-mta` can provide `/usr/sbin/sendmail`; configure its
+SMTP relay separately and protect its credentials. Then set:
+
+```text
+# /etc/rgbdns/query-report.env
+REPORT_TO=deliverable@gmail.com
+REPORT_FROM=rgbdns@a.ns.cron.sh
+REPORT_SENDMAIL=/usr/sbin/sendmail
+```
+
+Enable the timer on the primary only, avoiding duplicate reports from the
+secondary:
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable --now rgbdns-query-report.timer
+sudo systemctl start rgbdns-query-report.service
+sudo systemctl status rgbdns-query-report.service --no-pager --full
+sudo journalctl -u rgbdns-query-report.service -n 50 --no-pager
+systemctl list-timers rgbdns-query-report.timer
+```
+
+The manual start sends the preceding local calendar day's report immediately.
+The timer normally runs shortly after 00:15 with a small randomized delay.
+Journald retention must cover the previous day, and `QUERY_LOG=1` must remain
+enabled. The timer is deliberately not enabled by package installation because
+the operator must first configure a recipient and working mail transport.
 
 There is deliberately no `rgbdns-axfrdns.service` in this package. The
 standalone `axfrdns` command remains part of the djbdns-compatible tool suite,
@@ -488,42 +582,87 @@ it is not a backup of the editable primary source.
 
 ## Configure a secondary nameserver
 
-The packaged secondary workflow manages one complete zone per host instance.
-It fetches the primary over DNS TCP, verifies response identity, authority,
-question, record bounds, zone confinement, and matching SOA bookends, then
-atomically installs the new tinydns source and CDB.
+The packaged secondary workflow manages a list of zones from one primary
+endpoint. It fetches each zone separately over DNS TCP, verifies response
+identity, authority, question, record bounds, zone confinement, and matching
+SOA bookends, retains the last valid snapshot of any zone whose refresh fails,
+then compiles and atomically installs one combined CDB. A newly configured zone
+must transfer successfully before the secondary can activate it.
 
 Configure the secondary:
 
 ```sh
 sudo rgbdns-setup secondary \
   --zone example.net \
+  --zone example.org \
   --primary 192.0.2.54 \
   --listen-ip 198.51.100.10
 ```
+
+To permit another secondary provider to AXFR the validated zone from this
+secondary, add its exact transfer-source CIDRs:
+
+```sh
+sudo rgbdns-setup secondary \
+  --zones "example.net example.org" \
+  --primary 192.0.2.54 \
+  --listen-ip 198.51.100.10 \
+  --allow-nets 203.0.113.10/32,203.0.113.11/32
+```
+
+Ordinary UDP and TCP answers remain public; `--allow-nets` restricts only
+AXFR. Use the provider's current published transfer-source list.
 
 If the primary uses a nonstandard transfer port:
 
 ```sh
 sudo rgbdns-setup secondary \
-  --zone example.net \
+  --zones "example.net,example.org" \
   --primary 192.0.2.53:5354 \
   --listen-ip 127.0.0.1 --port 5353
 ```
 
-Setup writes `/etc/rgbdns/secondary.env`, performs the first transfer, starts
-the authoritative service only after that transfer succeeds, and enables
-`rgbdns-secondary-sync.timer`. The timer refreshes every five minutes with a
-small randomized delay. Failed transfers leave the last successfully compiled
-zone active. A successful transfer atomically replaces `data`, compiles
-`data.cdb`, and restarts tinydns.
+Setup writes the one-zone-per-line canonical list to `/var/lib/rgbdns/tinydns/zones` and
+the `PRIMARY=` endpoint to `/etc/rgbdns/secondary.env`. It also watches
+`/var/lib/rgbdns/incoming/rgbdns.zones`. Override that location or owner with
+`--zones-drop FILE` and `--zones-drop-owner USER`.
+Setup performs every initial transfer, starts the authoritative service only
+after every zone has a valid snapshot, and enables both the five-minute sync
+timer and `rgbdns-zones.path`.
+
+Manage later additions as a file and publish it atomically:
+
+```text
+fieldnotes.es
+example.net
+example.org
+```
+
+```sh
+scp rgbdns.zones secondary.example:/var/lib/rgbdns/incoming/rgbdns.zones.new
+ssh secondary.example \
+  'mv /var/lib/rgbdns/incoming/rgbdns.zones.new /var/lib/rgbdns/incoming/rgbdns.zones'
+```
+
+The path unit validates ownership and syntax, lowercases names, removes
+duplicates, atomically installs `/var/lib/rgbdns/tinydns/zones`, and starts synchronization.
+An invalid or partial list cannot replace the canonical list. Upload through a
+temporary name as shown so the watcher only observes the final rename.
+
+During refreshes, a failed zone retains its last-known-good snapshot while
+successfully transferred zones advance. A newly listed zone must obtain its
+first valid snapshot before the combined database can include the new list.
+The run compiles the snapshots together, atomically replaces `data.cdb`, and
+restarts tinydns.
 
 Run or inspect synchronization manually:
 
 ```sh
 sudo systemctl start rgbdns-secondary-sync.service
 systemctl list-timers rgbdns-secondary-sync.timer
-journalctl -u rgbdns-secondary-sync.service
+systemctl status rgbdns-zones.path
+journalctl -u rgbdns-zones-import.service \
+  -u rgbdns-secondary-sync.service
 ```
 
 Change the interval with a systemd drop-in:
@@ -573,11 +712,23 @@ zone SOA, and that TCP and UDP agree.
 
 ## Upgrades, removal, and troubleshooting
 
-Package upgrades preserve `/etc/rgbdns/tinydns.env` as a conffile and do not
-automatically enable a service. Managed zone data and optional role files live
-outside the package payload. Removing the package stops its units but preserves
-configuration and zone state; purge or remove those files explicitly only
-after taking a backup.
+Package upgrades preserve `/etc/rgbdns/tinydns.env` as a conffile. Beginning
+with 0.3.3, an upgrade detects an existing configured role, restarts
+`rgbdns-tinydns`, and restores that role's path and timer units. A fresh
+unconfigured installation still starts nothing until `rgbdns-setup` records a
+role. Managed zone data and optional role files live outside the package
+payload. Removing the package stops its units but preserves configuration and
+zone state; purge or remove those files explicitly only after taking a backup.
+
+After upgrading a configured host, verify rather than manually reconstructing
+unit state:
+
+```sh
+systemctl is-active rgbdns-tinydns.service
+systemctl status rgbdns-data.path rgbdns-zones.path \
+  rgbdns-secondary-sync.timer --no-pager
+sudo ss -lntup '( sport = :53 )'
+```
 
 Common failures:
 
@@ -593,4 +744,4 @@ Common failures:
   replaces the active zone.
 
 Use `systemctl cat UNIT` to include local overrides when diagnosing a host.
-```
+````

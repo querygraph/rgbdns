@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "random-ip"
 line_count: 72
 fragment_count: 3
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/bin/random-ip.rs

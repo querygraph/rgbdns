@@ -19,7 +19,7 @@ end_line: 53
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-4c85445184dc", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-4c85445184dc: heading Identity is not location", "sourcePath": "docs/book/rgbdns.md", "startLine": 24, "endLine": 53}
+{"id": "rgbdns-frag-4c85445184dc", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 24, "endLine": 53}
 ```
 
 ## Excerpt
@@ -27,7 +27,7 @@ end_line: 53
 <span id="rgbdns-frag-4c85445184dc" class="rgbdns-fragment-target"></span>
 ### rgbdns-frag-4c85445184dc: heading Identity is not location
 
-```markdown
+````markdown
 ## Identity is not location
 
 A network delivers packets to addresses. Humans and applications want stable
@@ -58,4 +58,4 @@ The owner and type together select an RRset. “RRset” means all resource reco
 with the same owner, type, and class. Implementations should normally treat the
 set as a unit because caches and DNSSEC signatures do.
 
-```
+````

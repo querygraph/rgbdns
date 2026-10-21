@@ -19,7 +19,7 @@ end_line: 322
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-c5639d87e4d2", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-c5639d87e4d2: heading UDP, TCP, EDNS, and truncation", "sourcePath": "docs/book/rgbdns.md", "startLine": 321, "endLine": 322}
+{"id": "rgbdns-frag-c5639d87e4d2", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 321, "endLine": 322}
 ```
 
 ## Excerpt

@@ -19,7 +19,7 @@ end_line: 339
 - Subsystem: [[DNS from First Principles/Subsystems/Documentation|Documentation]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-0e38bf950ab7", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "heading": "rgbdns-frag-0e38bf950ab7: heading Why there are two transports", "sourcePath": "docs/book/rgbdns.md", "startLine": 323, "endLine": 339}
+{"id": "rgbdns-frag-0e38bf950ab7", "codeNote": "DNS from First Principles/Code/docs/book/rgbdns.md.source", "sourcePath": "docs/book/rgbdns.md", "startLine": 323, "endLine": 339}
 ```
 
 ## Excerpt

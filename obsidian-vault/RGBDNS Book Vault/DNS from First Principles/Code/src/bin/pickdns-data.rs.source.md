@@ -6,7 +6,7 @@ subsystem: "Command-line programs"
 crate: "pickdns-data"
 line_count: 10
 fragment_count: 1
-rgbdns_commit: "79502939"
+rgbdns_commit: "5ae24772"
 ---
 
 # src/bin/pickdns-data.rs

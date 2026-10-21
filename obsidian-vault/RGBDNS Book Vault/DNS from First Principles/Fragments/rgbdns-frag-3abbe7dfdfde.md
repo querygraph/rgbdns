@@ -19,7 +19,7 @@ end_line: 279
 - Subsystem: [[DNS from First Principles/Subsystems/Tests and performance|Tests and performance]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-3abbe7dfdfde", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "heading": "rgbdns-frag-3abbe7dfdfde: fn rfc2181_referral_contains_only_in_bailiwick_glue", "sourcePath": "tests/rfc_conformance.rs", "startLine": 266, "endLine": 279}
+{"id": "rgbdns-frag-3abbe7dfdfde", "codeNote": "DNS from First Principles/Code/tests/rfc_conformance.rs.source", "sourcePath": "tests/rfc_conformance.rs", "startLine": 266, "endLine": 279}
 ```
 
 ## Excerpt

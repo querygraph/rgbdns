@@ -21,7 +21,7 @@ end_line: 233
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-2c2cadfbad0f", "codeNote": "DNS from First Principles/Code/src/tai64.rs.source", "heading": "rgbdns-frag-2c2cadfbad0f: fn stream_filters_preserve_lines_and_invalid_prefixes", "sourcePath": "src/tai64.rs", "startLine": 215, "endLine": 233}
+{"id": "rgbdns-frag-2c2cadfbad0f", "codeNote": "DNS from First Principles/Code/src/tai64.rs.source", "sourcePath": "src/tai64.rs", "startLine": 215, "endLine": 233}
 ```
 
 ## Excerpt

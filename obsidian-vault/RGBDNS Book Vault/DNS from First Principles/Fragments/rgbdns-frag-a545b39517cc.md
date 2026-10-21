@@ -21,7 +21,7 @@ end_line: 201
 - Component: [[DNS from First Principles/Components/rgbdns|rgbdns]]
 
 ```rgbdns-fragment
-{"id": "rgbdns-frag-a545b39517cc", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "heading": "rgbdns-frag-a545b39517cc: fn write_private", "sourcePath": "src/dnscache_config.rs", "startLine": 187, "endLine": 201}
+{"id": "rgbdns-frag-a545b39517cc", "codeNote": "DNS from First Principles/Code/src/dnscache_config.rs.source", "sourcePath": "src/dnscache_config.rs", "startLine": 187, "endLine": 201}
 ```
 
 ## Excerpt
