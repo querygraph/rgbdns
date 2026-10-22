@@ -6,7 +6,7 @@
  * firstpair-reader/dictionary.js: sha256 a9e0470f3b444105567d5c2b967e4127e01410368095b8360f891229591c56f3
  * firstpair-reader/quotes.js: sha256 0b5243294ed374e473b9213edfcafc6f137c9c967628e5b285abe36dd3a6b63b
  * firstpair-reader/strings.js: sha256 772c1233567c3e9925c2592a67cee6131ec25f5c7b2d78a2adf0c0133bb69718
- * firstpair-triptych/review-state.js: sha256 ca475578ae239aca9f6cca128d9eb014edc89bb9828650e3af02de2f184848a5
+ * firstpair-triptych/review-state.js: sha256 97527ad9f8e7a08e7e2509780acc855523f20cd96afb5f68539e314f0c6b2e89
  * shared/metrics.js: sha256 038414feb3790124525a5dfcd2f80d66bed599af8cde01dc7f7757bc949a6e4e
  * shared/ledger-store.js: sha256 b35236c51a80555a3c3547893bce2613e4fcfc5114a2aed897e5a1a838937d33
  * shared/voice-core.js: sha256 9c8c2541b9e66116b208711937ece95b831fd788194a107379ab9ea4b2f4c40a
@@ -2563,6 +2563,16 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       action_note: "Note",
       action_voice: "🎙 Voice",
       note_dialog_title: "Note on “{quote}”",
+      diff: "Diff",
+      diff_title: "Mark what differs between the editions shown: two panes compare as a pair, three as a set",
+      diff_legend_pair: "{older} → {newer}: struck through in {older} = removed; underlined in {newer} = added.",
+      diff_legend_all: "All {count} editions: highlighted = in this edition only; underlined in an edition's colour = shared with that edition only.",
+      diff_same: "No differences between the editions shown on this page.",
+      diff_need_two: "Show at least two panes to see a diff.",
+      diff_del: "Not in {name}",
+      diff_ins: "New since {name}",
+      diff_uniq: "In this edition only",
+      diff_share: "Shared with {name} only",
       note_text_aria: "Text note",
       note_text_placeholder: "Type a note, record one, or both.",
       record: "Record",
@@ -2788,6 +2798,16 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       action_note: "Nota",
       action_voice: "🎙 Voce",
       note_dialog_title: "Nota su «{quote}»",
+      diff: "Differenze",
+      diff_title: "Segna ciò che cambia tra le edizioni mostrate: due riquadri si confrontano a coppia, tre insieme",
+      diff_legend_pair: "{older} → {newer}: barrato in {older} = tolto; sottolineato in {newer} = aggiunto.",
+      diff_legend_all: "Tutte le {count} edizioni: evidenziato = solo in questa edizione; sottolineato nel colore di un'edizione = in comune solo con quella.",
+      diff_same: "Nessuna differenza tra le edizioni mostrate in questa pagina.",
+      diff_need_two: "Mostrate almeno due riquadri per vedere le differenze.",
+      diff_del: "Assente in {name}",
+      diff_ins: "Nuovo rispetto a {name}",
+      diff_uniq: "Solo in questa edizione",
+      diff_share: "In comune solo con {name}",
       note_text_aria: "Nota scritta",
       note_text_placeholder: "Scrivete una nota, registratela, o entrambe le cose.",
       record: "Registra",
@@ -3012,6 +3032,16 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       action_note: "Заметка",
       action_voice: "🎙 Голос",
       note_dialog_title: "Заметка к «{quote}»",
+      diff: "Разница",
+      diff_title: "Отметить расхождения между показанными изданиями: две панели сравниваются попарно, три — все вместе",
+      diff_legend_pair: "{older} → {newer}: зачёркнуто в {older} — убрано; подчёркнуто в {newer} — добавлено.",
+      diff_legend_all: "Все {count} издания: выделено — есть только в этом издании; подчёркнуто цветом издания — общее только с ним.",
+      diff_same: "На этой странице показанные издания не расходятся.",
+      diff_need_two: "Чтобы увидеть разницу, откройте хотя бы две панели.",
+      diff_del: "Нет в {name}",
+      diff_ins: "Новое по сравнению с {name}",
+      diff_uniq: "Только в этом издании",
+      diff_share: "Общее только с {name}",
       note_text_aria: "Текст заметки",
       note_text_placeholder: "Напишите заметку, запишите голосом — или то и другое.",
       record: "Записать",
