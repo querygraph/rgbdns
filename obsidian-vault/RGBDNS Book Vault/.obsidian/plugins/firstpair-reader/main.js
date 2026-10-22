@@ -6,7 +6,7 @@
  * firstpair-reader/dictionary.js: sha256 a9e0470f3b444105567d5c2b967e4127e01410368095b8360f891229591c56f3
  * firstpair-reader/quotes.js: sha256 0b5243294ed374e473b9213edfcafc6f137c9c967628e5b285abe36dd3a6b63b
  * firstpair-reader/strings.js: sha256 772c1233567c3e9925c2592a67cee6131ec25f5c7b2d78a2adf0c0133bb69718
- * firstpair-triptych/review-state.js: sha256 fd6d2f242ba2311b934d5bd6cdff3806cf92b2f98d8ca75bac1ce637980d3fba
+ * firstpair-triptych/review-state.js: sha256 a4d666e3f5eee3c1d92ac3ad23138518121272248157d33d4302b6b8a14e4959
  * shared/metrics.js: sha256 038414feb3790124525a5dfcd2f80d66bed599af8cde01dc7f7757bc949a6e4e
  * shared/ledger-store.js: sha256 b35236c51a80555a3c3547893bce2613e4fcfc5114a2aed897e5a1a838937d33
  * shared/voice-core.js: sha256 9c8c2541b9e66116b208711937ece95b831fd788194a107379ab9ea4b2f4c40a
@@ -2499,6 +2499,7 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       note_prefix: "Note: {note}",
       review_nav_aria: "Rosetta Review navigation",
       reader_button: "Reader",
+      review_back_title: "Back to the page you came from",
       refresh: "Refresh",
       review_explanation:
         "This workspace lists touched Reader pages and the deterministic decision digest. "
@@ -2762,6 +2763,7 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       note_prefix: "Nota: {note}",
       review_nav_aria: "Navigazione della revisione",
       reader_button: "Lettore",
+      review_back_title: "Torna alla pagina da cui siete venuti",
       refresh: "Aggiorna",
       review_explanation:
         "Qui sono elencate le pagine del Lettore che portano scelte e il riepilogo "
@@ -3026,6 +3028,7 @@ __firstpairModules["firstpair-triptych/review-state.js"] = (module, exports) => 
       note_prefix: "Заметка: {note}",
       review_nav_aria: "Навигация обзора",
       reader_button: "Окно чтения",
+      review_back_title: "Вернуться на страницу, с которой пришли",
       refresh: "Обновить",
       review_explanation:
         "Здесь перечислены страницы окна чтения, на которых приняты решения, и точная "
