@@ -1,7 +1,7 @@
 {
   "id": "firstpair-reader",
   "name": "FirstPair Reader",
-  "version": "2.1.4",
+  "version": "2.2.0",
   "minAppVersion": "1.5.0",
   "description": "Offline reader for every FirstPair vault: plain books, edition libraries, aligned multilingual chapters with dictionaries, code books with fragment cards, source rails, and pinned navigation; optional span text and voice notes.",
   "author": "First Pair",
