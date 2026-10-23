@@ -394,8 +394,8 @@ body {
 .firstpair-reader__picker { field-sizing: content; font-size: var(--font-ui-small); max-width: 10rem; min-height: 36px; min-width: 0; overflow: hidden; text-overflow: ellipsis; width: auto; }
 .firstpair-reader__toolbar-title { color: var(--text-muted); font-size: var(--font-ui-smaller); }
 .firstpair-reader__language-toggle { align-items: center; display: inline-flex; gap: var(--size-4-1); min-height: 44px; }
-.firstpair-reader__rail { align-items: center; background: var(--background-primary); border-top: 1px solid var(--background-modifier-border); bottom: 0; display: grid; gap: var(--size-4-2); grid-template-columns: minmax(0, 1fr) repeat(4, auto) minmax(0, 1fr); position: sticky; padding: var(--size-4-2) 0 max(var(--size-4-2), env(safe-area-inset-bottom)); z-index: 5; }
-.firstpair-reader__rail--words { grid-template-columns: minmax(0, 1fr) repeat(6, auto) minmax(0, 1fr); }
+.firstpair-reader__rail { align-items: center; background: var(--background-primary); border-top: 1px solid var(--background-modifier-border); bottom: 0; display: grid; gap: var(--size-4-2); grid-template-columns: minmax(0, 1fr) repeat(5, auto) minmax(0, 1fr); position: sticky; padding: var(--size-4-2) 0 max(var(--size-4-2), env(safe-area-inset-bottom)); z-index: 5; }
+.firstpair-reader__rail--words { grid-template-columns: minmax(0, 1fr) repeat(7, auto) minmax(0, 1fr); }
 .firstpair-reader__rail button { min-height: 44px; min-width: 44px; }
 .firstpair-reader__control--previous { justify-self: start; }
 .firstpair-reader__control--next { justify-self: end; }
@@ -461,8 +461,8 @@ body {
   .firstpair-reader__rail { gap: 2px; }
 }
 @media (max-width: 360px) {
-  .firstpair-reader__rail { gap: 0; grid-template-columns: minmax(44px, 1fr) repeat(4, 44px) minmax(44px, 1fr); margin-inline: calc(-1 * var(--size-4-2)); }
-  .firstpair-reader__rail--words { grid-template-columns: minmax(44px, 1fr) repeat(6, 36px) minmax(44px, 1fr); }
+  .firstpair-reader__rail { gap: 0; grid-template-columns: minmax(44px, 1fr) repeat(5, 44px) minmax(44px, 1fr); margin-inline: calc(-1 * var(--size-4-2)); }
+  .firstpair-reader__rail--words { grid-template-columns: minmax(44px, 1fr) repeat(7, 34px) minmax(44px, 1fr); }
   .firstpair-reader__rail button { min-width: 0; padding-inline: 0; width: 100%; }
   .firstpair-reader__control--previous, .firstpair-reader__control--next { min-width: 44px; }
 }
